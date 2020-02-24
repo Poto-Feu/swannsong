@@ -1,0 +1,29 @@
+ROOM dontloadthisroom
+    ATLAUNCH
+        PRINT temp_str
+    END
+    CHOICES
+        c1
+            GO "firstroom"
+            CUTSCENE "welcome"
+        END
+        c2
+            GO "aboutscreen"
+    END CHOICES
+END ROOM
+
+ROOM menu
+    CHOICES
+        c1
+            GO "firstroom"
+            CUTSCENE "welcome"
+        END
+        c2
+            GO "aboutscreen"
+        END
+    END
+    ATLAUNCH
+        PRINT menu_desc
+        DISPLAY CHOICES
+    END
+END ROOM
