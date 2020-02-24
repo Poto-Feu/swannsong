@@ -1,32 +1,32 @@
 # SwannSong
 A text-adventure game with some humour
 
-##Building the game
+## Building the game
 
-###Building prerequisites
+### Building prerequisites
 
-####Linux
+#### Linux
 * glibc
 * gcc
 * cmake
 
-####Windows
+#### Windows
 * mingw
 * cmake
 
 
-###Compiling
+### Compiling
 
-####Linux
+#### Linux
 ```bash
 mkdir build && cd build
 cmake .. && cp -r ../txt .
 make
 ```
 
-####Windows
+#### Windows
 TO-DO
 
 
-##Licence
+## Licence
 **SwannSong** is licensed under the GPL v3 License.
