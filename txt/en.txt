@@ -1,0 +1,7 @@
+test_str "english works"
+temp_str "temporary"
+filenotf "ERR : Missing data file."
+exit_penter "Press Enter to exit..."
+menu_desc "SwannSong --- Menu"
+menu_c1 "Play"
+menu_c2 "About"

@@ -1,0 +1,7 @@
+test_str "french works"
+temp_str "temporaire"
+filenotf "ERR : Fichier de données manquant."
+exit_penter "Appuyez sur Entrée pour quitter..."
+menu_desc "SwannSong --- Menu"
+menu_c1 "Jouer"
+menu_c2 "A propos"
