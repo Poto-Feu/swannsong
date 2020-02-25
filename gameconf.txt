@@ -1,0 +1,6 @@
+* files path
+langdir="txt/lang/"
+roomfile="txt/rooms.txt"
+
+* game vars
+firstroom=menu
