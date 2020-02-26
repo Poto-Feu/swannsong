@@ -3,4 +3,4 @@ langdir="txt/lang/"
 roomfile="txt/rooms.txt"
 
 * game vars
-firstroom=menu
+firstroom="menu"
