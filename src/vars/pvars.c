@@ -15,4 +15,19 @@
 */
 #include "pvars.h"
 
+struct gcvar 
+{
+    char* name;
+    char* value;
+};
+
 char pvars_userlang[3] = "en";
+struct gcvar pvars_gameconf[3];
+
+
+void init_gcvars()
+{
+    pvars_gameconf[0].name = "langdir";
+    pvars_gameconf[1].name = "roomfile";
+    pvars_gameconf[2].name = "firstroom";
+}
