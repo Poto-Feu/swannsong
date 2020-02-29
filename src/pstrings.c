@@ -70,7 +70,7 @@ void pstrings_fetch(char id[], char *rstr)
             }
         }
 
-        if(strcmp(id, id_found) == 0)
+        if(!strcmp(id, id_found))
         {
             id_exist = 1;
             free(id_found);
@@ -88,7 +88,7 @@ void pstrings_fetch(char id[], char *rstr)
         
         for(int i = index + 1; i < len; i++)
         {
-            if(quote_inc == 0)
+            if(!quote_inc)
             {
                 if(ustr[i] == '"')
                 {

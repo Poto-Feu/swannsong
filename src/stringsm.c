@@ -53,7 +53,7 @@ void stringsm_getfw(char* fw, char* str, int* index)
             break;
         }
     }
-    if(space == 0)
+    if(!space)
     {
         strcpy(fw, str);
         *index = 0;

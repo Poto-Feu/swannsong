@@ -39,7 +39,7 @@ void gameconf_readfile()
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);
-        if(strcmp(buf, "") != 0 && buf[0] != '*')
+        if(strcmp(buf, "") && buf[0] != '*')
         {
             gameconf_splitins(var, value, buf);
             pvars_setgcvars(var, value);

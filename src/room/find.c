@@ -62,27 +62,27 @@ bool find_insline(int* foundln, int ln, char* ins)
         stringsm_rtab(buf);
         
         parser_splitline(type, arg, buf);
-        if (strcmp(type, ins) == 0)
+        if (!strcmp(type, ins))
         {
             *foundln = i + ln;
             return 1;
-        } else if(strcmp(type, "CHOICES") == 0)
+        } else if(!strcmp(type, "CHOICES"))
         {
-            if(strcmp(ins, "CHOICES") != 0)
+            if(strcmp(ins, "CHOICES"))
             {
                 inchoices = 1;
             }
             
         }
-        if(strcmp(type, "END") == 0)
+        if(!strcmp(type, "END"))
         {
             if(inchoices == 0)
             {
-                if(strcmp(type, "ATLAUNCH") == 0)
+                if(!strcmp(type, "ATLAUNCH"))
                 {
                     perror_disp("NO_ATLAUNCH_INS", 0);
                     break;
-                } else if(strcmp(type, "CHOICES") == 0)
+                } else if(!strcmp(type, "CHOICES"))
                 {
                     perror_disp("NO_CHOICES_INS", 0);
                     break;

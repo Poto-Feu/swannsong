@@ -52,7 +52,7 @@ void fileio_getln(int* ln, char* s)
     {
         stringsm_chomp(buf);
         stringsm_rtab(buf);
-        if(strcmp(s, buf) == 0)
+        if(!strcmp(s, buf))
         {
             *ln = i + 1;
             break;
@@ -81,7 +81,7 @@ void fileio_execuntilend(int startln)
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         parser_splitline(type, arg, buf);
-        if(strcmp(type, "END") != 0)
+        if(strcmp(type, "END"))
         {
             parser_execins(type, arg, &inblock);
             free(type);

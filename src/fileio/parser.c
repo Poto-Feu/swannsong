@@ -27,7 +27,7 @@
 
 void parser_execins(char* type, char* arg, bool* inblock)
 {
-    if(strcmp(type, "PRINT") == 0)
+    if(!strcmp(type, "PRINT"))
     {
         printf("\n");
         pstrings_display(arg);
@@ -35,9 +35,9 @@ void parser_execins(char* type, char* arg, bool* inblock)
     } else if (strcmp(type, "IF") == 0)
     {
         *inblock = 1;
-    } else if (*inblock == 0 && strcmp(type, "DISPLAY") == 0)
+    } else if (*inblock == 0 && !strcmp(type, "DISPLAY"))
     {    
-        if(strcmp(arg, "CHOICES") == 0)
+        if(!strcmp(arg, "CHOICES"))
         {
             //To do
             int* roomln = malloc(sizeof(int));

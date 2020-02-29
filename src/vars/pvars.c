@@ -38,7 +38,7 @@ void pvars_setgcvars(char* name, char* value)
     int varfndid = -1;
     for(int i = 0; i < GCVARS_LN ; i++)
     {
-        if(strcmp(name, pvars_gameconf[i].name) == 0)
+        if(!strcmp(name, pvars_gameconf[i].name))
         {
             isvarfnd = 1;
             varfndid = i;
