@@ -20,4 +20,3 @@ add_executable(swannsong src/main.c
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
-set(CMAKE_C_FLAGS "-pedantic -Wall -Wextra")
