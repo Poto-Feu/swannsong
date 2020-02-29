@@ -14,9 +14,11 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdbool.h>
+
 #ifndef PERROR_H
 #define PERROR_H
 
-void perror_disp (char* id, _Bool fatal);
+void perror_disp (char* id, bool fatal);
 
 #endif

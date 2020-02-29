@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "../vars/pconst.h"
 #include "../perror.h"
 #include "../pstrings.h"
@@ -42,10 +43,10 @@ void find_roomline(char* id, int* ln)
 }
 
 
-_Bool find_insline(int* foundln, int ln, char* ins)
+bool find_insline(int* foundln, int ln, char* ins)
 {
-    _Bool inchoices = 0;
-    _Bool inonechoice = 0;
+    bool inchoices = 0;
+    bool inonechoice = 0;
     char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
     char* type = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
     char* arg = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
@@ -101,13 +102,13 @@ _Bool find_insline(int* foundln, int ln, char* ins)
     return 0;
 }
 
-void find_atlaunchline(int* foundln, int ln, _Bool* atlfound)
+void find_atlaunchline(int* foundln, int ln, bool* atlfound)
 {
     char* ins = "ATLAUNCH";
     *atlfound = find_insline(foundln, ln, ins);
 }
 
-void find_choicesline(int* foundln, int ln, _Bool* choiceslfound)
+void find_choicesline(int* foundln, int ln, bool* choiceslfound)
 {
     char* ins = "CHOICES";
     *choiceslfound = find_insline(foundln, ln, ins);

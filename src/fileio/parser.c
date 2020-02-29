@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "../vars/pconst.h"
 #include "../perror.h"
 #include "../pstrings.h"
@@ -24,7 +25,7 @@
 #include "../room/room.h"
 #include "../room/find.h"
 
-void parser_execins(char* type, char* arg, _Bool* inblock)
+void parser_execins(char* type, char* arg, bool* inblock)
 {
     if(strcmp(type, "PRINT") == 0)
     {

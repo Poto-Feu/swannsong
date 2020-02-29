@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "gameconf.h"
 #include "../vars/pconst.h"
 #include "../vars/pvars.h"
@@ -56,7 +57,7 @@ void gameconf_splitins(char* var, char* value, char* ins)
 {
     int index = 0;
     int vindex = 0;
-    _Bool quoteinc = 0;
+    bool quoteinc = 0;
 
     *var = '\0';
     *value = '\0';
