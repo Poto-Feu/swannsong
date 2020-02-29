@@ -38,7 +38,6 @@ int main (void)
 
     init_game();
     strcpy(room_name, "menu");
-    printf("\n");
     room_load(room_name);
     free(next_room);
     free(room_name);

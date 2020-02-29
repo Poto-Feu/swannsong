@@ -47,7 +47,6 @@ void parser_execins(char* type, char* arg, _Bool* inblock)
         }
     } else if (*inblock == 0 && strcmp(type, "END") == 0)
     {
-        printf("\nend of block\n");
     } else
     {
         printf("arg: %s\n", type);
@@ -65,7 +64,6 @@ void parser_splitline(char* type, char* arg, char* ins)
     int len = strlen(ins);
     ins[len] = '\0';
     stringsm_getfw(type, ins, &i);
-    printf("type: %s\n", type);
     if(len != (int)strlen(type))
     {
         for(int index = i; index < len; index++)

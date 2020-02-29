@@ -55,7 +55,6 @@ void room_load(char* id)
     int roomln = 0;
     croomid = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
     strcpy(croomid, id);
-    printf("croomid: %s\n", croomid);
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);
     free(croomid);

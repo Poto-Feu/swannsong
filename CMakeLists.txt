@@ -8,6 +8,7 @@ add_executable(swannsong src/main.c
     src/room/room.c
     src/room/find.c
     src/fileio/fileio.c
+    src/fileio/gameconf.c
     src/fileio/parser.c
     src/vars/pvars.c
     src/vars/pconst.c
@@ -19,4 +20,3 @@ add_executable(swannsong src/main.c
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
-set(CMAKE_C_FLAGS "-pedantic -Wall -Wextra")

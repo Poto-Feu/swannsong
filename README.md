@@ -20,7 +20,8 @@ A text-adventure game with some humour
 #### Linux
 ```bash
 mkdir build && cd build
-cmake .. && cp -r ../txt .
+cmake .. 
+cp -r ../txt ../gameconf.txt .
 make
 ```
 
