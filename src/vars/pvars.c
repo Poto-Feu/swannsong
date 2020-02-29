@@ -62,10 +62,17 @@ void pvars_getgcvars(char* name, char* value)
     {
         if(!strcmp(name, pvars_gameconf[i].name))
         {
-            strcpy(value, pvars_gameconf[i].value);
-            isvarfnd = 1;
-            break;
+            int vlen = strlen(pvars_gameconf[i].value);
+            char* check = realloc(value, (vlen + 1) * sizeof(char));
+            if(!check)
+            {
+                perror_disp("REALLOC_FAIL", 1);
+            }
+            free(check);
         }
+        strcpy(value, pvars_gameconf[i].value);
+        isvarfnd = 1;
+        break;
     }
     if(!isvarfnd)
     {
