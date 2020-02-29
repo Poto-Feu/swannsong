@@ -26,7 +26,6 @@
 
 void find_roomline(char* id, int* ln)
 {
-    printf("id(find_roomline): %s", id);
     char* roomline = malloc(P_MAX_BUF_SIZE * sizeof(char));
     int idlen = strlen(id);
 
@@ -37,7 +36,6 @@ void find_roomline(char* id, int* ln)
     {
         roomline[strlen(roomline)] = id[i];
     }
-    printf("\nroomline(find_roomline): %s\n", roomline);
     fileio_getln(ln, roomline);
     free(roomline);
     roomline = NULL;
@@ -62,13 +60,10 @@ _Bool find_insline(int* foundln, int ln, char* ins)
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         
-        printf("%s\n", arg);
         parser_splitline(type, arg, buf);
         if (strcmp(type, ins) == 0)
         {
             *foundln = i + ln;
-            printf("foundln: %i", *foundln);
-            printf("foundit\n");
             return 1;
         } else if(strcmp(type, "CHOICES") == 0)
         {
