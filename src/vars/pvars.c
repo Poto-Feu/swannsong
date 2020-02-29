@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "pvars.h"
 #include "../perror.h"
 
@@ -33,11 +34,11 @@ struct gcvar pvars_gameconf[3];
 
 void pvars_setgcvars(char* name, char* value)
 {
-    _Bool isvarfnd = 0;
+    bool isvarfnd = 0;
     int varfndid = -1;
     for(int i = 0; i < GCVARS_LN ; i++)
     {
-        if(strcmp(name, pvars_gameconf[i].name) == 0)
+        if(!strcmp(name, pvars_gameconf[i].name))
         {
             isvarfnd = 1;
             varfndid = i;

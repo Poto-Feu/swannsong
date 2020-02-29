@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "room.h"
 #include "find.h"
 #include "../vars/pconst.h"
@@ -41,7 +42,7 @@ void room_getcroomid(char* str)
 static void room_atlaunch(int* roomln)
 {
     int *foundln = malloc(sizeof(int));
-    _Bool atlfound = 0;
+    bool atlfound = 0;
     find_atlaunchline(foundln, *roomln, &atlfound);
     *foundln = *foundln + 1;
     if(atlfound == 1)

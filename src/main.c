@@ -33,8 +33,8 @@ int main (void)
     SetConsoleOutputCP(65001);
     #endif
 
-    char* next_room = (char*)malloc(100*sizeof(char));
-    char* room_name = (char*)malloc(200*sizeof(char));
+    char* next_room = malloc(100*sizeof(char));
+    char* room_name = malloc(200*sizeof(char));
 
     init_game();
     strcpy(room_name, "menu");

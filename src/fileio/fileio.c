@@ -52,7 +52,7 @@ void fileio_getln(int* ln, char* s)
     {
         stringsm_chomp(buf);
         stringsm_rtab(buf);
-        if(strcmp(s, buf) == 0)
+        if(!strcmp(s, buf))
         {
             *ln = i + 1;
             break;
@@ -66,7 +66,7 @@ void fileio_getln(int* ln, char* s)
 // Execute all the instructions until the end of the block
 void fileio_execuntilend(int startln)
 {
-    _Bool inblock = 0;
+    bool inblock = 0;
     char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
     char* type = NULL;
     char* arg = NULL;
@@ -81,7 +81,7 @@ void fileio_execuntilend(int startln)
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         parser_splitline(type, arg, buf);
-        if(strcmp(type, "END") != 0)
+        if(strcmp(type, "END"))
         {
             parser_execins(type, arg, &inblock);
             free(type);
