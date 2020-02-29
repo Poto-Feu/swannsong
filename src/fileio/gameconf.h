@@ -14,17 +14,9 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "init.h"
-#include "vars/pconst.h"
-#include "vars/pvars.h"
-#include "fileio/gameconf.h"
-#include "room/room.h"
+#ifndef GAMECONF_H
+#define GAMECONF_H
 
-void init_game()
-{
-    init_gcvars();
-    room_initmodule();
-    gameconf_readfile();
-}
+void gameconf_readfile();
+
+#endif
