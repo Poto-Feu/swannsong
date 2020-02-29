@@ -19,10 +19,12 @@
 #include "init.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
+#include "fileio/gameconf.h"
 #include "room/room.h"
 
 void init_game()
 {
     init_gcvars();
     room_initmodule();
+    gameconf_readfile();
 }
