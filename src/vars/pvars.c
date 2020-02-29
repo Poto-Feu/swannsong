@@ -55,6 +55,24 @@ void pvars_setgcvars(char* name, char* value)
     }
 }
 
+void pvars_getgcvars(char* name, char* value)
+{
+    _Bool isvarfnd = 0;
+    for(int i = 0; i < GCVARS_LN; i++)
+    {
+        if(!strcmp(name, pvars_gameconf[i].name))
+        {
+            strcpy(value, pvars_gameconf[i].value);
+            isvarfnd = 1;
+            break;
+        }
+    }
+    if(!isvarfnd)
+    {
+        perror_disp("GAMECONF_VAR_NF", 1);
+    }
+}
+
 void init_gcvars()
 {
     pvars_gameconf[0].name = "langdir";
