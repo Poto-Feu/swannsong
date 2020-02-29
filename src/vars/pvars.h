@@ -18,5 +18,6 @@
 #define PVARS_H
 
 extern char pvars_userlang[3];
+void pvars_setgcvars(char* name, char* value);
 
 #endif

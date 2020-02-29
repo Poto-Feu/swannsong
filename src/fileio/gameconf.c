@@ -19,6 +19,7 @@
 #include <string.h>
 #include "gameconf.h"
 #include "../vars/pconst.h"
+#include "../vars/pvars.h"
 #include "../stringsm.h"
 
 void gameconf_splitins(char* var, char* value, char* ins);
@@ -40,6 +41,7 @@ void gameconf_readfile()
         if(strcmp(buf, "") != 0 && buf[0] != '*')
         {
             gameconf_splitins(var, value, buf);
+            pvars_setgcvars(var, value);
         } 
 
         free(var);

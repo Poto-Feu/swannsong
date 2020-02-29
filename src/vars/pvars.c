@@ -13,7 +13,13 @@
     You should have received a copy of the GNU General Public License
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+#include <stdlib.h>
+#include <string.h>
 #include "pvars.h"
+#include "../perror.h"
+
+#define GCVARS_LN 3
 
 struct gcvar 
 {
@@ -24,6 +30,30 @@ struct gcvar
 char pvars_userlang[3] = "en";
 struct gcvar pvars_gameconf[3];
 
+
+void pvars_setgcvars(char* name, char* value)
+{
+    _Bool isvarfnd = 0;
+    int varfndid = -1;
+    for(int i = 0; i < GCVARS_LN ; i++)
+    {
+        if(strcmp(name, pvars_gameconf[i].name) == 0)
+        {
+            isvarfnd = 1;
+            varfndid = i;
+            break;
+        }
+    }
+
+    if(isvarfnd == 1 && varfndid != -1)
+    {
+        pvars_gameconf[varfndid].value = malloc((strlen(value) + 1) * sizeof (char));
+        strcpy(pvars_gameconf[varfndid].value, value);
+    } else
+    {
+        perror_disp("UNK_GAMECONF_VAR", 0);
+    }
+}
 
 void init_gcvars()
 {
