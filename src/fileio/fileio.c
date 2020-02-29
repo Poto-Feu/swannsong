@@ -42,23 +42,18 @@ void fileio_gotoline(FILE** fp, int ln)
 
 void fileio_getln(int* ln, char* s)
 {
-    printf("\nin fileio_getln\n");
     FILE *fp = fopen("txt/rooms.txt", "r");
     char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
     //char buf[500];
-    printf("\nin fileio_getln2\n");
     int i = 0;
     *ln = 0;
     *buf = '\0';
-    printf("\nln: %i\ns:%s\n\n", *ln, s);
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
-        printf("buf(fileio_getln): %s", buf);
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         if(strcmp(s, buf) == 0)
         {
-            printf("\ncorrespond\n");
             *ln = i + 1;
             break;
         }
