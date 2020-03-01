@@ -56,6 +56,8 @@ void pvars_setgcvars(char* name, char* value)
     }
 }
 
+#include <stdio.h>
+
 void pvars_getgcvars(char* name, char* value)
 {
     _Bool isvarfnd = 0;
@@ -70,10 +72,10 @@ void pvars_getgcvars(char* name, char* value)
                 perror_disp("REALLOC_FAIL", 1);
             }
             free(check);
+            strcpy(value, pvars_gameconf[i].value);
+            isvarfnd = 1;
+            break;
         }
-        strcpy(value, pvars_gameconf[i].value);
-        isvarfnd = 1;
-        break;
     }
     if(!isvarfnd)
     {
