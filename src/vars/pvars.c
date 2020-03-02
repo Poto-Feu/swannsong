@@ -32,24 +32,17 @@ char pvars_userlang[3] = "en";
 struct gcvar pvars_gameconf[3];
 
 
+bool fetch_pvarsid(char* name, int* id);
+
 void pvars_setgcvars(char* name, char* value)
 {
-    bool isvarfnd = 0;
-    int varfndid = -1;
-    for(int i = 0; i < GCVARS_LN ; i++)
-    {
-        if(!strcmp(name, pvars_gameconf[i].name))
-        {
-            isvarfnd = 1;
-            varfndid = i;
-            break;
-        }
-    }
+    int* varfndid = malloc(sizeof(int));
+    bool isvarfnd = fetch_pvarsid(name, varfndid);
 
-    if(isvarfnd == 1 && varfndid != -1)
+    if(isvarfnd == 1 && *varfndid != -1)
     {
-        pvars_gameconf[varfndid].value = malloc((strlen(value) + 1) * sizeof (char));
-        strcpy(pvars_gameconf[varfndid].value, value);
+        pvars_gameconf[*varfndid].value = malloc((strlen(value) + 1) * sizeof (char));
+        strcpy(pvars_gameconf[*varfndid].value, value);
     } else
     {
         perror_disp("UNK_GAMECONF_VAR", 0);
@@ -88,4 +81,22 @@ void init_gcvars()
     pvars_gameconf[0].name = "langdir";
     pvars_gameconf[1].name = "roomfile";
     pvars_gameconf[2].name = "firstroom";
+}
+
+bool fetch_pvarsid(char* name, int* id)
+{
+    bool isvarfnd = false;
+    int varfndid = -1;
+    for(int i = 0; i < GCVARS_LN ; i++)
+    {
+        if(!strcmp(name, pvars_gameconf[i].name))
+        {
+            isvarfnd = true;
+            varfndid = i;
+            break;
+        }
+    }
+    *id = varfndid;
+
+    return isvarfnd;
 }
