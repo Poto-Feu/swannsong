@@ -22,7 +22,7 @@
 
 #define GCVARS_LN 3
 
-struct gcvar 
+struct gcvar
 {
     char* name;
     char* value;
