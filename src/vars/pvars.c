@@ -49,8 +49,6 @@ void pvars_setgcvars(char* name, char* value)
     }
 }
 
-#include <stdio.h>
-
 void pvars_getgcvars(char* name, char* value)
 {
     _Bool isvarfnd = 0;
