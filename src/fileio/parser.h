@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -14,10 +16,12 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdbool.h>
+
 #ifndef PARSER_H
 #define PARSER_H
 
-void parser_execins(char* type, char* arg, _Bool* inblock);
+void parser_execins(char* type, char* arg, bool* inblock);
 void parser_splitline(char* type, char* arg, char* ins);
 
 #endif

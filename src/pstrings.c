@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
 #include "pstrings.h"
@@ -46,7 +49,7 @@ void pstrings_fetch(char id[], char *rstr)
     char* ustr = malloc(P_MAX_BUF_SIZE * sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
-    _Bool id_exist = 0;
+    bool id_exist = 0;
     FILE* fp = NULL;
 
     *buf = '\0';
@@ -69,7 +72,7 @@ void pstrings_fetch(char id[], char *rstr)
             }
         }
 
-        if(strcmp(id, id_found) == 0)
+        if(!strcmp(id, id_found))
         {
             id_exist = 1;
             free(id_found);
@@ -83,11 +86,11 @@ void pstrings_fetch(char id[], char *rstr)
     if (id_exist == 1)
     {
         int findex = 0;
-        _Bool quote_inc = 0;
+        bool quote_inc = 0;
         
         for(int i = index + 1; i < len; i++)
         {
-            if(quote_inc == 0)
+            if(!quote_inc)
             {
                 if(ustr[i] == '"')
                 {

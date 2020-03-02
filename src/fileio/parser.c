@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "../vars/pconst.h"
 #include "../perror.h"
 #include "../pstrings.h"
@@ -24,9 +27,9 @@
 #include "../room/room.h"
 #include "../room/find.h"
 
-void parser_execins(char* type, char* arg, _Bool* inblock)
+void parser_execins(char* type, char* arg, bool* inblock)
 {
-    if(strcmp(type, "PRINT") == 0)
+    if(!strcmp(type, "PRINT"))
     {
         printf("\n");
         pstrings_display(arg);
@@ -34,9 +37,9 @@ void parser_execins(char* type, char* arg, _Bool* inblock)
     } else if (strcmp(type, "IF") == 0)
     {
         *inblock = 1;
-    } else if (*inblock == 0 && strcmp(type, "DISPLAY") == 0)
+    } else if (*inblock == 0 && !strcmp(type, "DISPLAY"))
     {    
-        if(strcmp(arg, "CHOICES") == 0)
+        if(!strcmp(arg, "CHOICES"))
         {
             //To do
             int* roomln = malloc(sizeof(int));

@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,9 +19,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "perror.h"
 
-void perror_disp(char* id, _Bool fatal)
+void perror_disp(char* id, bool fatal)
 {
     printf("ERROR : %s\n", id);
     if (fatal == 1)

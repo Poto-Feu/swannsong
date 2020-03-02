@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -14,12 +16,14 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdbool.h>
+
 #ifndef FIND_H
 #define FIND_H
 
-void find_room(char* id, _Bool* inroom, char* lang);
+void find_room(char* id, bool* inroom, char* lang);
 void find_roomline(char* id, int* ln);
-_Bool find_atlaunchline(int* foundln, int ln, _Bool* atlfound);
-_Bool find_choicesline(int* foundln, int ln, _Bool* choiceslfound);
+bool find_atlaunchline(int* foundln, int ln, bool* atlfound);
+bool find_choicesline(int* foundln, int ln, bool* choiceslfound);
 
 #endif

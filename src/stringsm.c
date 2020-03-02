@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -16,6 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "stringsm.h"
 
 void stringsm_chomp(char *str)
@@ -40,7 +43,7 @@ void stringsm_rtab(char *str)
 // Get the first word of a string
 void stringsm_getfw(char* fw, char* str, int* index)
 {
-    _Bool space = 0;
+    bool space = false;
     int len = strlen(str);
     for(int i = 0; i < len; i++)
     {
@@ -48,11 +51,11 @@ void stringsm_getfw(char* fw, char* str, int* index)
         {
             strncpy(fw, str, i);
             *index = i+1;
-            space = 1;
+            space = true;
             break;
         }
     }
-    if(space == 0)
+    if(!space)
     {
         strcpy(fw, str);
         *index = 0;
