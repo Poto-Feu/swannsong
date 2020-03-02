@@ -20,7 +20,7 @@
 #include "pvars.h"
 #include "../perror.h"
 
-#define GCVARS_LN 3
+#define GCVARS_LN 4
 
 struct gcvar
 {
@@ -64,21 +64,21 @@ void pvars_getgcvars(char* name, char* value)
         {
             perror_disp("REALLOC_FAIL", 1);
         }
-        free(check);
         strcpy(value, pvars_gameconf[*id].value);
-        free(id);
     }
     else
     {
         perror_disp("GAMECONF_VAR_NF", 1);
     }
+    free(id);
 }
 
 void init_gcvars()
 {
     pvars_gameconf[0].name = "langdir";
     pvars_gameconf[1].name = "roomfile";
-    pvars_gameconf[2].name = "firstroom";
+    pvars_gameconf[2].name = "defaultlang";
+    pvars_gameconf[GCVARS_LN - 1].name = "firstroom";
 }
 
 bool fetch_pvarsid(char* name, int* id)
