@@ -34,6 +34,7 @@ struct gcvar pvars_gameconf[3];
 
 bool fetch_pvarsid(char* name, int* id);
 
+/*Set the value of a gameconf-defined variable*/
 void pvars_setgcvars(char* name, char* value)
 {
     int* varfndid = malloc(sizeof(int));
@@ -49,6 +50,7 @@ void pvars_setgcvars(char* name, char* value)
     }
 }
 
+/*Copy the value of a gameconf-defined variable*/
 void pvars_getgcvars(char* name, char* value)
 {
     int *id = malloc(sizeof(int));
