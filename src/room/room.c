@@ -44,7 +44,7 @@ void room_getcroomid(char* str)
 static void room_atlaunch(int* roomln)
 {
     int *foundln = malloc(sizeof(int));
-    bool atlfound = 0;
+    bool atlfound = false;
     find_atlaunchline(foundln, *roomln, &atlfound);
     *foundln = *foundln + 1;
     if(atlfound == 1)

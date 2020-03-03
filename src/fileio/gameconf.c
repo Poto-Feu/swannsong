@@ -59,7 +59,7 @@ void gameconf_splitins(char* var, char* value, char* ins)
 {
     int index = 0;
     int vindex = 0;
-    bool quoteinc = 0;
+    bool quoteinc = false;
 
     *var = '\0';
     *value = '\0';
