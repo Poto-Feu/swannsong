@@ -68,7 +68,7 @@ void fileio_getln(int* ln, char* s)
 // Execute all the instructions until the end of the block
 void fileio_execuntilend(int startln)
 {
-    bool inblock = 0;
+    bool inblock = false;
     char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
     char* type = NULL;
     char* arg = NULL;

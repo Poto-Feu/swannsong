@@ -47,8 +47,8 @@ void find_roomline(char* id, int* ln)
 
 bool find_insline(int* foundln, int ln, char* ins)
 {
-    bool inchoices = 0;
-    bool inonechoice = 0;
+    bool inchoices = false;
+    bool inonechoice = false;
     char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
     char* type = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
     char* arg = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));

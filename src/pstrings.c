@@ -49,7 +49,7 @@ void pstrings_fetch(char id[], char *rstr)
     char* ustr = malloc(P_MAX_BUF_SIZE * sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
-    bool id_exist = 0;
+    bool id_exist = false;
     FILE* fp = NULL;
 
     *buf = '\0';
@@ -86,7 +86,7 @@ void pstrings_fetch(char id[], char *rstr)
     if (id_exist == 1)
     {
         int findex = 0;
-        bool quote_inc = 0;
+        bool quote_inc = false;
         
         for(int i = index + 1; i < len; i++)
         {
