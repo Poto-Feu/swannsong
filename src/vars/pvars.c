@@ -22,6 +22,7 @@
 #include "pvars.h"
 #include "../perror.h"
 
+#define PVARS_LN 1
 #define GCVARS_LN 4
 
 struct pvar
@@ -31,16 +32,18 @@ struct pvar
 };
 
 char pvars_userlang[3] = "en";
+static struct pvar pvars[PVARS_LN];
 static struct pvar pvars_gameconf[GCVARS_LN];
 
 
-static bool fetch_pvarsid(char* name, int* id);
+static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
+static bool fetch_gcvarsid(char* name, int *id);
 
 /*Set the value of a gameconf-defined variable*/
 void pvars_setgcvars(char* name, char* value)
 {
     int* varfndid = malloc(sizeof(int));
-    bool isvarfnd = fetch_pvarsid(name, varfndid);
+    bool isvarfnd = fetch_gcvarsid(name, varfndid);
 
     if(isvarfnd == 1 && *varfndid != -1)
     {
@@ -57,7 +60,7 @@ void pvars_setgcvars(char* name, char* value)
 void pvars_getgcvars(char* name, char* value)
 {
     int *id = malloc(sizeof(int));
-    bool isvarfnd = fetch_pvarsid(name, id);
+    bool isvarfnd = fetch_gcvarsid(name, id);
 
     if(isvarfnd)
     {
@@ -84,18 +87,51 @@ void init_gcvars()
     pvars_gameconf[GCVARS_LN - 1].name = "firstroom";
 }
 
-static bool fetch_pvarsid(char* name, int* id)
+// Fetch regular pvars id
+static bool fetch_stdpvarsid(char* name, int *id)
+{
+    return fetch_pvarsid(name, id, true);
+}
+
+// Fetch gameconf-defined pvars id
+static bool fetch_gcvarsid(char* name, int *id)
+{
+    return fetch_pvarsid(name, id, true);
+}
+
+
+static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
 {
     bool isvarfnd = false;
     int varfndid = -1;
-    for(int i = 0; i < GCVARS_LN ; i++)
+    int arrlen = 0;
+
+    if(isgcvar == true)
     {
+        arrlen = GCVARS_LN;
+    } else
+    {
+        arrlen = PVARS_LN;
+    }
+
+    for(int i = 0; i < arrlen; i++)
+    {
+        char* iname = NULL;
+        if(isgcvar == true)
+        {
+            iname = malloc(strlen(pvars_gameconf[i].name) * sizeof(char));
+        }
+        else
+        {
+            iname = malloc(strlen(pvars_gameconf[i].name) * sizeof(char));
+        }
         if(!strcmp(name, pvars_gameconf[i].name))
         {
             isvarfnd = true;
             varfndid = i;
             break;
         }
+        free(iname);
     }
     *id = varfndid;
 
