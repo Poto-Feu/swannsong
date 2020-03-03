@@ -33,7 +33,7 @@ struct pvar
 
 char pvars_userlang[3] = "en";
 static struct pvar pvars[PVARS_LN];
-static struct pvar pvars_gameconf[GCVARS_LN];
+static struct pvar gcvars[GCVARS_LN];
 
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
@@ -48,8 +48,8 @@ void pvars_setgcvars(char* name, char* value)
     if(isvarfnd == 1 && *varfndid != -1)
     {
         int vlen = strlen(value);
-        pvars_gameconf[*varfndid].value = malloc((vlen + 1) * sizeof(char));
-        strcpy(pvars_gameconf[*varfndid].value, value);
+        gcvars[*varfndid].value = malloc((vlen + 1) * sizeof(char));
+        strcpy(gcvars[*varfndid].value, value);
     } else
     {
         perror_disp("UNK_GAMECONF_VAR", 0);
@@ -64,13 +64,13 @@ void pvars_getgcvars(char* name, char* value)
 
     if(isvarfnd)
     {
-        int vlen = strlen(pvars_gameconf[*id].value);
+        int vlen = strlen(gcvars[*id].value);
         char* check = realloc(value, (vlen + 1) * sizeof(char));
         if(!check)
         {
             perror_disp("REALLOC_FAIL", 1);
         }
-        strcpy(value, pvars_gameconf[*id].value);
+        strcpy(value, gcvars[*id].value);
     }
     else
     {
@@ -81,10 +81,10 @@ void pvars_getgcvars(char* name, char* value)
 
 void init_gcvars()
 {
-    pvars_gameconf[0].name = "langdir";
-    pvars_gameconf[1].name = "roomfile";
-    pvars_gameconf[2].name = "defaultlang";
-    pvars_gameconf[GCVARS_LN - 1].name = "firstroom";
+    gcvars[0].name = "langdir";
+    gcvars[1].name = "roomfile";
+    gcvars[2].name = "defaultlang";
+    gcvars[GCVARS_LN - 1].name = "firstroom";
 }
 
 /*Fetch regular pvars id*/
@@ -119,13 +119,13 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
         char* iname = NULL;
         if(isgcvar == true)
         {
-            iname = malloc(strlen(pvars_gameconf[i].name) * sizeof(char));
+            iname = malloc(strlen(gcvars[i].name) * sizeof(char));
         }
         else
         {
-            iname = malloc(strlen(pvars_gameconf[i].name) * sizeof(char));
+            iname = malloc(strlen(gcvars[i].name) * sizeof(char));
         }
-        if(!strcmp(name, pvars_gameconf[i].name))
+        if(!strcmp(name, gcvars[i].name))
         {
             isvarfnd = true;
             varfndid = i;
