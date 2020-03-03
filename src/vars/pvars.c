@@ -22,45 +22,82 @@
 #include "pvars.h"
 #include "../perror.h"
 
-#define GCVARS_LN 3
+#define GCVARS_LN 4
 
-struct gcvar 
+struct gcvar
 {
     char* name;
     char* value;
 };
 
 char pvars_userlang[3] = "en";
-struct gcvar pvars_gameconf[3];
+static struct gcvar pvars_gameconf[GCVARS_LN];
 
 
+static bool fetch_pvarsid(char* name, int* id);
+
+/*Set the value of a gameconf-defined variable*/
 void pvars_setgcvars(char* name, char* value)
 {
-    bool isvarfnd = 0;
-    int varfndid = -1;
-    for(int i = 0; i < GCVARS_LN ; i++)
-    {
-        if(!strcmp(name, pvars_gameconf[i].name))
-        {
-            isvarfnd = 1;
-            varfndid = i;
-            break;
-        }
-    }
+    int* varfndid = malloc(sizeof(int));
+    bool isvarfnd = fetch_pvarsid(name, varfndid);
 
-    if(isvarfnd == 1 && varfndid != -1)
+    if(isvarfnd == 1 && *varfndid != -1)
     {
-        pvars_gameconf[varfndid].value = malloc((strlen(value) + 1) * sizeof (char));
-        strcpy(pvars_gameconf[varfndid].value, value);
+        int vlen = strlen(value);
+        pvars_gameconf[*varfndid].value = malloc((vlen + 1) * sizeof(char));
+        strcpy(pvars_gameconf[*varfndid].value, value);
     } else
     {
         perror_disp("UNK_GAMECONF_VAR", 0);
     }
 }
 
+/*Copy the value of a gameconf-defined variable*/
+void pvars_getgcvars(char* name, char* value)
+{
+    int *id = malloc(sizeof(int));
+    bool isvarfnd = fetch_pvarsid(name, id);
+
+    if(isvarfnd)
+    {
+        int vlen = strlen(pvars_gameconf[*id].value);
+        char* check = realloc(value, (vlen + 1) * sizeof(char));
+        if(!check)
+        {
+            perror_disp("REALLOC_FAIL", 1);
+        }
+        strcpy(value, pvars_gameconf[*id].value);
+    }
+    else
+    {
+        perror_disp("GAMECONF_VAR_NF", 1);
+    }
+    free(id);
+}
+
 void init_gcvars()
 {
     pvars_gameconf[0].name = "langdir";
     pvars_gameconf[1].name = "roomfile";
-    pvars_gameconf[2].name = "firstroom";
+    pvars_gameconf[2].name = "defaultlang";
+    pvars_gameconf[GCVARS_LN - 1].name = "firstroom";
+}
+
+static bool fetch_pvarsid(char* name, int* id)
+{
+    bool isvarfnd = false;
+    int varfndid = -1;
+    for(int i = 0; i < GCVARS_LN ; i++)
+    {
+        if(!strcmp(name, pvars_gameconf[i].name))
+        {
+            isvarfnd = true;
+            varfndid = i;
+            break;
+        }
+    }
+    *id = varfndid;
+
+    return isvarfnd;
 }

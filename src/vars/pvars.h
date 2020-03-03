@@ -21,6 +21,7 @@
 
 extern char pvars_userlang[3];
 void pvars_setgcvars(char* name, char* value);
+void pvars_getgcvars(char* name, char* value);
 void init_gcvars();
 
 #endif

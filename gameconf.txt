@@ -3,4 +3,5 @@ langdir="txt/lang/"
 roomfile="txt/rooms.txt"
 
 * game vars
+defaultlang="en"
 firstroom="menu"
