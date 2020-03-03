@@ -29,7 +29,7 @@ struct gcvar
 };
 
 char pvars_userlang[3] = "en";
-struct gcvar pvars_gameconf[3];
+struct gcvar pvars_gameconf[GCVARS_LN];
 
 
 bool fetch_pvarsid(char* name, int* id);
