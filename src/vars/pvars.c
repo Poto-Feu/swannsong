@@ -87,13 +87,13 @@ void init_gcvars()
     pvars_gameconf[GCVARS_LN - 1].name = "firstroom";
 }
 
-// Fetch regular pvars id
+/*Fetch regular pvars id*/
 static bool fetch_stdpvarsid(char* name, int *id)
 {
     return fetch_pvarsid(name, id, true);
 }
 
-// Fetch gameconf-defined pvars id
+/*Fetch gameconf-defined pvars id*/
 static bool fetch_gcvarsid(char* name, int *id)
 {
     return fetch_pvarsid(name, id, true);
