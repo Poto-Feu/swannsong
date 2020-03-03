@@ -29,10 +29,10 @@ struct gcvar
 };
 
 char pvars_userlang[3] = "en";
-struct gcvar pvars_gameconf[GCVARS_LN];
+static struct gcvar pvars_gameconf[GCVARS_LN];
 
 
-bool fetch_pvarsid(char* name, int* id);
+static bool fetch_pvarsid(char* name, int* id);
 
 /*Set the value of a gameconf-defined variable*/
 void pvars_setgcvars(char* name, char* value)
@@ -81,7 +81,7 @@ void init_gcvars()
     pvars_gameconf[GCVARS_LN - 1].name = "firstroom";
 }
 
-bool fetch_pvarsid(char* name, int* id)
+static bool fetch_pvarsid(char* name, int* id)
 {
     bool isvarfnd = false;
     int varfndid = -1;
