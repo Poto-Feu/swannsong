@@ -24,14 +24,14 @@
 
 #define GCVARS_LN 4
 
-struct gcvar
+struct pvar
 {
     char* name;
     char* value;
 };
 
 char pvars_userlang[3] = "en";
-static struct gcvar pvars_gameconf[GCVARS_LN];
+static struct pvar pvars_gameconf[GCVARS_LN];
 
 
 static bool fetch_pvarsid(char* name, int* id);
