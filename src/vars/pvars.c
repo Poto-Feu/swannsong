@@ -42,7 +42,8 @@ void pvars_setgcvars(char* name, char* value)
 
     if(isvarfnd == 1 && *varfndid != -1)
     {
-        pvars_gameconf[*varfndid].value = malloc((strlen(value) + 1) * sizeof (char));
+        int vlen = strlen(value);
+        pvars_gameconf[*varfndid].value = malloc((vlen + 1) * sizeof(char));
         strcpy(pvars_gameconf[*varfndid].value, value);
     } else
     {
