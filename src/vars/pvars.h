@@ -20,8 +20,11 @@
 #define PVARS_H
 
 extern char pvars_userlang[3];
+void pvars_setstdvars(char* name, char* value);
+void pvars_getstdvars(char* name, char* value);
 void pvars_setgcvars(char* name, char* value);
 void pvars_getgcvars(char* name, char* value);
 void init_gcvars();
+void init_pvars();
 
 #endif
