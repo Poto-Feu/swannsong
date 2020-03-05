@@ -51,6 +51,7 @@ static void room_atlaunch(int* roomln)
     {
         fileio_execuntilend(*foundln);
     }
+    free(foundln);
 }
 
 void room_load(char* id)

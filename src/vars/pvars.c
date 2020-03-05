@@ -65,6 +65,7 @@ void pvars_setstdvars(char* name, char* value)
     {
         perror_disp("UNK_STD_VAR", 0);
     }
+    free(varfndid);
 }
 
 /*Set the value of a gameconf-defined variable*/
@@ -82,6 +83,7 @@ void pvars_setgcvars(char* name, char* value)
     {
         perror_disp("UNK_GAMECONF_VAR", 0);
     }
+    free(varfndid);
 }
 
 /*Copy the value of a standard program variable*/

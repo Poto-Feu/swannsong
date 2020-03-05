@@ -113,6 +113,7 @@ void pstrings_fetch(char id[], char *rstr)
     }
     strcpy(rstr, fstring);
     fclose(fp);
+    free(fstring);
     free(ustr);
     free(buf);
 }
