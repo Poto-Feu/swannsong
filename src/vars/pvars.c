@@ -32,8 +32,18 @@ struct pvar
 };
 
 char pvars_userlang[3] = "en";
-static struct pvar pvars[PVARS_LN];
-static struct pvar gcvars[GCVARS_LN];
+static struct pvar pvars[PVARS_LN] =
+{
+    {.name = "lang", .value = NULL},
+    {.name = "currentroom", .value = NULL}
+};
+static struct pvar gcvars[GCVARS_LN] =
+{
+    {.name = "langdir", .value = NULL},
+    {.name = "roomfile", .value = NULL},
+    {.name = "defaultlang", .value = NULL},
+    {.name = "firstroom", .value = NULL}
+};
 
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
@@ -120,18 +130,6 @@ void pvars_getgcvars(char* name, char* value)
     free(id);
 }
 
-void init_gcvars()
-{
-    gcvars[0].name = "langdir";
-    gcvars[1].name = "roomfile";
-    gcvars[2].name = "defaultlang";
-    gcvars[GCVARS_LN - 1].name = "firstroom";
-}
-void init_pvars()
-{
-    pvars[0].name = "lang";
-    pvars[PVARS_LN - 1].name = "currentroom";
-}
 
 /*Fetch regular pvars id*/
 static bool fetch_stdpvarsid(char* name, int *id)
@@ -144,7 +142,6 @@ static bool fetch_gcvarsid(char* name, int *id)
 {
     return fetch_pvarsid(name, id, true);
 }
-
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
 {

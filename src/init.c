@@ -26,8 +26,6 @@
 
 void init_game()
 {
-    init_gcvars();
-    init_pvars();
     room_initmodule();
     gameconf_readfile();
 }
