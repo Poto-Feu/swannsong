@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "pvars.h"
+#include "pconst.h"
 #include "../perror.h"
 
 #define STDVARS_LN 3
@@ -122,26 +123,22 @@ static void pvars_getpvars(char* name, char* value, bool isgcvar)
     if(isvarfnd)
     {
         int vlen = 0;
+        char* valuetocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
         if(isgcvar)
         {
-            vlen = strlen(gcvars[*id].value);
+            strcpy(valuetocpy, gcvars[*id].value);
         } else
         {
-            vlen = strlen(stdvars[*id].value);
+            strcpy(valuetocpy, stdvars[*id].value);
         }
-        
+        vlen = strlen(valuetocpy);
         char* check = realloc(value, (vlen + 1) * sizeof(char));
         if(!check)
         {
             perror_disp("REALLOC_FAIL", 1);
         }
-        if(isgcvar)
-        {
-            strcpy(value, gcvars[*id].value);
-        } else
-        {
-            strcpy(value, stdvars[*id].value);
-        }
+        strcpy(value, valuetocpy);
+        free(valuetocpy);
     }
     else
     {
