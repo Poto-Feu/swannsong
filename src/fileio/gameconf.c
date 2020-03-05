@@ -30,14 +30,12 @@ void gameconf_splitins(char* var, char* value, char* ins);
 void gameconf_readfile()
 {
     FILE* fp = fopen("gameconf.txt", "r");
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    
-    *buf = '\0';
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
 
     while (fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
     {
-        char* var = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
-        char* value = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+        char* var = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char* value = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);

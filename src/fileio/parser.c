@@ -47,6 +47,7 @@ void parser_execins(char* type, char* arg, bool* inblock)
             room_getcroomid(croomid);
             find_roomline(croomid, roomln);
             free(croomid);
+            free(roomln);
         }
     } else if (*inblock == 0 && strcmp(type, "END") == 0)
     {

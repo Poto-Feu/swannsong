@@ -101,6 +101,7 @@ bool find_insline(int* foundln, int ln, char* ins)
     fclose(fp);
     free(type);
     free(arg);
+    free(buf);
     return 0;
 }
 
