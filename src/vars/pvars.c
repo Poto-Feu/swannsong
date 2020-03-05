@@ -22,7 +22,7 @@
 #include "pvars.h"
 #include "../perror.h"
 
-#define PVARS_LN 2
+#define PVARS_LN 3
 #define GCVARS_LN 4
 
 struct pvar
@@ -35,7 +35,8 @@ char pvars_userlang[3] = "en";
 static struct pvar pvars[PVARS_LN] =
 {
     {.name = "lang", .value = NULL},
-    {.name = "currentroom", .value = NULL}
+    {.name = "currentroom", .value = NULL},
+    {.name = "nextroom", .value = NULL}
 };
 static struct pvar gcvars[GCVARS_LN] =
 {
