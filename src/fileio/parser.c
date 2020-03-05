@@ -59,26 +59,28 @@ void parser_execins(char* type, char* arg, bool* inblock)
     
 }
 
-void parser_splitline(char* type, char* arg, char* ins)
+void parser_splitline(char** type, char** arg, char* ins)
 {
     int i = 0;
     int findex = 0;
+    int len = 0;
+    char* argtocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
     
     stringsm_chomp(ins);
-    int len = strlen(ins);
+    len = strlen(ins);
     ins[len] = '\0';
-    stringsm_getfw(type, ins, &i);
-    if(len != (int)strlen(type))
+    stringsm_getfw(*type, ins, &i);
+    if(len != (int)strlen(*type))
     {
         for(int index = i; index < len; index++)
         {
-            arg[findex] = ins[index];
+            argtocpy[findex] = ins[index];
             findex++;
         }
+        strcpy(*arg, argtocpy);
     } else
     {
-        strcpy(arg, "ARGNULL");
+        strcpy(*arg, "ARGNULL");
     }
-    arg[findex] = '\0';
-    type[(int)strlen(type)] = '\0';
+    free(argtocpy);
 }

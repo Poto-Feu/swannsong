@@ -81,7 +81,7 @@ void fileio_execuntilend(int startln)
         arg = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
         stringsm_chomp(buf);
         stringsm_rtab(buf);
-        parser_splitline(type, arg, buf);
+        parser_splitline(&type, &arg, buf);
         if(strcmp(type, "END"))
         {
             parser_execins(type, arg, &inblock);

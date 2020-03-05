@@ -22,6 +22,6 @@
 #define PARSER_H
 
 void parser_execins(char* type, char* arg, bool* inblock);
-void parser_splitline(char* type, char* arg, char* ins);
+void parser_splitline(char** type, char** arg, char* ins);
 
 #endif

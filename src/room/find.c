@@ -59,7 +59,7 @@ bool find_insline(int* foundln, int ln, char* ins)
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         
-        parser_splitline(type, arg, buf);
+        parser_splitline(&type, &arg, buf);
         if (!strcmp(type, ins))
         {
             *foundln = i + ln;
