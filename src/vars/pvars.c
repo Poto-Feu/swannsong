@@ -50,6 +50,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
 static bool fetch_stdpvarsid(char* name, int *id);
 static bool fetch_gcvarsid(char* name, int *id);
 static void pvars_setpvars(char* name, char* value, bool isgcvar);
+static void pvars_getpvars(char* name, char* value, bool isgcvar);
 
 /*Set the value of a standard program variable*/
 void pvars_setstdvars(char* name, char* value)
@@ -99,46 +100,55 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
 /*Copy the value of a standard program variable*/
 void pvars_getstdvars(char* name, char* value)
 {
-    int *id = malloc(sizeof(int));
-    bool isvarfnd = fetch_stdpvarsid(name, id);
-
-    if(isvarfnd)
-    {
-        int vlen = strlen(pvars[*id].value);
-        char* check = realloc(value, (vlen + 1) * sizeof(char));
-        if(!check)
-        {
-            perror_disp("REALLOC_FAIL", 1);
-        }
-        strcpy(value, pvars[*id].value);
-    }
-    else
-    {
-        perror_disp("GAMECONF_VAR_NF", 1);
-    }
-    free(id);
+    pvars_getpvars(name, value, false);
 }
 
 /*Copy the value of a gameconf-defined variable*/
 void pvars_getgcvars(char* name, char* value)
 {
-    int *id = malloc(sizeof(int));
-    bool isvarfnd = fetch_gcvarsid(name, id);
+    pvars_getpvars(name, value, true);
+}
 
+static void pvars_getpvars(char* name, char* value, bool isgcvar)
+{
+    int *id = malloc(sizeof(int));
+    bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
     if(isvarfnd)
     {
-        int vlen = strlen(gcvars[*id].value);
+        int vlen = 0;
+        if(isgcvar)
+        {
+            vlen = strlen(gcvars[*id].value);
+        } else
+        {
+            vlen = strlen(pvars[*id].value);
+        }
+        
         char* check = realloc(value, (vlen + 1) * sizeof(char));
         if(!check)
         {
             perror_disp("REALLOC_FAIL", 1);
         }
-        strcpy(value, gcvars[*id].value);
+        if(isgcvar)
+        {
+            strcpy(value, gcvars[*id].value);
+        } else
+        {
+            strcpy(value, pvars[*id].value);
+        }
     }
     else
     {
-        perror_disp("GAMECONF_VAR_NF", 1);
+        if(isgcvar)
+        {
+            perror_disp("GAMECONF_VAR_NF", 1);
+        }
+        else
+        {
+            perror_disp("STD_VAR_NF", 1);
+        }
     }
+
     free(id);
 }
 
