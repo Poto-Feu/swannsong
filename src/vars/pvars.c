@@ -47,8 +47,6 @@ static struct pvar gcvars[GCVARS_LN] =
 
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
-static bool fetch_stdpvarsid(char* name, int *id);
-static bool fetch_gcvarsid(char* name, int *id);
 static void pvars_setpvars(char* name, char* value, bool isgcvar);
 static void pvars_getpvars(char* name, char* value, bool isgcvar);
 
@@ -150,19 +148,6 @@ static void pvars_getpvars(char* name, char* value, bool isgcvar)
     }
 
     free(id);
-}
-
-
-/*Fetch regular pvars id*/
-static bool fetch_stdpvarsid(char* name, int *id)
-{
-    return fetch_pvarsid(name, id, false);
-}
-
-/*Fetch gameconf-defined pvars id*/
-static bool fetch_gcvarsid(char* name, int *id)
-{
-    return fetch_pvarsid(name, id, true);
 }
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
