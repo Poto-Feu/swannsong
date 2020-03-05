@@ -71,10 +71,18 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
         int vlen = strlen(value) + 1;
         if(isgcvar)
         {
+            if(gcvars[*varfndid].value != NULL)
+            {
+                free(gcvars[*varfndid].value);
+            }
             gcvars[*varfndid].value = malloc((vlen) * sizeof(char));
             strcpy(gcvars[*varfndid].value, value);
         } else
         {
+            if(pvars[*varfndid].value != NULL)
+            {
+                free(pvars[*varfndid].value);
+            }
             pvars[*varfndid].value = malloc((vlen) * sizeof(char));
             strcpy(pvars[*varfndid].value, value);
         }
