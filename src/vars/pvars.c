@@ -75,7 +75,7 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
             {
                 free(gcvars[*varfndid].value);
             }
-            gcvars[*varfndid].value = malloc((vlen) * sizeof(char));
+            gcvars[*varfndid].value = calloc(vlen, sizeof(char));
             strcpy(gcvars[*varfndid].value, value);
         } else
         {
@@ -83,7 +83,7 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
             {
                 free(pvars[*varfndid].value);
             }
-            pvars[*varfndid].value = malloc((vlen) * sizeof(char));
+            pvars[*varfndid].value = calloc(vlen, sizeof(char));
             strcpy(pvars[*varfndid].value, value);
         }
         
@@ -176,7 +176,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
         char* iname = NULL;
         if(isgcvar)
         {
-            iname = malloc(strlen(gcvars[i].name) * sizeof(char));
+            iname = calloc(strlen(gcvars[i].name), sizeof(char));
             if(!strcmp(name, gcvars[i].name))
             {
                 isvarfnd = true;
@@ -187,7 +187,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
         }
         else
         {
-            iname = malloc(strlen(pvars[i].name) * sizeof(char));
+            iname = calloc(strlen(pvars[i].name), sizeof(char));
             if(!strcmp(name, pvars[i].name))
             {
                 isvarfnd = true;
