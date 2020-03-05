@@ -22,7 +22,7 @@
 #include "pvars.h"
 #include "../perror.h"
 
-#define PVARS_LN 3
+#define STDVARS_LN 3
 #define GCVARS_LN 4
 
 struct pvar
@@ -32,7 +32,7 @@ struct pvar
 };
 
 char pvars_userlang[3] = "en";
-static struct pvar pvars[PVARS_LN] =
+static struct pvar stdvars[STDVARS_LN] =
 {
     {.name = "lang", .value = NULL},
     {.name = "currentroom", .value = NULL},
@@ -80,12 +80,12 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
             strcpy(gcvars[*varfndid].value, value);
         } else
         {
-            if(pvars[*varfndid].value != NULL)
+            if(stdvars[*varfndid].value != NULL)
             {
-                free(pvars[*varfndid].value);
+                free(stdvars[*varfndid].value);
             }
-            pvars[*varfndid].value = calloc(vlen, sizeof(char));
-            strcpy(pvars[*varfndid].value, value);
+            stdvars[*varfndid].value = calloc(vlen, sizeof(char));
+            strcpy(stdvars[*varfndid].value, value);
         }
         
     } else
@@ -127,7 +127,7 @@ static void pvars_getpvars(char* name, char* value, bool isgcvar)
             vlen = strlen(gcvars[*id].value);
         } else
         {
-            vlen = strlen(pvars[*id].value);
+            vlen = strlen(stdvars[*id].value);
         }
         
         char* check = realloc(value, (vlen + 1) * sizeof(char));
@@ -140,7 +140,7 @@ static void pvars_getpvars(char* name, char* value, bool isgcvar)
             strcpy(value, gcvars[*id].value);
         } else
         {
-            strcpy(value, pvars[*id].value);
+            strcpy(value, stdvars[*id].value);
         }
     }
     else
@@ -169,7 +169,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
         arrlen = GCVARS_LN;
     } else
     {
-        arrlen = PVARS_LN;
+        arrlen = STDVARS_LN;
     }
 
     for(int i = 0; i < arrlen; i++)
@@ -188,8 +188,8 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
         }
         else
         {
-            iname = calloc(strlen(pvars[i].name), sizeof(char));
-            if(!strcmp(name, pvars[i].name))
+            iname = calloc(strlen(stdvars[i].name), sizeof(char));
+            if(!strcmp(name, stdvars[i].name))
             {
                 isvarfnd = true;
                 varfndid = i;
