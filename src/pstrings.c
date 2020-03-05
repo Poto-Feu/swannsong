@@ -41,7 +41,7 @@ void open_strfile(FILE **f)
     }
 }
 
-void pstrings_fetch(char id[], char *rstr)
+void pstrings_fetch(char* id, char** rstr)
 {
     int index = 0;
     int len = 0;
@@ -108,7 +108,7 @@ void pstrings_fetch(char id[], char *rstr)
         printf("idfound: %s\n", id);
         strcpy(fstring, "ERR_STR_NULL");
     }
-    strcpy(rstr, fstring);
+    strcpy(*rstr, fstring);
     fclose(fp);
     free(fstring);
     free(ustr);
@@ -118,7 +118,7 @@ void pstrings_fetch(char id[], char *rstr)
 void pstrings_display(char *id)
 {
     char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
-    pstrings_fetch(id, rstring);
+    pstrings_fetch(id, &rstring);
     printf("%s", rstring);
     free(rstring);
 }
