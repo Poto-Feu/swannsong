@@ -120,6 +120,7 @@ static void pvars_getpvars(char* name, char* value, bool isgcvar)
 {
     int *id = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
+    
     if(isvarfnd)
     {
         int vlen = 0;
