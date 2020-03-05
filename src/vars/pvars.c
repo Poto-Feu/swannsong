@@ -50,7 +50,7 @@ static struct pvar gcvars[GCVARS_LN] =
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
 static void pvars_setpvars(char* name, char* value, bool isgcvar);
-static void pvars_getpvars(char* name, char* value, bool isgcvar);
+static void pvars_getpvars(char* name, char** value, bool isgcvar);
 
 /*Set the value of a standard program variable*/
 void pvars_setstdvars(char* name, char* value)
@@ -105,22 +105,22 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
 }
 
 /*Copy the value of a standard program variable*/
-void pvars_getstdvars(char* name, char* value)
+void pvars_getstdvars(char* name, char** value)
 {
     pvars_getpvars(name, value, false);
 }
 
 /*Copy the value of a gameconf-defined variable*/
-void pvars_getgcvars(char* name, char* value)
+void pvars_getgcvars(char* name, char** value)
 {
     pvars_getpvars(name, value, true);
 }
 
-static void pvars_getpvars(char* name, char* value, bool isgcvar)
+static void pvars_getpvars(char* name, char** value, bool isgcvar)
 {
     int *id = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
-    
+
     if(isvarfnd)
     {
         int vlen = 0;
@@ -133,12 +133,12 @@ static void pvars_getpvars(char* name, char* value, bool isgcvar)
             strcpy(valuetocpy, stdvars[*id].value);
         }
         vlen = strlen(valuetocpy);
-        char* check = realloc(value, (vlen + 1) * sizeof(char));
+        char* check = realloc(*value, (vlen + 1) * sizeof(char));
         if(!check)
         {
             perror_disp("REALLOC_FAIL", 1);
         }
-        strcpy(value, valuetocpy);
+        strcpy(*value, valuetocpy);
         free(valuetocpy);
     }
     else
