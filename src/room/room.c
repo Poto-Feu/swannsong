@@ -33,7 +33,7 @@ static char* croomid = NULL;
 
 void room_initmodule()
 {
-    croomid = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    croomid = calloc(P_MAX_BUF_SIZE, sizeof(char));
 }
 
 void room_getcroomid(char* str)
@@ -43,7 +43,7 @@ void room_getcroomid(char* str)
 
 static void room_atlaunch(int* roomln)
 {
-    int *foundln = malloc(sizeof(int));
+    int *foundln = calloc(1, sizeof(int));
     bool atlfound = false;
     find_atlaunchline(foundln, *roomln, &atlfound);
     *foundln = *foundln + 1;
@@ -57,7 +57,7 @@ static void room_atlaunch(int* roomln)
 void room_load(char* id)
 {
     int roomln = 0;
-    croomid = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+    croomid = calloc((P_MAX_BUF_SIZE - 1),  sizeof(char));
     strcpy(croomid, id);
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);

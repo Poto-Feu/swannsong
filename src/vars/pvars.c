@@ -66,7 +66,7 @@ void pvars_setgcvars(char* name, char* value)
 
 static void pvars_setpvars(char* name, char* value, bool isgcvar)
 {
-    int* varfndid = malloc(sizeof(int));
+    int* varfndid = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);
     if(isvarfnd == 1 && *varfndid != -1)
     {
@@ -118,7 +118,7 @@ void pvars_getgcvars(char* name, char* value)
 
 static void pvars_getpvars(char* name, char* value, bool isgcvar)
 {
-    int *id = malloc(sizeof(int));
+    int *id = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
     if(isvarfnd)
     {

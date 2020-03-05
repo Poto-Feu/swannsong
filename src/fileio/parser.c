@@ -42,8 +42,8 @@ void parser_execins(char* type, char* arg, bool* inblock)
         if(!strcmp(arg, "CHOICES"))
         {
             //To do
-            int* roomln = malloc(sizeof(int));
-            char* croomid = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+            int* roomln = calloc(1, sizeof(int));
+            char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
             room_getcroomid(croomid);
             find_roomline(croomid, roomln);
             free(croomid);
