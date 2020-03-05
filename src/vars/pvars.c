@@ -49,40 +49,50 @@ static struct pvar gcvars[GCVARS_LN] =
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
 static bool fetch_stdpvarsid(char* name, int *id);
 static bool fetch_gcvarsid(char* name, int *id);
+static void pvars_setpvars(char* name, char* value, bool isgcvar);
 
 /*Set the value of a standard program variable*/
 void pvars_setstdvars(char* name, char* value)
 {
-    int* varfndid = malloc(sizeof(int));
-    bool isvarfnd = fetch_stdpvarsid(name, varfndid);
-
-    if(isvarfnd == 1 && *varfndid != -1)
-    {
-        int vlen = strlen(value);
-        pvars[*varfndid].value = malloc((vlen + 1) * sizeof(char));
-        strcpy(pvars[*varfndid].value, value);
-    } else
-    {
-        perror_disp("UNK_STD_VAR", 0);
-    }
-    free(varfndid);
+    pvars_setpvars(name, value, false);
 }
 
 /*Set the value of a gameconf-defined variable*/
 void pvars_setgcvars(char* name, char* value)
 {
-    int* varfndid = malloc(sizeof(int));
-    bool isvarfnd = fetch_gcvarsid(name, varfndid);
+    pvars_setpvars(name, value, true);
+}
 
+static void pvars_setpvars(char* name, char* value, bool isgcvar)
+{
+    int* varfndid = malloc(sizeof(int));
+    bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);
     if(isvarfnd == 1 && *varfndid != -1)
     {
-        int vlen = strlen(value);
-        gcvars[*varfndid].value = malloc((vlen + 1) * sizeof(char));
-        strcpy(gcvars[*varfndid].value, value);
+        int vlen = strlen(value) + 1;
+        if(isgcvar)
+        {
+            gcvars[*varfndid].value = malloc((vlen + 1) * sizeof(char));
+            strcpy(gcvars[*varfndid].value, value);
+        } else
+        {
+            int vlen = strlen(value);
+            pvars[*varfndid].value = malloc((vlen + 1) * sizeof(char));
+            strcpy(pvars[*varfndid].value, value);
+        }
+        
     } else
     {
-        perror_disp("UNK_GAMECONF_VAR", 0);
+        if(isgcvar)
+        {
+            perror_disp("UNK_GAMECONF_VAR", 0);
+        }
+        else
+        {
+            perror_disp("UNK_STD_VAR", 0);
+        }
     }
+    
     free(varfndid);
 }
 
