@@ -69,7 +69,7 @@ void parser_splitline(char** type, char** arg, char* ins)
     stringsm_chomp(ins);
     len = strlen(ins);
     ins[len] = '\0';
-    stringsm_getfw(*type, ins, &i);
+    stringsm_getfw(type, ins, &i);
     if(len != (int)strlen(*type))
     {
         for(int index = i; index < len; index++)

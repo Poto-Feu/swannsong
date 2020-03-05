@@ -40,8 +40,8 @@ void stringsm_rtab(char *str)
     }
 }
 
-// Get the first word of a string
-void stringsm_getfw(char* fw, char* str, int* index)
+/*Get the first word of a string*/
+void stringsm_getfw(char** fw, char* str, int* index)
 {
     bool space = false;
     int len = strlen(str);
@@ -49,7 +49,7 @@ void stringsm_getfw(char* fw, char* str, int* index)
     {
         if(str[i] == ' ')
         {
-            strncpy(fw, str, i);
+            strncpy(*fw, str, i);
             *index = i+1;
             space = true;
             break;
@@ -57,9 +57,8 @@ void stringsm_getfw(char* fw, char* str, int* index)
     }
     if(!space)
     {
-        strcpy(fw, str);
+        strcpy(*fw, str);
         *index = 0;
         return;
     }
-    fw[*index - 1] = '\0';
 }
