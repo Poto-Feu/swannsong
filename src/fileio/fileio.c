@@ -27,7 +27,7 @@
 
 void fileio_gotoline(FILE** fp, int ln)
 {
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     for(int i = 0; i < ln; i++)
     {
         if(fgets(buf, P_MAX_BUF_SIZE - 1, *fp) == NULL)
@@ -45,11 +45,11 @@ void fileio_gotoline(FILE** fp, int ln)
 void fileio_getln(int* ln, char* s)
 {
     FILE *fp = fopen("txt/rooms.txt", "r");
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    //char buf[500];
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+
     int i = 0;
     *ln = 0;
-    *buf = '\0';
+
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
         stringsm_chomp(buf);
@@ -69,20 +69,19 @@ void fileio_getln(int* ln, char* s)
 void fileio_execuntilend(int startln)
 {
     bool inblock = false;
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* type = NULL;
     char* arg = NULL;
     FILE* fp = fopen("txt/rooms.txt", "r");
 
-    *buf = '\0';
     fileio_gotoline(&fp, startln);
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
-        type  = malloc((P_MAX_BUF_SIZE - 1 ) * sizeof(char));
-        arg = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+        type  = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        arg = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
         stringsm_chomp(buf);
         stringsm_rtab(buf);
-        parser_splitline(type, arg, buf);
+        parser_splitline(&type, &arg, buf);
         if(strcmp(type, "END"))
         {
             parser_execins(type, arg, &inblock);

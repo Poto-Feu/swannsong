@@ -29,10 +29,9 @@
 
 void find_roomline(char* id, int* ln)
 {
-    char* roomline = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* roomline = calloc(P_MAX_BUF_SIZE, sizeof(char));
     int idlen = strlen(id);
 
-    *roomline = '\0';
     strcpy(roomline, "ROOM");
     roomline[strlen(roomline)] = ' ';
     for(int i = 0; i < idlen; i++)
@@ -49,24 +48,25 @@ bool find_insline(int* foundln, int ln, char* ins)
 {
     bool inchoices = false;
     bool inonechoice = false;
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    char* type = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
-    char* arg = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     FILE* fp = fopen("txt/rooms.txt", "r");
     
-    *buf = '\0';
-    *arg = '\0';
-    *type = '\0';
     fileio_gotoline(&fp, ln);
     for(int i = 0; fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL; i++)
     {
+        char* type = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
+        char* arg = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         
-        parser_splitline(type, arg, buf);
+        parser_splitline(&type, &arg, buf);
         if (!strcmp(type, ins))
         {
             *foundln = i + ln;
+            free(type);
+            free(arg);
+            fclose(fp);
+            free(buf);
             return 1;
         } else if(!strcmp(type, "CHOICES"))
         {
@@ -76,6 +76,7 @@ bool find_insline(int* foundln, int ln, char* ins)
             }
             
         }
+        free(arg);
         if(!strcmp(type, "END"))
         {
             if(inchoices == 0)
@@ -83,10 +84,12 @@ bool find_insline(int* foundln, int ln, char* ins)
                 if(!strcmp(type, "ATLAUNCH"))
                 {
                     perror_disp("NO_ATLAUNCH_INS", 0);
+                    free(type);
                     break;
                 } else if(!strcmp(type, "CHOICES"))
                 {
                     perror_disp("NO_CHOICES_INS", 0);
+                    free(type);
                     break;
                 }
             } else if(inonechoice == 1)
@@ -97,10 +100,10 @@ bool find_insline(int* foundln, int ln, char* ins)
                 inchoices = 0;
             }
         }
+        free(type);
     }
     fclose(fp);
-    free(type);
-    free(arg);
+    free(buf);
     return 0;
 }
 

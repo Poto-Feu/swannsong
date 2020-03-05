@@ -42,11 +42,12 @@ void parser_execins(char* type, char* arg, bool* inblock)
         if(!strcmp(arg, "CHOICES"))
         {
             //To do
-            int* roomln = malloc(sizeof(int));
-            char* croomid = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+            int* roomln = calloc(1, sizeof(int));
+            char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
             room_getcroomid(croomid);
             find_roomline(croomid, roomln);
             free(croomid);
+            free(roomln);
         }
     } else if (*inblock == 0 && strcmp(type, "END") == 0)
     {
@@ -58,26 +59,28 @@ void parser_execins(char* type, char* arg, bool* inblock)
     
 }
 
-void parser_splitline(char* type, char* arg, char* ins)
+void parser_splitline(char** type, char** arg, char* ins)
 {
     int i = 0;
     int findex = 0;
+    int len = 0;
+    char* argtocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
     
     stringsm_chomp(ins);
-    int len = strlen(ins);
+    len = strlen(ins);
     ins[len] = '\0';
     stringsm_getfw(type, ins, &i);
-    if(len != (int)strlen(type))
+    if(len != (int)strlen(*type))
     {
         for(int index = i; index < len; index++)
         {
-            arg[findex] = ins[index];
+            argtocpy[findex] = ins[index];
             findex++;
         }
+        strcpy(*arg, argtocpy);
     } else
     {
-        strcpy(arg, "ARGNULL");
+        strcpy(*arg, "ARGNULL");
     }
-    arg[findex] = '\0';
-    type[(int)strlen(type)] = '\0';
+    free(argtocpy);
 }
