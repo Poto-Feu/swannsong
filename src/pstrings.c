@@ -45,19 +45,16 @@ void pstrings_fetch(char id[], char *rstr)
 {
     int index = 0;
     int len = 0;
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    char* ustr = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* ustr = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
     bool id_exist = false;
     FILE* fp = NULL;
 
-    *buf = '\0';
-    *ustr = '\0';
     open_strfile(&fp);
     while (fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL) {
-        id_found = malloc(P_MAX_BUF_SIZE * sizeof(char));
-        *id_found = '\0';
+        id_found = calloc(P_MAX_BUF_SIZE, sizeof(char));
         stringsm_chomp(buf);
         strcpy(ustr, buf);
         len = strlen(ustr);
@@ -82,7 +79,7 @@ void pstrings_fetch(char id[], char *rstr)
             free(id_found);
         }
     }
-    fstring = malloc(len * sizeof(char));
+    fstring = calloc(len, sizeof(char));
     if (id_exist == 1)
     {
         int findex = 0;
@@ -120,7 +117,7 @@ void pstrings_fetch(char id[], char *rstr)
 
 void pstrings_display(char *id)
 {
-    char* rstring = (char*) malloc(150*sizeof(char));;
+    char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
     pstrings_fetch(id, rstring);
     printf("%s", rstring);
     free(rstring);

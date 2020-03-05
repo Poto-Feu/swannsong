@@ -29,10 +29,9 @@
 
 void find_roomline(char* id, int* ln)
 {
-    char* roomline = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* roomline = calloc(P_MAX_BUF_SIZE, sizeof(char));
     int idlen = strlen(id);
 
-    *roomline = '\0';
     strcpy(roomline, "ROOM");
     roomline[strlen(roomline)] = ' ';
     for(int i = 0; i < idlen; i++)
@@ -49,14 +48,11 @@ bool find_insline(int* foundln, int ln, char* ins)
 {
     bool inchoices = false;
     bool inonechoice = false;
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    char* type = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
-    char* arg = malloc(P_MAX_BUF_SIZE - 2 * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* type = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
+    char* arg = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
     FILE* fp = fopen("txt/rooms.txt", "r");
     
-    *buf = '\0';
-    *arg = '\0';
-    *type = '\0';
     fileio_gotoline(&fp, ln);
     for(int i = 0; fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL; i++)
     {

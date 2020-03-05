@@ -37,7 +37,7 @@ int main (void)
     SetConsoleOutputCP(65001);
     #endif
 
-    char* room_name = malloc(P_MAX_BUF_SIZE*sizeof(char));
+    char* room_name = calloc(P_MAX_BUF_SIZE, sizeof(char));
 
     init_game();
     pvars_getgcvars("firstroom", room_name);
