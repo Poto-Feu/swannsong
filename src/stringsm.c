@@ -62,3 +62,19 @@ void stringsm_getfw(char** fw, char* str, int* index)
         return;
     }
 }
+
+void stringsm_getuseri(char** buf)
+{
+    char *c = NULL;
+
+    fgets(*buf, (sizeof(*buf) + 1), stdin);
+    if((c = strchr(*buf, '\n')))
+    {
+        stringsm_chomp(*buf);
+    } else
+    {
+        scanf("%*[^\n]");
+        scanf("%*c");
+    }
+    
+}
