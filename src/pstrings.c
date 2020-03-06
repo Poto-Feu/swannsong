@@ -25,7 +25,7 @@
 #include "pstrings.h"
 #include "stringsm.h"
 
-void open_strfile(FILE **f)
+static void open_strfile(FILE **f)
 {
     if (strcmp(pvars_userlang, "fr") == 0)
     {
