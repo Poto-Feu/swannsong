@@ -29,7 +29,6 @@
 void fileio_setfileptr(FILE** fp, char* path)
 {
     *fp = fopen(path, "r");
-    printf("path: %s", path);
     if(*fp == NULL)
     {
         perror_disp("FOPEN_NULL", 1);
