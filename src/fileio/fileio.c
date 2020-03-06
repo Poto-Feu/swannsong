@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../vars/pconst.h"
+#include "../vars/pvars.h"
 #include "fileio.h"
 #include "parser.h"
 #include "../perror.h"
@@ -44,12 +45,15 @@ void fileio_gotoline(FILE** fp, int ln)
 
 void fileio_getln(int* ln, char* s)
 {
-    FILE *fp = fopen("txt/rooms.txt", "r");
+    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
+    FILE* fp = NULL;
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-
     int i = 0;
-    *ln = 0;
 
+    pvars_getgcvars("roomfile", &roomfile);
+    fp = fopen(roomfile, "r");
+    free(roomfile);
+    *ln = 0;
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
         stringsm_chomp(buf);
@@ -69,11 +73,15 @@ void fileio_getln(int* ln, char* s)
 void fileio_execuntilend(int startln)
 {
     bool inblock = false;
+    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* type = NULL;
     char* arg = NULL;
-    FILE* fp = fopen("txt/rooms.txt", "r");
+    FILE* fp = NULL;
 
+    pvars_getgcvars("roomfile", &roomfile);
+    fp = fopen(roomfile, "r");
+    free(roomfile);
     fileio_gotoline(&fp, startln);
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
