@@ -24,21 +24,31 @@
 #include "vars/pconst.h"
 #include "pstrings.h"
 #include "stringsm.h"
+#include "fileio/fileio.h"
 
 static void open_strfile(FILE **f)
 {
-    if (strcmp(pvars_userlang, "fr") == 0)
+    char* langdir = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* lang = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* langfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* txt = ".txt";
+    int langdirln = 0;
+
+    pvars_getgcvars("langdir", &langdir);
+    pvars_getstdvars("lang", &lang);
+    strcpy(langfile, langdir);
+    langdirln = strlen(langdir);
+    for(int i = 0; i < (int)strlen(lang); i++)
     {
-        *f = fopen("txt/fr.txt", "r");
-    } else
-    {
-        *f = fopen("txt/en.txt", "r");
+        langfile[langdirln] = lang[i];
+        langdirln++;
     }
-    if (*f == NULL)
+    for(int i = 0; i < (int)strlen(txt); i++)
     {
-        printf("\nfopen is null : your game files might be corrupted.");
-        exit(1);
+        langfile[langdirln] = txt[i];
+        langdirln++;
     }
+    fileio_setfileptr(f, langfile);
 }
 
 void pstrings_fetch(char* id, char** rstr)
