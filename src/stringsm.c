@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include "stringsm.h"
 
-void stringsm_chomp(char *str)
+void stringsm_chomp(char* str)
 {
     while (*str != '\n' && *str != '\0')
         str++;
@@ -29,7 +29,7 @@ void stringsm_chomp(char *str)
     *str = '\0';
 }
 
-void stringsm_rtab(char *str)
+void stringsm_rtab(char* str)
 {
     while(str[0] == '\t' || str[0] == ' ')
     {

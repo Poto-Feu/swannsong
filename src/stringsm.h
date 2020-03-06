@@ -19,8 +19,8 @@
 #ifndef STRINGSM_H
 #define STRINGSM_H
 
-void stringsm_chomp(char *str);
-void stringsm_rtab(char *str);
+void stringsm_chomp(char* str);
+void stringsm_rtab(char* str);
 void stringsm_getuseri(char** buf);
 void stringsm_getfw(char** fw, char* s, int *index);
 
