@@ -26,5 +26,10 @@
 
 void init_game()
 {
+    char* defaultlang = calloc(P_MAX_BUF_SIZE, sizeof(char));
+
     gameconf_readfile();
+    pvars_getgcvars("defaultlang", &defaultlang);
+    pvars_setstdvars("lang", defaultlang);
+    free(defaultlang);
 }
