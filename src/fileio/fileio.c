@@ -26,6 +26,16 @@
 #include "../perror.h"
 #include "../stringsm.h"
 
+void fileio_setfileptr(FILE** fp, char* path)
+{
+    *fp = fopen(path, "r");
+    printf("path: %s", path);
+    if(*fp == NULL)
+    {
+        perror_disp("FOPEN_NULL", 1);
+    }
+}
+
 void fileio_gotoline(FILE** fp, int ln)
 {
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
@@ -80,7 +90,7 @@ void fileio_execuntilend(int startln)
     FILE* fp = NULL;
 
     pvars_getgcvars("roomfile", &roomfile);
-    fp = fopen(roomfile, "r");
+    fileio_setfileptr(&fp, roomfile);
     free(roomfile);
     fileio_gotoline(&fp, startln);
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)

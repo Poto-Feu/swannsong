@@ -54,7 +54,7 @@ bool find_insline(int* foundln, int ln, char* ins)
     FILE* fp = NULL;
 
     pvars_getgcvars("roomfile", &roomfile);
-    fp = fopen(roomfile, "r");
+    fileio_setfileptr(&fp, roomfile);
     free(roomfile);
     fileio_gotoline(&fp, ln);
     for(int i = 0; fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL; i++)
