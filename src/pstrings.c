@@ -49,6 +49,10 @@ static void open_strfile(FILE **f)
         langdirln++;
     }
     fileio_setfileptr(f, langfile);
+    
+    free(langdir);
+    free(lang);
+    free(langfile);
 }
 
 void pstrings_fetch(char* id, char** rstr)
