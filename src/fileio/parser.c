@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../vars/pconst.h"
+#include "../vars/pvars.h"
 #include "../perror.h"
 #include "../pstrings.h"
 #include "../stringsm.h"
@@ -44,7 +45,7 @@ void parser_execins(char* type, char* arg, bool* inblock)
             //To do
             int* roomln = calloc(1, sizeof(int));
             char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-            room_getcroomid(croomid);
+            pvars_getstdvars("currentroom", &croomid);
             find_roomline(croomid, roomln);
             free(croomid);
             free(roomln);
@@ -62,7 +63,6 @@ void parser_execins(char* type, char* arg, bool* inblock)
 void parser_splitline(char** type, char** arg, char* ins)
 {
     int i = 0;
-    int findex = 0;
     int len = 0;
     char* argtocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
     
@@ -72,6 +72,7 @@ void parser_splitline(char** type, char** arg, char* ins)
     stringsm_getfw(type, ins, &i);
     if(len != (int)strlen(*type))
     {
+        int findex = 0;
         for(int index = i; index < len; index++)
         {
             argtocpy[findex] = ins[index];

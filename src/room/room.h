@@ -22,6 +22,4 @@
 void room_initmodule();
 void room_load(char* id);
 
-void room_getcroomid(char* str);
-
 #endif

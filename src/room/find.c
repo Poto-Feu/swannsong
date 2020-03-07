@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "../vars/pconst.h"
+#include "../vars/pvars.h"
 #include "../perror.h"
 #include "../pstrings.h"
 #include "../stringsm.h"
@@ -48,9 +49,13 @@ bool find_insline(int* foundln, int ln, char* ins)
 {
     bool inchoices = false;
     bool inonechoice = false;
+    char* roomfile = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    FILE* fp = fopen("txt/rooms.txt", "r");
-    
+    FILE* fp = NULL;
+
+    pvars_getgcvars("roomfile", &roomfile);
+    fileio_setfileptr(&fp, roomfile);
+    free(roomfile);
     fileio_gotoline(&fp, ln);
     for(int i = 0; fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL; i++)
     {

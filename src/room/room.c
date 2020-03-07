@@ -23,23 +23,13 @@
 #include "room.h"
 #include "find.h"
 #include "../vars/pconst.h"
+#include "../vars/pvars.h"
 #include "../perror.h"
 #include "../pstrings.h"
 #include "../stringsm.h"
 #include "../fileio/fileio.h"
 #include "../fileio/parser.h"
 
-static char* croomid = NULL;
-
-void room_initmodule()
-{
-    croomid = calloc(P_MAX_BUF_SIZE, sizeof(char));
-}
-
-void room_getcroomid(char* str)
-{
-    strcpy(str, croomid);
-}
 
 static void room_atlaunch(int* roomln)
 {
@@ -57,10 +47,8 @@ static void room_atlaunch(int* roomln)
 void room_load(char* id)
 {
     int roomln = 0;
-    croomid = calloc((P_MAX_BUF_SIZE - 1),  sizeof(char));
-    strcpy(croomid, id);
+    pvars_setstdvars("currentroom", id);
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);
-    free(croomid);
 }
 

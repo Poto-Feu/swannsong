@@ -141,11 +141,6 @@ static void pvars_getpvars(char* name, char** value, bool isgcvar)
         *value = calloc((vlen+1), sizeof(char));
         strcpy(*value, prevvalue);
         free(prevvalue);
-        /*char* check = realloc(*value, (vlen + 1) * sizeof(char));
-        if(!check)
-        {
-            perror_disp("REALLOC_FAIL", 1);
-        }*/
         strcpy(*value, valuetocpy);
         free(valuetocpy);
     }
