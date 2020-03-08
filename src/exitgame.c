@@ -27,6 +27,7 @@ void exitgame(int c)
     pstrings_display("exit_penter");
     printf("\n");
     getchar();
+
     if(c == 0)
     {
         exit(c);

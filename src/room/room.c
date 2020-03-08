@@ -35,18 +35,21 @@ static void room_atlaunch(int* roomln)
 {
     int *foundln = calloc(1, sizeof(int));
     bool atlfound = false;
+
     find_atlaunchline(foundln, *roomln, &atlfound);
     *foundln = *foundln + 1;
     if(atlfound == 1)
     {
         fileio_execuntilend(*foundln);
     }
+
     free(foundln);
 }
 
 void room_load(char* id)
 {
     int roomln = 0;
+
     pvars_setstdvars("currentroom", id);
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);

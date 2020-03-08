@@ -38,6 +38,7 @@ void init_game()
     pvars_getgcvars("defaultlang", &defaultlang);
     pvars_setstdvars("lang", defaultlang);
     pvars_getgcvars("firstroom", &room_name);
+
     ask_lang();
     room_load(room_name);
 
@@ -80,5 +81,6 @@ static void ask_lang()
             printf("Nope. (too long)\n");
         }
     }
+
     free(buf);
 }

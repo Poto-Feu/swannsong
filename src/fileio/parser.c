@@ -73,6 +73,7 @@ void parser_splitline(char** type, char** arg, char* ins)
     if(len != (int)strlen(*type))
     {
         int findex = 0;
+
         for(int index = i; index < len; index++)
         {
             argtocpy[findex] = ins[index];
@@ -83,5 +84,6 @@ void parser_splitline(char** type, char** arg, char* ins)
     {
         strcpy(*arg, "ARGNULL");
     }
+
     free(argtocpy);
 }

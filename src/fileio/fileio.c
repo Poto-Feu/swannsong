@@ -102,15 +102,18 @@ void fileio_execuntilend(int startln)
         if(strcmp(type, "END"))
         {
             parser_execins(type, arg, &inblock);
+
             free(type);
             free(arg);
         } else 
         {
             free(type);
             free(arg);
+
             break;
         }
     }
+
     free(buf);
     fclose(fp);
 }

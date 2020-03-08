@@ -40,6 +40,7 @@ void find_roomline(char* id, int* ln)
         roomline[strlen(roomline)] = id[i];
     }
     fileio_getln(ln, roomline);
+
     free(roomline);
 }
 
@@ -54,8 +55,10 @@ bool find_insline(int* foundln, int ln, char* ins)
 
     pvars_getgcvars("roomfile", &roomfile);
     fileio_setfileptr(&fp, roomfile);
-    free(roomfile);
     fileio_gotoline(&fp, ln);
+
+    free(roomfile);
+
     for(int i = 0; fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL; i++)
     {
         char* type = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
@@ -67,10 +70,12 @@ bool find_insline(int* foundln, int ln, char* ins)
         if (!strcmp(type, ins))
         {
             *foundln = i + ln;
+
             free(type);
             free(arg);
             fclose(fp);
             free(buf);
+
             return 1;
         } else if(!strcmp(type, "CHOICES"))
         {
@@ -80,7 +85,9 @@ bool find_insline(int* foundln, int ln, char* ins)
             }
             
         }
+
         free(arg);
+
         if(!strcmp(type, "END"))
         {
             if(inchoices == 0)
@@ -88,12 +95,16 @@ bool find_insline(int* foundln, int ln, char* ins)
                 if(!strcmp(type, "ATLAUNCH"))
                 {
                     perror_disp("NO_ATLAUNCH_INS", 0);
+
                     free(type);
+
                     break;
                 } else if(!strcmp(type, "CHOICES"))
                 {
                     perror_disp("NO_CHOICES_INS", 0);
+
                     free(type);
+
                     break;
                 }
             } else if(inonechoice == 1)
@@ -104,10 +115,12 @@ bool find_insline(int* foundln, int ln, char* ins)
                 inchoices = 0;
             }
         }
+
         free(type);
     }
     fclose(fp);
     free(buf);
+
     return 0;
 }
 
