@@ -41,7 +41,6 @@ void find_roomline(char* id, int* ln)
     }
     fileio_getln(ln, roomline);
     free(roomline);
-    roomline = NULL;
 }
 
 
