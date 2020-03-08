@@ -78,7 +78,7 @@ void fileio_getln(int* ln, char* s)
     free(buf);
 }
 
-// Execute all the instructions until the end of the block
+/*Execute all the instructions until the end of the block*/
 void fileio_execuntilend(int startln)
 {
     bool inblock = false;
