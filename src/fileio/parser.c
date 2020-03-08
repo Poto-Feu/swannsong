@@ -29,7 +29,7 @@
 #include "../room/find.h"
 
 /*Execute the appropriate action according to the type and the arg received*/
-void parser_execins(char* type, char* arg, bool* inblock)
+void parser_execins(char* type, char* arg, bool* inif)
 {
     if(!strcmp(type, "PRINT"))
     {
@@ -38,20 +38,22 @@ void parser_execins(char* type, char* arg, bool* inblock)
         printf("\n");
     } else if (strcmp(type, "IF") == 0)
     {
-        *inblock = 1;
-    } else if (*inblock == 0 && !strcmp(type, "DISPLAY"))
+        *inif = 1;
+    } else if (*inif == 0 && !strcmp(type, "DISPLAY"))
     {    
         if(!strcmp(arg, "CHOICES"))
         {
             //To do
             int* roomln = calloc(1, sizeof(int));
             char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+
             pvars_getstdvars("currentroom", &croomid);
             find_roomline(croomid, roomln);
+
             free(croomid);
             free(roomln);
         }
-    } else if (*inblock == 0 && strcmp(type, "END") == 0)
+    } else if (*inif == 0 && strcmp(type, "END") == 0)
     {
     } else
     {
