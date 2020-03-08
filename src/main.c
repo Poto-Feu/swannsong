@@ -37,7 +37,8 @@ int main (void)
     SetConsoleOutputCP(65001);
     #endif
 
-
     init_game();
     exitgame(0);
+
+    return 0;
 }
