@@ -28,6 +28,7 @@
 #include "../room/room.h"
 #include "../room/find.h"
 
+/*Execute the appropriate action according to the type and the arg received*/
 void parser_execins(char* type, char* arg, bool* inblock)
 {
     if(!strcmp(type, "PRINT"))
@@ -60,6 +61,7 @@ void parser_execins(char* type, char* arg, bool* inblock)
     
 }
 
+/*Extract the type and the argument from a string*/
 void parser_splitline(char** type, char** arg, char* ins)
 {
     int i = 0;
