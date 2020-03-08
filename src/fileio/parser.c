@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "parser.h"
 #include "../vars/pconst.h"
 #include "../vars/pvars.h"
 #include "../perror.h"
