@@ -77,7 +77,6 @@ bool find_insline(int* foundln, int ln, char* ins)
             free(arg);
             fclose(fp);
             free(buf);
-
             return 1;
         } else if(!strcmp(type, "CHOICES"))
         {
@@ -97,14 +96,12 @@ bool find_insline(int* foundln, int ln, char* ins)
                 if(!strcmp(type, "ATLAUNCH"))
                 {
                     perror_disp("NO_ATLAUNCH_INS", 0);
-
                     free(type);
 
                     break;
                 } else if(!strcmp(type, "CHOICES"))
                 {
                     perror_disp("NO_CHOICES_INS", 0);
-
                     free(type);
 
                     break;
