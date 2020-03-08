@@ -69,6 +69,7 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
 {
     int* varfndid = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);
+
     if(isvarfnd == 1 && *varfndid != -1)
     {
         int vlen = strlen(value) + 1;
