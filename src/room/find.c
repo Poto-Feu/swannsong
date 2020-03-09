@@ -65,9 +65,9 @@ bool find_insline(int* foundln, int ln, char* ins)
     {
         char* type = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
         char* arg = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
+
         stringsm_chomp(buf);
-        stringsm_rtab(buf);
-        
+        stringsm_rtab(buf);        
         parser_splitline(&type, &arg, buf);
         if (!strcmp(type, ins))
         {
@@ -77,6 +77,7 @@ bool find_insline(int* foundln, int ln, char* ins)
             free(arg);
             fclose(fp);
             free(buf);
+            
             return 1;
         } else if(!strcmp(type, "CHOICES"))
         {
