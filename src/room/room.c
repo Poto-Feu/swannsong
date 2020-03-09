@@ -36,7 +36,7 @@ static void room_atlaunch(int* roomln)
     int *foundln = calloc(1, sizeof(int));
     bool atlfound = false;
 
-    find_atlaunchline(foundln, *roomln, &atlfound);
+    atlfound = find_atlaunchline(foundln, *roomln);
     *foundln = *foundln + 1;
     if(atlfound == 1)
     {

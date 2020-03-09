@@ -77,7 +77,7 @@ bool find_insline(int* foundln, int ln, char* ins)
             free(arg);
             fclose(fp);
             free(buf);
-            
+
             return 1;
         } else if(!strcmp(type, "CHOICES"))
         {
@@ -125,15 +125,15 @@ bool find_insline(int* foundln, int ln, char* ins)
 }
 
 /*Return the line where the ATLAUNCH block start*/
-void find_atlaunchline(int* foundln, int ln, bool* atlfound)
+bool find_atlaunchline(int* foundln, int ln)
 {
     char* ins = "ATLAUNCH";
-    *atlfound = find_insline(foundln, ln, ins);
+    return find_insline(foundln, ln, ins);
 }
 
 /*Return the line where the CHOICES block start*/
-void find_choicesline(int* foundln, int ln, bool* choiceslfound)
+bool find_choicesline(int* foundln, int ln)
 {
     char* ins = "CHOICES";
-    *choiceslfound = find_insline(foundln, ln, ins);
+    return find_insline(foundln, ln, ins);
 }
