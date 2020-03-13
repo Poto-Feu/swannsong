@@ -45,6 +45,71 @@ void find_roomline(char* id, int* ln)
     free(roomline);
 }
 
+/*Fetch the line where a Choice declaration start ; the starln must point to
+the beginning of the Choices decleration set*/
+bool find_onechoiceline(int num, int startln, int* ln)
+{
+    bool choicefound = false;
+    bool inonechoice = false;
+    bool inif = false;
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* roomfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    FILE* fp = NULL;
+
+    if(num < 0 || num > 9)
+    {
+        free(buf);
+        free(roomfile);
+        perror_disp("WRG_CHOI_NUM", 1);
+    }
+    pvars_getgcvars("roomfile", &roomfile);
+    fileio_setfileptr(&fp, roomfile);
+    fileio_gotoline(&fp, startln);
+
+    free(roomfile);
+
+    for(int i = 0; !choicefound; i++)
+    {
+        fgets(buf, (P_MAX_BUF_SIZE - 1), fp);
+        stringsm_chomp(buf);
+        stringsm_rtab(buf);
+
+        if(buf[0] == 'c' && buf[1] == num + '0')
+        {
+            if(inif == false && inonechoice == false)
+            {
+                *ln = i + startln;
+                choicefound = true;
+            } else
+            {
+                free(buf);
+                perror_disp("WRG_CHOICE_PLACE", 1);
+            }
+        } else if(buf[0] == 'c' && buf[1] != num + '0')
+        {
+            inonechoice = true;
+        } else if(buf[0] == 'I' && buf[1] == 'F')
+        {
+            inif = true;
+        } else if(buf[0] == 'E' && buf[1] == 'N' && buf[2] == 'D')
+        {
+            if(inif)
+            {
+                inif = false;
+            } else if (inonechoice)
+            {
+                inonechoice = false;
+            } else
+            {
+                break;
+            }
+        }
+    }
+
+    free(buf);
+    return choicefound;
+}
+
 /*Fetch the line where a specific instruction is present beginning from a
 specified line*/
 bool find_insline(int* foundln, int ln, char* ins)

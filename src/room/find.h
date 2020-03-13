@@ -25,5 +25,6 @@ void find_room(char* id, bool* inroom, char* lang);
 void find_roomline(char* id, int* ln);
 bool find_atlaunchline(int* foundln, int ln);
 bool find_choicesline(int* foundln, int ln);
+bool find_onechoiceline(int num, int startln, int* ln);
 
 #endif

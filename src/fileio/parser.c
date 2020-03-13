@@ -26,8 +26,12 @@
 #include "../perror.h"
 #include "../pstrings.h"
 #include "../stringsm.h"
+#include "fileio.h"
 #include "../room/room.h"
 #include "../room/find.h"
+
+
+static void display_choices(int roomln);
 
 /*Execute the appropriate action according to the type and the arg received*/
 void parser_execins(char* type, char* arg, bool* inif)
@@ -45,14 +49,14 @@ void parser_execins(char* type, char* arg, bool* inif)
         if(!strcmp(arg, "CHOICES"))
         {
             //To do
-            int* roomln = calloc(1, sizeof(int));
+            int roomln = 0;
             char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
             pvars_getstdvars("currentroom", &croomid);
-            find_roomline(croomid, roomln);
+            find_roomline(croomid, &roomln);
+            display_choices(roomln);
 
             free(croomid);
-            free(roomln);
         }
     } else if (*inif == 0 && strcmp(type, "END") == 0)
     {
@@ -91,4 +95,94 @@ void parser_splitline(char** type, char** arg, char* ins)
     }
 
     free(argtocpy);
+}
+
+
+static void display_choicetext(int choiceln, int num);
+
+static void display_choices(int roomln)
+{
+    int choicesln = 0;
+    bool choicesremain = true;
+    bool choicesexist = find_choicesline(&choicesln, roomln);
+    
+    if(!choicesexist)
+    {
+        perror_disp("NO_CHOICES_INS", 1);
+    }
+    for(int i = 0; choicesremain; i++)
+    {
+        int onechoiceln = 0;
+        bool choicesexist = find_onechoiceline((i+1), choicesln, &onechoiceln);
+        
+        if(!choicesexist)
+        {
+            if(i == 0)
+            {
+                perror_disp("NO_CHOICE_FND", 1);
+            }
+            choicesremain = false;
+        } else
+        {
+            display_choicetext(onechoiceln, (i+1));
+        }
+    }
+}
+
+/*Display the text attributed to a choice ; choiceln must point to the
+line number of the beginning of the choice block*/
+static void display_choicetext(int choiceln, int num)
+{
+    bool textfound = false;
+    bool inif = false;
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* roomfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    FILE* fp = NULL;
+
+    pvars_getgcvars("roomfile", &roomfile);
+    fileio_setfileptr(&fp, roomfile);
+    fileio_gotoline(&fp, choiceln);
+
+    free(roomfile);
+
+    for(int i = 0; !textfound; i++)
+    {
+        char* arg = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
+        char* type = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
+
+        fgets(buf, (P_MAX_BUF_SIZE - 1), fp);
+        stringsm_chomp(buf);
+        stringsm_rtab(buf);
+        parser_splitline(&type, &arg, buf);
+
+        if(!strcmp(type, "TEXT"))
+        {
+            textfound = true;
+            printf("\n%i - ", num);
+            pstrings_display(arg);
+        }
+        else if(!strcmp(type, "END"))
+        {
+            if(inif)
+            {
+                inif = false;
+            } else
+            {
+                free(buf);
+                free(type);
+                free(arg);
+                perror_disp("NO_CHOICE_TEXT", 1);
+
+                break;
+            }
+        } else if(buf[0] == 'I' && buf[1] == 'F')
+        {
+            inif = true;
+        }
+
+        free(type);
+        free(arg);
+    }
+
+    free(buf);
 }
