@@ -15,10 +15,12 @@ END ROOM
 ROOM menu
     CHOICES
         c1
+            TEXT menu_c1
             GO "firstroom"
             CUTSCENE "welcome"
         END
         c2
+            TEXT menu_c2
             GO "aboutscreen"
         END
     END
