@@ -16,8 +16,8 @@ ROOM menu
     CHOICES
         c1
             TEXT menu_c1
-            GO firstroom
             CUTSCENE welcome
+            GO firstroom
         END
         c2
             TEXT menu_c2
