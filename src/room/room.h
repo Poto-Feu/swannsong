@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -19,7 +21,5 @@
 
 void room_initmodule();
 void room_load(char* id);
-
-void room_getcroomid(char* str);
 
 #endif

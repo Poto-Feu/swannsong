@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -18,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "init.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "exitgame.h"
@@ -33,13 +37,8 @@ int main (void)
     SetConsoleOutputCP(65001);
     #endif
 
-    char* next_room = malloc(100*sizeof(char));
-    char* room_name = malloc(200*sizeof(char));
-
     init_game();
-    strcpy(room_name, "menu");
-    room_load(room_name);
-    free(next_room);
-    free(room_name);
     exitgame(0);
+
+    return 0;
 }

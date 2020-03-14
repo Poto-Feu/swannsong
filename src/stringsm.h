@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,8 +19,9 @@
 #ifndef STRINGSM_H
 #define STRINGSM_H
 
-void stringsm_chomp(char *str);
-void stringsm_rtab(char *str);
-void stringsm_getfw(char* fw, char* s, int *index);
+void stringsm_chomp(char* str);
+void stringsm_rtab(char* str);
+void stringsm_getuseri(char** buf);
+void stringsm_getfw(char** fw, char* s, int *index);
 
 #endif

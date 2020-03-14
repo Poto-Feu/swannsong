@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -16,7 +18,9 @@
 
 #ifndef FILEIO_H
 #define FILEIO_H
+#include <stdio.h>
 
+void fileio_setfileptr(FILE** fp, char* path);
 void fileio_gotoline(FILE** fp, int ln);
 void fileio_getln(int* ln, char* s);
 void fileio_execuntilend(int startln);

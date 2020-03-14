@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -21,7 +23,8 @@
 
 void find_room(char* id, bool* inroom, char* lang);
 void find_roomline(char* id, int* ln);
-bool find_atlaunchline(int* foundln, int ln, bool* atlfound);
-bool find_choicesline(int* foundln, int ln, bool* choiceslfound);
+bool find_atlaunchline(int* foundln, int ln);
+bool find_choicesline(int* foundln, int ln);
+bool find_onechoiceline(int num, int startln, int* ln);
 
 #endif

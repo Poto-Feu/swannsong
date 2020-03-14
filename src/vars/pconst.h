@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,7 +19,7 @@
 #ifndef PCONST_H
 #define PCONST_H
 
-extern const int P_MAX_BUF_SIZE;
-extern const int P_MAX_USERINPUT_SIZE;
+#define P_MAX_BUF_SIZE 500
+#define P_MAX_USERINPUT_SIZE 100
 
 #endif

@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -22,40 +24,52 @@
 #include "vars/pconst.h"
 #include "pstrings.h"
 #include "stringsm.h"
+#include "fileio/fileio.h"
 
-void open_strfile(FILE **f)
+static void open_strfile(FILE **f)
 {
-    if (strcmp(pvars_userlang, "fr") == 0)
+    char* langdir = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* lang = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* langfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* txt = ".txt";
+    int langdirln = 0;
+
+    pvars_getgcvars("langdir", &langdir);
+    pvars_getstdvars("lang", &lang);
+    strcpy(langfile, langdir);
+    langdirln = strlen(langdir);
+
+    for(int i = 0; i < (int)strlen(lang); i++)
     {
-        *f = fopen("txt/fr.txt", "r");
-    } else
-    {
-        *f = fopen("txt/en.txt", "r");
+        langfile[langdirln] = lang[i];
+        langdirln++;
     }
-    if (*f == NULL)
+    for(int i = 0; i < (int)strlen(txt); i++)
     {
-        printf("\nfopen is null : your game files might be corrupted.");
-        exit(1);
+        langfile[langdirln] = txt[i];
+        langdirln++;
     }
+    fileio_setfileptr(f, langfile);
+    
+    free(langdir);
+    free(lang);
+    free(langfile);
 }
 
-void pstrings_fetch(char id[], char *rstr)
+void pstrings_fetch(char* id, char** rstr)
 {
     int index = 0;
     int len = 0;
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    char* ustr = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* ustr = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
-    bool id_exist = 0;
+    bool id_exist = false;
     FILE* fp = NULL;
 
-    *buf = '\0';
-    *ustr = '\0';
     open_strfile(&fp);
     while (fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL) {
-        id_found = malloc(P_MAX_BUF_SIZE * sizeof(char));
-        *id_found = '\0';
+        id_found = calloc(P_MAX_BUF_SIZE, sizeof(char));
         stringsm_chomp(buf);
         strcpy(ustr, buf);
         len = strlen(ustr);
@@ -80,11 +94,11 @@ void pstrings_fetch(char id[], char *rstr)
             free(id_found);
         }
     }
-    fstring = malloc(len * sizeof(char));
+    fstring = calloc(len, sizeof(char));
     if (id_exist == 1)
     {
         int findex = 0;
-        bool quote_inc = 0;
+        bool quote_inc = false;
         
         for(int i = index + 1; i < len; i++)
         {
@@ -109,16 +123,20 @@ void pstrings_fetch(char id[], char *rstr)
         printf("idfound: %s\n", id);
         strcpy(fstring, "ERR_STR_NULL");
     }
-    strcpy(rstr, fstring);
+    strcpy(*rstr, fstring);
+
     fclose(fp);
+    free(fstring);
     free(ustr);
     free(buf);
 }
 
 void pstrings_display(char *id)
 {
-    char* rstring = (char*) malloc(150*sizeof(char));;
-    pstrings_fetch(id, rstring);
+    char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
+
+    pstrings_fetch(id, &rstring);
     printf("%s", rstring);
+
     free(rstring);
 }

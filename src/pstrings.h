@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,7 +19,7 @@
 #ifndef PSTRINGS_H
 #define PSTRINGS_H
 
-void pstrings_fetch(char id[], char *rstr);
+void pstrings_fetch(char* id, char** rstr);
 void pstrings_display(char id[]);
 
 #endif

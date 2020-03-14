@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -25,6 +27,7 @@ void exitgame(int c)
     pstrings_display("exit_penter");
     printf("\n");
     getchar();
+
     if(c == 0)
     {
         exit(c);

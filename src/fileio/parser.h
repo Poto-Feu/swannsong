@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -20,6 +22,6 @@
 #define PARSER_H
 
 void parser_execins(char* type, char* arg, bool* inblock);
-void parser_splitline(char* type, char* arg, char* ins);
+void parser_splitline(char** type, char** arg, char* ins);
 
 #endif

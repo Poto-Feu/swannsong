@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -20,44 +22,36 @@
 #include <stdbool.h>
 #include "room.h"
 #include "find.h"
-#include "../vars/pconst.h"
-#include "../perror.h"
-#include "../pstrings.h"
-#include "../stringsm.h"
-#include "../fileio/fileio.h"
-#include "../fileio/parser.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "perror.h"
+#include "pstrings.h"
+#include "stringsm.h"
+#include "fileio/fileio.h"
+#include "fileio/parser.h"
 
-static char* croomid = NULL;
-
-void room_initmodule()
-{
-    croomid = malloc(P_MAX_BUF_SIZE * sizeof(char));
-}
-
-void room_getcroomid(char* str)
-{
-    strcpy(str, croomid);
-}
-
+/*Read the first ATLAUNCH block encountered starting from specified line*/
 static void room_atlaunch(int* roomln)
 {
-    int *foundln = malloc(sizeof(int));
-    bool atlfound = 0;
-    find_atlaunchline(foundln, *roomln, &atlfound);
+    int *foundln = calloc(1, sizeof(int));
+    bool atlfound = false;
+
+    atlfound = find_atlaunchline(foundln, *roomln);
     *foundln = *foundln + 1;
     if(atlfound == 1)
     {
         fileio_execuntilend(*foundln);
     }
+
+    free(foundln);
 }
 
 void room_load(char* id)
 {
     int roomln = 0;
-    croomid = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
-    strcpy(croomid, id);
+
+    pvars_setstdvars("currentroom", id);
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);
-    free(croomid);
 }
 

@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -17,15 +19,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../vars/pconst.h"
 #include "fileio.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
 #include "parser.h"
-#include "../perror.h"
-#include "../stringsm.h"
+#include "perror.h"
+#include "stringsm.h"
+
+void fileio_setfileptr(FILE** fp, char* path)
+{
+    *fp = fopen(path, "r");
+    if(*fp == NULL)
+    {
+        perror_disp("FOPEN_NULL", 1);
+    }
+}
 
 void fileio_gotoline(FILE** fp, int ln)
 {
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+
     for(int i = 0; i < ln; i++)
     {
         if(fgets(buf, P_MAX_BUF_SIZE - 1, *fp) == NULL)
@@ -42,12 +55,15 @@ void fileio_gotoline(FILE** fp, int ln)
 
 void fileio_getln(int* ln, char* s)
 {
-    FILE *fp = fopen("txt/rooms.txt", "r");
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    //char buf[500];
+    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
+    FILE* fp = NULL;
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     int i = 0;
+
+    pvars_getgcvars("roomfile", &roomfile);
+    fp = fopen(roomfile, "r");
+    free(roomfile);
     *ln = 0;
-    *buf = '\0';
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
         stringsm_chomp(buf);
@@ -63,36 +79,43 @@ void fileio_getln(int* ln, char* s)
     free(buf);
 }
 
-// Execute all the instructions until the end of the block
+/*Execute all the instructions until the end of the block*/
 void fileio_execuntilend(int startln)
 {
-    bool inblock = 0;
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
+    bool inif = false;
+    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* type = NULL;
     char* arg = NULL;
-    FILE* fp = fopen("txt/rooms.txt", "r");
+    FILE* fp = NULL;
 
-    *buf = '\0';
+    pvars_getgcvars("roomfile", &roomfile);
+    fileio_setfileptr(&fp, roomfile);
+    free(roomfile);
     fileio_gotoline(&fp, startln);
+
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
-        type  = malloc((P_MAX_BUF_SIZE - 1 ) * sizeof(char));
-        arg = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+        type  = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        arg = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
         stringsm_chomp(buf);
         stringsm_rtab(buf);
-        parser_splitline(type, arg, buf);
+        parser_splitline(&type, &arg, buf);
         if(strcmp(type, "END"))
         {
-            parser_execins(type, arg, &inblock);
+            parser_execins(type, arg, &inif);
+
             free(type);
             free(arg);
         } else 
         {
             free(type);
             free(arg);
+
             break;
         }
     }
+
     free(buf);
     fclose(fp);
 }

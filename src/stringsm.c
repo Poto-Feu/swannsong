@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -19,7 +21,7 @@
 #include <stdbool.h>
 #include "stringsm.h"
 
-void stringsm_chomp(char *str)
+void stringsm_chomp(char* str)
 {
     while (*str != '\n' && *str != '\0')
         str++;
@@ -27,7 +29,7 @@ void stringsm_chomp(char *str)
     *str = '\0';
 }
 
-void stringsm_rtab(char *str)
+void stringsm_rtab(char* str)
 {
     while(str[0] == '\t' || str[0] == ' ')
     {
@@ -38,26 +40,43 @@ void stringsm_rtab(char *str)
     }
 }
 
-// Get the first word of a string
-void stringsm_getfw(char* fw, char* str, int* index)
+/*Get the first word of a string*/
+void stringsm_getfw(char** fw, char* str, int* index)
 {
     bool space = false;
     int len = strlen(str);
+
     for(int i = 0; i < len; i++)
     {
         if(str[i] == ' ')
         {
-            strncpy(fw, str, i);
+            strncpy(*fw, str, i);
             *index = i+1;
             space = true;
             break;
         }
     }
+
     if(!space)
     {
-        strcpy(fw, str);
+        strcpy(*fw, str);
         *index = 0;
         return;
     }
-    fw[*index - 1] = '\0';
+}
+
+void stringsm_getuseri(char** buf)
+{
+    char *c = NULL;
+
+    fgets(*buf, (sizeof(*buf) + 1), stdin);
+    if((c = strchr(*buf, '\n')))
+    {
+        stringsm_chomp(*buf);
+    } else
+    {
+        scanf("%*[^\n]");
+        scanf("%*c");
+    }
+    
 }

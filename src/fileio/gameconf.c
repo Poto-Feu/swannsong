@@ -1,4 +1,6 @@
 /*
+    Copyright (C) 2020 Adrien Saad
+
     This file is part of SwannSong.
 
     SwannSong is free software: you can redistribute it and/or modify
@@ -19,23 +21,21 @@
 #include <string.h>
 #include <stdbool.h>
 #include "gameconf.h"
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
-#include "../stringsm.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "stringsm.h"
 
 void gameconf_splitins(char* var, char* value, char* ins);
 
 void gameconf_readfile()
 {
     FILE* fp = fopen("gameconf.txt", "r");
-    char* buf = malloc(P_MAX_BUF_SIZE * sizeof(char));
-    
-    *buf = '\0';
+    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
 
     while (fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
     {
-        char* var = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
-        char* value = malloc((P_MAX_BUF_SIZE - 1) * sizeof(char));
+        char* var = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char* value = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);
@@ -57,7 +57,7 @@ void gameconf_splitins(char* var, char* value, char* ins)
 {
     int index = 0;
     int vindex = 0;
-    bool quoteinc = 0;
+    bool quoteinc = false;
 
     *var = '\0';
     *value = '\0';
