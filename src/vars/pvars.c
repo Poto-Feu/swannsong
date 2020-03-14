@@ -26,20 +26,20 @@
 #define STDVARS_LN 3
 #define GCVARS_LN 4
 
-struct pvar
+typedef struct 
 {
     char* name;
     char* value;
-};
+} pvar ;
 
 char pvars_userlang[3] = "en";
-static struct pvar stdvars[STDVARS_LN] =
+static pvar stdvars[STDVARS_LN] =
 {
     {.name = "lang", .value = NULL},
     {.name = "currentroom", .value = NULL},
     {.name = "nextroom", .value = NULL}
 };
-static struct pvar gcvars[GCVARS_LN] =
+static pvar gcvars[GCVARS_LN] =
 {
     {.name = "langdir", .value = NULL},
     {.name = "roomfile", .value = NULL},
