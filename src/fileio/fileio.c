@@ -38,6 +38,7 @@ void fileio_setfileptr(FILE** fp, char* path)
 void fileio_gotoline(FILE** fp, int ln)
 {
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+
     for(int i = 0; i < ln; i++)
     {
         if(fgets(buf, P_MAX_BUF_SIZE - 1, *fp) == NULL)
