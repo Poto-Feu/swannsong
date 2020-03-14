@@ -28,6 +28,22 @@
 #include "fileio/fileio.h"
 #include "fileio/parser.h"
 
+bool find_insline(int* foundln, int ln, char* ins);
+
+/*Return the line where the ATLAUNCH block start*/
+bool find_atlaunchline(int* foundln, int ln)
+{
+    char* ins = "ATLAUNCH";
+    return find_insline(foundln, ln, ins);
+}
+
+/*Return the line where the CHOICES block start*/
+bool find_choicesline(int* foundln, int ln)
+{
+    char* ins = "CHOICES";
+    return find_insline(foundln, ln, ins);
+}
+
 /*Fetch the beginning line of the room definition in file*/
 void find_roomline(char* id, int* ln)
 {
@@ -187,18 +203,4 @@ bool find_insline(int* foundln, int ln, char* ins)
     free(buf);
 
     return 0;
-}
-
-/*Return the line where the ATLAUNCH block start*/
-bool find_atlaunchline(int* foundln, int ln)
-{
-    char* ins = "ATLAUNCH";
-    return find_insline(foundln, ln, ins);
-}
-
-/*Return the line where the CHOICES block start*/
-bool find_choicesline(int* foundln, int ln)
-{
-    char* ins = "CHOICES";
-    return find_insline(foundln, ln, ins);
 }
