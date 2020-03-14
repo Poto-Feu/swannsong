@@ -54,6 +54,7 @@ static void ask_lang()
 
     while(!validinp)
     {
+        printf("\nHint : make a choice by typing the corresponding number.\n");
         printf("\nSelect your language:"
                 "\n1. English"
                 "\n2. Français"
