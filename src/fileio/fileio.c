@@ -19,12 +19,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
 #include "fileio.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
 #include "parser.h"
-#include "../perror.h"
-#include "../stringsm.h"
+#include "perror.h"
+#include "stringsm.h"
 
 void fileio_setfileptr(FILE** fp, char* path)
 {
@@ -38,6 +38,7 @@ void fileio_setfileptr(FILE** fp, char* path)
 void fileio_gotoline(FILE** fp, int ln)
 {
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+
     for(int i = 0; i < ln; i++)
     {
         if(fgets(buf, P_MAX_BUF_SIZE - 1, *fp) == NULL)
@@ -78,10 +79,10 @@ void fileio_getln(int* ln, char* s)
     free(buf);
 }
 
-// Execute all the instructions until the end of the block
+/*Execute all the instructions until the end of the block*/
 void fileio_execuntilend(int startln)
 {
-    bool inblock = false;
+    bool inif = false;
     char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* type = NULL;
@@ -92,6 +93,7 @@ void fileio_execuntilend(int startln)
     fileio_setfileptr(&fp, roomfile);
     free(roomfile);
     fileio_gotoline(&fp, startln);
+
     while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
     {
         type  = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
@@ -101,16 +103,19 @@ void fileio_execuntilend(int startln)
         parser_splitline(&type, &arg, buf);
         if(strcmp(type, "END"))
         {
-            parser_execins(type, arg, &inblock);
+            parser_execins(type, arg, &inif);
+
             free(type);
             free(arg);
         } else 
         {
             free(type);
             free(arg);
+
             break;
         }
     }
+
     free(buf);
     fclose(fp);
 }

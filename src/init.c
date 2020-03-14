@@ -32,11 +32,17 @@ static void ask_lang();
 void init_game()
 {
     char* defaultlang = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* room_name = calloc(P_MAX_BUF_SIZE, sizeof(char));
 
     gameconf_readfile();
     pvars_getgcvars("defaultlang", &defaultlang);
     pvars_setstdvars("lang", defaultlang);
+    pvars_getgcvars("firstroom", &room_name);
+
     ask_lang();
+    room_load(room_name);
+
+    free(room_name);
     free(defaultlang);
 }
 
@@ -75,5 +81,6 @@ static void ask_lang()
             printf("Nope. (too long)\n");
         }
     }
+
     free(buf);
 }

@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include "pvars.h"
 #include "pconst.h"
-#include "../perror.h"
+#include "perror.h"
 
 #define STDVARS_LN 3
 #define GCVARS_LN 4
@@ -52,6 +52,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
 static void pvars_setpvars(char* name, char* value, bool isgcvar);
 static void pvars_getpvars(char* name, char** value, bool isgcvar);
 
+
 /*Set the value of a standard program variable*/
 void pvars_setstdvars(char* name, char* value)
 {
@@ -68,6 +69,7 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
 {
     int* varfndid = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);
+
     if(isvarfnd == 1 && *varfndid != -1)
     {
         int vlen = strlen(value) + 1;
@@ -135,14 +137,17 @@ static void pvars_getpvars(char* name, char** value, bool isgcvar)
             strcpy(valuetocpy, stdvars[*id].value);
         }
         vlen = strlen(valuetocpy);
+
         prevvalue = calloc((vlen+1), sizeof(char));
         strcpy(prevvalue, *value);
         free(*value);
+
         *value = calloc((vlen+1), sizeof(char));
         strcpy(*value, prevvalue);
-        free(prevvalue);
         strcpy(*value, valuetocpy);
+
         free(valuetocpy);
+        free(prevvalue);
     }
     else
     {
@@ -194,6 +199,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
             {
                 isvarfnd = true;
                 varfndid = i;
+
                 free(iname);
                 break;
             }

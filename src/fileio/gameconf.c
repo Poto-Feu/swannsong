@@ -21,9 +21,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include "gameconf.h"
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
-#include "../stringsm.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "stringsm.h"
 
 void gameconf_splitins(char* var, char* value, char* ins);
 

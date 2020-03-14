@@ -45,6 +45,7 @@ void stringsm_getfw(char** fw, char* str, int* index)
 {
     bool space = false;
     int len = strlen(str);
+
     for(int i = 0; i < len; i++)
     {
         if(str[i] == ' ')
@@ -55,6 +56,7 @@ void stringsm_getfw(char** fw, char* str, int* index)
             break;
         }
     }
+
     if(!space)
     {
         strcpy(*fw, str);

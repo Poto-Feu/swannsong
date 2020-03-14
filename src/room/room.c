@@ -22,31 +22,34 @@
 #include <stdbool.h>
 #include "room.h"
 #include "find.h"
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
-#include "../perror.h"
-#include "../pstrings.h"
-#include "../stringsm.h"
-#include "../fileio/fileio.h"
-#include "../fileio/parser.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "perror.h"
+#include "pstrings.h"
+#include "stringsm.h"
+#include "fileio/fileio.h"
+#include "fileio/parser.h"
 
-
+/*Read the first ATLAUNCH block encountered starting from specified line*/
 static void room_atlaunch(int* roomln)
 {
     int *foundln = calloc(1, sizeof(int));
     bool atlfound = false;
-    find_atlaunchline(foundln, *roomln, &atlfound);
+
+    atlfound = find_atlaunchline(foundln, *roomln);
     *foundln = *foundln + 1;
     if(atlfound == 1)
     {
         fileio_execuntilend(*foundln);
     }
+
     free(foundln);
 }
 
 void room_load(char* id)
 {
     int roomln = 0;
+
     pvars_setstdvars("currentroom", id);
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);

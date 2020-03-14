@@ -38,6 +38,7 @@ static void open_strfile(FILE **f)
     pvars_getstdvars("lang", &lang);
     strcpy(langfile, langdir);
     langdirln = strlen(langdir);
+
     for(int i = 0; i < (int)strlen(lang); i++)
     {
         langfile[langdirln] = lang[i];
@@ -123,6 +124,7 @@ void pstrings_fetch(char* id, char** rstr)
         strcpy(fstring, "ERR_STR_NULL");
     }
     strcpy(*rstr, fstring);
+
     fclose(fp);
     free(fstring);
     free(ustr);
@@ -132,7 +134,9 @@ void pstrings_fetch(char* id, char** rstr)
 void pstrings_display(char *id)
 {
     char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
+
     pstrings_fetch(id, &rstring);
     printf("%s", rstring);
+
     free(rstring);
 }
