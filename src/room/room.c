@@ -22,13 +22,13 @@
 #include <stdbool.h>
 #include "room.h"
 #include "find.h"
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
-#include "../perror.h"
-#include "../pstrings.h"
-#include "../stringsm.h"
-#include "../fileio/fileio.h"
-#include "../fileio/parser.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "perror.h"
+#include "pstrings.h"
+#include "stringsm.h"
+#include "fileio/fileio.h"
+#include "fileio/parser.h"
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
 static void room_atlaunch(int* roomln)

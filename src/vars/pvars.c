@@ -21,7 +21,7 @@
 #include <stdbool.h>
 #include "pvars.h"
 #include "pconst.h"
-#include "../perror.h"
+#include "perror.h"
 
 #define STDVARS_LN 3
 #define GCVARS_LN 4

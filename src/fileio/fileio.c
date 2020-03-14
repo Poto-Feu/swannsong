@@ -19,12 +19,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
 #include "fileio.h"
 #include "parser.h"
-#include "../perror.h"
-#include "../stringsm.h"
+#include "perror.h"
+#include "stringsm.h"
 
 void fileio_setfileptr(FILE** fp, char* path)
 {

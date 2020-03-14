@@ -21,14 +21,14 @@
 #include <string.h>
 #include <stdbool.h>
 #include "parser.h"
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
-#include "../perror.h"
-#include "../pstrings.h"
-#include "../stringsm.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "perror.h"
+#include "pstrings.h"
+#include "stringsm.h"
 #include "fileio.h"
-#include "../room/room.h"
-#include "../room/find.h"
+#include "room/room.h"
+#include "room/find.h"
 
 
 static void display_choices(int roomln);

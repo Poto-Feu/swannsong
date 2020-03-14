@@ -20,13 +20,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "../vars/pconst.h"
-#include "../vars/pvars.h"
-#include "../perror.h"
-#include "../pstrings.h"
-#include "../stringsm.h"
-#include "../fileio/fileio.h"
-#include "../fileio/parser.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "perror.h"
+#include "pstrings.h"
+#include "stringsm.h"
+#include "fileio/fileio.h"
+#include "fileio/parser.h"
 
 /*Fetch the beginning line of the room definition in file*/
 void find_roomline(char* id, int* ln)

@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 # set the project name
 project(SwannSong VERSION 0.1)
 
+include_directories(src)
+
 # add the executable
 add_executable(swannsong src/main.c
     src/room/room.c
