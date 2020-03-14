@@ -210,3 +210,24 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
 
     return isvarfnd;
 }
+
+void pvars_freegcvar(char* name)
+{
+    int id = 0;
+    bool pvarsid_check = fetch_pvarsid(name, &id, true);
+
+    if(pvarsid_check)
+    {
+        if(gcvars[id].value)
+        {
+            free(gcvars[id].value);
+            gcvars[id].value = NULL;
+        } else
+        {
+            perror_disp("GAMECONF_VAR_NOTALLOC", 0);
+        }
+    } else
+    {
+        perror_disp("UNK_GAMECONF_VAR (in pvars_freegcvar)", 0);
+    }
+}

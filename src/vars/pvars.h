@@ -24,5 +24,6 @@ void pvars_setstdvars(char* name, char* value);
 void pvars_getstdvars(char* name, char** value);
 void pvars_setgcvars(char* name, char* value);
 void pvars_getgcvars(char* name, char** value);
+void pvars_freegcvar(char* name);
 
 #endif

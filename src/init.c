@@ -38,6 +38,8 @@ void init_game()
     pvars_getgcvars("defaultlang", &defaultlang);
     pvars_setstdvars("lang", defaultlang);
     pvars_getgcvars("firstroom", &room_name);
+    pvars_freegcvar("defaultlang");
+    pvars_freegcvar("firstroom");
 
     ask_lang();
     room_load(room_name);
