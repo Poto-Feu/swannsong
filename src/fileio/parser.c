@@ -34,8 +34,9 @@
 static void display_choices(int roomln);
 
 /*Execute the appropriate action according to the type and the arg received*/
-void parser_execins(char* type, char* arg, bool* inif)
+void parser_execins(char* type, char* arg, bool* inif, bool* ifcond)
 {
+    //TODO: refactor condition checking
     if(!strcmp(type, "PRINT"))
     {
         printf("\n");
@@ -44,7 +45,7 @@ void parser_execins(char* type, char* arg, bool* inif)
     } else if (strcmp(type, "IF") == 0)
     {
         *inif = 1;
-    } else if (*inif == 0 && !strcmp(type, "DISPLAY"))
+    } else if (*inif == 0 && *ifcond == false && !strcmp(type, "DISPLAY"))
     {    
         if(!strcmp(arg, "CHOICES"))
         {
@@ -58,7 +59,7 @@ void parser_execins(char* type, char* arg, bool* inif)
 
             free(croomid);
         }
-    } else if (*inif == 0 && strcmp(type, "END") == 0)
+    } else if (*inif == 0 && *ifcond == 0 && strcmp(type, "END") == 0)
     {
     } else
     {
