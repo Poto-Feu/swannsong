@@ -44,11 +44,11 @@ void pstrings_fetch(char* id, char** rstr)
 {
     int index = 0;
     int len = 0;
+    bool id_exist = false;
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* ustr = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
-    bool id_exist = false;
     FILE* fp = NULL;
 
     open_strfile(&fp);
