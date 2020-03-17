@@ -29,5 +29,5 @@ make
 TO-DO
 
 
-## Licence
+## License
 **SwannSong** is licensed under the GPL v3 License.
