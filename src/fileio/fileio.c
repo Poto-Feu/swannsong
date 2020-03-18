@@ -83,6 +83,7 @@ void fileio_getln(int* ln, char* s)
 void fileio_execuntilend(int startln)
 {
     bool inif = false;
+    bool ifcond = false;
     char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* type = NULL;
@@ -103,7 +104,7 @@ void fileio_execuntilend(int startln)
         parser_splitline(&type, &arg, buf);
         if(strcmp(type, "END"))
         {
-            parser_execins(type, arg, &inif);
+            parser_execins(type, arg, &inif, &ifcond);
 
             free(type);
             free(arg);

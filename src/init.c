@@ -38,6 +38,8 @@ void init_game()
     pvars_getgcvars("defaultlang", &defaultlang);
     pvars_setstdvars("lang", defaultlang);
     pvars_getgcvars("firstroom", &room_name);
+    pvars_freegcvar("defaultlang");
+    pvars_freegcvar("firstroom");
 
     ask_lang();
     room_load(room_name);
@@ -54,6 +56,7 @@ static void ask_lang()
 
     while(!validinp)
     {
+        printf("\nHint : make a choice by typing the corresponding number.\n");
         printf("\nSelect your language:"
                 "\n1. English"
                 "\n2. Français"
@@ -68,6 +71,7 @@ static void ask_lang()
             if(intval > 0 && intval <= (langarrsize / langarr0size))
             {
                 char* lang = calloc(3, sizeof(char));
+
                 strcpy(lang, langarr[intval - 1]);
                 pvars_setstdvars("lang", lang);
                 free(lang);

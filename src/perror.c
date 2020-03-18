@@ -25,7 +25,7 @@
 void perror_disp(char* id, bool fatal)
 {
     printf("ERROR : %s\n", id);
-    if (fatal == 1)
+    if (fatal)
     {
         exit(1);
     }

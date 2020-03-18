@@ -26,20 +26,20 @@
 #define STDVARS_LN 3
 #define GCVARS_LN 4
 
-struct pvar
+typedef struct 
 {
     char* name;
     char* value;
-};
+} pvar ;
 
 char pvars_userlang[3] = "en";
-static struct pvar stdvars[STDVARS_LN] =
+static pvar stdvars[STDVARS_LN] =
 {
     {.name = "lang", .value = NULL},
     {.name = "currentroom", .value = NULL},
     {.name = "nextroom", .value = NULL}
 };
-static struct pvar gcvars[GCVARS_LN] =
+static pvar gcvars[GCVARS_LN] =
 {
     {.name = "langdir", .value = NULL},
     {.name = "roomfile", .value = NULL},
@@ -209,4 +209,25 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
     *id = varfndid;
 
     return isvarfnd;
+}
+
+void pvars_freegcvar(char* name)
+{
+    int id = 0;
+    bool pvarsid_check = fetch_pvarsid(name, &id, true);
+
+    if(pvarsid_check)
+    {
+        if(gcvars[id].value)
+        {
+            free(gcvars[id].value);
+            gcvars[id].value = NULL;
+        } else
+        {
+            perror_disp("GAMECONF_VAR_NOTALLOC", 0);
+        }
+    } else
+    {
+        perror_disp("UNK_GAMECONF_VAR (in pvars_freegcvar)", 0);
+    }
 }
