@@ -49,7 +49,6 @@ void parser_execins(char* type, char* arg, bool* inif, bool* ifcond)
     {    
         if(!strcmp(arg, "CHOICES"))
         {
-            //To do
             int roomln = 0;
             char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
