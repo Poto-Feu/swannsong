@@ -28,6 +28,7 @@
 
 void pstrings_fetch(char* id, char** rstr);
 
+/*Display the string corresponding to the id*/
 void pstrings_display(char *id)
 {
     char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
@@ -40,6 +41,7 @@ void pstrings_display(char *id)
 
 static void open_strfile(FILE **f);
 
+/*Copy the corresponding string into the pointer of a char pointer*/
 void pstrings_fetch(char* id, char** rstr)
 {
     int index = 0;
@@ -116,6 +118,8 @@ void pstrings_fetch(char* id, char** rstr)
     free(buf);
 }
 
+/*Set the file pointer to the file containing the strings correponding
+to the selected language*/
 static void open_strfile(FILE **f)
 {
     char* langdir = calloc(P_MAX_BUF_SIZE, sizeof(char));
