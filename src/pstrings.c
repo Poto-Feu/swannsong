@@ -26,45 +26,29 @@
 #include "stringsm.h"
 #include "fileio/fileio.h"
 
-static void open_strfile(FILE **f)
+void pstrings_fetch(char* id, char** rstr);
+
+void pstrings_display(char *id)
 {
-    char* langdir = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* lang = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* langfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* txt = ".txt";
-    int langdirln = 0;
+    char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
 
-    pvars_getgcvars("langdir", &langdir);
-    pvars_getstdvars("lang", &lang);
-    strcpy(langfile, langdir);
-    langdirln = strlen(langdir);
+    pstrings_fetch(id, &rstring);
+    printf("%s", rstring);
 
-    for(int i = 0; i < (int)strlen(lang); i++)
-    {
-        langfile[langdirln] = lang[i];
-        langdirln++;
-    }
-    for(int i = 0; i < (int)strlen(txt); i++)
-    {
-        langfile[langdirln] = txt[i];
-        langdirln++;
-    }
-    fileio_setfileptr(f, langfile);
-    
-    free(langdir);
-    free(lang);
-    free(langfile);
+    free(rstring);
 }
+
+static void open_strfile(FILE **f);
 
 void pstrings_fetch(char* id, char** rstr)
 {
     int index = 0;
     int len = 0;
+    bool id_exist = false;
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* ustr = calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
-    bool id_exist = false;
     FILE* fp = NULL;
 
     open_strfile(&fp);
@@ -95,6 +79,7 @@ void pstrings_fetch(char* id, char** rstr)
         }
     }
     fstring = calloc(len, sizeof(char));
+
     if (id_exist == 1)
     {
         int findex = 0;
@@ -131,12 +116,33 @@ void pstrings_fetch(char* id, char** rstr)
     free(buf);
 }
 
-void pstrings_display(char *id)
+static void open_strfile(FILE **f)
 {
-    char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
+    char* langdir = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* lang = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* langfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* txt = ".txt";
+    int langdirln = 0;
 
-    pstrings_fetch(id, &rstring);
-    printf("%s", rstring);
+    pvars_getgcvars("langdir", &langdir);
+    pvars_getstdvars("lang", &lang);
+    strcpy(langfile, langdir);
+    langdirln = strlen(langdir);
 
-    free(rstring);
+    for(int i = 0; i < (int)strlen(lang); i++)
+    {
+        langfile[langdirln] = lang[i];
+        langdirln++;
+    }
+    for(int i = 0; i < (int)strlen(txt); i++)
+    {
+        langfile[langdirln] = txt[i];
+        langdirln++;
+    }
+    fileio_setfileptr(f, langfile);
+    
+    free(langdir);
+    free(lang);
+    free(langfile);
 }
+
