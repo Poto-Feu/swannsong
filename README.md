@@ -29,5 +29,12 @@ make
 TO-DO
 
 
+## Roadmap
+* Add essential features to the rooms file interpreter such as conditions
+* Add room choice prompt
+* Add a cutscene system
+* Develop a storyline
+
+
 ## License
 **SwannSong** is licensed under the GPL v3 License.
