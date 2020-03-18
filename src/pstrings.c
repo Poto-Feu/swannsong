@@ -79,6 +79,7 @@ void pstrings_fetch(char* id, char** rstr)
         }
     }
     fstring = calloc(len, sizeof(char));
+
     if (id_exist == 1)
     {
         int findex = 0;

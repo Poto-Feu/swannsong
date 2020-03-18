@@ -71,6 +71,7 @@ static void ask_lang()
             if(intval > 0 && intval <= (langarrsize / langarr0size))
             {
                 char* lang = calloc(3, sizeof(char));
+
                 strcpy(lang, langarr[intval - 1]);
                 pvars_setstdvars("lang", lang);
                 free(lang);
