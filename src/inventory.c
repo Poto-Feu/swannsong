@@ -16,6 +16,7 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdlib.h>
 #include "inventory.h"
 
 typedef struct
@@ -23,3 +24,5 @@ typedef struct
     char* name;
     int n;
 } gitem;
+
+static gitem* inventory_list = NULL;
