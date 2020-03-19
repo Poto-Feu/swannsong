@@ -17,3 +17,9 @@
 */
 
 #include "inventory.h"
+
+typedef struct
+{
+    char* name;
+    int n;
+} gitem;
