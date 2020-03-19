@@ -17,7 +17,8 @@ add_executable(swannsong src/main.c
     src/perror.c
     src/pstrings.c
     src/stringsm.c
-    src/exitgame.c)
+    src/exitgame.c
+    src/inventory.c)
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic")
