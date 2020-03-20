@@ -26,3 +26,4 @@ typedef struct
 } gitem;
 
 static gitem* inventory_list = NULL;
+static int inv_ln = 0;
