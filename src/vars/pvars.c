@@ -32,7 +32,6 @@ typedef struct
     char* value;
 } pvar ;
 
-char pvars_userlang[3] = "en";
 static pvar stdvars[STDVARS_LN] =
 {
     {.name = "lang", .value = NULL},
