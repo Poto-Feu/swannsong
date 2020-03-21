@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "inventory.h"
 
 typedef struct
@@ -28,6 +29,28 @@ typedef struct
 
 static gitem* inventory_list = NULL;
 static int inv_ln = 0;
+
+static bool check_gitem_exist(char* pname, int* ind);
+void inventory_additem_tolist(char* pname, int val);
+
+void inventory_getitem(char* name, int val)
+{
+    int i = -1;
+
+    if(check_gitem_exist(name, &i))
+    {
+        if(inventory_list[i].n + val < 0)
+        {
+            inventory_list[i].n = 0;
+        } else
+        {
+            inventory_list[i].n += val;
+        }
+    } else
+    {
+        inventory_additem_tolist(name, val);
+    }
+}
 
 void inventory_additem_tolist(char* pname, int val)
 {
@@ -70,4 +93,20 @@ void inventory_additem_tolist(char* pname, int val)
         inventory_list[inv_ln].n = val;
         inv_ln++;
     }
+}
+
+static bool check_gitem_exist(char* pname, int* ind)
+{
+    bool isfound = false;
+
+    for(int i = 0; i < inv_ln && !isfound; i++)
+    {
+        if(!strcmp(pname, inventory_list[i].name))
+        {
+            *ind = i;
+            isfound = true;
+        }
+    }
+
+    return isfound;
 }
