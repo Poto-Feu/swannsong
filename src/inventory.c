@@ -33,7 +33,7 @@ static int inv_ln = 0;
 static bool check_gitem_exist(char* pname, int* ind);
 void inventory_additem_tolist(char* pname, int val);
 
-void inventory_getitem(char* name, int val)
+void inventory_player_getitem(char* name, int val)
 {
     int i = -1;
 
