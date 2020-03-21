@@ -20,6 +20,5 @@
 #define INVENTORY_H
 
 void inventory_player_getitem(char* name, int val);
-void inventory_additem_tolist(char* pname, int val);
 
 #endif
