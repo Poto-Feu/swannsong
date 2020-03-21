@@ -19,5 +19,6 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+void inventory_additem_tolist(char* pname, int val);
 
 #endif

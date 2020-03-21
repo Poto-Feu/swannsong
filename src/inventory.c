@@ -17,6 +17,7 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 #include "inventory.h"
 
 typedef struct
@@ -27,3 +28,46 @@ typedef struct
 
 static gitem* inventory_list = NULL;
 static int inv_ln = 0;
+
+void inventory_additem_tolist(char* pname, int val)
+{
+    if(inv_ln == 0)
+    {
+        inventory_list = calloc(1, sizeof(gitem));
+        inventory_list[0].name = calloc(strlen(pname)+1, sizeof(char));
+        strcpy(inventory_list[0].name, pname);
+        inventory_list[0].n = val;
+        inv_ln++;
+    } else
+    {
+        gitem* temp_arr = calloc(inv_ln, sizeof(gitem));
+
+        for(int i = 0; i < inv_ln; i++)
+        {
+            int str_ln = strlen(inventory_list[i].name);
+
+            temp_arr[i].name = calloc(str_ln+1, sizeof(char));
+            strcpy(temp_arr[i].name, inventory_list[i].name);
+            temp_arr[i].n = inventory_list[i].n;
+            free(inventory_list[i].name);
+        }
+        free(inventory_list);
+
+        inventory_list = calloc(inv_ln+1, sizeof(gitem));
+        for(int i = 0; i < inv_ln; i++)
+        {
+            int str_ln = strlen(temp_arr[i].name);
+
+            inventory_list[i].name = calloc(str_ln+1, sizeof(char));
+            strcpy(inventory_list[i].name, temp_arr[i].name);
+            inventory_list[i].n = temp_arr[i].n;
+            free(temp_arr[i].name);
+        }
+        free(temp_arr);
+
+        inventory_list[inv_ln].name = calloc(strlen(pname)+1, sizeof(char));
+        strcpy(inventory_list[inv_ln].name, pname);
+        inventory_list[inv_ln].n = val;
+        inv_ln++;
+    }
+}
