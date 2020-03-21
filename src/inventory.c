@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include "inventory.h"
 
+/*Not named item in order to prevent conflict with some libs*/
 typedef struct
 {
     char* name;
@@ -33,6 +34,8 @@ static int inv_ln = 0;
 static bool check_gitem_exist(char* pname, int* ind);
 void inventory_additem_tolist(char* pname, int val);
 
+/*Add the specified number of an item - if it doesn't exist in inventory_list,
+the function adds the item to it*/
 void inventory_player_getitem(char* name, int val)
 {
     int i = -1;
@@ -52,6 +55,7 @@ void inventory_player_getitem(char* name, int val)
     }
 }
 
+/*Create an entry for the specified item in inventory_list*/
 void inventory_additem_tolist(char* pname, int val)
 {
     if(inv_ln == 0)
