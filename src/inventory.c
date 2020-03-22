@@ -55,6 +55,20 @@ void inventory_player_getitem(char* name, int val)
     }
 }
 
+/*Return the number of pieces of an item present in the inventory*/
+int inventory_return_item_n(char* pname)
+{
+    int ind = -1;
+
+    if(check_gitem_exist(pname, &ind))
+    {
+        return inventory_list[ind].n;
+    } else
+    {
+        return 0;
+    }
+}
+
 /*Create an entry for the specified item in inventory_list*/
 static void inventory_additem_tolist(char* pname, int val)
 {

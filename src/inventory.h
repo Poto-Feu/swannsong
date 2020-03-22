@@ -20,5 +20,6 @@
 #define INVENTORY_H
 
 void inventory_player_getitem(char* name, int val);
+int inventory_return_item_n(char* pname);
 
 #endif
