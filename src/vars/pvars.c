@@ -30,7 +30,7 @@ typedef struct
 {
     char* name;
     char* value;
-} pvar ;
+} pvar;
 
 static pvar stdvars[STDVARS_LN] =
 {
