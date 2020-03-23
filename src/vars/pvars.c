@@ -26,6 +26,7 @@
 #define STDVARS_LN 3
 #define GCVARS_LN 4
 
+/*pvar is short for program var - not named var to prevent naming conflict*/
 typedef struct 
 {
     char* name;
