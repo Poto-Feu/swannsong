@@ -16,8 +16,8 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#define INTVAR_H
 #ifndef INTVAR_H
+#define INTVAR_H
 
 typedef struct
 {
