@@ -23,6 +23,6 @@ typedef struct
 {
     char* name;
     int val;
-}
+} intvar;
 
 #endif
