@@ -25,4 +25,10 @@ typedef struct
     int val;
 } intvar;
 
+typedef struct
+{
+    int ln;
+    intvar* list;
+} intvar_arr;
+
 #endif
