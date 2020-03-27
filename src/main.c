@@ -20,12 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "init.h"
-#include "vars/pconst.h"
-#include "vars/pvars.h"
-#include "perror.h"
-#include "pstrings.h"
 #include "exitgame.h"
-#include "room/room.h"
 
 #ifdef _WIN32
 #include <windows.h>
