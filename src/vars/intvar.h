@@ -31,6 +31,9 @@ typedef struct
     intvar* list;
 } intvar_arr;
 
+#define INIT_INTVAR_ARR {.ln = 0, .list = NULL}
+#define INIT_INTVAR(n, v) {.name = n, .val = v}
+
 void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var);
 
 #endif
