@@ -31,4 +31,6 @@ typedef struct
     intvar* list;
 } intvar_arr;
 
+void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var);
+
 #endif
