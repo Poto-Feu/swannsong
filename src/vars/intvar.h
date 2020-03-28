@@ -19,6 +19,8 @@
 #ifndef INTVAR_H
 #define INTVAR_H
 
+#include <stdbool.h>
+
 typedef struct
 {
     char* name;
@@ -35,5 +37,6 @@ typedef struct
 #define INIT_INTVAR(n, v) {.name = n, .val = v}
 
 void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var);
+bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr);
 
 #endif

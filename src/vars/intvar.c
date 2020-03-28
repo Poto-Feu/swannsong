@@ -45,6 +45,25 @@ void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var)
     }
 }
 
+/*Fetch the index of a specified intvar - returns false if not found*/
+bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr)
+{
+    bool isfnd = false;
+    *p_ind = -1;
+    int arr_ln = p_arr->ln;
+
+    for(int i = 0; i < arr_ln && !isfnd; i++)
+    {
+        if(!strcmp(p_arr->list[i].name, p_name))
+        {
+            *p_ind = i;
+            isfnd = true;
+        }
+    }
+
+    return isfnd;
+}
+
 static void add_first_elem(intvar_arr* p_arr, intvar p_var)
 {
     int str_ln = strlen(p_var.name);
