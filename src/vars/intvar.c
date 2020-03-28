@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "intvar.h"
-#include "perror.h"
 
 static void add_first_elem(intvar_arr* p_arr, intvar p_var);
 static void add_elem_to_arr(intvar_arr* p_arr, intvar p_var);
