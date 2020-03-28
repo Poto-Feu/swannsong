@@ -40,7 +40,7 @@ void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var)
     }
 }
 
-/*Fetch the index of a specified intvar - returns false if not found*/
+/*Fetch the index of the specified intvar - returns false if not found*/
 bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr)
 {
     bool isfnd = false;
