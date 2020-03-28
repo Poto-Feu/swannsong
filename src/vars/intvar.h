@@ -19,6 +19,7 @@
 #ifndef INTVAR_H
 #define INTVAR_H
 
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef struct
@@ -29,7 +30,7 @@ typedef struct
 
 typedef struct
 {
-    int ln;
+    uint16_t ln;
     intvar* list;
 } intvar_arr;
 

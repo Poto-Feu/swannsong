@@ -18,8 +18,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdbool.h>
-#include "vars/intvar.h"
+#include "intvar.h"
 #include "perror.h"
 
 static void add_first_elem(intvar_arr* p_arr, intvar p_var);
@@ -28,20 +29,14 @@ static void add_elem_to_arr(intvar_arr* p_arr, intvar p_var);
 /*Add an intvar into an intvar_arr*/
 void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var)
 {
-    if(p_arr->ln >= 0)
+    if (p_arr->ln == 0)
     {
-        if (p_arr->ln == 0)
-        {
-            add_first_elem(p_arr, p_var);
-            p_arr->ln = 1;
-        } else
-        {
-            add_elem_to_arr(p_arr, p_var);
-            p_arr->ln = p_arr->ln + 1;
-        }
+        add_first_elem(p_arr, p_var);
+        p_arr->ln = 1;
     } else
     {
-        perror_disp("NEG_ARR_LN", 1);
+        add_elem_to_arr(p_arr, p_var);
+        p_arr->ln = p_arr->ln + 1;
     }
 }
 
@@ -50,7 +45,7 @@ bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr)
 {
     bool isfnd = false;
     *p_ind = -1;
-    int arr_ln = p_arr->ln;
+    uint16_t arr_ln = p_arr->ln;
 
     for(int i = 0; i < arr_ln && !isfnd; i++)
     {
@@ -80,7 +75,7 @@ static void add_list_row(intvar_arr* p_arr);
 static void add_elem_to_arr(intvar_arr* p_arr, intvar p_var)
 {
     int str_ln = strlen(p_var.name);
-    int arr_ln = p_arr->ln;
+    uint16_t arr_ln = p_arr->ln;
 
     add_list_row(p_arr);
     p_arr->list[arr_ln].name = calloc(str_ln+1, sizeof(char));
@@ -102,7 +97,7 @@ static void add_list_row(intvar_arr* p_arr)
 
 static void create_temp_arr(intvar** temp_arr, intvar_arr* p_arr)
 {
-    int arr_ln = p_arr->ln;
+    uint16_t arr_ln = p_arr->ln;
 
     *temp_arr = calloc(arr_ln+1, sizeof(intvar));
 
@@ -120,7 +115,7 @@ static void create_temp_arr(intvar** temp_arr, intvar_arr* p_arr)
 
 static void temp_arr_cpy_back(intvar_arr** p_arr, intvar** temp_arr)
 {
-    int arr_ln = (*p_arr)->ln;
+    uint16_t arr_ln = (*p_arr)->ln;
 
     (*p_arr)->list = calloc(arr_ln+1, sizeof(intvar));
     
