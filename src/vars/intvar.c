@@ -41,7 +41,7 @@ void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var)
 }
 
 /*Fetch the index of the specified intvar - returns false if not found*/
-bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr)
+bool intvar_search_ind(uint16_t* p_ind, char* p_name, intvar_arr* p_arr)
 {
     bool isfnd = false;
     *p_ind = -1;
@@ -60,7 +60,7 @@ bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr)
 }
 
 /*Return the value of the intvar on the specified index*/
-void intvar_return_value(int* r_val, int p_ind, intvar_arr* p_arr)
+void intvar_return_value(int* r_val, uint16_t p_ind, intvar_arr* p_arr)
 {
     if(p_ind >= p_arr->ln)
     {

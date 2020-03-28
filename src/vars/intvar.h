@@ -38,7 +38,7 @@ typedef struct
 #define INIT_INTVAR(n, v) {.name = n, .val = v}
 
 void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var);
-bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr);
-void intvar_return_value(int* r_val, int p_ind, intvar_arr* p_arr);
+bool intvar_search_ind(uint16_t* p_ind, char* p_name, intvar_arr* p_arr);
+void intvar_return_value(int* r_val, uint16_t p_ind, intvar_arr* p_arr);
 
 #endif
