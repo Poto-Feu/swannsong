@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "vars/intvar.h"
+#include "perror.h"
 
 static void add_first_elem(intvar_arr* p_arr, intvar p_var);
 static void add_elem_to_arr(intvar_arr* p_arr, intvar p_var);
@@ -56,6 +57,18 @@ bool intvar_search_ind(int* p_ind, char* p_name, intvar_arr* p_arr)
     }
 
     return isfnd;
+}
+
+/*Return the value of the intvar on the specified index*/
+void intvar_return_value(int* r_val, int p_ind, intvar_arr* p_arr)
+{
+    if(p_ind >= p_arr->ln)
+    {
+        perror_disp("OOR_ARR_INDEX", 1);
+    } else
+    {
+        *r_val = p_arr->list[p_ind].val;
+    }
 }
 
 static void add_first_elem(intvar_arr* p_arr, intvar p_var)
