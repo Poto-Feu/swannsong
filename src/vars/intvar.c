@@ -71,6 +71,12 @@ void intvar_return_value(int* r_val, uint16_t p_ind, intvar_arr* p_arr)
     }
 }
 
+/*Set the value of the specified intvar*/
+void intvar_set_value(int r_val, uint16_t p_ind, intvar_arr* p_arr)
+{
+    p_arr->list[p_ind].val = r_val;
+}
+
 static void add_first_elem(intvar_arr* p_arr, intvar p_var)
 {
     int str_ln = strlen(p_var.name);
