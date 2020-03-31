@@ -19,7 +19,7 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-void inventory_player_getitem(char* name, int val);
-int inventory_return_item_n(char* pname);
+void inventory_player_getitem(char* p_name, int val);
+int inventory_return_item_n(char* p_name);
 
 #endif
