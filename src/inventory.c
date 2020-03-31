@@ -20,111 +20,64 @@
 #include <string.h>
 #include <stdbool.h>
 #include "inventory.h"
+#include "perror.h"
+#include "vars/intvar.h"
 
 /*Not named item in order to prevent conflict with some libs*/
-typedef struct
-{
-    char* name;
-    int n;
-} gitem;
+typedef intvar gitem;
+typedef intvar_arr gitem_arr;
 
-static gitem* inventory_list = NULL;
-static int inv_ln = 0;
+static gitem_arr inventory_arr = INIT_INTVAR_ARR;
 
-static bool check_gitem_exist(char* pname, int* ind);
 static void inventory_additem_tolist(char* pname, int val);
+static void inventory_add_n_item(uint16_t p_ind, int val);
 
 /*Add the specified number of an item - if it doesn't exist in inventory_list,
 the function adds the item to it*/
-void inventory_player_getitem(char* name, int val)
+void inventory_player_getitem(char* p_name, int val)
 {
-    int i = -1;
+    uint16_t p_ind = 0;
 
-    if(check_gitem_exist(name, &i))
+    if(intvar_search_ind(&p_ind, p_name, &inventory_arr))
     {
-        if(inventory_list[i].n + val < 0)
-        {
-            inventory_list[i].n = 0;
-        } else
-        {
-            inventory_list[i].n += val;
-        }
+        inventory_add_n_item(p_ind, val);
     } else
     {
-        inventory_additem_tolist(name, val);
+        inventory_additem_tolist(p_name, val);
     }
 }
 
 /*Return the number of pieces of an item present in the inventory*/
-int inventory_return_item_n(char* pname)
+int inventory_return_item_n(char* p_name)
 {
-    int ind = -1;
+    int r_val = -1;
+    uint16_t p_ind = 0;
 
-    if(check_gitem_exist(pname, &ind))
+    if(intvar_search_ind(&p_ind, p_name, &inventory_arr))
     {
-        return inventory_list[ind].n;
+        intvar_return_value(&r_val, p_ind, &inventory_arr);
     } else
     {
-        return 0;
+        perror_disp("INV_VAR_NF", 1);
     }
+
+    return r_val;
 }
 
 /*Create an entry for the specified item in inventory_list*/
-static void inventory_additem_tolist(char* pname, int val)
+static void inventory_additem_tolist(char* p_name, int p_val)
 {
-    if(inv_ln == 0)
-    {
-        inventory_list = calloc(1, sizeof(gitem));
-        inventory_list[0].name = calloc(strlen(pname)+1, sizeof(char));
-        strcpy(inventory_list[0].name, pname);
-        inventory_list[0].n = val;
-        inv_ln++;
-    } else
-    {
-        gitem* temp_arr = calloc(inv_ln, sizeof(gitem));
+    intvar elem = INIT_INTVAR(p_name, p_val);
 
-        for(int i = 0; i < inv_ln; i++)
-        {
-            int str_ln = strlen(inventory_list[i].name);
-
-            temp_arr[i].name = calloc(str_ln+1, sizeof(char));
-            strcpy(temp_arr[i].name, inventory_list[i].name);
-            temp_arr[i].n = inventory_list[i].n;
-            free(inventory_list[i].name);
-        }
-        free(inventory_list);
-
-        inventory_list = calloc(inv_ln+1, sizeof(gitem));
-        for(int i = 0; i < inv_ln; i++)
-        {
-            int str_ln = strlen(temp_arr[i].name);
-
-            inventory_list[i].name = calloc(str_ln+1, sizeof(char));
-            strcpy(inventory_list[i].name, temp_arr[i].name);
-            inventory_list[i].n = temp_arr[i].n;
-            free(temp_arr[i].name);
-        }
-        free(temp_arr);
-
-        inventory_list[inv_ln].name = calloc(strlen(pname)+1, sizeof(char));
-        strcpy(inventory_list[inv_ln].name, pname);
-        inventory_list[inv_ln].n = val;
-        inv_ln++;
-    }
+    intvar_add_var_to_arr(&inventory_arr, elem);
 }
 
-static bool check_gitem_exist(char* pname, int* ind)
+/*Add the specified number of item to an inventory*/
+static void inventory_add_n_item(uint16_t p_ind, int p_val)
 {
-    bool isfound = false;
+    int r_val = -1;
 
-    for(int i = 0; i < inv_ln && !isfound; i++)
-    {
-        if(!strcmp(pname, inventory_list[i].name))
-        {
-            *ind = i;
-            isfound = true;
-        }
-    }
-
-    return isfound;
+    intvar_return_value(&r_val, p_ind, &inventory_arr);
+    p_val += r_val;
+    intvar_set_value(r_val, p_ind, &inventory_arr);
 }

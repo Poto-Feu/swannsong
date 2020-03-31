@@ -16,10 +16,30 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef INVENTORY_H
-#define INVENTORY_H
+#ifndef INTVAR_H
+#define INTVAR_H
 
-void inventory_player_getitem(char* p_name, int val);
-int inventory_return_item_n(char* p_name);
+#include <stdint.h>
+#include <stdbool.h>
+
+typedef struct
+{
+    char* name;
+    int val;
+} intvar;
+
+typedef struct
+{
+    uint16_t ln;
+    intvar* list;
+} intvar_arr;
+
+#define INIT_INTVAR_ARR {.ln = 0, .list = NULL}
+#define INIT_INTVAR(n, v) {.name = n, .val = v}
+
+void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var);
+bool intvar_search_ind(uint16_t* p_ind, char* p_name, intvar_arr* p_arr);
+void intvar_return_value(int* r_val, uint16_t p_ind, intvar_arr* p_arr);
+void intvar_set_value(int r_val, uint16_t p_ind, intvar_arr* p_arr);
 
 #endif
