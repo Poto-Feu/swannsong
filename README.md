@@ -5,7 +5,7 @@ A text-adventure game with some humour
 
 ### Building prerequisites
 
-#### Linux
+#### Unix-like (including Linux)
 * glibc
 * gcc
 * cmake
@@ -17,7 +17,7 @@ A text-adventure game with some humour
 
 ### Compiling
 
-#### Linux
+#### Unix-like
 ```bash
 mkdir build && cd build
 cmake .. 
