@@ -1,5 +1,5 @@
 # SwannSong
-A text-adventure game with some humour
+A text-adventure game with some humour. Please note that this game is in a pre-alpha stage and is far from being finished.
 
 ## Building the game
 
