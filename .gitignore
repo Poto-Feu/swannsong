@@ -54,3 +54,6 @@ dkms.conf
 # Custom
 *.swp
 *.swo
+build/
+debug/
+release/
