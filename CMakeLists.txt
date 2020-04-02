@@ -33,7 +33,7 @@ option(TESTS "Enable unit testing linking" OFF)
 if(TESTS)
     include_directories(tests)
     add_compile_definitions(UNIT_TESTING)
-    target_sources(swannsong PRIVATE tests/tests.c)
+    target_sources(swannsong PRIVATE src/tests/tests.c)
 endif()
 
 set(CMAKE_C_STANDARD 99)

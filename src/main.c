@@ -23,7 +23,7 @@
 #include "exitgame.h"
 
 #ifdef UNIT_TESTING
-#include "tests.h"
+#include "tests/tests.h"
 #endif
 
 #ifdef _WIN32
