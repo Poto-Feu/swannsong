@@ -29,5 +29,12 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
+option(TESTS "Enable unit testing linking" OFF)
+if(TESTS)
+    include_directories(tests)
+    add_compile_definitions(UNIT_TESTING)
+    target_sources(swannsong PRIVATE tests/tests.c)
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
