@@ -26,13 +26,13 @@
 #define STDVARS_LN 3
 #define GCVARS_LN 4
 
+/*pvar is short for program var - not named var to prevent naming conflict*/
 typedef struct 
 {
     char* name;
     char* value;
-} pvar ;
+} pvar;
 
-char pvars_userlang[3] = "en";
 static pvar stdvars[STDVARS_LN] =
 {
     {.name = "lang", .value = NULL},

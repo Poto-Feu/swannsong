@@ -16,28 +16,10 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "init.h"
-#include "exitgame.h"
+#ifndef INVENTORY_H
+#define INVENTORY_H
 
-#ifdef UNIT_TESTING
-#include "tests/tests.h"
+void inventory_player_getitem(char* p_name, int val);
+int inventory_return_item_n(char* p_name);
+
 #endif
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-int main (void)
-{
-    #ifdef _WIN32
-    SetConsoleOutputCP(65001);
-    #endif
-
-    init_game();
-    exitgame(0);
-
-    return 0;
-}
