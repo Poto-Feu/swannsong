@@ -40,7 +40,6 @@ static void room_atlaunch(int* roomln)
     *foundln = *foundln + 1;
     if(atlfound == 1)
     {
-        fileio_execuntilend(*foundln);
     }
 
     free(foundln);
@@ -54,4 +53,3 @@ void room_load(char* id)
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);
 }
-
