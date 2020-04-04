@@ -26,7 +26,7 @@
 #include "perror.h"
 #include "pstrings.h"
 #include "stringsm.h"
-#include "fileio.h"
+#include "fileio/fileio.h"
 #include "room/room.h"
 #include "room/find.h"
 

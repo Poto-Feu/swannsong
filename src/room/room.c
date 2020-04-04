@@ -28,7 +28,7 @@
 #include "pstrings.h"
 #include "stringsm.h"
 #include "fileio/fileio.h"
-#include "fileio/parser.h"
+#include "interpreter/parser.h"
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
 static void room_atlaunch(int* roomln)

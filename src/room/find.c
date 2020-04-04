@@ -26,7 +26,7 @@
 #include "pstrings.h"
 #include "stringsm.h"
 #include "fileio/fileio.h"
-#include "fileio/parser.h"
+#include "interpreter/parser.h"
 
 bool find_blockline(int* foundln, int ln, char* ins);
 

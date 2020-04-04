@@ -22,7 +22,7 @@
 #include "fileio.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "parser.h"
+#include "interpreter/parser.h"
 #include "perror.h"
 #include "stringsm.h"
 
