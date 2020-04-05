@@ -41,6 +41,21 @@ void pstrings_display(char *id)
 
 static void open_strfile(FILE **f);
 
+/*Check if a string is defined in the lang file*/
+bool pstrings_check_exist(char* id)
+{
+    bool isfnd = true;
+    char* result_str = calloc(P_MAX_BUF_SIZE, sizeof(char));
+
+    pstrings_fetch(id, &result_str);
+    
+    if(!strcmp(result_str, "ERR_STR_NULL"))
+    {
+        isfnd = false;
+    }
+
+    return isfnd;
+}
 /*Copy the corresponding string into the pointer of a char pointer*/
 void pstrings_fetch(char* id, char** rstr)
 {
@@ -107,7 +122,6 @@ void pstrings_fetch(char* id, char** rstr)
         }
     } else
     {
-        printf("idfound: %s\n", id);
         strcpy(fstring, "ERR_STR_NULL");
     }
     strcpy(*rstr, fstring);

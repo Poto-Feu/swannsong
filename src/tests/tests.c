@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include "tests.h"
 #include "vars/intvar.h"
+#include "pstrings.h"
 
 void tests_intvar()
 {
@@ -60,7 +61,22 @@ void tests_intvar()
     }
 }
 
+void tests_pstrings()
+{
+    char str1[] = "ABCDEFG";
+    char str2[] = "test_str";
+    bool exist1 = pstrings_check_exist(str1);
+    bool exist2 = pstrings_check_exist(str2);
+
+    if(exist1 || !exist2)
+    {
+        printf("pstrings_check_exist returns wrong value\n");
+        exit(1);
+    }
+}
+
 void tests_runall()
 {
     tests_intvar();
+    tests_pstrings();
 }
