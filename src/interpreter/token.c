@@ -16,4 +16,16 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdbool.h>
 #include "interpreter/token.h"
+#include "pstrings.h"
+
+#define FUNC_LIST_SIZE 4
+static const char* func_list[FUNC_LIST_SIZE] = 
+{
+    "PRINT",
+    "SET",
+    "GO",
+    "TEXT"
+};
+
