@@ -23,6 +23,7 @@
 #include <stdbool.h>
 #include "tests.h"
 #include "vars/intvar.h"
+#include "vars/gvars.h"
 
 void tests_intvar()
 {
@@ -61,7 +62,30 @@ void tests_intvar()
     }
 }
 
+void tests_gvars()
+{
+    gvars_set_var("test_el1", 123);
+    gvars_set_var("test_el2", 8);
+    gvars_set_var("test_el3", 671452);
+    int test_var1 = gvars_return_value("test_el2");
+
+    if(test_var1 != 8)
+    {
+        printf("gvars_return_value returns wrong value\n");
+        exit(1);
+    }
+
+    gvars_change_val("test_el3", 12);
+
+    if(gvars_return_value("test_el3") != 12)
+    {
+        printf("gvars_change_val sets wrong value\n");
+        exit(1);
+    }
+}
+
 void tests_runall()
 {
     tests_intvar();
+    tests_gvars();
 }
