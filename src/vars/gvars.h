@@ -20,5 +20,8 @@
 #ifndef GVARS_H
 #define GVARS_H
 
+void gvars_set_var(char* p_name, int p_val);
+int gvars_return_value(char* p_name);
+void gvars_change_val(char* p_name, int p_val);
 
 #endif
