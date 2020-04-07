@@ -12,6 +12,7 @@ add_executable(swannsong src/main.c
     src/fileio/parser.c
     src/vars/pvars.c
     src/vars/intvar.c
+    src/vars/gvars.c
     src/init.c
     src/perror.c
     src/pstrings.c
