@@ -36,6 +36,7 @@ void fileio_setfileptr(FILE** fp, char* path)
     }
 }
 
+/*Move the virtual cursor to the specified line in the file*/
 void fileio_gotoline(FILE** fp, int ln)
 {
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
@@ -54,6 +55,7 @@ void fileio_gotoline(FILE** fp, int ln)
     free(buf);
 }
 
+/*Return the line in the room file where the specified line is present*/
 void fileio_getln(int* ln, char* s)
 {
     char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));

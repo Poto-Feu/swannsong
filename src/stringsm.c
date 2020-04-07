@@ -66,6 +66,7 @@ void stringsm_getfw(char** fw, char* str, int* index)
     }
 }
 
+/*Get user text input and return it in a pointer*/
 void stringsm_getuseri(char** buf)
 {
     char *c = NULL;

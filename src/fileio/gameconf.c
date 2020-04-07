@@ -28,6 +28,8 @@
 
 void gameconf_splitins(char* var, char* value, char* ins);
 
+/*Read data contained in the gameconf file and set the gameconf variable to
+the appropriate value*/
 void gameconf_readfile()
 {
     FILE* fp = fopen("gameconf.txt", "r");

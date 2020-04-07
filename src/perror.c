@@ -23,6 +23,7 @@
 #include <stdbool.h>
 #include "perror.h"
 
+/*Display an error message with the specified string*/
 void perror_disp(char* id, bool fatal)
 {
     printf("ERROR : %s\n", id);

@@ -49,6 +49,7 @@ void init_game()
     free(defaultlang);
 }
 
+/*Show a prompt asking the user to choose the language*/
 static void ask_lang()
 {
     char* buf = calloc(P_MAX_USERINPUT_SIZE, sizeof(char));

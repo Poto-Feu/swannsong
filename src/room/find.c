@@ -62,7 +62,7 @@ void find_roomline(char* id, int* ln)
     free(roomline);
 }
 
-/*Fetch the line where a Choice declaration start ; the starln must point to
+/*Fetch the line where a Choice declaration start ; the startln must point to
 the beginning of the Choices decleration set*/
 bool find_onechoiceline(int num, int startln, int* ln)
 {
