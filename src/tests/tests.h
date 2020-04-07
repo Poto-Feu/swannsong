@@ -21,6 +21,7 @@
 #define TESTS_H
 
 void tests_intvar();
+void tests_gvars();
 void tests_runall();
 
 #endif
