@@ -16,6 +16,8 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include "interpreter/token.h"
 #include "pstrings.h"
@@ -29,3 +31,26 @@ static const char* func_list[FUNC_LIST_SIZE] =
     "TEXT"
 };
 
+static bool is_func(char* p_tkn)
+{
+    for(int i = 0; i < FUNC_LIST_SIZE; i++)
+    {
+        if(!strcmp(func_list[i], p_tkn))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+static bool is_oper(char p_chr)
+{
+    for(int i = 0; i < OPER_LIST_SIZE; i++)
+    {
+        if(p_chr == oper_list[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
