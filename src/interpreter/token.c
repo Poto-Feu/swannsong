@@ -23,6 +23,8 @@
 #include "pstrings.h"
 
 #define FUNC_LIST_SIZE 4
+#define OPER_LIST_SIZE 5
+
 static const char* func_list[FUNC_LIST_SIZE] = 
 {
     "PRINT",
@@ -31,6 +33,14 @@ static const char* func_list[FUNC_LIST_SIZE] =
     "TEXT"
 };
 
+static const char oper_list[OPER_LIST_SIZE] =
+{
+    '+',
+    '-',
+    '*',
+    '/',
+    '%'
+};
 static bool is_func(char* p_tkn)
 {
     for(int i = 0; i < FUNC_LIST_SIZE; i++)
