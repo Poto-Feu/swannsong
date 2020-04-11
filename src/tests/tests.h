@@ -20,6 +20,7 @@
 #define TESTS_H
 
 void tests_intvar();
+void tests_token();
 void tests_runall();
 
 #endif

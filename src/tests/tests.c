@@ -23,6 +23,7 @@
 #include "tests.h"
 #include "vars/intvar.h"
 #include "pstrings.h"
+#include "interpreter/token.h"
 
 void tests_intvar()
 {
@@ -75,8 +76,21 @@ void tests_pstrings()
     }
 }
 
+void tests_token()
+{
+    token_arr r_arr = {.ln = 0, .list = NULL};
+    token_create_arr(&r_arr, "SET testvar = 12 + 3");
+
+    for(int i = 0; i < r_arr.ln; i++)
+    {
+        free(r_arr.list[i].str);
+    }
+    free(r_arr.list);
+}
+
 void tests_runall()
 {
     tests_intvar();
     tests_pstrings();
+    tests_token();
 }

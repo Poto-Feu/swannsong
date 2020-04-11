@@ -47,4 +47,7 @@ typedef struct
     token* list;
 } token_arr;
 
+
+void token_create_arr(token_arr* r_arr, const char* p_str);
+
 #endif
