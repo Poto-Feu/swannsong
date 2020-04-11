@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,6 +66,7 @@ void stringsm_getfw(char** fw, char* str, int* index)
     }
 }
 
+/*Get user text input and return it in a pointer*/
 void stringsm_getuseri(char** buf)
 {
     char *c = NULL;

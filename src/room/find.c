@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,7 +62,7 @@ void find_roomline(char* id, int* ln)
     free(roomline);
 }
 
-/*Fetch the line where a Choice declaration start ; the starln must point to
+/*Fetch the line where a Choice declaration start ; the startln must point to
 the beginning of the Choices decleration set*/
 bool find_onechoiceline(int num, int startln, int* ln)
 {

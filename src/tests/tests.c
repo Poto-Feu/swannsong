@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +24,7 @@
 #include "tests.h"
 #include "vars/intvar.h"
 #include "pstrings.h"
+#include "vars/gvars.h"
 #include "interpreter/token.h"
 
 void tests_intvar()
@@ -76,6 +78,28 @@ void tests_pstrings()
     }
 }
 
+void tests_gvars()
+{
+    gvars_set_var("test_el1", 123);
+    gvars_set_var("test_el2", 8);
+    gvars_set_var("test_el3", 671452);
+    int test_var1 = gvars_return_value("test_el2");
+
+    if(test_var1 != 8)
+    {
+        printf("gvars_return_value returns wrong value\n");
+        exit(1);
+    }
+
+    gvars_change_val("test_el3", 12);
+
+    if(gvars_return_value("test_el3") != 12)
+    {
+        printf("gvars_change_val sets wrong value\n");
+        exit(1);
+    }
+}
+
 void tests_token()
 {
     token_arr r_arr = {.ln = 0, .list = NULL};
@@ -91,6 +115,7 @@ void tests_token()
 void tests_runall()
 {
     tests_intvar();
+    tests_gvars();
     tests_pstrings();
     tests_token();
 }

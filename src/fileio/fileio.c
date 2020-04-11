@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +36,7 @@ void fileio_setfileptr(FILE** fp, char* path)
     }
 }
 
+/*Move the virtual cursor to the specified line in the file*/
 void fileio_gotoline(FILE** fp, int ln)
 {
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
@@ -53,6 +55,7 @@ void fileio_gotoline(FILE** fp, int ln)
     free(buf);
 }
 
+/*Return the line in the room file where the specified line is present*/
 void fileio_getln(int* ln, char* s)
 {
     char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));

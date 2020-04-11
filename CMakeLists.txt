@@ -13,6 +13,7 @@ add_executable(swannsong src/main.c
     src/interpreter/token.c
     src/vars/pvars.c
     src/vars/intvar.c
+    src/vars/gvars.c
     src/init.c
     src/perror.c
     src/pstrings.c
