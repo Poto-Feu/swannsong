@@ -20,8 +20,11 @@
 #ifndef GVARS_H
 #define GVARS_H
 
+#include <stdbool.h>
+
 void gvars_set_var(char* p_name, int p_val);
 int gvars_return_value(char* p_name);
 void gvars_change_val(char* p_name, int p_val);
+bool gvars_exist(char* p_name);
 
 #endif
