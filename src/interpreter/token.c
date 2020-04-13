@@ -24,7 +24,7 @@
 #include "perror.h"
 #include "pstrings.h"
 
-#define FUNC_LIST_SIZE 4
+#define FUNC_LIST_SIZE 5
 #define OPER_LIST_SIZE 5
 
 #define TKN_STR_BUF 52
@@ -35,7 +35,8 @@ static const char* func_list[FUNC_LIST_SIZE] =
     "PRINT",
     "SET",
     "GO",
-    "TEXT"
+    "TEXT",
+    "IF"
 };
 
 static const char oper_list[OPER_LIST_SIZE] =
