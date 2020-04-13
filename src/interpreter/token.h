@@ -24,6 +24,7 @@
 typedef enum
 {
     FUNCTION,
+    IF,
     VARIABLE,
     OPERATOR,
     EQUAL,
@@ -39,15 +40,16 @@ typedef struct
 {
     char* str;
     token_type type;
-} token;
+} Token;
 
 typedef struct
 {
     uint8_t ln;
-    token* list;
-} token_arr;
+    Token* list;
+} TokenArr;
 
+#define INIT_TKN_ARR {.ln = 0, .list = NULL}
 
-void token_create_arr(token_arr* r_arr, const char* p_str);
+void token_create_arr(TokenArr* r_arr, const char* p_str);
 
 #endif

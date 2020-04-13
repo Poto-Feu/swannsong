@@ -19,12 +19,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdbool.h>
 #include "interpreter/token.h"
 #include "perror.h"
 #include "pstrings.h"
+#include "vars/gvars.h"
 
-#define FUNC_LIST_SIZE 5
+#define FUNC_LIST_SIZE 6
 #define OPER_LIST_SIZE 5
 
 #define TKN_STR_BUF 52
@@ -33,6 +35,7 @@
 static const char* func_list[FUNC_LIST_SIZE] = 
 {
     "PRINT",
+    "DISPLAY",
     "SET",
     "GO",
     "TEXT",
@@ -48,10 +51,10 @@ static const char oper_list[OPER_LIST_SIZE] =
     '%'
 };
 
-static void add_tokens_to_arr(token_arr* r_arr, const char* p_str);
+static void add_tokens_to_arr(TokenArr* r_arr, const char* p_str);
 
-/*Create token_arr with the specified string*/
-void token_create_arr(token_arr* r_arr, const char* p_str)
+/*Create TokenArr with the specified string*/
+void token_create_arr(TokenArr* r_arr, const char* p_str)
 {
     if(r_arr->list != NULL)
     {
@@ -60,48 +63,25 @@ void token_create_arr(token_arr* r_arr, const char* p_str)
     add_tokens_to_arr(r_arr, p_str);
 }
 
-
 static bool is_oper(char p_chr);
-static void create_temp_arr(token* temp_arr, const char* p_str, uint8_t* tkn_n);
-static void create_final_arr(token* temp_arr, token_arr* r_arr, uint8_t tkn_n);
+static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n);
+static void create_final_arr(Token* temp_arr, TokenArr* r_arr, uint8_t tkn_n);
+static void set_tokens_type(TokenArr* p_arr);
 
-/*Find tokens in a string and add them to a token_arr*/
-static void add_tokens_to_arr(token_arr* r_arr, const char* p_str)
+/*Find Tokens in a string and add them to a TokenArr*/
+static void add_tokens_to_arr(TokenArr* r_arr, const char* p_str)
 {
     uint8_t tkn_n = 0;
-    token temp_arr[TKN_ARR_BUF];
+    Token temp_arr[TKN_ARR_BUF];
 
     create_temp_arr(temp_arr, p_str, &tkn_n);
     create_final_arr(temp_arr, r_arr, tkn_n);
+    set_tokens_type(r_arr);
 }
 
-static bool is_func(char* p_tkn)
-{
-    for(int i = 0; i < FUNC_LIST_SIZE; i++)
-    {
-        if(!strcmp(func_list[i], p_tkn))
-        {
-            return true;
-        }
-    }
-    return false;
-}
+static void set_one_chr_tkn(Token* temp_arr, int p_n, char p_chr);
 
-static bool is_oper(char p_chr)
-{
-    for(int i = 0; i < OPER_LIST_SIZE; i++)
-    {
-        if(p_chr == oper_list[i])
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-static void set_one_chr_tkn(token* temp_arr, int p_n, char p_chr);
-
-static void create_temp_arr(token* temp_arr, const char* p_str, uint8_t* tkn_n)
+static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n)
 {
     int tkn_letter_ind = 0;
     bool is_zero_used = false;
@@ -110,8 +90,8 @@ static void create_temp_arr(token* temp_arr, const char* p_str, uint8_t* tkn_n)
     {
         if((*tkn_n)+1 == TKN_ARR_BUF)
         {
-            perror_disp("too many tokens in rooms line "
-                    "(some tokens will be ignored)", 0);
+            perror_disp("too many Tokens in rooms line "
+                    "(some Tokens will be ignored)", 0);
             break;
         }
         if(p_str[i] == ' ')
@@ -141,7 +121,7 @@ static void create_temp_arr(token* temp_arr, const char* p_str, uint8_t* tkn_n)
                 temp_arr[*tkn_n].type = UNDEFINED;
             } else if(tkn_letter_ind == TKN_STR_BUF - 2)
             {
-                perror_disp("token size is too long", 1);
+                perror_disp("Token size is too long", 1);
             }
             temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[i];
             tkn_letter_ind++;
@@ -149,9 +129,9 @@ static void create_temp_arr(token* temp_arr, const char* p_str, uint8_t* tkn_n)
     }
 }
 
-static void create_final_arr(token* temp_arr, token_arr* r_arr, uint8_t tkn_n)
+static void create_final_arr(Token* temp_arr, TokenArr* r_arr, uint8_t tkn_n)
 {
-    r_arr->list = malloc((tkn_n+1) * sizeof(token));
+    r_arr->list = malloc((tkn_n+1) * sizeof(Token));
     r_arr->ln = tkn_n + 1;
 
     for(int i = 0; i <= tkn_n; i++)
@@ -167,7 +147,113 @@ static void create_final_arr(token* temp_arr, token_arr* r_arr, uint8_t tkn_n)
     }
 }
 
-static void set_one_chr_tkn(token* temp_arr, int p_n, char p_chr)
+static bool is_if(char* p_tkn);
+static bool is_func(char* p_tkn);
+static bool is_variable(char* p_tkn);
+static bool is_oper(char p_chr);
+static bool is_number(char* p_tkn);
+static bool is_string(char* p_tkn);
+static bool is_string_id(char* p_tkn);
+static bool is_new_var(TokenArr* p_arr, int p_ind);
+
+/*Set the appropriate type to each Token in a TokenArr*/
+static void set_tokens_type(TokenArr* p_arr)
+{
+    for(int i = 0; i < p_arr->ln; i++)
+    {
+        if(p_arr->list[i].type != UNDEFINED) continue;
+
+        if(is_if(p_arr->list[i].str)) p_arr->list[i].type = IF;
+        else if(is_func(p_arr->list[i].str)) p_arr->list[i].type = FUNCTION;
+        else if(is_number(p_arr->list[i].str)) p_arr->list[i].type = NUMBER;
+        else if(is_variable(p_arr->list[i].str))
+        {
+            p_arr->list[i].type = VARIABLE;
+        } else if(is_string(p_arr->list[i].str)) p_arr->list[i].type = STRING;
+        else if(is_string_id(p_arr->list[i].str))
+        {
+            p_arr->list[i].type = STRING_ID;
+        } else if(is_new_var(p_arr, i)) p_arr->list[i].type = NEWVAR;
+        else 
+        {
+            p_arr->list[i].type = UNKNOWN;
+        }
+    }
+}
+
+static bool is_if(char* p_tkn)
+{
+    if(!strcmp("IF", p_tkn)) return true;
+    return false;
+}
+static bool is_func(char* p_tkn)
+{
+    for(int i = 0; i < FUNC_LIST_SIZE; i++)
+    {
+        if(!strcmp(func_list[i], p_tkn)) return true;
+    }
+    return false;
+}
+
+static bool is_variable(char* p_tkn)
+{
+    if(gvars_exist(p_tkn)) return true;
+    return false;
+}
+
+static bool is_oper(char p_chr)
+{
+    for(int i = 0; i < OPER_LIST_SIZE; i++)
+    {
+        if(p_chr == oper_list[i]) return true;
+    }
+    return false;
+}
+
+static bool is_number(char* p_tkn)
+{
+    for(int i = 0; p_tkn[i] != '\0'; i++)
+    {
+        if(!isdigit(p_tkn[i])) return false;
+    }
+    return true;
+}
+
+static bool is_string(char* p_tkn)
+{
+    int str_ln = strlen(p_tkn);
+    char symbol = '\0';
+    
+    switch(p_tkn[0])
+    {
+        case '\'':
+            symbol = '\'';
+            break;
+        case '\"':
+            symbol = '\"';
+            break;
+        default:
+            return false;
+            break;
+    }
+
+    if(p_tkn[str_ln-1] == symbol) return true;
+    return false;
+}
+
+static bool is_string_id(char* p_tkn)
+{
+    if(pstrings_check_exist(p_tkn)) return true;
+    return false;
+}
+
+static bool is_new_var(TokenArr* p_arr, int p_ind)
+{
+    if(!strcmp(p_arr->list[0].str, "SET") && p_ind == 1) return true;
+    return false;
+}
+
+static void set_one_chr_tkn(Token* temp_arr, int p_n, char p_chr)
 {
     temp_arr[p_n].str = calloc(2, sizeof(char));
     temp_arr[p_n].str[0] = p_chr;
