@@ -5,7 +5,7 @@ A text-adventure game with some humour. Please note that this game is in a pre-a
 
 ### Building prerequisites
 
-#### Unix-like (including Linux)
+#### Unix-like (including GNU/Linux)
 * glibc
 * gcc
 * cmake
