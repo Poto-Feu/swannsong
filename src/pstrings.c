@@ -55,6 +55,7 @@ bool pstrings_check_exist(char* id)
         isfnd = false;
     }
 
+    free(result_str);
     return isfnd;
 }
 /*Copy the corresponding string into the pointer of a char pointer*/
