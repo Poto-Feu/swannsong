@@ -102,9 +102,9 @@ void tests_gvars()
 
 void tests_token()
 {
-    token_arr r_arr = {.ln = 0, .list = NULL};
-    token_arr r_arr2 = {.ln = 0, .list = NULL};
-    token_arr r_arr3 = {.ln = 0, .list = NULL};
+    TokenArr r_arr = {.ln = 0, .list = NULL};
+    TokenArr r_arr2 = {.ln = 0, .list = NULL};
+    TokenArr r_arr3 = {.ln = 0, .list = NULL};
 
     token_create_arr(&r_arr, "SET testvar1 = 12 + 3");
     gvars_set_var("testvar2", 12);
