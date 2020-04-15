@@ -24,49 +24,178 @@
 #include "parser.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
+#include "vars/gvars.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "stringsm.h"
+#include "interpreter/token.h"
 #include "fileio/fileio.h"
 #include "room/room.h"
 #include "room/find.h"
 
+static void parser_execins(char* p_line);
+
+void parser_exec_until_end(int blockln)
+{
+    char* buf = calloc((P_MAX_BUF_SIZE), sizeof(char));
+    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
+    FILE* fp = NULL;
+
+    pvars_getgcvars("roomfile", &roomfile);
+    fileio_setfileptr(&fp, roomfile);
+    fileio_gotoline(&fp, blockln);
+
+    while(fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
+    {
+        int ind = -1;
+        char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+
+        stringsm_chomp(buf);
+        stringsm_rtab(buf);
+        stringsm_getfw(&fw, buf, &ind);
+        if(strcmp("END", fw))
+        {
+            parser_execins(buf);
+            free(fw);
+            continue;
+        } else
+        {
+            free(fw);
+            break;
+        }
+    }
+    free(buf);
+    free(roomfile);
+    fclose(fp);
+}
+
+static void interp_ins(TokenArr r_arr);
+
+static void parser_execins(char* p_line)
+{
+    TokenArr r_arr = INIT_TKN_ARR;
+
+    token_create_arr(&r_arr, (const char*) p_line);
+    interp_ins(r_arr);
+    
+    for(int i = 0; i < r_arr.ln; i++)
+    {
+        free(r_arr.list[i].str);
+    }
+
+    free(r_arr.list);
+}
+
+static void interp_func_ins(TokenArr r_arr);
+
+static void interp_ins(TokenArr r_arr)
+{
+    switch(r_arr.list[0].type)
+    {
+        case FUNCTION:
+            interp_func_ins(r_arr);
+            break;
+        default:
+            perror_disp("this is not yet implemented by the parser", 1);
+            break;
+    }
+}
+
+static void interp_DISPLAY_func(Token* c_list);
+static void interp_PRINT_func(Token* c_list);
+static void interp_SET_func(Token* c_list);
+
+static void interp_func_ins(TokenArr r_arr)
+{
+    if(!strcmp(r_arr.list[0].str, "DISPLAY"))
+    {
+        if(r_arr.ln != 2)
+        {
+            perror_disp("too many tokens (DISPLAY)", 1);
+        }
+        interp_DISPLAY_func(r_arr.list);
+    }
+    else if(!strcmp(r_arr.list[0].str, "PRINT"))
+    {
+        if(r_arr.ln != 2)
+        {
+            perror_disp("too many tokens (PRINT)", 1);
+        }
+        interp_PRINT_func(r_arr.list);
+    }
+    else if(!strcmp(r_arr.list[0].str, "SET"))
+    {
+        if(r_arr.ln != 3)
+        {
+            perror_disp("wrong number of tokens (SET)", 1);
+        }
+        interp_SET_func(r_arr.list);
+    }
+}
+
+static void interp_PRINT_func(Token* c_list)
+{
+    switch(c_list[1].type)
+    {
+        case STRING:
+            {
+                char* r_str = NULL;
+
+                stringsm_ext_str_quotes(&r_str, c_list[1].str);
+                puts(r_str);
+
+                free(r_str);
+            }
+            break;
+        case STRING_ID:
+            printf("\n");
+            pstrings_display(c_list[1].str);
+            printf("\n");
+            break;
+        default:
+            perror_disp("token cannot be displayed (PRINT)", 0);
+            break;
+    }
+}
 
 static void display_choices(int roomln);
 
-/*Execute the appropriate action according to the type and the arg received*/
-void parser_execins(char* type, char* arg, bool* inif, bool* ifcond)
+static void interp_DISPLAY_func(Token* c_list)
 {
-    //TODO: refactor condition checking
-    if(!strcmp(type, "PRINT"))
+    if(!strcmp(c_list[1].str, "CHOICES"))
     {
-        printf("\n");
-        pstrings_display(arg);
-        printf("\n");
-    } else if (strcmp(type, "IF") == 0)
-    {
-        *inif = 1;
-    } else if (*inif == 0 && *ifcond == false && !strcmp(type, "DISPLAY"))
-    {    
-        if(!strcmp(arg, "CHOICES"))
-        {
-            int roomln = 0;
-            char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        int roomln = -1;
+        char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
-            pvars_getstdvars("currentroom", &croomid);
-            find_roomline(croomid, &roomln);
-            display_choices(roomln);
-
-            free(croomid);
-        }
-    } else if (*inif == 0 && *ifcond == 0 && strcmp(type, "END") == 0)
-    {
+        pvars_getstdvars("currentroom", &croomid);
+        find_roomline(croomid, &roomln);
+        display_choices(roomln);
+        free(croomid);
     } else
     {
-        printf("arg: %s\n", type);
-        perror_disp("UNK_INS_TYPE", 0);
+        perror_disp("displaying one choice is not yet implemented", 0);
     }
-    
+}
+
+static void interp_SET_func(Token* c_list)
+{
+    int val;
+
+    if(gvars_exist(c_list[1].str))
+    {
+        perror_disp("gvar already exist", 1);
+    }
+    if(c_list[2].type != EQUAL)
+    {
+        perror_disp("missing EQUAL token (SET)", 1);
+    }
+    if(c_list[3].type != NUMBER)
+    {
+        perror_disp("no value assigned to var during its init", 1);
+    }
+
+    sscanf(c_list[3].str, "%d", &val);
+    gvars_set_var(c_list[1].str, val);
 }
 
 /*Extract the type and the argument from a string*/

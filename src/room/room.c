@@ -34,16 +34,12 @@
 /*Read the first ATLAUNCH block encountered starting from specified line*/
 static void room_atlaunch(int* roomln)
 {
-    int *foundln = calloc(1, sizeof(int));
+    int foundln;
     bool atlfound = false;
 
-    atlfound = find_atlaunchline(foundln, *roomln);
-    *foundln = *foundln + 1;
-    if(atlfound == 1)
-    {
-    }
-
-    free(foundln);
+    atlfound = find_atlaunchline(&foundln, *roomln);
+    foundln = foundln + 1;
+    if(atlfound == 1) parser_exec_until_end(foundln);
 }
 
 void room_load(char* id)
