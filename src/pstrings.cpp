@@ -17,22 +17,26 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+extern "C" 
+{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
-#include "pstrings.h"
 #include "stringsm.h"
 #include "fileio/fileio.h"
+}
+
+#include "pstrings.h"
 
 void pstrings_fetch(char* id, char** rstr);
 
 /*Display the string corresponding to the id*/
 void pstrings_display(char *id)
 {
-    char* rstring = calloc(P_MAX_BUF_SIZE, sizeof(char));;
+    char* rstring = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));;
 
     pstrings_fetch(id, &rstring);
     printf("%s", rstring);
@@ -46,7 +50,7 @@ static void open_strfile(FILE **f);
 bool pstrings_check_exist(char* id)
 {
     bool isfnd = true;
-    char* result_str = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* result_str = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
 
     pstrings_fetch(id, &result_str);
     
@@ -64,15 +68,15 @@ void pstrings_fetch(char* id, char** rstr)
     int index = 0;
     int len = 0;
     bool id_exist = false;
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* ustr = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* buf = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* ustr = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
     char* fstring = NULL;
     char* id_found = NULL;
     FILE* fp = NULL;
 
     open_strfile(&fp);
     while (fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL) {
-        id_found = calloc(P_MAX_BUF_SIZE, sizeof(char));
+        id_found = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
         stringsm_chomp(buf);
         strcpy(ustr, buf);
         len = strlen(ustr);
@@ -97,7 +101,7 @@ void pstrings_fetch(char* id, char** rstr)
             free(id_found);
         }
     }
-    fstring = calloc(len, sizeof(char));
+    fstring = (char*)calloc(len, sizeof(char));
 
     if (id_exist == 1)
     {
@@ -138,14 +142,14 @@ void pstrings_fetch(char* id, char** rstr)
 to the selected language*/
 static void open_strfile(FILE **f)
 {
-    char* langdir = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* lang = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* langfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* txt = ".txt";
+    char* langdir = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* lang = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* langfile = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* txt = (char*)".txt";
     int langdirln = 0;
 
-    pvars_getgcvars("langdir", &langdir);
-    pvars_getstdvars("lang", &lang);
+    pvars_getgcvars((char*)"langdir", &langdir);
+    pvars_getstdvars((char*)"lang", &lang);
     strcpy(langfile, langdir);
     langdirln = strlen(langdir);
 
