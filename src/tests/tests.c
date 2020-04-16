@@ -117,11 +117,3 @@ void tests_token()
     }
     free(r_arr.list);
 }
-
-void tests_runall()
-{
-    tests_intvar();
-    tests_gvars();
-    tests_pstrings();
-    tests_token();
-}
