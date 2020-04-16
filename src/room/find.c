@@ -27,22 +27,22 @@
 #include "pstrings.h"
 #include "stringsm.h"
 #include "fileio/fileio.h"
-#include "fileio/parser.h"
+#include "interpreter/parser.h"
 
-bool find_insline(int* foundln, int ln, char* ins);
+bool find_blockline(int* foundln, int ln, char* ins);
 
 /*Return the line where the ATLAUNCH block start*/
 bool find_atlaunchline(int* foundln, int ln)
 {
     char* ins = "ATLAUNCH";
-    return find_insline(foundln, ln, ins);
+    return find_blockline(foundln, ln, ins);
 }
 
 /*Return the line where the CHOICES block start*/
 bool find_choicesline(int* foundln, int ln)
 {
     char* ins = "CHOICES";
-    return find_insline(foundln, ln, ins);
+    return find_blockline(foundln, ln, ins);
 }
 
 /*Fetch the beginning line of the room definition in file*/
@@ -129,7 +129,7 @@ bool find_onechoiceline(int num, int startln, int* ln)
 
 /*Fetch the line where a specific instruction is present beginning from a
 specified line*/
-bool find_insline(int* foundln, int ln, char* ins)
+bool find_blockline(int* foundln, int ln, char* ins)
 {
     bool inchoices = false;
     bool inonechoice = false;
@@ -145,23 +145,22 @@ bool find_insline(int* foundln, int ln, char* ins)
 
     for(int i = 0; fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL; i++)
     {
-        char* type = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
-        char* arg = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
+        char* block = calloc((P_MAX_BUF_SIZE - 2), sizeof(char));
+        int index = -1;
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);        
-        parser_splitline(&type, &arg, buf);
-        if (!strcmp(type, ins))
+        stringsm_getfw(&block, buf, &index);
+        if (!strcmp(block, ins))
         {
             *foundln = i + ln;
 
-            free(type);
-            free(arg);
+            free(block);
             fclose(fp);
             free(buf);
 
             return 1;
-        } else if(!strcmp(type, "CHOICES"))
+        } else if(!strcmp(block, "CHOICES"))
         {
             if(strcmp(ins, "CHOICES"))
             {
@@ -170,22 +169,20 @@ bool find_insline(int* foundln, int ln, char* ins)
             
         }
 
-        free(arg);
-
-        if(!strcmp(type, "END"))
+        if(!strcmp(block, "END"))
         {
             if(inchoices == 0)
             {
-                if(!strcmp(type, "ATLAUNCH"))
+                if(!strcmp(block, "ATLAUNCH"))
                 {
                     perror_disp("NO_ATLAUNCH_INS", 0);
-                    free(type);
+                    free(block);
 
                     break;
-                } else if(!strcmp(type, "CHOICES"))
+                } else if(!strcmp(block, "CHOICES"))
                 {
                     perror_disp("NO_CHOICES_INS", 0);
-                    free(type);
+                    free(block);
 
                     break;
                 }
@@ -198,7 +195,7 @@ bool find_insline(int* foundln, int ln, char* ins)
             }
         }
 
-        free(type);
+        free(block);
     }
     fclose(fp);
     free(buf);

@@ -20,6 +20,9 @@
 #ifndef PSTRINGS_H
 #define PSTRINGS_H
 
+#include <stdbool.h>
+
+bool pstrings_check_exist(char* id);
 void pstrings_fetch(char* id, char** rstr);
 void pstrings_display(char id[]);
 

@@ -9,7 +9,8 @@ add_executable(swannsong src/main.c
     src/room/find.c
     src/fileio/fileio.c
     src/fileio/gameconf.c
-    src/fileio/parser.c
+    src/interpreter/parser.c
+    src/interpreter/token.c
     src/vars/pvars.c
     src/vars/intvar.c
     src/vars/gvars.c

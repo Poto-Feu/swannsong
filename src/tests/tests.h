@@ -22,6 +22,7 @@
 
 void tests_intvar();
 void tests_gvars();
+void tests_token();
 void tests_runall();
 
 #endif

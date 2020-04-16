@@ -18,9 +18,11 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "stringsm.h"
+#include "perror.h"
 
 void stringsm_chomp(char* str)
 {
@@ -81,4 +83,21 @@ void stringsm_getuseri(char** buf)
         scanf("%*c");
     }
     
+}
+
+/*Extract string from quotations marks*/
+void stringsm_ext_str_quotes(char** r_ext, char* p_str)
+{
+    int chr_numb = 0;
+
+    if(*r_ext != NULL) perror_disp("*r_ext must be null", 1);
+    for(int i = 1; p_str[i] != '\"'; i++) chr_numb++;
+
+    *r_ext = malloc((chr_numb+1) * sizeof(char));
+    (*r_ext)[chr_numb] = '\0';
+
+    for(int i = 1; i <= chr_numb; i++)
+    {
+        (*r_ext)[i-1] = p_str[i];
+    }
 }

@@ -17,13 +17,40 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef STRINGSM_H
-#define STRINGSM_H
+#ifndef TOKEN_H
+#define TOKEN_H
 
-void stringsm_chomp(char* str);
-void stringsm_rtab(char* str);
-void stringsm_getuseri(char** buf);
-void stringsm_getfw(char** fw, char* s, int *index);
-void stringsm_ext_str_quotes(char** r_ext, char* p_str);
+#include <stdint.h>
+
+typedef enum
+{
+    FUNCTION,
+    IF,
+    VARIABLE,
+    OPERATOR,
+    EQUAL,
+    STRING,
+    NUMBER,
+    STRING_ID,
+    NEWVAR,
+    UNKNOWN,
+    UNDEFINED
+} token_type;
+
+typedef struct
+{
+    char* str;
+    token_type type;
+} Token;
+
+typedef struct
+{
+    uint8_t ln;
+    Token* list;
+} TokenArr;
+
+#define INIT_TKN_ARR {.ln = 0, .list = NULL}
+
+void token_create_arr(TokenArr* r_arr, const char* p_str);
 
 #endif

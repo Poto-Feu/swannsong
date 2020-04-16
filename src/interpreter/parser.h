@@ -22,7 +22,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "token.h"
+
+void parser_exec_until_end(int blockln);
 void parser_splitline(char** type, char** arg, char* ins);
-void parser_execins(char* type, char* arg, bool* inif, bool* ifcond);
 
 #endif

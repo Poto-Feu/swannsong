@@ -24,6 +24,8 @@
 #include "tests.h"
 #include "vars/intvar.h"
 #include "vars/gvars.h"
+#include "pstrings.h"
+#include "interpreter/token.h"
 
 void tests_intvar()
 {
@@ -62,6 +64,20 @@ void tests_intvar()
     }
 }
 
+void tests_pstrings()
+{
+    char str1[] = "ABCDEFG";
+    char str2[] = "test_str";
+    bool exist1 = pstrings_check_exist(str1);
+    bool exist2 = pstrings_check_exist(str2);
+
+    if(exist1 || !exist2)
+    {
+        printf("pstrings_check_exist returns wrong value\n");
+        exit(1);
+    }
+}
+
 void tests_gvars()
 {
     gvars_set_var("test_el1", 123);
@@ -84,8 +100,28 @@ void tests_gvars()
     }
 }
 
+void tests_token()
+{
+    TokenArr r_arr = {.ln = 0, .list = NULL};
+    TokenArr r_arr2 = {.ln = 0, .list = NULL};
+    TokenArr r_arr3 = {.ln = 0, .list = NULL};
+
+    token_create_arr(&r_arr, "SET testvar1 = 12 + 3");
+    gvars_set_var("testvar2", 12);
+    token_create_arr(&r_arr2, "testvar2 = 14");
+    token_create_arr(&r_arr3, "PRINT \'hey\'");
+
+    for(int i = 0; i < r_arr.ln; i++)
+    {
+        free(r_arr.list[i].str);
+    }
+    free(r_arr.list);
+}
+
 void tests_runall()
 {
     tests_intvar();
     tests_gvars();
+    tests_pstrings();
+    tests_token();
 }

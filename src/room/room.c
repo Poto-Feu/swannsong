@@ -29,22 +29,17 @@
 #include "pstrings.h"
 #include "stringsm.h"
 #include "fileio/fileio.h"
-#include "fileio/parser.h"
+#include "interpreter/parser.h"
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
 static void room_atlaunch(int* roomln)
 {
-    int *foundln = calloc(1, sizeof(int));
+    int foundln;
     bool atlfound = false;
 
-    atlfound = find_atlaunchline(foundln, *roomln);
-    *foundln = *foundln + 1;
-    if(atlfound == 1)
-    {
-        fileio_execuntilend(*foundln);
-    }
-
-    free(foundln);
+    atlfound = find_atlaunchline(&foundln, *roomln);
+    foundln = foundln + 1;
+    if(atlfound == 1) parser_exec_until_end(foundln);
 }
 
 void room_load(char* id)
@@ -55,4 +50,3 @@ void room_load(char* id)
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);
 }
-

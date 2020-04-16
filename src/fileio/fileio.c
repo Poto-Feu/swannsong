@@ -23,7 +23,7 @@
 #include "fileio.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "parser.h"
+#include "interpreter/parser.h"
 #include "perror.h"
 #include "stringsm.h"
 
@@ -80,46 +80,4 @@ void fileio_getln(int* ln, char* s)
     }
     fclose(fp);
     free(buf);
-}
-
-/*Execute all the instructions until the end of the block*/
-void fileio_execuntilend(int startln)
-{
-    bool inif = false;
-    bool ifcond = false;
-    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* type = NULL;
-    char* arg = NULL;
-    FILE* fp = NULL;
-
-    pvars_getgcvars("roomfile", &roomfile);
-    fileio_setfileptr(&fp, roomfile);
-    free(roomfile);
-    fileio_gotoline(&fp, startln);
-
-    while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
-    {
-        type  = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-        arg = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
-        parser_splitline(&type, &arg, buf);
-        if(strcmp(type, "END"))
-        {
-            parser_execins(type, arg, &inif, &ifcond);
-
-            free(type);
-            free(arg);
-        } else 
-        {
-            free(type);
-            free(arg);
-
-            break;
-        }
-    }
-
-    free(buf);
-    fclose(fp);
 }

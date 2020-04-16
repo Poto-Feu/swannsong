@@ -72,10 +72,20 @@ void gvars_change_val(char* p_name, int p_val)
     }
 }
 
+bool gvars_exist(char* p_name)
+{
+    uint16_t p_ind = 0;
+
+    if(intvar_search_ind(&p_ind, p_name, &gvar_arr))
+    {
+        return true;
+    }
+    return false;
+}
+
 static void gvars_add_to_list(char* p_name, int p_val)
 {
     gvar elem = INIT_INTVAR(p_name, p_val);
 
     intvar_add_var_to_arr(&gvar_arr, elem);
 }
-
