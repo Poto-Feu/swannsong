@@ -101,3 +101,4 @@ void stringsm_ext_str_quotes(char** r_ext, char* p_str)
         (*r_ext)[i-1] = p_str[i];
     }
 }
+

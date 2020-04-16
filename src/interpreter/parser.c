@@ -320,3 +320,4 @@ static void display_choicetext(int choiceln, int num)
 
     free(buf);
 }
+

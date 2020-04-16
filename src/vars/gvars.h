@@ -28,3 +28,4 @@ void gvars_change_val(char* p_name, int p_val);
 bool gvars_exist(char* p_name);
 
 #endif
+

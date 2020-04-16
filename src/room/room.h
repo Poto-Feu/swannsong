@@ -24,3 +24,4 @@ void room_initmodule();
 void room_load(char* id);
 
 #endif
+

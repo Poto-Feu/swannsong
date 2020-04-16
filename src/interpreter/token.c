@@ -259,3 +259,4 @@ static void set_one_chr_tkn(Token* temp_arr, int p_n, char p_chr)
     temp_arr[p_n].str = calloc(2, sizeof(char));
     temp_arr[p_n].str[0] = p_chr;
 }
+

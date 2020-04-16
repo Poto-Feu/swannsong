@@ -50,3 +50,4 @@ void room_load(char* id)
     find_roomline(id, &roomln);
     room_atlaunch(&roomln);
 }
+

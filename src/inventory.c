@@ -82,3 +82,4 @@ static void inventory_add_n_item(uint16_t p_ind, int p_val)
     p_val += r_val;
     intvar_set_value(r_val, p_ind, &inventory_arr);
 }
+

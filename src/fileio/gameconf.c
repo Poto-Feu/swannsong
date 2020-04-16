@@ -92,3 +92,4 @@ void gameconf_splitins(char* var, char* value, char* ins)
         }
     }
 }
+

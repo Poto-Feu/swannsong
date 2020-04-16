@@ -32,3 +32,4 @@ void perror_disp(char* id, bool fatal)
         exit(1);
     }
 }
+

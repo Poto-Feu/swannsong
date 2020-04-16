@@ -24,3 +24,4 @@ void inventory_player_getitem(char* p_name, int val);
 int inventory_return_item_n(char* p_name);
 
 #endif
+
