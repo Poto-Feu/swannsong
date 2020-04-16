@@ -69,6 +69,7 @@ void parser_exec_until_end(int blockln)
     fclose(fp);
 }
 
+static void free_TokenArr(TokenArr* p_arr);
 static void interp_ins(TokenArr r_arr);
 
 static void parser_execins(char* p_line)
@@ -77,13 +78,16 @@ static void parser_execins(char* p_line)
 
     token_create_arr(&r_arr, (const char*) p_line);
     interp_ins(r_arr);
-    
-    for(int i = 0; i < r_arr.ln; i++)
-    {
-        free(r_arr.list[i].str);
-    }
+    free_TokenArr(&r_arr);   
+}
 
-    free(r_arr.list);
+static void free_TokenArr(TokenArr* p_arr)
+{
+    for(int i = 0; i < p_arr->ln; i++)
+    {
+        free(p_arr->list[i].str);
+    }
+    free(p_arr->list);
 }
 
 static void interp_func_ins(TokenArr r_arr);
