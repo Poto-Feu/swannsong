@@ -2,7 +2,16 @@ cmake_minimum_required(VERSION 3.0)
 
 project(SwannSong)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED True)
+
 include_directories(src)
+
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-Wall -Wextra -pedantic)
+else()
+    message(WARNING "warnings flags will only be set in Clang or GCC")
+endif()
 
 add_executable(swannsong src/main.c
     src/room/room.c
@@ -21,10 +30,6 @@ add_executable(swannsong src/main.c
     src/exitgame.c
     src/inventory.c)
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic")
-endif()
-
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
@@ -36,5 +41,3 @@ if(TESTS)
     target_sources(swannsong PRIVATE src/tests/tests.c)
 endif()
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED True)
