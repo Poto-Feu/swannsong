@@ -113,12 +113,12 @@ void pstrings_fetch(char* id, char** rstr);
 /*Display the string corresponding to the id*/
 void pstrings_display(char *id)
 {
-    char* rstring = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));;
+    char* rstring = new char[P_MAX_BUF_SIZE]();
 
     pstrings_fetch(id, &rstring);
     printf("%s", rstring);
 
-    free(rstring);
+    delete[] rstring;
 }
 
 
