@@ -140,79 +140,22 @@ bool pstrings_check_exist(char* id)
     return isfnd;
 }
 /*Copy the corresponding string into the pointer of a char pointer*/
-void pstrings_fetch(char* id, char** rstr)
+void pstrings_fetch(char* id, char** r_str)
 {
-    int index = 0;
-    int len = 0;
-    bool id_exist = false;
-    char* buf = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* ustr = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* fstring = NULL;
-    char* id_found = NULL;
-    FILE* fp = NULL;
+    auto str_id(id);
+    bool isfnd = false;
 
-    open_strfile(&fp);
-    while (fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL) {
-        id_found = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-        stringsm_chomp(buf);
-        strcpy(ustr, buf);
-        len = strlen(ustr);
-
-        for(int i = 0; i < len; i++)
+    for(const auto& it : pstrings_arr)
+    {
+        if(str_id == it.id)
         {
-            if(ustr[i] == ' ')
-            {
-                index = i;
-                strncpy(id_found, ustr, i);
-                break;
-            }
-        }
-
-        if(!strcmp(id, id_found))
-        {
-            id_exist = 1;
-            free(id_found);
+            isfnd = true;
+            strcpy(*r_str, it.val.c_str());
             break;
-        } else
-        {
-            free(id_found);
         }
     }
-    fstring = (char*)calloc(len, sizeof(char));
 
-    if (id_exist == 1)
-    {
-        int findex = 0;
-        bool quote_inc = false;
-        
-        for(int i = index + 1; i < len; i++)
-        {
-            if(!quote_inc)
-            {
-                if(ustr[i] == '"')
-                {
-                    quote_inc = 1;
-                } else 
-                {
-                    strcpy(fstring, "ERR_BAD_STR_FRMT");
-                    break;
-                }
-            } else if (ustr[i] != '"')
-            {
-                fstring[findex] = ustr[i];
-                findex++;
-            }
-        }
-    } else
-    {
-        strcpy(fstring, "ERR_STR_NULL");
-    }
-    strcpy(*rstr, fstring);
-
-    fclose(fp);
-    free(fstring);
-    free(ustr);
-    free(buf);
+    if(!isfnd) perror_disp("pstring not found", 0);
 }
 
 /*Set the file pointer to the file containing the strings correponding
