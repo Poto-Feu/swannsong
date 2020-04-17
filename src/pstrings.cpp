@@ -125,17 +125,18 @@ void pstrings_display(char *id)
 /*Check if a string is defined in the lang file*/
 bool pstrings_check_exist(char* id)
 {
-    bool isfnd = true;
-    char* result_str = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
+    bool isfnd = false;
+    auto str_id(id);
 
-    pstrings_fetch(id, &result_str);
-    
-    if(!strcmp(result_str, "ERR_STR_NULL"))
+    for(const auto& it : pstrings_arr)
     {
-        isfnd = false;
+        if(str_id == it.id)
+        {
+            isfnd = true;
+            break;
+        }
     }
-
-    free(result_str);
+    
     return isfnd;
 }
 /*Copy the corresponding string into the pointer of a char pointer*/
