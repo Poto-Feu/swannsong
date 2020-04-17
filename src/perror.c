@@ -24,7 +24,7 @@
 #include "perror.h"
 
 /*Display an error message with the specified string*/
-void perror_disp(char* id, bool fatal)
+void perror_disp(const char* id, bool fatal)
 {
     printf("ERROR : %s\n", id);
     if (fatal)

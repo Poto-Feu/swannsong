@@ -22,7 +22,7 @@
 #ifndef PERROR_H
 #define PERROR_H
 
-void perror_disp (char* id, bool fatal);
+void perror_disp(const char* id, bool fatal);
 
 #endif
 

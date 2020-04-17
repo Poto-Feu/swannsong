@@ -93,7 +93,7 @@ static void split_file_line(std::string* r_id, std::string* r_val, char* buf)
 
     if(!quote_inc)
     {
-        perror_disp((char*)"wrong pstring format", 1);
+        perror_disp("wrong pstring format", 1);
     }
     for(int i = quote_ind+1; buf[i] != '\0'; i++)
     {
