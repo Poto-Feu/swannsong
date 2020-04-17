@@ -29,6 +29,7 @@ extern "C" {
 bool pstrings_check_exist(char* id);
 void pstrings_fetch(char* id, char** rstr);
 void pstrings_display(char id[]);
+void pstrings_copy_file_to_vec();
 
 #ifdef __cplusplus
 }
