@@ -4,6 +4,8 @@ project(SwannSong)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(src)
 
@@ -25,7 +27,7 @@ add_executable(swannsong src/main.c
     src/vars/gvars.c
     src/init.c
     src/perror.c
-    src/pstrings.c
+    src/pstrings.cpp
     src/stringsm.c
     src/exitgame.c
     src/inventory.c)

@@ -25,6 +25,7 @@
 #include "vars/pconst.h"
 #include "vars/pvars.h"
 #include "stringsm.h"
+#include "pstrings.h"
 #include "fileio/gameconf.h"
 #include "room/room.h"
 
@@ -76,8 +77,10 @@ static void ask_lang()
 
                 strcpy(lang, langarr[intval - 1]);
                 pvars_setstdvars("lang", lang);
-                free(lang);
                 validinp = true;
+                pstrings_copy_file_to_vec();
+
+                free(lang);
             } else
             {
                 printf("Nope. (not a valid input)\n");

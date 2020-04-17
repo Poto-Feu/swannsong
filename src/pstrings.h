@@ -20,11 +20,20 @@
 #ifndef PSTRINGS_H
 #define PSTRINGS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 
 bool pstrings_check_exist(char* id);
-void pstrings_fetch(char* id, char** rstr);
+void pstrings_fetch(char* id, char** r_str);
 void pstrings_display(char id[]);
+void pstrings_copy_file_to_vec();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
