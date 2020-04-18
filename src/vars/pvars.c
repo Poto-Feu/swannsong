@@ -24,7 +24,7 @@
 #include "pconst.h"
 #include "perror.h"
 
-#define STDVARS_LN 3
+#define STDVARS_LN 4
 #define GCVARS_LN 4
 
 /*pvar is short for program var - not named var to prevent naming conflict*/
@@ -38,7 +38,8 @@ static pvar stdvars[STDVARS_LN] =
 {
     {.name = "lang", .value = NULL},
     {.name = "currentroom", .value = NULL},
-    {.name = "nextroom", .value = NULL}
+    {.name = "nextroom", .value = NULL},
+    {.name = "roomfile", .value = NULL}
 };
 static pvar gcvars[GCVARS_LN] =
 {

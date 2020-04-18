@@ -79,7 +79,7 @@ bool find_onechoiceline(int num, int startln, int* ln)
         free(roomfile);
         perror_disp("WRG_CHOI_NUM", 1);
     }
-    pvars_getgcvars("roomfile", &roomfile);
+    pvars_getstdvars("roomfile", &roomfile);
     fileio_setfileptr(&fp, roomfile);
     fileio_gotoline(&fp, startln);
 
@@ -137,7 +137,7 @@ bool find_blockline(int* foundln, int ln, char* ins)
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     FILE* fp = NULL;
 
-    pvars_getgcvars("roomfile", &roomfile);
+    pvars_getstdvars("roomfile", &roomfile);
     fileio_setfileptr(&fp, roomfile);
     fileio_gotoline(&fp, ln);
 

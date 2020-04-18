@@ -41,7 +41,7 @@ void parser_exec_until_end(int blockln)
     char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
     FILE* fp = NULL;
 
-    pvars_getgcvars("roomfile", &roomfile);
+    pvars_getstdvars("roomfile", &roomfile);
     fileio_setfileptr(&fp, roomfile);
     fileio_gotoline(&fp, blockln);
 
@@ -273,7 +273,7 @@ static void display_choicetext(int choiceln, int num)
     char* roomfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
     FILE* fp = NULL;
 
-    pvars_getgcvars("roomfile", &roomfile);
+    pvars_getstdvars("roomfile", &roomfile);
     fileio_setfileptr(&fp, roomfile);
     fileio_gotoline(&fp, choiceln);
 
