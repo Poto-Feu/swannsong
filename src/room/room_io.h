@@ -26,7 +26,7 @@ extern "C"
 #endif
 
 void roomio_copy_file_to_vec();
-void roomio_fetch_ln(char** p_ln, int ind);
+bool roomio_fetch_ln(char** p_ln, int ind);
 
 #ifdef __cplusplus
 }
