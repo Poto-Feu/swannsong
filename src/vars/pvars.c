@@ -121,48 +121,31 @@ void pvars_getgcvars(char* name, char** value)
 
 static void pvars_getpvars(char* name, char** value, bool isgcvar)
 {
-    int *id = calloc(1, sizeof(int));
-    bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
+    int id = -1;
+    bool isvarfnd = fetch_pvarsid(name, &id, isgcvar);
 
     if(isvarfnd)
     {
         int vlen = 0;
         char* valuetocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
-        char* prevvalue = NULL;
 
-        if(isgcvar)
-        {
-            strcpy(valuetocpy, gcvars[*id].value);
-        } else
-        {
-            strcpy(valuetocpy, stdvars[*id].value);
-        }
+        if(isgcvar) strcpy(valuetocpy, gcvars[id].value);
+        else strcpy(valuetocpy, stdvars[id].value);
+
         vlen = strlen(valuetocpy);
 
-        prevvalue = calloc((vlen+1), sizeof(char));
-        strcpy(prevvalue, *value);
-        free(*value);
+        if(*value != NULL) free(*value);
 
         *value = calloc((vlen+1), sizeof(char));
-        strcpy(*value, prevvalue);
         strcpy(*value, valuetocpy);
 
         free(valuetocpy);
-        free(prevvalue);
     }
     else
     {
-        if(isgcvar)
-        {
-            perror_disp("GAMECONF_VAR_NF", 1);
-        }
-        else
-        {
-            perror_disp("STD_VAR_NF", 1);
-        }
+        if(isgcvar) perror_disp("gameconf var does not exist", 1);
+        else perror_disp("std var does not exist", 1);
     }
-
-    free(id);
 }
 
 static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
