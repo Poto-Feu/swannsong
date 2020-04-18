@@ -25,6 +25,8 @@ extern "C"
 {
 #endif
 
+void roomio_copy_file_to_vec();
+
 #ifdef __cplusplus
 }
 #endif

@@ -24,10 +24,11 @@
 #include "init.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "stringsm.h"
-#include "pstrings.h"
 #include "fileio/gameconf.h"
 #include "room/room.h"
+#include "room/room_io.h"
+#include "stringsm.h"
+#include "pstrings.h"
 
 static void ask_lang();
 
@@ -46,6 +47,8 @@ void init_game()
     pvars_freegcvar("defaultlang");
     pvars_freegcvar("firstroom");
     pvars_freegcvar("roomfile");
+
+    roomio_copy_file_to_vec();
 
     ask_lang();
     room_load(room_name);

@@ -20,14 +20,46 @@
 extern "C"
 {
 #include <stdlib.h>
+#include <string.h>
+#include "fileio/fileio.h"
+#include "vars/pconst.h"
+#include "vars/pvars.h"
+#include "stringsm.h"
+#include "perror.h"
 }
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include "room_io.h"
+#include "room/room_io.h"
 
 using std::string;
+using std::cout;
+using std::endl;
 using std::vector;
 
-static vector<string> room_file {};
+static vector<string> roomfile_arr {};
+
+static void open_strfile(FILE** fp);
+static void add_ln_to_vec(char* p_ln);
+
+void roomio_copy_file_to_vec()
+{
+    char buf[P_MAX_BUF_SIZE]{0};
+    FILE* fp = NULL;
+    char* roomfile = NULL;
+
+    open_strfile(&fp);
+    pvars_getstdvars("roomfile", &roomfile);
+    
+    while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
+    {
+        stringsm_chomp(buf);
+        stringsm_rtab(buf);
+
+        if(*buf != '\0') add_ln_to_vec(buf);
+        else continue;
+    }
+    free(roomfile);
+}
 
