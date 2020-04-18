@@ -50,24 +50,24 @@ static pvar gcvars[GCVARS_LN] =
 };
 
 
-static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
-static void pvars_setpvars(char* name, char* value, bool isgcvar);
-static void pvars_getpvars(char* name, char** value, bool isgcvar);
+static bool fetch_pvarsid(const char* name, int* id, bool isgcvar);
+static void pvars_setpvars(const char* name, char* value, bool isgcvar);
+static void pvars_getpvars(const char* name, char** value, bool isgcvar);
 
 
 /*Set the value of a standard program variable*/
-void pvars_setstdvars(char* name, char* value)
+void pvars_setstdvars(const char* name, char* value)
 {
     pvars_setpvars(name, value, false);
 }
 
 /*Set the value of a gameconf-defined variable*/
-void pvars_setgcvars(char* name, char* value)
+void pvars_setgcvars(const char* name, char* value)
 {
     pvars_setpvars(name, value, true);
 }
 
-static void pvars_setpvars(char* name, char* value, bool isgcvar)
+static void pvars_setpvars(const char* name, char* value, bool isgcvar)
 {
     int* varfndid = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);
@@ -109,18 +109,18 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
 }
 
 /*Copy the value of a standard program variable*/
-void pvars_getstdvars(char* name, char** value)
+void pvars_getstdvars(const char* name, char** value)
 {
     pvars_getpvars(name, value, false);
 }
 
 /*Copy the value of a gameconf-defined variable*/
-void pvars_getgcvars(char* name, char** value)
+void pvars_getgcvars(const char* name, char** value)
 {
     pvars_getpvars(name, value, true);
 }
 
-static void pvars_getpvars(char* name, char** value, bool isgcvar)
+static void pvars_getpvars(const char* name, char** value, bool isgcvar)
 {
     int id = -1;
     bool isvarfnd = fetch_pvarsid(name, &id, isgcvar);
@@ -149,7 +149,7 @@ static void pvars_getpvars(char* name, char** value, bool isgcvar)
     }
 }
 
-static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
+static bool fetch_pvarsid(const char* name, int* id, bool isgcvar)
 {
     bool isvarfnd = false;
     int varfndid = -1;
@@ -196,7 +196,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
     return isvarfnd;
 }
 
-void pvars_freegcvar(char* name)
+void pvars_freegcvar(const char* name)
 {
     int id = 0;
     bool pvarsid_check = fetch_pvarsid(name, &id, true);
