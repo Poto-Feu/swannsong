@@ -63,3 +63,38 @@ void roomio_copy_file_to_vec()
     free(roomfile);
 }
 
+void roomio_fetch_ln(char** p_ln, int ind)
+{
+    if(*p_ln != NULL) free(*p_ln);
+
+    if(ind > static_cast<int>(roomfile_arr.size()))
+    {
+        perror_disp("line index does not exist", 1);
+    } else
+    {
+        int str_len = P_MAX_BUF_SIZE;
+        string ind_ln(roomfile_arr[ind-1]);
+
+        str_len = ind_ln.length();
+        *p_ln = (char*)malloc((str_len+1) * sizeof(char));
+        (*p_ln)[str_len] = '\0';
+        strcpy(*p_ln, ind_ln.c_str());
+    }
+}
+
+static void add_ln_to_vec(char* p_ln)
+{
+    string str_ln(p_ln);
+    roomfile_arr.push_back(str_ln);
+}
+
+static void open_strfile(FILE** fp)
+{
+    char* roomfile = NULL;
+
+    pvars_getstdvars("roomfile", &roomfile);
+    fileio_setfileptr(fp, roomfile);
+
+    free(roomfile);
+}
+
