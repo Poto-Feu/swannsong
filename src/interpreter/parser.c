@@ -25,48 +25,40 @@
 #include "vars/pconst.h"
 #include "vars/pvars.h"
 #include "vars/gvars.h"
+#include "room/room.h"
+#include "room/find.h"
+#include "room/room_io.h"
+#include "interpreter/token.h"
+#include "fileio/fileio.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "stringsm.h"
-#include "interpreter/token.h"
-#include "fileio/fileio.h"
-#include "room/room.h"
-#include "room/find.h"
 
 static void parser_execins(char* p_line);
 
 void parser_exec_until_end(int blockln)
 {
-    char* buf = calloc((P_MAX_BUF_SIZE), sizeof(char));
-    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
-    FILE* fp = NULL;
+    bool is_end = false;
+    int currln = blockln + 1;
 
-    pvars_getstdvars("roomfile", &roomfile);
-    fileio_setfileptr(&fp, roomfile);
-    fileio_gotoline(&fp, blockln);
-
-    while(fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
+    for(int i = currln; !is_end; i++)
     {
         int ind = -1;
+        char* buf = NULL;
         char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+
+        roomio_fetch_ln(&buf, i);
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         stringsm_getfw(&fw, buf, &ind);
-        if(strcmp("END", fw))
-        {
-            parser_execins(buf);
-            free(fw);
-            continue;
-        } else
-        {
-            free(fw);
-            break;
-        }
+
+        if(strcmp("END", fw)) parser_execins(buf);
+        else is_end = true;
+
+        free(buf);
+        free(fw);
     }
-    free(buf);
-    free(roomfile);
-    fclose(fp);
 }
 
 static void free_TokenArr(TokenArr* p_arr);
