@@ -83,6 +83,24 @@ bool roomio_fetch_ln(char** p_ln, int ind)
     return true;
 }
 
+bool roomio_find_ind(int* f_ln, const char* p_ln)
+{
+    int i = 1;
+    string str_ln(p_ln);
+
+    for(const auto& it : roomfile_arr)
+    {
+        if(it == str_ln)
+        {
+            *f_ln = i;
+            return true;
+        } else i++;  
+    }
+    *f_ln = -1;
+
+    return false;
+}
+
 static void add_ln_to_vec(char* p_ln)
 {
     string str_ln(p_ln);
