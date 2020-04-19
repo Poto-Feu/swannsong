@@ -43,6 +43,7 @@ static vector<string> roomfile_arr {};
 static void open_strfile(FILE** fp);
 static void add_ln_to_vec(char* p_ln);
 
+/*Copy room file lines into a vector*/
 void roomio_copy_file_to_vec()
 {
     char buf[P_MAX_BUF_SIZE]{0};
@@ -63,6 +64,7 @@ void roomio_copy_file_to_vec()
     free(roomfile);
 }
 
+/*Return a char array containing the line from the specified index*/
 bool roomio_fetch_ln(char** p_ln, int ind)
 {
     if(*p_ln != NULL) free(*p_ln);
@@ -83,6 +85,7 @@ bool roomio_fetch_ln(char** p_ln, int ind)
     return true;
 }
 
+/*Return the line number where the specified line is present*/
 bool roomio_find_ind(int* f_ln, const char* p_ln)
 {
     int i = 1;
