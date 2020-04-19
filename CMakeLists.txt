@@ -43,4 +43,3 @@ if(TESTS)
     add_compile_definitions(UNIT_TESTING)
     target_sources(swannsong PRIVATE src/tests/tests.c)
 endif()
-

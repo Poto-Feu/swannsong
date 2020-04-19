@@ -149,4 +149,3 @@ static void temp_arr_cpy_back(intvar_arr** p_arr, intvar** temp_arr)
     }
     free(*temp_arr);
 }
-

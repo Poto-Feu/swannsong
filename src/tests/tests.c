@@ -117,4 +117,3 @@ void tests_token()
     }
     free(r_arr.list);
 }
-

@@ -44,4 +44,3 @@ void intvar_return_value(int* r_val, uint16_t p_ind, intvar_arr* p_arr);
 void intvar_set_value(int r_val, uint16_t p_ind, intvar_arr* p_arr);
 
 #endif
-

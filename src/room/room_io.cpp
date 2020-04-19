@@ -119,4 +119,3 @@ static void open_strfile(FILE** fp)
 
     free(roomfile);
 }
-

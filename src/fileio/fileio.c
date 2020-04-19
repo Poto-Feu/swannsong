@@ -81,4 +81,3 @@ void fileio_getln(int* ln, char* s)
     fclose(fp);
     free(buf);
 }
-

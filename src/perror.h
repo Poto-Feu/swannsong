@@ -25,4 +25,3 @@
 void perror_disp(const char* id, bool fatal);
 
 #endif
-

@@ -89,4 +89,3 @@ static void gvars_add_to_list(char* p_name, int p_val)
 
     intvar_add_var_to_arr(&gvar_arr, elem);
 }
-

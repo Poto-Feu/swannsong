@@ -37,4 +37,3 @@ void exitgame(int c)
         exit(1);
     }
 }
-

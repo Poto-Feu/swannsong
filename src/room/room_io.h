@@ -34,4 +34,3 @@ bool roomio_find_ind(int* f_ln, const char* p_ln);
 #endif
 
 #endif
-

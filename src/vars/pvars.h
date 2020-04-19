@@ -28,4 +28,3 @@ void pvars_getgcvars(const char* name, char** value);
 void pvars_freegcvar(const char* name);
 
 #endif
-

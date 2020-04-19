@@ -216,4 +216,3 @@ void pvars_freegcvar(const char* name)
         perror_disp("UNK_GAMECONF_VAR (in pvars_freegcvar)", 0);
     }
 }
-

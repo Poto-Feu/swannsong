@@ -27,4 +27,3 @@ void stringsm_getfw(char** fw, char* s, int *index);
 void stringsm_ext_str_quotes(char** r_ext, char* p_str);
 
 #endif
-
