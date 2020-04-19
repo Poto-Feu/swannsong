@@ -23,4 +23,3 @@
 void gameconf_readfile();
 
 #endif
-

@@ -21,11 +21,10 @@
 #define PVARS_H
 
 extern char pvars_userlang[3];
-void pvars_setstdvars(char* name, char* value);
-void pvars_getstdvars(char* name, char** value);
-void pvars_setgcvars(char* name, char* value);
-void pvars_getgcvars(char* name, char** value);
-void pvars_freegcvar(char* name);
+void pvars_setstdvars(const char* name, char* value);
+void pvars_getstdvars(const char* name, char** value);
+void pvars_setgcvars(const char* name, char* value);
+void pvars_getgcvars(const char* name, char** value);
+void pvars_freegcvar(const char* name);
 
 #endif
-

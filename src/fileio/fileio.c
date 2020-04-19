@@ -63,7 +63,7 @@ void fileio_getln(int* ln, char* s)
     char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
     int i = 0;
 
-    pvars_getgcvars("roomfile", &roomfile);
+    pvars_getstdvars("roomfile", &roomfile);
     fp = fopen(roomfile, "r");
     free(roomfile);
     *ln = 0;
@@ -81,4 +81,3 @@ void fileio_getln(int* ln, char* s)
     fclose(fp);
     free(buf);
 }
-

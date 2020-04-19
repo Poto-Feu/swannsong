@@ -23,4 +23,3 @@
 void init_game();
 
 #endif
-

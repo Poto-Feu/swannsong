@@ -24,30 +24,38 @@
 #include "init.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "stringsm.h"
-#include "pstrings.h"
 #include "fileio/gameconf.h"
 #include "room/room.h"
+#include "room/room_io.h"
+#include "stringsm.h"
+#include "pstrings.h"
 
 static void ask_lang();
 
 void init_game()
 {
-    char* defaultlang = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* room_name = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* defaultlang = NULL;
+    char* room_name = NULL; 
+    char* roomfile = NULL;
 
     gameconf_readfile();
     pvars_getgcvars("defaultlang", &defaultlang);
-    pvars_setstdvars("lang", defaultlang);
     pvars_getgcvars("firstroom", &room_name);
+    pvars_getgcvars("roomfile", &roomfile);
+    pvars_setstdvars("lang", defaultlang);
+    pvars_setstdvars("roomfile", roomfile);
     pvars_freegcvar("defaultlang");
     pvars_freegcvar("firstroom");
+    pvars_freegcvar("roomfile");
+
+    roomio_copy_file_to_vec();
 
     ask_lang();
     room_load(room_name);
 
-    free(room_name);
     free(defaultlang);
+    free(room_name);
+    free(roomfile);
 }
 
 /*Show a prompt asking the user to choose the language*/
@@ -93,4 +101,3 @@ static void ask_lang()
 
     free(buf);
 }
-

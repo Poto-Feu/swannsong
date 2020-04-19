@@ -189,4 +189,3 @@ static void open_strfile(FILE **f)
     free(lang);
     free(langfile);
 }
-

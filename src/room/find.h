@@ -29,4 +29,3 @@ bool find_choicesline(int* foundln, int ln);
 bool find_onechoiceline(int num, int startln, int* ln);
 
 #endif
-

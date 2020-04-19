@@ -18,6 +18,7 @@ endif()
 add_executable(swannsong src/main.c
     src/room/room.c
     src/room/find.c
+    src/room/room_io.cpp
     src/fileio/fileio.c
     src/fileio/gameconf.c
     src/interpreter/parser.c
@@ -42,4 +43,3 @@ if(TESTS)
     add_compile_definitions(UNIT_TESTING)
     target_sources(swannsong PRIVATE src/tests/tests.c)
 endif()
-

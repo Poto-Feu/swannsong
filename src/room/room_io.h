@@ -17,11 +17,20 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef ROOM_IO_H
+#define ROOM_IO_H
 
-void tests_intvar();
-void tests_gvars();
-void tests_token();
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+void roomio_copy_file_to_vec();
+bool roomio_fetch_ln(char** p_ln, int ind);
+bool roomio_find_ind(int* f_ln, const char* p_ln);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
