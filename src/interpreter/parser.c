@@ -36,19 +36,20 @@
 
 static void parser_execins(char* p_line);
 
-void parser_exec_until_end(int blockln)
+int parser_exec_until_end(int blockln)
 {
     bool is_end = false;
-    int currln = blockln + 1;
+    int startln = blockln + 1;
+    int endln = startln;
 
-    for(int i = currln; !is_end; i++)
+    for(int i = startln; !is_end; i++)
     {
         int ind = -1;
         char* buf = NULL;
         char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
+        endln = i;
         roomio_fetch_ln(&buf, i);
-
         stringsm_chomp(buf);
         stringsm_rtab(buf);
         stringsm_getfw(&fw, buf, &ind);
@@ -59,6 +60,9 @@ void parser_exec_until_end(int blockln)
         free(buf);
         free(fw);
     }
+
+    return endln;
+}
 }
 
 static void free_TokenArr(TokenArr* p_arr);
