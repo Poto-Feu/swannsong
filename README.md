@@ -21,7 +21,6 @@ A text-adventure game with some humour. Please note that this game is in a pre-a
 ```bash
 mkdir build && cd build
 cmake .. 
-cp -r ../txt ../gameconf.txt .
 make
 ```
 

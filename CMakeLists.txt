@@ -7,6 +7,8 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(default_build_type "Release")
+
 include_directories(src)
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
@@ -32,6 +34,16 @@ add_executable(swannsong src/main.c
     src/stringsm.c
     src/exitgame.c
     src/inventory.c)
+
+# Copy necessary text files
+add_custom_command(TARGET swannsong POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/gameconf.txt
+        ${CMAKE_CURRENT_BINARY_DIR}/gameconf.txt)
+add_custom_command(TARGET swannsong POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/txt/
+        ${CMAKE_CURRENT_BINARY_DIR}/txt/)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
