@@ -35,7 +35,10 @@
 #include "stringsm.h"
 
 static void parser_execins(char* p_line);
+static bool check_condition(char* insln);
+int parser_skip_until_end(int blockln);
 
+/*Execute instructions until the end of the block*/
 int parser_exec_until_end(int blockln)
 {
     bool is_end = false;
@@ -49,13 +52,17 @@ int parser_exec_until_end(int blockln)
         char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
         endln = i;
+
         roomio_fetch_ln(&buf, i);
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
         stringsm_getfw(&fw, buf, &ind);
 
-        if(strcmp("END", fw)) parser_execins(buf);
-        else is_end = true;
+        if(!strcmp("END", fw)) is_end = true;
+        else if(!strcmp("IF", fw)) 
+        {
+            if(check_condition(buf)) i = parser_exec_until_end(i);
+            else i = parser_skip_until_end(i);
+        }
+        else parser_execins(buf);
 
         free(buf);
         free(fw);
@@ -158,6 +165,61 @@ static void interp_func_ins(TokenArr r_arr)
         }
         interp_SET_func(r_arr.list);
     }
+}
+
+static bool check_condition(char* insln)
+{
+    bool rtrn_val = false;
+    TokenArr r_arr = INIT_TKN_ARR;
+
+    token_create_arr(&r_arr, insln);
+
+    if(r_arr.list[2].type == EXISTS)
+    {
+        if(r_arr.ln != 3)
+        {
+            free_TokenArr(&r_arr);
+            perror_disp("wrong arg number in EXISTS IF", 1);
+        }
+        if(gvars_exist(r_arr.list[1].str)) rtrn_val = true;
+
+    } else if(r_arr.list[1].type == VARIABLE)
+    {
+        if(r_arr.ln != 4)
+        {
+            free_TokenArr(&r_arr);
+            perror_disp("wrong arg number in COMP IF", 1);
+        }
+
+        if(r_arr.list[3].type == NUMBER)
+        {
+            if(r_arr.list[2].type == EQUAL)
+            {
+                int varval = gvars_return_value(r_arr.list[1].str);
+                int compval = -1;
+
+                sscanf(r_arr.list[3].str, "%d", &compval);
+                if(compval == varval) rtrn_val = true;
+            } else
+            {
+                free_TokenArr(&r_arr);
+                perror_disp("missing equal token in COMP IF", 1);
+            }
+
+        } else
+        {
+            free_TokenArr(&r_arr);
+            perror_disp("missing number in if condition", 1);
+        }
+
+    } else 
+    {
+        free_TokenArr(&r_arr);
+        perror_disp("IF type not recognized", 1);
+    }
+    
+    free_TokenArr(&r_arr);
+    return rtrn_val;
 }
 
 static void interp_PRINT_func(Token* c_list)

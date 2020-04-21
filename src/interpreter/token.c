@@ -185,6 +185,7 @@ static bool is_number(char* p_tkn);
 static bool is_string(char* p_tkn);
 static bool is_string_id(char* p_tkn);
 static bool is_new_var(TokenArr* p_arr, int p_ind);
+static bool is_exists(char* p_tkn);
 
 /*Set the appropriate type to each Token in a TokenArr*/
 static void set_tokens_type(TokenArr* p_arr)
@@ -204,6 +205,7 @@ static void set_tokens_type(TokenArr* p_arr)
         {
             p_arr->list[i].type = STRING_ID;
         } else if(is_new_var(p_arr, i)) p_arr->list[i].type = NEWVAR;
+        else if(is_exists(p_arr->list[i].str)) p_arr->list[i].type = EXISTS;
         else 
         {
             p_arr->list[i].type = UNKNOWN;
@@ -280,6 +282,12 @@ static bool is_string_id(char* p_tkn)
 static bool is_new_var(TokenArr* p_arr, int p_ind)
 {
     if(!strcmp(p_arr->list[0].str, "SET") && p_ind == 1) return true;
+    return false;
+}
+
+static bool is_exists(char* p_tkn)
+{
+    if(!strcmp(p_tkn, "EXISTS") || !strcmp(p_tkn, "EXIST")) return true;
     return false;
 }
 
