@@ -90,14 +90,14 @@ void stringsm_ext_str_quotes(char** r_ext, char* p_str)
 {
     int chr_numb = 0;
 
-    if(*r_ext != NULL) perror_disp("*r_ext must be null", 1);
-    for(int i = 1; p_str[i] != '\"'; i++) chr_numb++;
+    if(*r_ext != NULL) free(*r_ext);
+    for(int i = 0; p_str[i] != '\0'; i++) chr_numb++;
 
     *r_ext = malloc((chr_numb+1) * sizeof(char));
     (*r_ext)[chr_numb] = '\0';
 
-    for(int i = 1; i <= chr_numb; i++)
+    for(int i = 0; i <= chr_numb; i++)
     {
-        (*r_ext)[i-1] = p_str[i];
+        (*r_ext)[i] = p_str[i];
     }
 }

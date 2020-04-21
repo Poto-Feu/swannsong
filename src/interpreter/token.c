@@ -18,7 +18,6 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -111,6 +110,36 @@ static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n)
             tkn_letter_ind = 0;
             set_one_chr_tkn(temp_arr, *tkn_n, p_str[i]);
             temp_arr[*tkn_n].type = EQUAL;
+        } else if(p_str[i] == '"')
+        {
+            (*tkn_n)++;
+            tkn_letter_ind = 0;
+            bool in_string = true;
+
+            temp_arr[*tkn_n].str = calloc(TKN_STR_BUF, sizeof(char));
+            temp_arr[*tkn_n].type = STRING;
+
+            /*Create a STRING token*/
+            for(int y = i+1; in_string; y++)
+            {
+                if(p_str[y] != '"')
+                {
+                    temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y];
+                    tkn_letter_ind++;
+                } else if(p_str[y] == '\\')
+                {
+                    if(p_str[y+1] == '"')
+                    {
+                        temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y+1];
+                        y++;
+                    } else  temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y];
+                } else
+                {
+                    i = y;
+                    tkn_letter_ind = 0;
+                    in_string = false;
+                }
+            }
         } else
         {
             if(tkn_letter_ind == 0)

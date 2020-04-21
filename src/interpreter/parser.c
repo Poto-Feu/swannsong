@@ -125,7 +125,7 @@ static void interp_func_ins(TokenArr r_arr)
     }
     else if(!strcmp(r_arr.list[0].str, "SET"))
     {
-        if(r_arr.ln != 3)
+        if(r_arr.ln != 4)
         {
             perror_disp("wrong number of tokens (SET)", 1);
         }
