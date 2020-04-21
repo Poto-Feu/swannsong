@@ -63,6 +63,33 @@ int parser_exec_until_end(int blockln)
 
     return endln;
 }
+
+/*Skip all lines until the end of the block*/
+int parser_skip_until_end(int blockln)
+{
+    bool is_end = false;
+    int startln = blockln + 1;
+    int endln = startln;
+
+    for(int i = startln; !is_end; i++)
+    {
+        int ind = -1;
+        char* buf = NULL;
+        char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+
+        endln = i;
+
+        roomio_fetch_ln(&buf, i);
+        stringsm_getfw(&fw, buf, &ind);
+
+        if(!strcmp("END", fw)) is_end = true;
+        else if(!strcmp("IF", fw)) i = parser_skip_until_end(i);
+
+        free(buf);
+        free(fw);
+    }
+
+    return endln;
 }
 
 static void free_TokenArr(TokenArr* p_arr);
