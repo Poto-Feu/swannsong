@@ -259,30 +259,20 @@ static void display_choices(int roomln)
     }
 }
 
-/*Display the text attributed to a choice ; choiceln must point to the
+/*Display the text attributed to a choice ; choiceln must correspond to the
 line number of the beginning of the choice block*/
 static void display_choicetext(int choiceln, int num)
 {
     bool textfound = false;
-    bool inif = false;
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* roomfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    FILE* fp = NULL;
-
-    pvars_getstdvars("roomfile", &roomfile);
-    fileio_setfileptr(&fp, roomfile);
-    fileio_gotoline(&fp, choiceln);
-
-    free(roomfile);
+    int currln = choiceln + 1;
 
     for(int i = 0; !textfound; i++)
     {
+        char* buf = NULL;
         char* arg = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
         char* type = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
 
-        fgets(buf, (P_MAX_BUF_SIZE - 1), fp);
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
+        roomio_fetch_ln(&buf, currln);
         parser_splitline(&type, &arg, buf);
 
         if(!strcmp(type, "TEXT"))
@@ -293,26 +283,15 @@ static void display_choicetext(int choiceln, int num)
         }
         else if(!strcmp(type, "END"))
         {
-            if(inif)
-            {
-                inif = false;
-            } else
-            {
-                free(buf);
-                free(type);
-                free(arg);
-                perror_disp("NO_CHOICE_TEXT", 1);
-
-                break;
-            }
-        } else if(buf[0] == 'I' && buf[1] == 'F')
-        {
-            inif = true;
+            free(buf);
+            free(type);
+            free(arg);
+            perror_disp("missing choice text", 1);
         }
+        currln++;
 
+        free(buf);
         free(type);
         free(arg);
     }
-
-    free(buf);
 }
