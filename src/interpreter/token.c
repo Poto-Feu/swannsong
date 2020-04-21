@@ -110,11 +110,19 @@ static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n)
             tkn_letter_ind = 0;
             set_one_chr_tkn(temp_arr, *tkn_n, p_str[i]);
             temp_arr[*tkn_n].type = EQUAL;
-        } else if(p_str[i] == '"')
+        } else if(p_str[i] == '!')
         {
             (*tkn_n)++;
             tkn_letter_ind = 0;
+
+            set_one_chr_tkn(temp_arr, *tkn_n, p_str[i]);
+            temp_arr[*tkn_n].type = NOT;
+        } else if(p_str[i] == '"')
+        {
             bool in_string = true;
+
+            (*tkn_n)++;
+            tkn_letter_ind = 0;
 
             temp_arr[*tkn_n].str = calloc(TKN_STR_BUF, sizeof(char));
             temp_arr[*tkn_n].type = STRING;

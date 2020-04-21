@@ -29,6 +29,7 @@ typedef enum
     VARIABLE,
     OPERATOR,
     EQUAL,
+    NOT,
     STRING,
     NUMBER,
     STRING_ID,

@@ -17,7 +17,6 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -25,7 +24,6 @@
 #include "vars/pconst.h"
 #include "vars/pvars.h"
 #include "vars/gvars.h"
-#include "room/room.h"
 #include "room/find.h"
 #include "room/room_io.h"
 #include "interpreter/token.h"
@@ -167,6 +165,8 @@ static void interp_func_ins(TokenArr r_arr)
     }
 }
 
+static bool check_COMP_condition(TokenArr* r_arr);
+
 static bool check_condition(char* insln)
 {
     bool rtrn_val = false;
@@ -183,35 +183,17 @@ static bool check_condition(char* insln)
         }
         if(gvars_exist(r_arr.list[1].str)) rtrn_val = true;
 
-    } else if(r_arr.list[1].type == VARIABLE)
+    } else if(r_arr.list[2].type == NOT && r_arr.list[3].type == EXISTS)
     {
         if(r_arr.ln != 4)
         {
             free_TokenArr(&r_arr);
-            perror_disp("wrong arg number in COMP IF", 1);
+            perror_disp("wrong arg number in EXISTS IF", 1);
         }
-
-        if(r_arr.list[3].type == NUMBER)
-        {
-            if(r_arr.list[2].type == EQUAL)
-            {
-                int varval = gvars_return_value(r_arr.list[1].str);
-                int compval = -1;
-
-                sscanf(r_arr.list[3].str, "%d", &compval);
-                if(compval == varval) rtrn_val = true;
-            } else
-            {
-                free_TokenArr(&r_arr);
-                perror_disp("missing equal token in COMP IF", 1);
-            }
-
-        } else
-        {
-            free_TokenArr(&r_arr);
-            perror_disp("missing number in if condition", 1);
-        }
-
+        if(!gvars_exist(r_arr.list[1].str)) rtrn_val = true;
+    } else if(r_arr.list[1].type == VARIABLE)
+    {
+        rtrn_val = check_COMP_condition(&r_arr);
     } else 
     {
         free_TokenArr(&r_arr);
@@ -219,6 +201,48 @@ static bool check_condition(char* insln)
     }
     
     free_TokenArr(&r_arr);
+    return rtrn_val;
+}
+
+static bool check_COMP_condition(TokenArr* r_arr)
+{
+    bool rtrn_val = false;
+
+    if(r_arr->ln < 4 || r_arr->ln > 5)
+    {
+        free_TokenArr(r_arr);
+        perror_disp("wrong arg number in COMP IF", 1);
+    }
+
+    if(r_arr->list[3].type == NUMBER)
+    {
+        if(r_arr->list[2].type == EQUAL)
+        {
+            int varval = gvars_return_value(r_arr->list[1].str);
+            int compval = -1;
+
+            sscanf(r_arr->list[3].str, "%d", &compval);
+            if(compval == varval) rtrn_val = true;
+        } else
+        {
+            free_TokenArr(r_arr);
+            perror_disp("missing equal token in COMP IF", 1);
+        }
+
+    } else if(r_arr->list[2].type == NOT && r_arr->list[3].type == EQUAL
+            && r_arr->list[4].type == NUMBER)
+    {
+        int varval = gvars_return_value(r_arr->list[1].str);
+        int compval = -1;
+
+        sscanf(r_arr->list[4].str, "%d", &compval);
+        if(compval != varval) rtrn_val = true;
+    } else
+    {
+        free_TokenArr(r_arr);
+        perror_disp("wrong token order in COMP IF", 1);
+    }
+
     return rtrn_val;
 }
 
