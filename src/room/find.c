@@ -70,43 +70,33 @@ the beginning of the Choices decleration set*/
 bool find_onechoiceline(int num, int startln, int* ln)
 {
     bool choicefound = false;
-    bool inonechoice = false;
-    bool inif = false;
+    bool is_end = false;
     int currln = startln + 1;
 
-    if(num < 0 || num > 9) perror_disp("WRG_CHOI_NUM", 1);
+    if(num < 0 || num > 9) perror_disp("choice number not allowed", 1);
 
-    for(int i = currln; !choicefound; i++)
+    for(int i = currln; !choicefound && !is_end; i++)
     {
         char* buf = NULL;
 
-        roomio_fetch_ln(&buf, i);
+        bool is_eof = !roomio_fetch_ln(&buf, i);
 
-        if(buf[0] == 'c' && buf[1] == num + '0')
+        if(is_eof) perror_disp("find_onechoiceline has hit EOF", 1);
+        if(buf[0] == 'c' && buf[1] == num + '0' && buf[2] == '\0')
         {
-            if(inif == false && inonechoice == false)
-            {
-                *ln = i;
-                choicefound = true;
-            } else
-            {
-                free(buf);
-                perror_disp("WRG_CHOICE_PLACE", 1);
-            }
-        } else if(buf[0] == 'c' && buf[1] != num + '0') inonechoice = true;
-        else if(buf[0] == 'I' && buf[1] == 'F') inif = true;
-        else if(buf[0] == 'E' && buf[1] == 'N' && buf[2] == 'D')
+            *ln = i;
+            choicefound = true;
+        } else if(buf[0] == 'c' && buf[1] != num + '0' && buf[2] == '\0')
         {
-            if(inif) inif = false;
-            else if (inonechoice) inonechoice = false;
-            else
-            {
-                free(buf);
-                break;
-            }
+            i = parser_skip_until_end(i);
+        } else if(!strcmp(buf, "END")) is_end = true;
+        else 
+        {
+            free(buf);
+            perror_disp("wrong input in find_onechoiceline", 1);
         }
 
-    free(buf);
+        free(buf);
     }
     return choicefound;
 }
