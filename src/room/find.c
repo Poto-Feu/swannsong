@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
 #include "vars/pconst.h"
@@ -101,23 +102,52 @@ bool find_onechoiceline(int num, int startln, int* ln)
     return choicefound;
 }
 
-/*Fetch the first line ecountered where a specific instruction is present
-beginning from a specified line*/
+/*Fetch the line where a specific block is present beginning from a 
+specified line*/
 bool find_blockline(int* foundln, int p_ln, const char* ins)
 {
     bool is_fnd = false;
+    bool is_end = false;
+    bool in_choices = false;
     int currln = p_ln + 1;
     
-    for(int i = currln; !is_fnd; i++)
+    for(int i = currln; !is_fnd && !is_end; i++)
     {
         char* buf = NULL;
         bool is_eof = !roomio_fetch_ln(&buf, i);
 
-        if(is_eof) break;
-        if(!strcmp(ins, buf))
+        if(is_eof) perror_disp("find_blockline has hit EOF", true);
+        if(!strcmp(ins, buf) && !in_choices)
         {
             is_fnd = true;
             *foundln = i;
+        } else if(!strcmp("ATLAUNCH", buf))
+        {
+            if(in_choices)
+            {
+                free(buf);
+                perror_disp("ATLAUNCH instruction inside CHOICES list", true);
+            }
+            else i = parser_skip_until_end(i);
+        } else if(!strcmp("CHOICES", buf))
+        {
+            if(in_choices)
+            {
+                free(buf);
+                perror_disp("CHOICES instruction inside CHOICES list", true);
+            } else in_choices = true;
+        } else if(buf[0] == 'c' && isdigit(buf[1]) && buf[2] == '\0')
+        {
+            if(in_choices) i = parser_skip_until_end(i);
+            else
+            {
+                free(buf);
+                perror_disp("CHOICE block outside CHOICES list", true);
+            }
+        } else if(!strcmp("END", buf))
+        {
+            if(in_choices) in_choices = false;
+            else is_end = true;
         }
 
         free(buf);
