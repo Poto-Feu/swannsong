@@ -18,7 +18,6 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -111,6 +110,44 @@ static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n)
             tkn_letter_ind = 0;
             set_one_chr_tkn(temp_arr, *tkn_n, p_str[i]);
             temp_arr[*tkn_n].type = EQUAL;
+        } else if(p_str[i] == '!')
+        {
+            (*tkn_n)++;
+            tkn_letter_ind = 0;
+
+            set_one_chr_tkn(temp_arr, *tkn_n, p_str[i]);
+            temp_arr[*tkn_n].type = NOT;
+        } else if(p_str[i] == '"')
+        {
+            bool in_string = true;
+
+            (*tkn_n)++;
+            tkn_letter_ind = 0;
+
+            temp_arr[*tkn_n].str = calloc(TKN_STR_BUF, sizeof(char));
+            temp_arr[*tkn_n].type = STRING;
+
+            /*Create a STRING token*/
+            for(int y = i+1; in_string; y++)
+            {
+                if(p_str[y] != '"')
+                {
+                    temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y];
+                    tkn_letter_ind++;
+                } else if(p_str[y] == '\\')
+                {
+                    if(p_str[y+1] == '"')
+                    {
+                        temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y+1];
+                        y++;
+                    } else  temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y];
+                } else
+                {
+                    i = y;
+                    tkn_letter_ind = 0;
+                    in_string = false;
+                }
+            }
         } else
         {
             if(tkn_letter_ind == 0)
@@ -156,6 +193,7 @@ static bool is_number(char* p_tkn);
 static bool is_string(char* p_tkn);
 static bool is_string_id(char* p_tkn);
 static bool is_new_var(TokenArr* p_arr, int p_ind);
+static bool is_exists(char* p_tkn);
 
 /*Set the appropriate type to each Token in a TokenArr*/
 static void set_tokens_type(TokenArr* p_arr)
@@ -175,6 +213,7 @@ static void set_tokens_type(TokenArr* p_arr)
         {
             p_arr->list[i].type = STRING_ID;
         } else if(is_new_var(p_arr, i)) p_arr->list[i].type = NEWVAR;
+        else if(is_exists(p_arr->list[i].str)) p_arr->list[i].type = EXISTS;
         else 
         {
             p_arr->list[i].type = UNKNOWN;
@@ -251,6 +290,12 @@ static bool is_string_id(char* p_tkn)
 static bool is_new_var(TokenArr* p_arr, int p_ind)
 {
     if(!strcmp(p_arr->list[0].str, "SET") && p_ind == 1) return true;
+    return false;
+}
+
+static bool is_exists(char* p_tkn)
+{
+    if(!strcmp(p_tkn, "EXISTS") || !strcmp(p_tkn, "EXIST")) return true;
     return false;
 }
 

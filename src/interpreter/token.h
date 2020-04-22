@@ -29,10 +29,12 @@ typedef enum
     VARIABLE,
     OPERATOR,
     EQUAL,
+    NOT,
     STRING,
     NUMBER,
     STRING_ID,
     NEWVAR,
+    EXISTS,
     UNKNOWN,
     UNDEFINED
 } token_type;

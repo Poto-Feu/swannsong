@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
 #include "vars/pconst.h"
@@ -70,64 +71,83 @@ the beginning of the Choices decleration set*/
 bool find_onechoiceline(int num, int startln, int* ln)
 {
     bool choicefound = false;
-    bool inonechoice = false;
-    bool inif = false;
+    bool is_end = false;
     int currln = startln + 1;
 
-    if(num < 0 || num > 9) perror_disp("WRG_CHOI_NUM", 1);
+    if(num < 0 || num > 9) perror_disp("choice number not allowed", 1);
 
-    for(int i = currln; !choicefound; i++)
+    for(int i = currln; !choicefound && !is_end; i++)
     {
         char* buf = NULL;
 
-        roomio_fetch_ln(&buf, i);
+        bool is_eof = !roomio_fetch_ln(&buf, i);
 
-        if(buf[0] == 'c' && buf[1] == num + '0')
+        if(is_eof) perror_disp("find_onechoiceline has hit EOF", 1);
+        if(buf[0] == 'c' && buf[1] == num + '0' && buf[2] == '\0')
         {
-            if(inif == false && inonechoice == false)
-            {
-                *ln = i;
-                choicefound = true;
-            } else
-            {
-                free(buf);
-                perror_disp("WRG_CHOICE_PLACE", 1);
-            }
-        } else if(buf[0] == 'c' && buf[1] != num + '0') inonechoice = true;
-        else if(buf[0] == 'I' && buf[1] == 'F') inif = true;
-        else if(buf[0] == 'E' && buf[1] == 'N' && buf[2] == 'D')
+            *ln = i;
+            choicefound = true;
+        } else if(buf[0] == 'c' && buf[1] != num + '0' && buf[2] == '\0')
         {
-            if(inif) inif = false;
-            else if (inonechoice) inonechoice = false;
-            else
-            {
-                free(buf);
-                break;
-            }
+            i = parser_skip_until_end(i);
+        } else if(!strcmp(buf, "END")) is_end = true;
+        else 
+        {
+            free(buf);
+            perror_disp("wrong input in find_onechoiceline", 1);
         }
 
-    free(buf);
+        free(buf);
     }
     return choicefound;
 }
 
-/*Fetch the first line ecountered where a specific instruction is present
-beginning from a specified line*/
+/*Fetch the line where a specific block is present beginning from a 
+specified line*/
 bool find_blockline(int* foundln, int p_ln, const char* ins)
 {
     bool is_fnd = false;
+    bool is_end = false;
+    bool in_choices = false;
     int currln = p_ln + 1;
     
-    for(int i = currln; !is_fnd; i++)
+    for(int i = currln; !is_fnd && !is_end; i++)
     {
         char* buf = NULL;
         bool is_eof = !roomio_fetch_ln(&buf, i);
 
-        if(is_eof) break;
-        if(!strcmp(ins, buf))
+        if(is_eof) perror_disp("find_blockline has hit EOF", true);
+        if(!strcmp(ins, buf) && !in_choices)
         {
             is_fnd = true;
             *foundln = i;
+        } else if(!strcmp("ATLAUNCH", buf))
+        {
+            if(in_choices)
+            {
+                free(buf);
+                perror_disp("ATLAUNCH instruction inside CHOICES list", true);
+            }
+            else i = parser_skip_until_end(i);
+        } else if(!strcmp("CHOICES", buf))
+        {
+            if(in_choices)
+            {
+                free(buf);
+                perror_disp("CHOICES instruction inside CHOICES list", true);
+            } else in_choices = true;
+        } else if(buf[0] == 'c' && isdigit(buf[1]) && buf[2] == '\0')
+        {
+            if(in_choices) i = parser_skip_until_end(i);
+            else
+            {
+                free(buf);
+                perror_disp("CHOICE block outside CHOICES list", true);
+            }
+        } else if(!strcmp("END", buf))
+        {
+            if(in_choices) in_choices = false;
+            else is_end = true;
         }
 
         free(buf);

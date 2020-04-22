@@ -38,7 +38,7 @@ static void room_atlaunch(int roomln)
     bool atlfound = false;
 
     atlfound = find_atlaunchline(&foundln, roomln);
-    if(atlfound == true) parser_exec_until_end(foundln);
+    if(atlfound == true) (void)parser_exec_until_end(foundln);
 }
 
 void room_load(char* id)

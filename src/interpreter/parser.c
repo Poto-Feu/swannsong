@@ -17,7 +17,6 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -25,7 +24,6 @@
 #include "vars/pconst.h"
 #include "vars/pvars.h"
 #include "vars/gvars.h"
-#include "room/room.h"
 #include "room/find.h"
 #include "room/room_io.h"
 #include "interpreter/token.h"
@@ -35,30 +33,68 @@
 #include "stringsm.h"
 
 static void parser_execins(char* p_line);
+static bool check_condition(char* insln);
+int parser_skip_until_end(int blockln);
 
-void parser_exec_until_end(int blockln)
+/*Execute instructions until the end of the block*/
+int parser_exec_until_end(int blockln)
 {
     bool is_end = false;
-    int currln = blockln + 1;
+    int startln = blockln + 1;
+    int endln = startln;
 
-    for(int i = currln; !is_end; i++)
+    for(int i = startln; !is_end; i++)
     {
         int ind = -1;
         char* buf = NULL;
         char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
 
-        roomio_fetch_ln(&buf, i);
+        endln = i;
 
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
+        roomio_fetch_ln(&buf, i);
         stringsm_getfw(&fw, buf, &ind);
 
-        if(strcmp("END", fw)) parser_execins(buf);
-        else is_end = true;
+        if(!strcmp("END", fw)) is_end = true;
+        else if(!strcmp("IF", fw)) 
+        {
+            if(check_condition(buf)) i = parser_exec_until_end(i);
+            else i = parser_skip_until_end(i);
+        }
+        else parser_execins(buf);
 
         free(buf);
         free(fw);
     }
+
+    return endln;
+}
+
+/*Skip all lines until the end of the block*/
+int parser_skip_until_end(int blockln)
+{
+    bool is_end = false;
+    int startln = blockln + 1;
+    int endln = startln;
+
+    for(int i = startln; !is_end; i++)
+    {
+        int ind = -1;
+        char* buf = NULL;
+        char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+
+        endln = i;
+
+        roomio_fetch_ln(&buf, i);
+        stringsm_getfw(&fw, buf, &ind);
+
+        if(!strcmp("END", fw)) is_end = true;
+        else if(!strcmp("IF", fw)) i = parser_skip_until_end(i);
+
+        free(buf);
+        free(fw);
+    }
+
+    return endln;
 }
 
 static void free_TokenArr(TokenArr* p_arr);
@@ -121,12 +157,93 @@ static void interp_func_ins(TokenArr r_arr)
     }
     else if(!strcmp(r_arr.list[0].str, "SET"))
     {
-        if(r_arr.ln != 3)
+        if(r_arr.ln != 4)
         {
             perror_disp("wrong number of tokens (SET)", 1);
         }
         interp_SET_func(r_arr.list);
     }
+}
+
+static bool check_COMP_condition(TokenArr* r_arr);
+
+static bool check_condition(char* insln)
+{
+    bool rtrn_val = false;
+    TokenArr r_arr = INIT_TKN_ARR;
+
+    token_create_arr(&r_arr, insln);
+
+    if(r_arr.list[2].type == EXISTS)
+    {
+        if(r_arr.ln != 3)
+        {
+            free_TokenArr(&r_arr);
+            perror_disp("wrong arg number in EXISTS IF", 1);
+        }
+        if(gvars_exist(r_arr.list[1].str)) rtrn_val = true;
+
+    } else if(r_arr.list[2].type == NOT && r_arr.list[3].type == EXISTS)
+    {
+        if(r_arr.ln != 4)
+        {
+            free_TokenArr(&r_arr);
+            perror_disp("wrong arg number in EXISTS IF", 1);
+        }
+        if(!gvars_exist(r_arr.list[1].str)) rtrn_val = true;
+    } else if(r_arr.list[1].type == VARIABLE)
+    {
+        rtrn_val = check_COMP_condition(&r_arr);
+    } else 
+    {
+        free_TokenArr(&r_arr);
+        perror_disp("IF type not recognized", 1);
+    }
+    
+    free_TokenArr(&r_arr);
+    return rtrn_val;
+}
+
+static bool check_COMP_condition(TokenArr* r_arr)
+{
+    bool rtrn_val = false;
+
+    if(r_arr->ln < 4 || r_arr->ln > 5)
+    {
+        free_TokenArr(r_arr);
+        perror_disp("wrong arg number in COMP IF", 1);
+    }
+
+    if(r_arr->list[3].type == NUMBER)
+    {
+        if(r_arr->list[2].type == EQUAL)
+        {
+            int varval = gvars_return_value(r_arr->list[1].str);
+            int compval = -1;
+
+            sscanf(r_arr->list[3].str, "%d", &compval);
+            if(compval == varval) rtrn_val = true;
+        } else
+        {
+            free_TokenArr(r_arr);
+            perror_disp("missing equal token in COMP IF", 1);
+        }
+
+    } else if(r_arr->list[2].type == NOT && r_arr->list[3].type == EQUAL
+            && r_arr->list[4].type == NUMBER)
+    {
+        int varval = gvars_return_value(r_arr->list[1].str);
+        int compval = -1;
+
+        sscanf(r_arr->list[4].str, "%d", &compval);
+        if(compval != varval) rtrn_val = true;
+    } else
+    {
+        free_TokenArr(r_arr);
+        perror_disp("wrong token order in COMP IF", 1);
+    }
+
+    return rtrn_val;
 }
 
 static void interp_PRINT_func(Token* c_list)
@@ -255,30 +372,20 @@ static void display_choices(int roomln)
     }
 }
 
-/*Display the text attributed to a choice ; choiceln must point to the
+/*Display the text attributed to a choice ; choiceln must correspond to the
 line number of the beginning of the choice block*/
 static void display_choicetext(int choiceln, int num)
 {
     bool textfound = false;
-    bool inif = false;
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* roomfile = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    FILE* fp = NULL;
-
-    pvars_getstdvars("roomfile", &roomfile);
-    fileio_setfileptr(&fp, roomfile);
-    fileio_gotoline(&fp, choiceln);
-
-    free(roomfile);
+    int currln = choiceln + 1;
 
     for(int i = 0; !textfound; i++)
     {
+        char* buf = NULL;
         char* arg = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
         char* type = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
 
-        fgets(buf, (P_MAX_BUF_SIZE - 1), fp);
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
+        roomio_fetch_ln(&buf, currln);
         parser_splitline(&type, &arg, buf);
 
         if(!strcmp(type, "TEXT"))
@@ -289,26 +396,15 @@ static void display_choicetext(int choiceln, int num)
         }
         else if(!strcmp(type, "END"))
         {
-            if(inif)
-            {
-                inif = false;
-            } else
-            {
-                free(buf);
-                free(type);
-                free(arg);
-                perror_disp("NO_CHOICE_TEXT", 1);
-
-                break;
-            }
-        } else if(buf[0] == 'I' && buf[1] == 'F')
-        {
-            inif = true;
+            free(buf);
+            free(type);
+            free(arg);
+            perror_disp("missing choice text", 1);
         }
+        currln++;
 
+        free(buf);
         free(type);
         free(arg);
     }
-
-    free(buf);
 }
