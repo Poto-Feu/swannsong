@@ -29,11 +29,6 @@ void exitgame(int c)
     printf("\n");
     getchar();
 
-    if(c == 0)
-    {
-        exit(c);
-    } else
-    {
-        exit(1);
-    }
+    if(c == 0) exit(c);
+    else exit(1);
 }

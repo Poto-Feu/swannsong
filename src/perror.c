@@ -28,8 +28,5 @@
 void perror_disp(const char* id, bool fatal)
 {
     printf("ERROR : %s\n", id);
-    if (fatal)
-    {
-        exit(1);
-    }
+    if (fatal) exitgame(1);
 }
