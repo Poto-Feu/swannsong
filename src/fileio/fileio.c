@@ -17,13 +17,11 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "fileio.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "interpreter/parser.h"
 #include "perror.h"
 #include "stringsm.h"
 

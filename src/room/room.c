@@ -17,18 +17,10 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
 #include "room.h"
 #include "find.h"
-#include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "perror.h"
-#include "pstrings.h"
-#include "stringsm.h"
-#include "fileio/fileio.h"
 #include "interpreter/parser.h"
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/

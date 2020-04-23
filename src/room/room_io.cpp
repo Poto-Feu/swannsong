@@ -19,7 +19,6 @@
 
 extern "C"
 {
-#include <stdlib.h>
 #include <string.h>
 #include "fileio/fileio.h"
 #include "vars/pconst.h"
@@ -28,14 +27,11 @@ extern "C"
 #include "perror.h"
 }
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include "room/room_io.h"
 
 using std::string;
-using std::cout;
-using std::endl;
 using std::vector;
 
 static vector<string> roomfile_arr {};

@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "perror.h"
+#include "exitgame.h"
 
 /*Display an error message with the specified string*/
 void perror_disp(const char* id, bool fatal)

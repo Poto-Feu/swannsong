@@ -17,19 +17,15 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
-#include "vars/pconst.h"
-#include "vars/pvars.h"
-#include "fileio/fileio.h"
-#include "interpreter/parser.h"
+#include "room/find.h"
 #include "room/room_io.h"
+#include "vars/pconst.h"
+#include "interpreter/parser.h"
 #include "perror.h"
-#include "pstrings.h"
-#include "stringsm.h"
 
 bool find_blockline(int* foundln, int ln, const char* ins);
 

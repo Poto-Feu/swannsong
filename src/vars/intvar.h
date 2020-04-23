@@ -20,6 +20,7 @@
 #ifndef INTVAR_H
 #define INTVAR_H
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 

@@ -19,8 +19,6 @@
 
 extern "C" 
 {
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
@@ -31,7 +29,6 @@ extern "C"
 
 #include <string>
 #include <vector>
-#include <iostream>
 #include "pstrings.h"
 
 typedef struct
