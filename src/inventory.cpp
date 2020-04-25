@@ -17,17 +17,18 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include "inventory.h"
+extern "C" {
 #include "perror.h"
+}
+
+#include <vector>
+#include "inventory.h"
 #include "vars/intvar.h"
 
 /*Not named item in order to prevent conflict with some libs*/
 typedef intvar gitem;
-typedef intvar_arr gitem_arr;
 
-static gitem_arr inventory_arr = INIT_INTVAR_ARR;
+static std::vector<gitem> inventory_arr;
 
 static void inventory_additem_tolist(char* pname, int val);
 static void inventory_add_n_item(uint16_t p_ind, int val);
@@ -56,10 +57,7 @@ int inventory_return_item_n(char* p_name)
     if(intvar_search_ind(&p_ind, p_name, &inventory_arr))
     {
         intvar_return_value(&r_val, p_ind, &inventory_arr);
-    } else
-    {
-        perror_disp("INV_VAR_NF", 1);
-    }
+    } else perror_disp("INV_VAR_NF", 1);
 
     return r_val;
 }
@@ -67,7 +65,7 @@ int inventory_return_item_n(char* p_name)
 /*Create an entry for the specified item in inventory_list*/
 static void inventory_additem_tolist(char* p_name, int p_val)
 {
-    intvar elem = INIT_INTVAR(p_name, p_val);
+    intvar elem = INIT_INTVAR(static_cast<std::string>(p_name), p_val);
 
     intvar_add_var_to_arr(&inventory_arr, elem);
 }

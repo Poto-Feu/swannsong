@@ -36,14 +36,14 @@ add_executable(swannsong src/main.c
     src/interpreter/parser.c
     src/interpreter/token.c
     src/vars/pvars.c
-    src/vars/intvar.c
-    src/vars/gvars.c
+    src/vars/intvar.cpp
+    src/vars/gvars.cpp
     src/init.c
     src/perror.c
     src/pstrings.cpp
     src/stringsm.c
     src/exitgame.c
-    src/inventory.c)
+    src/inventory.cpp)
 
 # Statically link libraries if compiled on MinGW (GCC C++ libs are rarely
 # installed on Windows)

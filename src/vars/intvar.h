@@ -20,28 +20,23 @@
 #ifndef INTVAR_H
 #define INTVAR_H
 
-#include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
+#include <string>
+#include <vector>
 
 typedef struct
 {
-    char* name;
+    std::string name;
     int val;
 } intvar;
 
-typedef struct
-{
-    uint16_t ln;
-    intvar* list;
-} intvar_arr;
+#define INIT_INTVAR(n, v) {n, v}
 
-#define INIT_INTVAR_ARR {.ln = 0, .list = NULL}
-#define INIT_INTVAR(n, v) {.name = n, .val = v}
-
-void intvar_add_var_to_arr(intvar_arr* p_arr, intvar p_var);
-bool intvar_search_ind(uint16_t* p_ind, char* p_name, intvar_arr* p_arr);
-void intvar_return_value(int* r_val, uint16_t p_ind, intvar_arr* p_arr);
-void intvar_set_value(int r_val, uint16_t p_ind, intvar_arr* p_arr);
+void intvar_add_var_to_arr(std::vector<intvar>* p_arr, intvar p_var);
+bool intvar_search_ind(uint16_t* p_ind, char* p_name,
+        std::vector<intvar>* p_arr);
+void intvar_return_value(int* r_val, uint16_t p_ind,
+        std::vector<intvar>* p_arr);
+void intvar_set_value(int r_val, uint16_t p_ind, std::vector<intvar>* p_arr);
 
 #endif
