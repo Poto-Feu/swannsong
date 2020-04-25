@@ -22,47 +22,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "tests.h"
-#include "vars/intvar.h"
 #include "vars/gvars.h"
 #include "pstrings.h"
 #include "interpreter/token.h"
-
-void tests_intvar()
-{
-    #define second_el_val 2889
-
-    int val = 0;
-    uint16_t ind = 0;
-    bool indexist = false;
-    intvar_arr test_arr = INIT_INTVAR_ARR;
-    intvar first_el = INIT_INTVAR("test1", 123);
-    intvar second_el = INIT_INTVAR("test2", second_el_val);
-    intvar third_el = INIT_INTVAR("test3", 1378699);
-
-    intvar_add_var_to_arr(&test_arr, first_el);
-    intvar_add_var_to_arr(&test_arr, second_el);
-    intvar_add_var_to_arr(&test_arr, third_el);
-
-    indexist = intvar_search_ind(&ind, "testaaa", &test_arr);
-    if(indexist)
-    {
-        printf("intvar_search_ind returns wrong value\n");
-        exit(1);
-    }
-
-    indexist = intvar_search_ind(&ind, "test2", &test_arr);
-    if(ind != 1)
-    {
-        printf("intvar_search_ind found wrong index\n");
-        exit(1);
-    }
-    intvar_return_value(&val, ind, &test_arr);
-    if(val != second_el_val)
-    {
-        printf("intvar_search_ind found wrong var value\n");
-        exit(1);
-    }
-}
 
 void tests_pstrings()
 {

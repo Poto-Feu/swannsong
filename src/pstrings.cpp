@@ -31,11 +31,11 @@ extern "C"
 #include <vector>
 #include "pstrings.h"
 
-typedef struct
+struct PstringsElement
 {
     std::string id;
     std::string val;
-} PstringsElement;
+};
 
 static std::vector<PstringsElement> pstrings_arr {};
 

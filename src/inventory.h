@@ -20,7 +20,15 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void inventory_player_getitem(char* p_name, int val);
 int inventory_return_item_n(char* p_name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
