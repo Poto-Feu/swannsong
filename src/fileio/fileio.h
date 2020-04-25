@@ -22,7 +22,5 @@
 #include <stdio.h>
 
 void fileio_setfileptr(FILE** fp, char* path);
-void fileio_gotoline(FILE** fp, int ln);
-void fileio_getln(int* ln, char* s);
 
 #endif
