@@ -24,11 +24,11 @@
 #include <string>
 #include <vector>
 
-typedef struct
+struct intvar
 {
     std::string name;
     int val;
-} intvar;
+};
 
 #define INIT_INTVAR(n, v) {n, v}
 
