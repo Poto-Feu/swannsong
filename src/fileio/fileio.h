@@ -22,5 +22,6 @@
 #include <stdio.h>
 
 void fileio_setfileptr(FILE** fp, char* path);
+char* fileio_getfileln(char* buf, int size, FILE** ptr);
 
 #endif

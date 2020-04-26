@@ -47,7 +47,7 @@ void roomio_copy_file_to_vec()
 
     open_strfile(&fp);
     
-    while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
+    while(fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
     {
         stringsm_chomp(buf);
         stringsm_rtab(buf);

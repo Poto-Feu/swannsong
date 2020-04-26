@@ -24,6 +24,7 @@
 #include "gameconf.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
+#include "fileio/fileio.h"
 #include "stringsm.h"
 
 void gameconf_splitins(char* var, char* value, char* ins);
@@ -35,7 +36,7 @@ void gameconf_readfile()
     FILE* fp = fopen("gameconf.txt", "r");
     char buf[P_MAX_BUF_SIZE] = {0};
 
-    while (fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
+    while (fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
     {
         char var[P_MAX_BUF_SIZE - 1] = {0};
         char value[P_MAX_BUF_SIZE - 1] = {0};
