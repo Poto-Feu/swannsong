@@ -33,27 +33,24 @@ the appropriate value*/
 void gameconf_readfile()
 {
     FILE* fp = fopen("gameconf.txt", "r");
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char buf[P_MAX_BUF_SIZE] = {0};
 
     while (fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
     {
-        char* var = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-        char* value = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char var[P_MAX_BUF_SIZE - 1] = {0};
+        char value[P_MAX_BUF_SIZE - 1] = {0};
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);
+
         if(strcmp(buf, "") && buf[0] != '*')
         {
             gameconf_splitins(var, value, buf);
             pvars_setgcvars(var, value);
         } 
-
-        free(var);
-        free(value);
     }
 
     fclose(fp);
-    free(buf);
 }
 
 void gameconf_splitins(char* var, char* value, char* ins)
