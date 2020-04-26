@@ -46,10 +46,11 @@ static void add_pstring_to_vec(std::string p_id, std::string p_val);
 void pstrings_copy_file_to_vec()
 {
     FILE* fp = NULL;
-    char buf[P_MAX_BUF_SIZE];
+    char buf[P_MAX_BUF_SIZE]{0};
 
     open_strfile(&fp);
-    while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
+
+    while(fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
     {
         std::string r_id;
         std::string r_val;

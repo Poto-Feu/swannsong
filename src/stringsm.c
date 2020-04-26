@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "stringsm.h"
+#include "fileio/fileio.h"
 #include "perror.h"
 
 void stringsm_chomp(char* str)
@@ -71,9 +72,11 @@ void stringsm_getfw(char** fw, char* str, int* index)
 /*Get user text input and return it in a pointer*/
 void stringsm_getuseri(char** buf)
 {
+    FILE* fp = stdin;
     char *c = NULL;
 
-    fgets(*buf, (sizeof(*buf) + 1), stdin);
+    fileio_getfileln(*buf, sizeof(*buf), &fp);
+
     if((c = strchr(*buf, '\n')))
     {
         stringsm_chomp(*buf);
