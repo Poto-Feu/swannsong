@@ -6,14 +6,14 @@ A text-adventure game with some humour. Please note that this game is in a pre-a
 ### Building prerequisites
 
 #### Unix-like (including GNU/Linux)
-* glibc
-* gcc
-* cmake
+* Gcc/clang
+* CMake
 
 #### Windows
-* mingw
-* cmake
+* Mingw
+* CMake
 
+Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
 
 ### Compiling
 
@@ -36,5 +36,7 @@ TO-DO
 * Develop a storyline
 
 
-## License
+## Licensing
 **SwannSong** is licensed under the GPL v3 License.
+
+The MingGW compiled version of this program is statically linked with libstdc++ and libgcc. Both of these libraries are licensed under the GPL v3 License (with the GPL linking exception).
