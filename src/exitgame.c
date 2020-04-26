@@ -25,8 +25,12 @@
 void exitgame(int c)
 {
     printf("\n");
-    pstrings_display("exit_penter");
-    printf("\n");
+    if(c == 0) 
+    {
+        pstrings_display("exit_penter");
+        printf("\n");
+    }
+    else puts("Press Enter to exit");
     getchar();
 
     if(c == 0) exit(c);
