@@ -51,7 +51,7 @@ typedef struct
     Token* list;
 } TokenArr;
 
-#define INIT_TKN_ARR {.ln = 0, .list = NULL}
+#define INIT_TKN_ARR {0, NULL}
 
 void token_create_arr(TokenArr* r_arr, const char* p_str);
 

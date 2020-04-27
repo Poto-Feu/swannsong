@@ -28,13 +28,13 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 endif()
 
 add_executable(swannsong src/main.c
-    src/room/room.c
+    src/room/interpreter/parser.cpp
+    src/room/interpreter/token.c
+    src/room/room.cpp
     src/room/find.c
     src/room/room_io.cpp
     src/fileio/fileio.c
     src/fileio/gameconf.c
-    src/interpreter/parser.c
-    src/interpreter/token.c
     src/vars/pvars.c
     src/vars/intvar.cpp
     src/vars/gvars.cpp
