@@ -18,19 +18,17 @@
 */
 
 extern "C" {
-#include <string.h>
 #include "vars/pconst.h"
-#include "vars/pvars.h"
 #include "vars/gvars.h"
 #include "room/find.h"
 #include "room/room_io.h"
 #include "room/interpreter/token.h"
-#include "fileio/fileio.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "stringsm.h"
 }
 
+#include <cstring>
 #include "parser.h"
 #include "room/room.h"
 
