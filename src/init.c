@@ -30,17 +30,30 @@
 #include "stringsm.h"
 #include "pstrings.h"
 
+static void init_pvars(char** room_name);
 static void ask_lang();
 
 void init_game()
 {
-    char* defaultlang = NULL;
     char* room_name = NULL; 
+
+    init_pvars(&room_name);
+    roomio_copy_file_to_vec();
+
+    ask_lang();
+    room_load(room_name);
+
+    free(room_name);
+}
+
+static void init_pvars(char** room_name)
+{
+    char* defaultlang = NULL;
     char* roomfile = NULL;
 
     gameconf_readfile();
     pvars_getgcvars("defaultlang", &defaultlang);
-    pvars_getgcvars("firstroom", &room_name);
+    pvars_getgcvars("firstroom", room_name);
     pvars_getgcvars("roomfile", &roomfile);
     pvars_setstdvars("lang", defaultlang);
     pvars_setstdvars("roomfile", roomfile);
@@ -48,13 +61,7 @@ void init_game()
     pvars_freegcvar("firstroom");
     pvars_freegcvar("roomfile");
 
-    roomio_copy_file_to_vec();
-
-    ask_lang();
-    room_load(room_name);
-
     free(defaultlang);
-    free(room_name);
     free(roomfile);
 }
 
