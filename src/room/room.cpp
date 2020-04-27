@@ -32,7 +32,7 @@ Room::Room() : name("NAME_NOT_SET") { }
 Room::Room(std::string room_name) : name(room_name) { }
 
 /*Room methods definitions*/
-void Room::getName(char* r_name)
+void Room::getName(char* r_name) const
 {
     strcpy(r_name, name.c_str());
 }
