@@ -17,15 +17,31 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdbool.h>
 
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "token.h"
+#ifdef __cplusplus
 
-int parser_exec_until_end(int blockln);
+#include "room/room.h"
+
+int parser_exec_until_end(int blockln, Room& currentRoom);
+
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#else
+
+#include <stdbool.h>
+
+#endif
+
 int parser_skip_until_end(int blockln);
-void parser_splitline(char** type, char** arg, char* ins);
+void parser_splitline(char* type, char* arg, char* ins);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -24,7 +24,7 @@
 #include "pconst.h"
 #include "perror.h"
 
-#define STDVARS_LN 4
+#define STDVARS_LN 3
 #define GCVARS_LN 4
 
 /*pvar is short for program var - not named var to prevent naming conflict*/
@@ -36,17 +36,16 @@ typedef struct
 
 static pvar stdvars[STDVARS_LN] =
 {
-    {.name = "lang", .value = NULL},
-    {.name = "currentroom", .value = NULL},
-    {.name = "nextroom", .value = NULL},
-    {.name = "roomfile", .value = NULL}
+    {"lang", NULL},
+    {"nextroom", NULL},
+    {"roomfile", NULL}
 };
 static pvar gcvars[GCVARS_LN] =
 {
-    {.name = "langdir", .value = NULL},
-    {.name = "roomfile", .value = NULL},
-    {.name = "defaultlang", .value = NULL},
-    {.name = "firstroom", .value = NULL}
+    {"langdir", NULL},
+    {"roomfile", NULL},
+    {"defaultlang", NULL},
+    {"firstroom", NULL}
 };
 
 

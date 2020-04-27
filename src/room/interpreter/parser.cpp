@@ -17,27 +17,27 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include "parser.h"
+extern "C" {
 #include "vars/pconst.h"
-#include "vars/pvars.h"
 #include "vars/gvars.h"
 #include "room/find.h"
 #include "room/room_io.h"
-#include "interpreter/token.h"
-#include "fileio/fileio.h"
+#include "room/interpreter/token.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "stringsm.h"
+}
 
-static void parser_execins(char* p_line);
+#include <cstring>
+#include "parser.h"
+#include "room/room.h"
+
+static void parser_execins(char* p_line, Room& currentRoom);
 static bool check_condition(char* insln);
 int parser_skip_until_end(int blockln);
 
 /*Execute instructions until the end of the block*/
-int parser_exec_until_end(int blockln)
+int parser_exec_until_end(int blockln, Room& currentRoom)
 {
     bool is_end = false;
     int startln = blockln + 1;
@@ -47,23 +47,22 @@ int parser_exec_until_end(int blockln)
     {
         int ind = -1;
         char* buf = NULL;
-        char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char fw[P_MAX_BUF_SIZE - 1] = {0};
 
         endln = i;
 
         roomio_fetch_ln(&buf, i);
-        stringsm_getfw(&fw, buf, &ind);
+        stringsm_getfw(fw, buf, &ind);
 
         if(!strcmp("END", fw)) is_end = true;
         else if(!strcmp("IF", fw)) 
         {
-            if(check_condition(buf)) i = parser_exec_until_end(i);
+            if(check_condition(buf)) i = parser_exec_until_end(i, currentRoom);
             else i = parser_skip_until_end(i);
         }
-        else parser_execins(buf);
+        else parser_execins(buf, currentRoom);
 
         free(buf);
-        free(fw);
     }
 
     return endln;
@@ -80,32 +79,31 @@ int parser_skip_until_end(int blockln)
     {
         int ind = -1;
         char* buf = NULL;
-        char* fw = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char fw[P_MAX_BUF_SIZE - 1] = {0};
 
         endln = i;
 
         roomio_fetch_ln(&buf, i);
-        stringsm_getfw(&fw, buf, &ind);
+        stringsm_getfw(fw, buf, &ind);
 
         if(!strcmp("END", fw)) is_end = true;
         else if(!strcmp("IF", fw)) i = parser_skip_until_end(i);
 
         free(buf);
-        free(fw);
     }
 
     return endln;
 }
 
 static void free_TokenArr(TokenArr* p_arr);
-static void interp_ins(TokenArr r_arr);
+static void interp_ins(TokenArr r_arr, Room& currentRoom);
 
-static void parser_execins(char* p_line)
+static void parser_execins(char* p_line, Room& currentRoom)
 {
     TokenArr r_arr = INIT_TKN_ARR;
 
     token_create_arr(&r_arr, (const char*) p_line);
-    interp_ins(r_arr);
+    interp_ins(r_arr, currentRoom);
     free_TokenArr(&r_arr);   
 }
 
@@ -118,14 +116,14 @@ static void free_TokenArr(TokenArr* p_arr)
     free(p_arr->list);
 }
 
-static void interp_func_ins(TokenArr r_arr);
+static void interp_func_ins(TokenArr r_arr, Room& currentRoom);
 
-static void interp_ins(TokenArr r_arr)
+static void interp_ins(TokenArr r_arr, Room& currentRoom)
 {
     switch(r_arr.list[0].type)
     {
         case FUNCTION:
-            interp_func_ins(r_arr);
+            interp_func_ins(r_arr, currentRoom);
             break;
         default:
             perror_disp("this is not yet implemented by the parser", 1);
@@ -133,11 +131,11 @@ static void interp_ins(TokenArr r_arr)
     }
 }
 
-static void interp_DISPLAY_func(Token* c_list);
+static void interp_DISPLAY_func(Token* c_list, Room& currentRoom);
 static void interp_PRINT_func(Token* c_list);
 static void interp_SET_func(Token* c_list);
 
-static void interp_func_ins(TokenArr r_arr)
+static void interp_func_ins(TokenArr r_arr, Room& currentRoom)
 {
     if(!strcmp(r_arr.list[0].str, "DISPLAY"))
     {
@@ -145,7 +143,7 @@ static void interp_func_ins(TokenArr r_arr)
         {
             perror_disp("too many tokens (DISPLAY)", 1);
         }
-        interp_DISPLAY_func(r_arr.list);
+        interp_DISPLAY_func(r_arr.list, currentRoom);
     }
     else if(!strcmp(r_arr.list[0].str, "PRINT"))
     {
@@ -271,19 +269,18 @@ static void interp_PRINT_func(Token* c_list)
     }
 }
 
-static void display_choices(int roomln);
+static void display_choices(int roomln, Room& currentRoom);
 
-static void interp_DISPLAY_func(Token* c_list)
+static void interp_DISPLAY_func(Token* c_list, Room& currentRoom)
 {
     if(!strcmp(c_list[1].str, "CHOICES"))
     {
         int roomln = -1;
-        char* croomid = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char room_name[P_MAX_BUF_SIZE - 1] = "\0";
 
-        pvars_getstdvars("currentroom", &croomid);
-        find_roomline(croomid, &roomln);
-        display_choices(roomln);
-        free(croomid);
+        currentRoom.getName(room_name);
+        find_roomline(room_name, &roomln);
+        display_choices(roomln, currentRoom);
     } else
     {
         perror_disp("displaying one choice is not yet implemented", 0);
@@ -312,17 +309,17 @@ static void interp_SET_func(Token* c_list)
 }
 
 /*Extract the type and the argument from a string*/
-void parser_splitline(char** type, char** arg, char* ins)
+void parser_splitline(char* type, char* arg, char* ins)
 {
     int i = 0;
     int len = 0;
-    char* argtocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char argtocpy[P_MAX_BUF_SIZE] = {0};
     
     stringsm_chomp(ins);
     len = strlen(ins);
     ins[len] = '\0';
     stringsm_getfw(type, ins, &i);
-    if(len != (int)strlen(*type))
+    if(len != (int)strlen(type))
     {
         int findex = 0;
 
@@ -331,19 +328,17 @@ void parser_splitline(char** type, char** arg, char* ins)
             argtocpy[findex] = ins[index];
             findex++;
         }
-        strcpy(*arg, argtocpy);
+        strcpy(arg, argtocpy);
     } else
     {
-        strcpy(*arg, "ARGNULL");
+        strcpy(arg, "ARGNULL");
     }
-
-    free(argtocpy);
 }
 
 
 static void display_choicetext(int choiceln, int num);
 
-static void display_choices(int roomln)
+static void display_choices(int roomln, Room& currentRoom)
 {
     int choicesln = 0;
     bool choicesremain = true;
@@ -357,7 +352,7 @@ static void display_choices(int roomln)
     {
         int onechoiceln = 0;
         bool choicesexist = find_onechoiceline((i+1), choicesln, &onechoiceln);
-        
+
         if(!choicesexist)
         {
             if(i == 0)
@@ -367,6 +362,7 @@ static void display_choices(int roomln)
             choicesremain = false;
         } else
         {
+            currentRoom.addDisplayChoice(i+1);
             display_choicetext(onechoiceln, (i+1));
         }
     }
@@ -382,11 +378,11 @@ static void display_choicetext(int choiceln, int num)
     for(int i = 0; !textfound; i++)
     {
         char* buf = NULL;
-        char* arg = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
-        char* type = calloc(P_MAX_BUF_SIZE - 1, sizeof(char));
+        char arg[P_MAX_BUF_SIZE - 1] = {0};
+        char type[P_MAX_BUF_SIZE - 1] = {0};
 
         roomio_fetch_ln(&buf, currln);
-        parser_splitline(&type, &arg, buf);
+        parser_splitline(type, arg, buf);
 
         if(!strcmp(type, "TEXT"))
         {
@@ -397,14 +393,10 @@ static void display_choicetext(int choiceln, int num)
         else if(!strcmp(type, "END"))
         {
             free(buf);
-            free(type);
-            free(arg);
             perror_disp("missing choice text", 1);
         }
         currln++;
 
         free(buf);
-        free(type);
-        free(arg);
     }
 }

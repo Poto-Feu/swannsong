@@ -19,14 +19,13 @@
 
 extern "C"
 {
-#include <string.h>
 #include "fileio/fileio.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
 #include "stringsm.h"
-#include "perror.h"
 }
 
+#include <cstring>
 #include <string>
 #include <vector>
 #include "room/room_io.h"

@@ -20,7 +20,38 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-void room_initmodule();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void room_load(char* id);
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+
+#include <string>
+#include <vector>
+
+class Room 
+{
+    public:
+
+        Room();
+        Room(std::string room_name);
+
+        void getName(char* r_name) const;
+        void addDisplayChoice(int ch_n);
+
+    private:
+
+        int test;
+        std::string name;
+        std::vector<int> displayed_choices;
+};
+#endif
+
 
 #endif

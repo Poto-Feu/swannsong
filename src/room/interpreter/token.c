@@ -21,7 +21,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include "interpreter/token.h"
+#include "token.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "vars/gvars.h"

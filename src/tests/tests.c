@@ -24,7 +24,7 @@
 #include "tests.h"
 #include "vars/gvars.h"
 #include "pstrings.h"
-#include "interpreter/token.h"
+#include "room/interpreter/token.h"
 
 void tests_pstrings()
 {
