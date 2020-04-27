@@ -36,17 +36,17 @@ typedef struct
 
 static pvar stdvars[STDVARS_LN] =
 {
-    {.name = "lang", .value = NULL},
-    {.name = "currentroom", .value = NULL},
-    {.name = "nextroom", .value = NULL},
-    {.name = "roomfile", .value = NULL}
+    {"lang", NULL},
+    {"currentroom", NULL},
+    {"nextroom", NULL},
+    {"roomfile", NULL}
 };
 static pvar gcvars[GCVARS_LN] =
 {
-    {.name = "langdir", .value = NULL},
-    {.name = "roomfile", .value = NULL},
-    {.name = "defaultlang", .value = NULL},
-    {.name = "firstroom", .value = NULL}
+    {"langdir", NULL},
+    {"roomfile", NULL},
+    {"defaultlang", NULL},
+    {"firstroom", NULL}
 };
 
 
