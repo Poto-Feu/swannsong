@@ -43,10 +43,14 @@ add_executable(swannsong src/main.c
     src/inventory.cpp
     src/pcurses.c)
 
+# Compile pdcurses if the user is on windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_package(Curses REQUIRED)
     include_directories(${CURSES_INCLUDE_DIRS})
     target_link_libraries(swannsong ${CURSES_LIBRARIES})
+else()
+    add_subdirectory(lib/pdcurses)
+    target_link_libraries(swannsong pdcurses)
 endif()
 
 # Statically link libraries if compiled on MinGW (GCC C++ libs are rarely
