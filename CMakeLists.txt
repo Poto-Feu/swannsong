@@ -24,9 +24,6 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_options(-s)
 endif()
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
-endif()
-
 add_executable(swannsong src/main.c
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.c
@@ -43,7 +40,14 @@ add_executable(swannsong src/main.c
     src/pstrings.cpp
     src/stringsm.c
     src/exitgame.c
-    src/inventory.cpp)
+    src/inventory.cpp
+    src/pcurses.c)
+
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    find_package(Curses REQUIRED)
+    include_directories(${CURSES_INCLUDE_DIRS})
+    target_link_libraries(swannsong ${CURSES_LIBRARIES})
+endif()
 
 # Statically link libraries if compiled on MinGW (GCC C++ libs are rarely
 # installed on Windows)
