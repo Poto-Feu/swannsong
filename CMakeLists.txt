@@ -24,7 +24,8 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_options(-s)
 endif()
 
-add_executable(swannsong src/main.c
+add_executable(swannsong
+    src/main.c
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.c
     src/room/room.cpp
@@ -41,7 +42,8 @@ add_executable(swannsong src/main.c
     src/stringsm.c
     src/exitgame.c
     src/inventory.cpp
-    src/pcurses.c)
+    src/textui/textui.c
+    src/textui/pcurses.c)
 
 # Compile pdcurses if the user is on windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")

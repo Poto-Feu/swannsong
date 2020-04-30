@@ -17,9 +17,52 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PCURSES_H
-#define PCURSES_H
+#include <curses.h>
+#include "pcurses.h"
 
-void pcurses_init();
+void pcurses_init()
+{
+    initscr();
+    raw();
+    noecho();
+}
 
-#endif
+void pcurses_end()
+{
+    endwin();
+}
+
+void pcurses_refresh()
+{
+    refresh();
+}
+
+void pcurses_clear()
+{
+    clear();
+}
+
+void pcurses_echo()
+{
+    echo();
+}
+
+void pcurses_noecho()
+{
+    noecho();
+}
+
+void pcurses_display_text(const char* p_str)
+{
+    printw(p_str);
+}
+
+void pcurses_getnstr(char* p_str, int n)
+{
+    getnstr(p_str, n);
+}
+
+int pcurses_getch()
+{
+    return getch();
+}
