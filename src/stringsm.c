@@ -22,7 +22,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "stringsm.h"
-#include "fileio/fileio.h"
+#include "textui/textui.h"
 #include "perror.h"
 
 void stringsm_chomp(char* str)
@@ -70,20 +70,19 @@ void stringsm_getfw(char* fw, char* str, int* index)
 }
 
 /*Get user text input and return it in a pointer*/
-void stringsm_getuseri(char** buf)
+void stringsm_getuseri(char** buf, int max_n)
 {
-    FILE* fp = stdin;
-    char *c = NULL;
+    char* c = NULL;
 
-    fileio_getfileln(*buf, sizeof(*buf), &fp);
+    *buf = calloc(max_n+1, sizeof(char));
 
-    if((c = strchr(*buf, '\n')))
+    textui_showchr();
+    textui_readuserinp(*buf, max_n);
+    textui_hidechr();
+
+    if(!(c = strchr(*buf, '\0')))
     {
-        stringsm_chomp(*buf);
-    } else
-    {
-        scanf("%*[^\n]");
-        scanf("%*c");
+        buf[max_n - 1] = '\0';
     }
     
 }

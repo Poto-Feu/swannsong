@@ -22,9 +22,10 @@ extern "C"
 #include <string.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
+#include "fileio/fileio.h"
+#include "textui/textui.h"
 #include "perror.h"
 #include "stringsm.h"
-#include "fileio/fileio.h"
 }
 
 #include <string>
@@ -114,7 +115,7 @@ void pstrings_display(char *id)
     char* rstring = new char[P_MAX_BUF_SIZE]();
 
     pstrings_fetch(id, &rstring);
-    printf("%s", rstring);
+    textui_display(rstring);
 
     delete[] rstring;
 }

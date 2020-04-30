@@ -20,18 +20,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "exitgame.h"
+#include "textui/textui.h"
 #include "pstrings.h"
 
 void exitgame(int c)
 {
-    printf("\n");
+    textui_display("\n");
     if(c == 0) 
     {
         pstrings_display("exit_penter");
-        printf("\n");
     }
-    else puts("Press Enter to exit");
-    getchar();
+    else textui_display("Press Enter to exit");
+
+    textui_update();
+    textui_waitenter();
+
+    textui_exit();
 
     if(c == 0) exit(c);
     else exit(1);

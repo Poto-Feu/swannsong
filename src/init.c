@@ -27,6 +27,7 @@
 #include "fileio/gameconf.h"
 #include "room/room.h"
 #include "room/room_io.h"
+#include "textui/textui.h"
 #include "stringsm.h"
 #include "pstrings.h"
 
@@ -36,6 +37,8 @@ static void ask_lang();
 void init_game()
 {
     char* room_name = NULL; 
+
+    textui_init();
 
     init_pvars(&room_name);
     roomio_copy_file_to_vec();
@@ -68,18 +71,23 @@ static void init_pvars(char** room_name)
 /*Show a prompt asking the user to choose the language*/
 static void ask_lang()
 {
-    char* buf = calloc(P_MAX_USERINPUT_SIZE, sizeof(char));
+    char* buf = NULL;
     bool validinp = false;
     char* langarr[2] = {"en", "fr"};
 
+    textui_newpage();
+    textui_display("Hint : make a choice by typing the corresponding number.\n");
+    textui_display("\nSelect your language:"
+            "\n1. English"
+            "\n2. Français\n");
+
     while(!validinp)
     {
-        printf("\nHint : make a choice by typing the corresponding number.\n");
-        printf("\nSelect your language:"
-                "\n1. English"
-                "\n2. Français"
-                "\n\nYour choice: ");
-        stringsm_getuseri(&buf);
+        textui_display("\nYour choice: ");
+        textui_update();
+
+        stringsm_getuseri(&buf, 2);
+
         if(strlen(buf) == 1)
         {
             int intval = buf[0] - '0';
@@ -98,13 +106,14 @@ static void ask_lang()
                 free(lang);
             } else
             {
-                printf("Nope. (not a valid input)\n");
+                textui_display("Nope. (not a valid input)\n");
+                textui_update();
             }
         } else
         {
-            printf("Nope. (too long)\n");
+            textui_display("Nope. (too long)\n");
+            textui_update();
         }
+        free(buf);
     }
-
-    free(buf);
 }

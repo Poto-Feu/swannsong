@@ -21,6 +21,7 @@ extern "C" {
 #include <string.h>
 #include "find.h"
 #include "vars/pvars.h"
+#include "textui/textui.h"
 }
 
 #include <string>
@@ -48,8 +49,12 @@ static void room_atlaunch(int roomln, Room& currentRoom)
     int foundln;
     bool atlfound = false;
 
+    textui_newpage();
+
     atlfound = find_atlaunchline(&foundln, roomln);
     if(atlfound == true) (void)parser_exec_until_end(foundln, currentRoom);
+
+    textui_update();
 }
 
 void room_load(char* id)
