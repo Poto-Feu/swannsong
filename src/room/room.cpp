@@ -53,7 +53,6 @@ static void room_atlaunch(int roomln, Room& currentRoom)
 
     atlfound = find_atlaunchline(&foundln, roomln);
     if(atlfound == true) (void)parser_exec_until_end(foundln, currentRoom);
-
     textui_update();
 }
 
