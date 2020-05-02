@@ -38,8 +38,11 @@ void textui_update()
     refresh();
 }
 
+void textui_move(int y, int x);
+
 void textui_newpage()
 {
+    textui_move(0, 0);
     clear();
 }
 
