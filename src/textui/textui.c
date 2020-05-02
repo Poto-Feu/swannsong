@@ -71,6 +71,16 @@ void textui_readuserinp(char* p_str, int n)
     getnstr(p_str, n);
 }
 
+int textui_getLINES()
+{
+    return LINES;
+}
+
+int textui_getCOLS()
+{
+    return COLS;
+}
+
 void textui_waitenter()
 {
 #ifdef _WIN32

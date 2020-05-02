@@ -387,13 +387,8 @@ static void display_choicetext(int choiceln, int num)
 
         if(!strcmp(type, "TEXT"))
         {
-            char str_num[3];
-
-            sprintf(str_num, "%d", num);
-            str_num[2] = '\0';
             textfound = true;
-            textui_display(str_num);
-            textui_display(" - ");
+            textui_display("%d - ", num);
             pstrings_display(arg);
             textui_display("\n");
         }

@@ -30,5 +30,7 @@ void textui_move(int y, int x);
 void textui_display(const char* p_str, ...);
 void textui_readuserinp(char* p_str, int n);
 void textui_waitenter();
+int textui_getLINES();
+int textui_getCOLS();
 
 #endif
