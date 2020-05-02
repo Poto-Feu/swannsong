@@ -53,6 +53,11 @@ void textui_hidechr()
     noecho();
 }
 
+void textui_move(int y, int x)
+{
+    move(y, x);
+}
+
 void textui_display(const char* p_str, ...)
 {
     va_list args;
