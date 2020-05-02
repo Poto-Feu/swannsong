@@ -26,7 +26,7 @@ void textui_update();
 void textui_newpage();
 void textui_showchr();
 void textui_hidechr();
-void textui_display(const char* p_str);
+void textui_display(const char* p_str, ...);
 void textui_readuserinp(char* p_str, int n);
 void textui_waitenter();
 

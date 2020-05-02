@@ -27,24 +27,8 @@
 /*Display an error message with the specified string*/
 void perror_disp(const char* id, bool fatal)
 {
-    const char* chr_err = "ERROR : ";
-
-    int chr_err_ln = strlen(chr_err);
-    int id_ln = strlen(id);
-    int full_chr_ln = chr_err_ln + id_ln;
-    char* full_chr = calloc(chr_err_ln + id_ln + 1, sizeof(char));
-
-    strcpy(full_chr, chr_err);
-
-    for(int i = 0; i < id_ln; i++)
-    {
-        full_chr[i + chr_err_ln] = id[i];
-    }
-
-    full_chr[full_chr_ln] = '\n';
-
     textui_newpage();
-    textui_display(full_chr);
+    textui_display("ERROR : %s\n", id);
     textui_update();
 
     if (fatal) exitgame(1);

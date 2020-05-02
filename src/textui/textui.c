@@ -17,47 +17,53 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <stdarg.h>
+#include <curses.h>
 #include "textui.h"
-#include "pcurses.h"
 
 void textui_init()
 {
-    pcurses_init();
+    initscr();
+    raw();
+    noecho();
 }
 
 void textui_exit()
 {
-    pcurses_end();
+    endwin();
 }
 
 void textui_update()
 {
-    pcurses_refresh();
+    refresh();
 }
 
 void textui_newpage()
 {
-    pcurses_clear();
+    clear();
 }
 
 void textui_showchr()
 {
-    pcurses_echo();
+    echo();
 }
 
 void textui_hidechr()
 {
-    pcurses_noecho();
+    noecho();
 }
 
-void textui_display(const char* p_str)
+void textui_display(const char* p_str, ...)
 {
-    pcurses_display_text(p_str);
+    va_list args;
+
+    va_start(args, p_str);
+    vw_printw(stdscr, p_str, args);
 }
 
 void textui_readuserinp(char* p_str, int n)
 {
-    pcurses_getnstr(p_str, n);
+    getnstr(p_str, n);
 }
 
 void textui_waitenter()
@@ -68,5 +74,5 @@ void textui_waitenter()
     int enter_ch = '\n';
 #endif
 
-    while(pcurses_getch() != enter_ch) {}
+    while(getch() != enter_ch) {}
 }

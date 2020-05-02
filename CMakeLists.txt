@@ -42,8 +42,7 @@ add_executable(swannsong
     src/stringsm.c
     src/exitgame.c
     src/inventory.cpp
-    src/textui/textui.c
-    src/textui/pcurses.c)
+    src/textui/textui.c)
 
 # Compile pdcurses if the user is on windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
