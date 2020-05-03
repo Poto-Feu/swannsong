@@ -82,7 +82,7 @@ void stringsm_getuseri(char** buf, int max_n)
 
     if(!(c = strchr(*buf, '\0')))
     {
-        buf[max_n - 1] = '\0';
+        (*buf)[max_n - 1] = '\0';
     }
     
 }
