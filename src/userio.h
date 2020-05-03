@@ -17,20 +17,10 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TEXTUI_H
-#define TEXTUI_H
+#ifndef USERIO_H
+#define USERIO_H
 
-void textui_init();
-void textui_exit();
-void textui_update();
-void textui_newpage();
-void textui_showchr();
-void textui_hidechr();
-void textui_move(int y, int x);
-void textui_display(const char* p_str, ...);
-void textui_readuserinp(char* p_str, int n);
-void textui_waitenter();
-int textui_getLINES();
-int textui_getCOLS();
+void userio_waitenter();
+void userio_gettextinput(char** buf, int max_n);
 
 #endif

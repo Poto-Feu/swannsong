@@ -17,19 +17,18 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <curses.h>
 #include "perror.h"
-#include "textui/textui.h"
 #include "exitgame.h"
 
 /*Display an error message with the specified string*/
 void perror_disp(const char* id, bool fatal)
 {
-    textui_newpage();
-    textui_display("ERROR : %s\n", id);
-    textui_update();
+    clear();
+    move(0, 0);
+    printw("ERROR : %s\n", id);
+    refresh();
 
     if (fatal) exitgame(1);
 }

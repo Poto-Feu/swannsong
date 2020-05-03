@@ -19,11 +19,11 @@
 
 extern "C" 
 {
+#include <curses.h>
 #include <string.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
 #include "fileio/fileio.h"
-#include "textui/textui.h"
 #include "perror.h"
 #include "stringsm.h"
 }
@@ -115,7 +115,7 @@ void pstrings_display(char *id)
     char* rstring = new char[P_MAX_BUF_SIZE]();
 
     pstrings_fetch(id, &rstring);
-    textui_display(rstring);
+    printw(rstring);
 
     delete[] rstring;
 }

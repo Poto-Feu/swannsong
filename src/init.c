@@ -18,19 +18,18 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <curses.h>
 #include "init.h"
-#include "vars/pconst.h"
 #include "vars/pvars.h"
 #include "fileio/gameconf.h"
-#include "room/room.h"
 #include "room/room_io.h"
-#include "textui/textui.h"
-#include "stringsm.h"
+#include "room/room.h"
+#include "userio.h"
 #include "pstrings.h"
 
+static void init_curses();
 static void init_pvars(char** room_name);
 static void ask_lang();
 
@@ -38,7 +37,7 @@ void init_game()
 {
     char* room_name = NULL; 
 
-    textui_init();
+    init_curses();
 
     init_pvars(&room_name);
     roomio_copy_file_to_vec();
@@ -47,6 +46,13 @@ void init_game()
     room_load(room_name);
 
     free(room_name);
+}
+
+static void init_curses()
+{
+    initscr();
+    raw();
+    noecho();
 }
 
 static void init_pvars(char** room_name)
@@ -72,21 +78,21 @@ static void init_pvars(char** room_name)
 static void ask_lang()
 {
     char* buf = NULL;
-    bool validinp = false;
     char* langarr[2] = {"en", "fr"};
+    bool validinp = false;
 
-    textui_newpage();
-    textui_display("Hint : make a choice by typing the corresponding number.\n");
-    textui_display("\nSelect your language:"
+    clear();
+    printw("Hint : make a choice by typing the corresponding number.\n");
+    printw("\nSelect your language:"
             "\n1. English"
             "\n2. Français\n");
 
     while(!validinp)
     {
-        textui_display("\nYour choice: ");
-        textui_update();
+        printw("\nYour choice: ");
+        refresh();
 
-        stringsm_getuseri(&buf, 2);
+        userio_gettextinput(&buf, 2);
 
         if(strlen(buf) == 1)
         {
@@ -106,13 +112,13 @@ static void ask_lang()
                 free(lang);
             } else
             {
-                textui_display("Nope. (not a valid input)\n");
-                textui_update();
+                printw("Nope. (not a valid input)\n");
+                refresh();
             }
         } else
         {
-            textui_display("Nope. (too long)\n");
-            textui_update();
+            printw("Nope. (too long)\n");
+            refresh();
         }
         free(buf);
     }

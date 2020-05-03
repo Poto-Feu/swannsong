@@ -42,7 +42,7 @@ add_executable(swannsong
     src/stringsm.c
     src/exitgame.c
     src/inventory.cpp
-    src/textui/textui.c)
+    src/userio.c)
 
 # Compile pdcurses if the user is on windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -51,6 +51,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_libraries(swannsong ${CURSES_LIBRARIES})
 else()
     add_subdirectory(lib/pdcurses)
+    include_directories(lib/pdcurses)
     target_link_libraries(swannsong pdcurses)
 endif()
 

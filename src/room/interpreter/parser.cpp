@@ -18,12 +18,12 @@
 */
 
 extern "C" {
+#include <curses.h>
 #include "vars/pconst.h"
 #include "vars/gvars.h"
 #include "room/find.h"
 #include "room/room_io.h"
 #include "room/interpreter/token.h"
-#include "textui/textui.h"
 #include "perror.h"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -261,8 +261,7 @@ static void interp_PRINT_func(Token* c_list)
             break;
         case STRING_ID:
             pstrings_display(c_list[1].str);
-            textui_display("\n");
-            textui_display("\n");
+            printw("\n\n");
             break;
         default:
             perror_disp("token cannot be displayed (PRINT)", 0);
@@ -388,9 +387,9 @@ static void display_choicetext(int choiceln, int num)
         if(!strcmp(type, "TEXT"))
         {
             textfound = true;
-            textui_display("%d - ", num);
+            printw("%d - ", num);
             pstrings_display(arg);
-            textui_display("\n");
+            printw("\n");
         }
         else if(!strcmp(type, "END"))
         {
