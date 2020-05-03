@@ -47,7 +47,6 @@ class Room
 
     private:
 
-        int test;
         std::string name;
         std::vector<int> displayed_choices;
 };
