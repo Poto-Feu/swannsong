@@ -10,7 +10,7 @@ Major changes will be documented here. For minor changes such as typos or more d
 * Inventory system (using intvar)
 * Simple unit testing
 
-## Pre-Alpha 2 - 2020-06-04
+## Pre-Alpha 2 - 2020-05-04
 
 ### Added
 
