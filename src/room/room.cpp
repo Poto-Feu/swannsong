@@ -19,6 +19,7 @@
 
 extern "C" {
 #include <string.h>
+#include <curses.h>
 #include "find.h"
 #include "vars/pvars.h"
 }
@@ -37,6 +38,38 @@ void Room::getName(char* r_name) const
     strcpy(r_name, name.c_str());
 }
 
+bool Room::isRoomLineSet() const
+{
+    if(room_line != 0) return true;
+    else return false;
+}
+
+bool Room::isChoicesLineSet() const
+{
+    if(choices_line != 0) return true;
+    else return false;
+}
+
+int Room::getRoomLine() const
+{
+    return room_line;
+}
+
+int Room::getChoicesLine() const
+{
+    return choices_line;
+}
+
+void Room::setRoomLine(int rln)
+{
+    room_line = rln;
+}
+
+void Room::setChoicesLine(int chln)
+{
+    choices_line = chln;
+}
+
 void Room::addDisplayChoice(int ch_n)
 {
     displayed_choices.push_back(ch_n);
@@ -48,8 +81,12 @@ static void room_atlaunch(int roomln, Room& currentRoom)
     int foundln;
     bool atlfound = false;
 
+    move(0, 0);
+    clear();
+
     atlfound = find_atlaunchline(&foundln, roomln);
     if(atlfound == true) (void)parser_exec_until_end(foundln, currentRoom);
+    refresh();
 }
 
 void room_load(char* id)

@@ -6,11 +6,12 @@ A text-adventure game with some humour. Please note that this game is in a pre-a
 ### Building prerequisites
 
 #### Unix-like (including GNU/Linux)
-* Gcc/clang
+* GCC/Clang
+* ncurses
 * CMake
 
 #### Windows
-* Mingw
+* MinGW
 * CMake
 
 Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
@@ -39,4 +40,8 @@ TO-DO
 ## Licensing
 **SwannSong** is licensed under the GPL v3 License.
 
-The MingGW compiled version of this program is statically linked with libstdc++ and libgcc. Both of these libraries are licensed under the GPL v3 License (with the GPL linking exception).
+ncurses is licensed under the MIT X11 License.
+
+The following only applies to the MingGW compiled version :
+
+PDCurses is in the public domain.

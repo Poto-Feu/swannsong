@@ -17,13 +17,11 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <curses.h>
 #include <stdbool.h>
 #include "stringsm.h"
-#include "fileio/fileio.h"
-#include "perror.h"
 
 void stringsm_chomp(char* str)
 {
@@ -67,25 +65,6 @@ void stringsm_getfw(char* fw, char* str, int* index)
         *index = 0;
         return;
     }
-}
-
-/*Get user text input and return it in a pointer*/
-void stringsm_getuseri(char** buf)
-{
-    FILE* fp = stdin;
-    char *c = NULL;
-
-    fileio_getfileln(*buf, sizeof(*buf), &fp);
-
-    if((c = strchr(*buf, '\n')))
-    {
-        stringsm_chomp(*buf);
-    } else
-    {
-        scanf("%*[^\n]");
-        scanf("%*c");
-    }
-    
 }
 
 /*Extract string from quotations marks*/

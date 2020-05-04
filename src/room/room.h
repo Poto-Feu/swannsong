@@ -43,15 +43,27 @@ class Room
         Room(std::string room_name);
 
         void getName(char* r_name) const;
+
+        bool isRoomLineSet() const;
+        bool isChoicesLineSet() const;
+
+        int getRoomLine() const;
+        int getChoicesLine() const;
+
+        void setRoomLine(int rln);
+        void setChoicesLine(int chln);
+
         void addDisplayChoice(int ch_n);
 
     private:
 
-        int test;
         std::string name;
+
+        int room_line = 0;
+        int choices_line = 0;
+
         std::vector<int> displayed_choices;
 };
 #endif
-
 
 #endif

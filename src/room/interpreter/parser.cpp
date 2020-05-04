@@ -18,6 +18,7 @@
 */
 
 extern "C" {
+#include <curses.h>
 #include "vars/pconst.h"
 #include "vars/gvars.h"
 #include "room/find.h"
@@ -259,9 +260,8 @@ static void interp_PRINT_func(Token* c_list)
             }
             break;
         case STRING_ID:
-            printf("\n");
             pstrings_display(c_list[1].str);
-            printf("\n");
+            printw("\n\n");
             break;
         default:
             perror_disp("token cannot be displayed (PRINT)", 0);
@@ -279,7 +279,13 @@ static void interp_DISPLAY_func(Token* c_list, Room& currentRoom)
         char room_name[P_MAX_BUF_SIZE - 1] = "\0";
 
         currentRoom.getName(room_name);
-        find_roomline(room_name, &roomln);
+
+        if(currentRoom.isRoomLineSet()) roomln = currentRoom.getRoomLine();
+        else
+        {
+            find_roomline(room_name, &roomln);
+            currentRoom.setRoomLine(roomln);
+        }
         display_choices(roomln, currentRoom);
     } else
     {
@@ -342,11 +348,23 @@ static void display_choices(int roomln, Room& currentRoom)
 {
     int choicesln = 0;
     bool choicesremain = true;
-    bool choicesexist = find_choicesline(&choicesln, roomln);
+    bool choicesexist = false;
     
-    if(!choicesexist)
+    if(currentRoom.isChoicesLineSet())
     {
-        perror_disp("NO_CHOICES_INS", 1);
+        choicesexist = true;
+        choicesln = currentRoom.getChoicesLine();
+    } else
+    {
+        choicesexist = find_choicesline(&choicesln, roomln);
+
+        if(!choicesexist)
+        {
+            perror_disp("NO_CHOICES_INS", 1);
+        } else
+        {
+            currentRoom.setChoicesLine(choicesln);
+        }
     }
     for(int i = 0; choicesremain; i++)
     {
@@ -387,8 +405,9 @@ static void display_choicetext(int choiceln, int num)
         if(!strcmp(type, "TEXT"))
         {
             textfound = true;
-            printf("\n%i - ", num);
+            printw("%d - ", num);
             pstrings_display(arg);
+            printw("\n");
         }
         else if(!strcmp(type, "END"))
         {

@@ -1,0 +1,3 @@
+[submodule "lib/pdcurses"]
+	path = lib/pdcurses
+	url = https://github.com/Poto-Feu/PDCurses

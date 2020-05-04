@@ -17,26 +17,10 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <curses.h>
-#include "exitgame.h"
-#include "pstrings.h"
-#include "userio.h"
+#ifndef USERIO_H
+#define USERIO_H
 
-void exitgame(int c)
-{
-    printw("\n");
-    if(c == 0) 
-    {
-        pstrings_display("exit_penter");
-    }
-    else printw("Press Enter to exit");
+void userio_waitenter();
+void userio_gettextinput(char** buf, int max_n);
 
-    refresh();
-    userio_waitenter();
-
-    endwin();
-
-    if(c == 0) exit(c);
-    else exit(1);
-}
+#endif

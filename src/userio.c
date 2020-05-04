@@ -19,24 +19,30 @@
 
 #include <stdlib.h>
 #include <curses.h>
-#include "exitgame.h"
-#include "pstrings.h"
-#include "userio.h"
+#include "stringsm.h"
 
-void exitgame(int c)
+#define WIN_ENTER_KEY 13
+
+/*Pause the program until the user press Enter*/
+void userio_waitenter()
 {
-    printw("\n");
-    if(c == 0) 
-    {
-        pstrings_display("exit_penter");
-    }
-    else printw("Press Enter to exit");
+#ifdef _WIN32
+    int enter_ch = WIN_ENTER_KEY;
+#else
+    int enter_ch = '\n';
+#endif
 
-    refresh();
-    userio_waitenter();
+    while(getch() != enter_ch) {}
+}
 
-    endwin();
+/*Get user text input and return it in a pointer*/
+void userio_gettextinput(char** buf, int max_n)
+{
+    *buf = calloc(max_n+1, sizeof(char));
 
-    if(c == 0) exit(c);
-    else exit(1);
+    echo();
+    getnstr(*buf, max_n);
+    noecho();
+
+    stringsm_chomp(*buf);
 }

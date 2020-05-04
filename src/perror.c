@@ -17,16 +17,18 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <curses.h>
 #include "perror.h"
 #include "exitgame.h"
 
 /*Display an error message with the specified string*/
 void perror_disp(const char* id, bool fatal)
 {
-    printf("ERROR : %s\n", id);
+    clear();
+    move(0, 0);
+    printw("ERROR : %s\n", id);
+    refresh();
+
     if (fatal) exitgame(1);
 }
