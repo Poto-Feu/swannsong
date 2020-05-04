@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,51 +18,82 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <curses.h>
 #include "init.h"
-#include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "stringsm.h"
 #include "fileio/gameconf.h"
+#include "room/room_io.h"
 #include "room/room.h"
+#include "userio.h"
+#include "pstrings.h"
 
+static void init_curses();
+static void init_pvars(char** room_name);
 static void ask_lang();
 
 void init_game()
 {
-    char* defaultlang = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* room_name = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char* room_name = NULL; 
 
-    gameconf_readfile();
-    pvars_getgcvars("defaultlang", &defaultlang);
-    pvars_setstdvars("lang", defaultlang);
-    pvars_getgcvars("firstroom", &room_name);
-    pvars_freegcvar("defaultlang");
-    pvars_freegcvar("firstroom");
+    init_curses();
+
+    init_pvars(&room_name);
+    roomio_copy_file_to_vec();
 
     ask_lang();
     room_load(room_name);
 
     free(room_name);
-    free(defaultlang);
 }
 
+static void init_curses()
+{
+    initscr();
+    raw();
+    noecho();
+}
+
+static void init_pvars(char** room_name)
+{
+    char* defaultlang = NULL;
+    char* roomfile = NULL;
+
+    gameconf_readfile();
+    pvars_getgcvars("defaultlang", &defaultlang);
+    pvars_getgcvars("firstroom", room_name);
+    pvars_getgcvars("roomfile", &roomfile);
+    pvars_setstdvars("lang", defaultlang);
+    pvars_setstdvars("roomfile", roomfile);
+    pvars_freegcvar("defaultlang");
+    pvars_freegcvar("firstroom");
+    pvars_freegcvar("roomfile");
+
+    free(defaultlang);
+    free(roomfile);
+}
+
+/*Show a prompt asking the user to choose the language*/
 static void ask_lang()
 {
-    char* buf = calloc(P_MAX_USERINPUT_SIZE, sizeof(char));
-    bool validinp = false;
+    char* buf = NULL;
     char* langarr[2] = {"en", "fr"};
+    bool validinp = false;
+
+    clear();
+    printw("Hint : make a choice by typing the corresponding number.\n");
+    printw("\nSelect your language:"
+            "\n1. English"
+            "\n2. Français\n");
 
     while(!validinp)
     {
-        printf("\nHint : make a choice by typing the corresponding number.\n");
-        printf("\nSelect your language:"
-                "\n1. English"
-                "\n2. Français"
-                "\n\nYour choice: ");
-        stringsm_getuseri(&buf);
+        printw("\nYour choice: ");
+        refresh();
+
+        userio_gettextinput(&buf, 2);
+
         if(strlen(buf) == 1)
         {
             int intval = buf[0] - '0';
@@ -74,17 +106,20 @@ static void ask_lang()
 
                 strcpy(lang, langarr[intval - 1]);
                 pvars_setstdvars("lang", lang);
-                free(lang);
                 validinp = true;
+                pstrings_copy_file_to_vec();
+
+                free(lang);
             } else
             {
-                printf("Nope. (not a valid input)\n");
+                printw("Nope. (not a valid input)\n");
+                refresh();
             }
         } else
         {
-            printf("Nope. (too long)\n");
+            printw("Nope. (too long)\n");
+            refresh();
         }
+        free(buf);
     }
-
-    free(buf);
 }

@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,37 +36,37 @@ typedef struct
 
 static pvar stdvars[STDVARS_LN] =
 {
-    {.name = "lang", .value = NULL},
-    {.name = "currentroom", .value = NULL},
-    {.name = "nextroom", .value = NULL}
+    {"lang", NULL},
+    {"nextroom", NULL},
+    {"roomfile", NULL}
 };
 static pvar gcvars[GCVARS_LN] =
 {
-    {.name = "langdir", .value = NULL},
-    {.name = "roomfile", .value = NULL},
-    {.name = "defaultlang", .value = NULL},
-    {.name = "firstroom", .value = NULL}
+    {"langdir", NULL},
+    {"roomfile", NULL},
+    {"defaultlang", NULL},
+    {"firstroom", NULL}
 };
 
 
-static bool fetch_pvarsid(char* name, int* id, bool isgcvar);
-static void pvars_setpvars(char* name, char* value, bool isgcvar);
-static void pvars_getpvars(char* name, char** value, bool isgcvar);
+static bool fetch_pvarsid(const char* name, int* id, bool isgcvar);
+static void pvars_setpvars(const char* name, char* value, bool isgcvar);
+static void pvars_getpvars(const char* name, char** value, bool isgcvar);
 
 
 /*Set the value of a standard program variable*/
-void pvars_setstdvars(char* name, char* value)
+void pvars_setstdvars(const char* name, char* value)
 {
     pvars_setpvars(name, value, false);
 }
 
 /*Set the value of a gameconf-defined variable*/
-void pvars_setgcvars(char* name, char* value)
+void pvars_setgcvars(const char* name, char* value)
 {
     pvars_setpvars(name, value, true);
 }
 
-static void pvars_setpvars(char* name, char* value, bool isgcvar)
+static void pvars_setpvars(const char* name, char* value, bool isgcvar)
 {
     int* varfndid = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);
@@ -107,64 +108,47 @@ static void pvars_setpvars(char* name, char* value, bool isgcvar)
 }
 
 /*Copy the value of a standard program variable*/
-void pvars_getstdvars(char* name, char** value)
+void pvars_getstdvars(const char* name, char** value)
 {
     pvars_getpvars(name, value, false);
 }
 
 /*Copy the value of a gameconf-defined variable*/
-void pvars_getgcvars(char* name, char** value)
+void pvars_getgcvars(const char* name, char** value)
 {
     pvars_getpvars(name, value, true);
 }
 
-static void pvars_getpvars(char* name, char** value, bool isgcvar)
+static void pvars_getpvars(const char* name, char** value, bool isgcvar)
 {
-    int *id = calloc(1, sizeof(int));
-    bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
+    int id = -1;
+    bool isvarfnd = fetch_pvarsid(name, &id, isgcvar);
 
     if(isvarfnd)
     {
         int vlen = 0;
         char* valuetocpy = calloc(P_MAX_BUF_SIZE, sizeof(char));
-        char* prevvalue = NULL;
 
-        if(isgcvar)
-        {
-            strcpy(valuetocpy, gcvars[*id].value);
-        } else
-        {
-            strcpy(valuetocpy, stdvars[*id].value);
-        }
+        if(isgcvar) strcpy(valuetocpy, gcvars[id].value);
+        else strcpy(valuetocpy, stdvars[id].value);
+
         vlen = strlen(valuetocpy);
 
-        prevvalue = calloc((vlen+1), sizeof(char));
-        strcpy(prevvalue, *value);
-        free(*value);
+        if(*value != NULL) free(*value);
 
         *value = calloc((vlen+1), sizeof(char));
-        strcpy(*value, prevvalue);
         strcpy(*value, valuetocpy);
 
         free(valuetocpy);
-        free(prevvalue);
     }
     else
     {
-        if(isgcvar)
-        {
-            perror_disp("GAMECONF_VAR_NF", 1);
-        }
-        else
-        {
-            perror_disp("STD_VAR_NF", 1);
-        }
+        if(isgcvar) perror_disp("gameconf var does not exist", 1);
+        else perror_disp("std var does not exist", 1);
     }
-
-    free(id);
 }
 
-static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
+static bool fetch_pvarsid(const char* name, int* id, bool isgcvar)
 {
     bool isvarfnd = false;
     int varfndid = -1;
@@ -211,7 +195,7 @@ static bool fetch_pvarsid(char* name, int* id, bool isgcvar)
     return isvarfnd;
 }
 
-void pvars_freegcvar(char* name)
+void pvars_freegcvar(const char* name)
 {
     int id = 0;
     bool pvarsid_check = fetch_pvarsid(name, &id, true);

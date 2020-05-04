@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +20,50 @@
 #ifndef ROOM_H
 #define ROOM_H
 
-void room_initmodule();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void room_load(char* id);
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+
+#include <string>
+#include <vector>
+
+class Room 
+{
+    public:
+
+        Room();
+        Room(std::string room_name);
+
+        void getName(char* r_name) const;
+
+        bool isRoomLineSet() const;
+        bool isChoicesLineSet() const;
+
+        int getRoomLine() const;
+        int getChoicesLine() const;
+
+        void setRoomLine(int rln);
+        void setChoicesLine(int chln);
+
+        void addDisplayChoice(int ch_n);
+
+    private:
+
+        std::string name;
+
+        int room_line = 0;
+        int choices_line = 0;
+
+        std::vector<int> displayed_choices;
+};
+#endif
 
 #endif

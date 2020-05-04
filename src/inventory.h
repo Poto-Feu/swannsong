@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +20,15 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void inventory_player_getitem(char* p_name, int val);
 int inventory_return_item_n(char* p_name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

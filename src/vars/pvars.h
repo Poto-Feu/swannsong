@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,10 +21,10 @@
 #define PVARS_H
 
 extern char pvars_userlang[3];
-void pvars_setstdvars(char* name, char* value);
-void pvars_getstdvars(char* name, char** value);
-void pvars_setgcvars(char* name, char* value);
-void pvars_getgcvars(char* name, char** value);
-void pvars_freegcvar(char* name);
+void pvars_setstdvars(const char* name, char* value);
+void pvars_getstdvars(const char* name, char** value);
+void pvars_setgcvars(const char* name, char* value);
+void pvars_getgcvars(const char* name, char** value);
+void pvars_freegcvar(const char* name);
 
 #endif

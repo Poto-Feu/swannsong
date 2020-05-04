@@ -17,11 +17,42 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef TOKEN_H
+#define TOKEN_H
 
-void tests_intvar();
-void tests_gvars();
-void tests_token();
+#include <stdint.h>
+
+typedef enum
+{
+    FUNCTION,
+    IF,
+    VARIABLE,
+    OPERATOR,
+    EQUAL,
+    NOT,
+    STRING,
+    NUMBER,
+    STRING_ID,
+    NEWVAR,
+    EXISTS,
+    UNKNOWN,
+    UNDEFINED
+} token_type;
+
+typedef struct
+{
+    char* str;
+    token_type type;
+} Token;
+
+typedef struct
+{
+    uint8_t ln;
+    Token* list;
+} TokenArr;
+
+#define INIT_TKN_ARR {0, NULL}
+
+void token_create_arr(TokenArr* r_arr, const char* p_str);
 
 #endif

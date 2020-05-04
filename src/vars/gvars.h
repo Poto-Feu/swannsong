@@ -17,11 +17,20 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef GVARS_H
+#define GVARS_H
 
-void tests_intvar();
-void tests_gvars();
-void tests_token();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void gvars_set_var(char* p_name, int p_val);
+int gvars_return_value(char* p_name);
+void gvars_change_val(char* p_name, int p_val);
+bool gvars_exist(char* p_name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

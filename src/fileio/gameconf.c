@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,34 +24,34 @@
 #include "gameconf.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
+#include "fileio/fileio.h"
 #include "stringsm.h"
 
 void gameconf_splitins(char* var, char* value, char* ins);
 
+/*Read data contained in the gameconf file and set the gameconf variable to
+the appropriate value*/
 void gameconf_readfile()
 {
     FILE* fp = fopen("gameconf.txt", "r");
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+    char buf[P_MAX_BUF_SIZE] = {0};
 
-    while (fgets(buf, (P_MAX_BUF_SIZE - 1), fp) != NULL)
+    while (fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
     {
-        char* var = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-        char* value = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
+        char var[P_MAX_BUF_SIZE - 1] = {0};
+        char value[P_MAX_BUF_SIZE - 1] = {0};
 
         stringsm_chomp(buf);
         stringsm_rtab(buf);
+
         if(strcmp(buf, "") && buf[0] != '*')
         {
             gameconf_splitins(var, value, buf);
             pvars_setgcvars(var, value);
         } 
-
-        free(var);
-        free(value);
     }
 
     fclose(fp);
-    free(buf);
 }
 
 void gameconf_splitins(char* var, char* value, char* ins)

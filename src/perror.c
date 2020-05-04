@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,17 +17,18 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <curses.h>
 #include "perror.h"
+#include "exitgame.h"
 
-void perror_disp(char* id, bool fatal)
+/*Display an error message with the specified string*/
+void perror_disp(const char* id, bool fatal)
 {
-    printf("ERROR : %s\n", id);
-    if (fatal)
-    {
-        exit(1);
-    }
+    clear();
+    move(0, 0);
+    printw("ERROR : %s\n", id);
+    refresh();
+
+    if (fatal) exitgame(1);
 }

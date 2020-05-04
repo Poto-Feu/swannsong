@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,22 +18,25 @@
 */
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <curses.h>
 #include "exitgame.h"
 #include "pstrings.h"
+#include "userio.h"
 
 void exitgame(int c)
 {
-    printf("\n");
-    pstrings_display("exit_penter");
-    printf("\n");
-    getchar();
-
-    if(c == 0)
+    printw("\n");
+    if(c == 0) 
     {
-        exit(c);
-    } else
-    {
-        exit(1);
+        pstrings_display("exit_penter");
     }
+    else printw("Press Enter to exit");
+
+    refresh();
+    userio_waitenter();
+
+    endwin();
+
+    if(c == 0) exit(c);
+    else exit(1);
 }

@@ -17,11 +17,32 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_H
-#define TESTS_H
+#include <stdlib.h>
+#include <curses.h>
+#include "stringsm.h"
 
-void tests_intvar();
-void tests_gvars();
-void tests_token();
+#define WIN_ENTER_KEY 13
 
+/*Pause the program until the user press Enter*/
+void userio_waitenter()
+{
+#ifdef _WIN32
+    int enter_ch = WIN_ENTER_KEY;
+#else
+    int enter_ch = '\n';
 #endif
+
+    while(getch() != enter_ch) {}
+}
+
+/*Get user text input and return it in a pointer*/
+void userio_gettextinput(char** buf, int max_n)
+{
+    *buf = calloc(max_n+1, sizeof(char));
+
+    echo();
+    getnstr(*buf, max_n);
+    noecho();
+
+    stringsm_chomp(*buf);
+}

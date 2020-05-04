@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +20,19 @@
 #ifndef PSTRINGS_H
 #define PSTRINGS_H
 
-void pstrings_fetch(char* id, char** rstr);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
+
+bool pstrings_check_exist(char* id);
+void pstrings_fetch(char* id, char** r_str);
 void pstrings_display(char id[]);
+void pstrings_copy_file_to_vec();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

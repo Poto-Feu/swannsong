@@ -17,11 +17,10 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef USERIO_H
+#define USERIO_H
 
-void tests_intvar();
-void tests_gvars();
-void tests_token();
+void userio_waitenter();
+void userio_gettextinput(char** buf, int max_n);
 
 #endif

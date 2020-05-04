@@ -6,6 +6,20 @@ Major changes will be documented here. For minor changes such as typos or more d
 ### Added
 
 * Changelog ;-)
-* Intvar (struct with variable name nad int value)
+* Intvar (struct with variable name and int value)
 * Inventory system (using intvar)
 * Simple unit testing
+
+## Pre-Alpha 2 - 2020-06-04
+
+### Added
+
+* Support for conditions in the interpreter
+* Implement token system in the interpreter
+* Implement curses library
+
+### Changed
+
+* Refactor some parts in C++ such as intvar
+* Use OOP in room module
+* Store roomfile in a vector in order to reduce drive I/O

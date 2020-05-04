@@ -5,7 +5,8 @@
 
     SwannSong is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License.
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
     SwannSong is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,107 +17,40 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fileio.h"
-#include "vars/pconst.h"
-#include "vars/pvars.h"
-#include "parser.h"
 #include "perror.h"
-#include "stringsm.h"
 
 void fileio_setfileptr(FILE** fp, char* path)
 {
     *fp = fopen(path, "r");
     if(*fp == NULL)
     {
-        perror_disp("FOPEN_NULL", 1);
+        perror_disp("file cannot be open", 1);
     }
 }
 
-void fileio_gotoline(FILE** fp, int ln)
-{
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
+static void fileio_check_ln_length(char* buf, int size);
 
-    for(int i = 0; i < ln; i++)
+char* fileio_getfileln(char* buf, int size, FILE** ptr)
+{
+    char* rtrn_val = fgets(buf, size, *ptr);
+
+    if(rtrn_val != NULL)
     {
-        if(fgets(buf, P_MAX_BUF_SIZE - 1, *fp) == NULL)
-        {
-            perror_disp("FILE_LINE_NF", 1);
-        } else
-        {
-            stringsm_chomp(buf);
-            stringsm_rtab(buf);
-        }
+        fileio_check_ln_length(buf, size);
     }
-    free(buf);
+
+    return rtrn_val;
 }
 
-void fileio_getln(int* ln, char* s)
+static void fileio_check_ln_length(char* buf, int size)
 {
-    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
-    FILE* fp = NULL;
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    int i = 0;
+    int newline_fnd = false;
 
-    pvars_getgcvars("roomfile", &roomfile);
-    fp = fopen(roomfile, "r");
-    free(roomfile);
-    *ln = 0;
-    while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
+    for(int i = 0; i < size; i++)
     {
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
-        if(!strcmp(s, buf))
-        {
-            *ln = i + 1;
-            break;
-        }
-        i++;
-    }
-    fclose(fp);
-    free(buf);
-}
-
-/*Execute all the instructions until the end of the block*/
-void fileio_execuntilend(int startln)
-{
-    bool inif = false;
-    bool ifcond = false;
-    char* roomfile = calloc((P_MAX_BUF_SIZE-1), sizeof(char));
-    char* buf = calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* type = NULL;
-    char* arg = NULL;
-    FILE* fp = NULL;
-
-    pvars_getgcvars("roomfile", &roomfile);
-    fileio_setfileptr(&fp, roomfile);
-    free(roomfile);
-    fileio_gotoline(&fp, startln);
-
-    while(fgets(buf, P_MAX_BUF_SIZE - 1, fp) != NULL)
-    {
-        type  = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-        arg = calloc((P_MAX_BUF_SIZE - 1), sizeof(char));
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
-        parser_splitline(&type, &arg, buf);
-        if(strcmp(type, "END"))
-        {
-            parser_execins(type, arg, &inif, &ifcond);
-
-            free(type);
-            free(arg);
-        } else 
-        {
-            free(type);
-            free(arg);
-
-            break;
-        }
+        if(buf[i] == '\n') newline_fnd = true;
     }
 
-    free(buf);
-    fclose(fp);
+    if(!newline_fnd) perror_disp("file string is too long", true);
 }
