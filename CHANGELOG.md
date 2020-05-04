@@ -15,11 +15,11 @@ Major changes will be documented here. For minor changes such as typos or more d
 ### Added
 
 * Support for conditions in the interpreter
-* Implement token system
+* Implement token system in the interpreter
 * Implement curses library
 
 ### Changed
 
 * Refactor some parts in C++ such as intvar
-* Use OOP within room module
+* Use OOP in room module
 * Store roomfile in a vector in order to reduce drive I/O
