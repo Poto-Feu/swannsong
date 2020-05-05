@@ -39,7 +39,6 @@ class Room
 {
     public:
 
-        Room();
         Room(std::string room_name);
 
         void getName(char* r_name) const;

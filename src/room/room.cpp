@@ -29,7 +29,6 @@ extern "C" {
 #include "interpreter/parser.h"
 
 /*Room constructor definitions*/
-Room::Room() : name("NAME_NOT_SET") { }
 Room::Room(std::string room_name) : name(room_name) { }
 
 /*Room methods definitions*/
