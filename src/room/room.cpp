@@ -20,15 +20,55 @@
 extern "C" {
 #include <string.h>
 #include <curses.h>
-#include "find.h"
 #include "vars/pvars.h"
+#include "vars/pconst.h"
+#include "pstrings.h"
+#include "find.h"
+#include "perror.h"
 }
 
 #include <string>
 #include "room.h"
+#include "room_io.h"
 #include "interpreter/parser.h"
 
-/*Room constructor definitions*/
+/*Choice constructor definition*/
+Choice::Choice(int ch_n, int ch_ln) : choice_n(ch_n), choice_line(ch_ln) { }
+
+/*Choice member functions definitions*/
+void Choice::displayChoice()
+{
+    bool textfound = false;
+    int currln = choice_line + 1;
+
+    for(int i = 0; !textfound; i++)
+    {
+        char* buf = NULL;
+        char arg[P_MAX_BUF_SIZE - 1] = {0};
+        char type[P_MAX_BUF_SIZE - 1] = {0};
+
+        roomio_fetch_ln(&buf, currln);
+        parser_splitline(type, arg, buf);
+
+        if(!strcmp(type, "TEXT"))
+        {
+            textfound = true;
+            printw("%d. ", choice_n);
+            pstrings_display(arg);
+            printw("\n");
+        }
+        else if(!strcmp(type, "END"))
+        {
+            free(buf);
+            perror_disp("missing choice text", 1);
+        }
+        currln++;
+
+        free(buf);
+    }
+}
+
+/*Room constructor definition*/
 Room::Room(std::string room_name) : name(room_name) { }
 
 /*Room methods definitions*/
@@ -64,14 +104,18 @@ void Room::setRoomLine(int rln)
     room_line = rln;
 }
 
-void Room::setChoicesLine(int chln)
+void Room::displayChoices()
 {
-    choices_line = chln;
+    for(auto& current_choice : displayed_choices)
+    {
+        current_choice.displayChoice();
+    }
 }
 
-void Room::addDisplayChoice(int ch_n)
+void Room::addDisplayChoice(int ch_ln)
 {
-    displayed_choices.push_back(ch_n);
+    Choice newChoice(displayed_choices.size() + 1, ch_ln);
+    displayed_choices.push_back(newChoice);
 }
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
@@ -96,4 +140,5 @@ void room_load(char* id)
 
     find_roomline(id, &roomln);
     room_atlaunch(roomln, currentRoom);
+    currentRoom.displayChoices();
 }
