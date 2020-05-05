@@ -269,7 +269,7 @@ static void interp_PRINT_func(Token* c_list)
     }
 }
 
-static void display_choices(int roomln, Room& currentRoom);
+static void add_all_choices(int roomln, Room& currentRoom);
 
 static void interp_DISPLAY_func(Token* c_list, Room& currentRoom)
 {
@@ -286,7 +286,7 @@ static void interp_DISPLAY_func(Token* c_list, Room& currentRoom)
             find_roomline(room_name, &roomln);
             currentRoom.setRoomLine(roomln);
         }
-        display_choices(roomln, currentRoom);
+        add_all_choices(roomln, currentRoom);
     } else
     {
         perror_disp("displaying one choice is not yet implemented", 0);
@@ -341,10 +341,7 @@ void parser_splitline(char* type, char* arg, char* ins)
     }
 }
 
-
-static void display_choicetext(int choiceln, int num);
-
-static void display_choices(int roomln, Room& currentRoom)
+static void add_all_choices(int roomln, Room& currentRoom)
 {
     int choicesln = 0;
     bool choicesremain = true;
@@ -358,64 +355,21 @@ static void display_choices(int roomln, Room& currentRoom)
     {
         choicesexist = find_choicesline(&choicesln, roomln);
 
-        if(!choicesexist)
-        {
-            perror_disp("NO_CHOICES_INS", 1);
-        } else
-        {
-            currentRoom.setChoicesLine(choicesln);
-        }
+        if(!choicesexist) perror_disp("Missing CHOICES block", true);
+        else currentRoom.setChoicesLine(choicesln);
     }
-    for(int i = 0; choicesremain; i++)
+    for(int i = 1; choicesremain; i++)
     {
         int onechoiceln = 0;
-        bool choicesexist = find_onechoiceline((i+1), choicesln, &onechoiceln);
+        bool choicesexist = find_onechoiceline((i), choicesln, &onechoiceln);
 
         if(!choicesexist)
         {
-            if(i == 0)
-            {
-                perror_disp("NO_CHOICE_FND", 1);
-            }
+            if(i == 1) perror_disp("No CHOICE block found", true);
             choicesremain = false;
         } else
         {
-            currentRoom.addDisplayChoice(i+1);
-            display_choicetext(onechoiceln, (i+1));
+            currentRoom.addDisplayChoice(onechoiceln);
         }
-    }
-}
-
-/*Display the text attributed to a choice ; choiceln must correspond to the
-line number of the beginning of the choice block*/
-static void display_choicetext(int choiceln, int num)
-{
-    bool textfound = false;
-    int currln = choiceln + 1;
-
-    for(int i = 0; !textfound; i++)
-    {
-        char* buf = NULL;
-        char arg[P_MAX_BUF_SIZE - 1] = {0};
-        char type[P_MAX_BUF_SIZE - 1] = {0};
-
-        roomio_fetch_ln(&buf, currln);
-        parser_splitline(type, arg, buf);
-
-        if(!strcmp(type, "TEXT"))
-        {
-            textfound = true;
-            printw("%d - ", num);
-            pstrings_display(arg);
-            printw("\n");
-        }
-        else if(!strcmp(type, "END"))
-        {
-            free(buf);
-            perror_disp("missing choice text", 1);
-        }
-        currln++;
-
-        free(buf);
     }
 }
