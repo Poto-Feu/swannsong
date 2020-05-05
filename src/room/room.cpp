@@ -72,10 +72,7 @@ void Choice::displayChoice()
 Room::Room(std::string room_name) : name(room_name) { }
 
 /*Room methods definitions*/
-void Room::getName(char* r_name) const
-{
-    strcpy(r_name, name.c_str());
-}
+void Room::getName(char* r_name) const { strcpy(r_name, name.c_str()); }
 
 bool Room::isRoomLineSet() const
 {
@@ -89,20 +86,13 @@ bool Room::isChoicesLineSet() const
     else return false;
 }
 
-int Room::getRoomLine() const
-{
-    return room_line;
-}
+int Room::getRoomLine() const { return room_line; }
 
-int Room::getChoicesLine() const
-{
-    return choices_line;
-}
+int Room::getChoicesLine() const { return choices_line; }
 
-void Room::setRoomLine(int rln)
-{
-    room_line = rln;
-}
+void Room::setRoomLine(int rln) { room_line = rln; }
+
+void Room::setChoicesLine(int chln) { choices_line = chln; }
 
 void Room::displayChoices()
 {
