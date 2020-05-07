@@ -67,19 +67,20 @@ void stringsm_getfw(char* fw, char* str, int* index)
     }
 }
 
-/*Extract string from quotations marks*/
-void stringsm_ext_str_quotes(char** r_ext, char* p_str)
 {
-    int chr_numb = 0;
 
-    if(*r_ext != NULL) free(*r_ext);
-    for(int i = 0; p_str[i] != '\0'; i++) chr_numb++;
 
-    *r_ext = malloc((chr_numb+1) * sizeof(char));
-    (*r_ext)[chr_numb] = '\0';
 
-    for(int i = 0; i <= chr_numb; i++)
+/*Extract string from quotations marks*/
+void stringsm_ext_str_quotes(char* r_ext, const char* p_str)
+{
+    bool str_end = false;
+    char quote_ch = p_str[0];
+
+    for(int i = 1; !str_end && p_str[1] != quote_ch; i++)
     {
-        (*r_ext)[i] = p_str[i];
+        r_ext[i-1] = p_str[i];
+
+        if(p_str[i+1] == quote_ch) str_end = true;
     }
 }

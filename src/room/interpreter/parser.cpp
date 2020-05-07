@@ -251,10 +251,11 @@ static void interp_PRINT_func(Token* c_list)
     {
         case STRING:
             {
-                char* r_str = NULL;
+                char* r_str = 
+                    (char*)calloc(strlen(c_list[1].str) - 1, sizeof(char));
 
-                stringsm_ext_str_quotes(&r_str, c_list[1].str);
-                puts(r_str);
+                stringsm_ext_str_quotes(r_str, c_list[1].str);
+                printw("%s\n", r_str);
 
                 free(r_str);
             }
