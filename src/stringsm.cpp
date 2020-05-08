@@ -17,10 +17,12 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <string.h>
+extern "C" {
 #include <curses.h>
-#include <stdbool.h>
+}
+#include <cstdlib>
+#include <cstring>
+#include <string>
 #include "stringsm.h"
 
 void stringsm_chomp(char* str)
@@ -67,20 +69,58 @@ void stringsm_getfw(char* fw, char* str, int* index)
     }
 }
 
+/*Check if the passed char array is a string enclosed with quotes*/
+bool stringsm_is_str(char* p_str)
 {
+    bool is_str = false;
+    bool nulterm = false;
+    char quote_ch = '\0';
 
+    if(p_str[0] != '"' && p_str[0] != '\'') return false;
+    else quote_ch = p_str[0];
 
+    for(int i = 1; !nulterm && !is_str ; ++i)
+    {
+        if(p_str[i] == '\0') nulterm = true;
+        else if(p_str[i] == '\\')
+        {
+            if(p_str[i+1] == quote_ch) ++i;
+        } else if(p_str[i] == quote_ch)
+        {
+            bool space_end = true;
+
+            if(p_str[i+1] != '\0')
+            {
+                for(int j = i + 1; space_end && !nulterm; j++)
+                {
+                    if(p_str[j] != '\0') nulterm = true;
+                    else if(p_str[j] != ' ' || p_str[j] != '\t') 
+                    {
+                        space_end = false;
+                    }
+                }
+            }
+            is_str = space_end;
+        }
+    }
+
+    return is_str;
+}
 
 /*Extract string from quotations marks*/
-void stringsm_ext_str_quotes(char* r_ext, const char* p_str)
+void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str)
 {
-    bool str_end = false;
-    char quote_ch = p_str[0];
+    auto str_end = false;
+    auto quote_ch = p_str[0];
 
     for(int i = 1; !str_end && p_str[1] != quote_ch; i++)
     {
-        r_ext[i-1] = p_str[i];
+        r_ext += p_str[i];
 
-        if(p_str[i+1] == quote_ch) str_end = true;
+        if(p_str[i] == '\\' && p_str[i+1] == quote_ch)
+        {
+            r_ext += quote_ch;
+            ++i;
+        } else if(p_str[i+1] == quote_ch) str_end = true;
     }
 }

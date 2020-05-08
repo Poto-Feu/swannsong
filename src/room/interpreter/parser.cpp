@@ -26,12 +26,14 @@ extern "C" {
 #include "room/interpreter/token.h"
 #include "perror.h"
 #include "pstrings.h"
-#include "stringsm.h"
 }
 
+#include <cstdlib>
 #include <cstring>
+#include <string>
 #include "parser.h"
 #include "room/room.h"
+#include "stringsm.h"
 
 static void parser_execins(char* p_line, Room& currentRoom);
 static bool check_condition(char* insln);
@@ -251,13 +253,10 @@ static void interp_PRINT_func(Token* c_list)
     {
         case STRING:
             {
-                char* r_str = 
-                    (char*)calloc(strlen(c_list[1].str) - 1, sizeof(char));
+                std::string r_str;
 
                 stringsm_ext_str_quotes(r_str, c_list[1].str);
-                printw("%s\n", r_str);
-
-                free(r_str);
+                printw("%s\n", r_str.c_str());
             }
             break;
         case STRING_ID:

@@ -22,13 +22,13 @@ extern "C"
 #include "fileio/fileio.h"
 #include "vars/pconst.h"
 #include "vars/pvars.h"
-#include "stringsm.h"
 }
 
 #include <cstring>
 #include <string>
 #include <vector>
 #include "room/room_io.h"
+#include "stringsm.h"
 
 using std::string;
 using std::vector;

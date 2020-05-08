@@ -18,19 +18,21 @@
 */
 
 extern "C" {
-#include <string.h>
 #include <curses.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
-#include "pstrings.h"
 #include "find.h"
+#include "pstrings.h"
 #include "perror.h"
 }
 
+#include <cstring>
 #include <string>
 #include "room.h"
 #include "room_io.h"
 #include "interpreter/parser.h"
+#include "stringsm.h"
+
 
 /*Choice constructor definition*/
 Choice::Choice(int ch_n, int ch_ln) : choice_n(ch_n), choice_line(ch_ln) { }
@@ -54,17 +56,26 @@ void Choice::displayChoice()
         {
             textfound = true;
             printw("%d. ", choice_n);
-            pstrings_display(arg);
+
+            if(stringsm_is_str(arg))
+            {
+                std::string disp_value;
+
+                stringsm_ext_str_quotes(disp_value, arg);
+                printw(disp_value.c_str());
+            }
+            else pstrings_display(arg);
+
             printw("\n");
+
+            currln++;
+            free(buf);
         }
         else if(!strcmp(type, "END"))
         {
             free(buf);
             perror_disp("missing choice text", 1);
         }
-        currln++;
-
-        free(buf);
     }
 }
 

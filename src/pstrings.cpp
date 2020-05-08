@@ -25,12 +25,12 @@ extern "C"
 #include "vars/pconst.h"
 #include "fileio/fileio.h"
 #include "perror.h"
-#include "stringsm.h"
 }
 
 #include <string>
 #include <vector>
 #include "pstrings.h"
+#include "stringsm.h"
 
 struct PstringsElement
 {
