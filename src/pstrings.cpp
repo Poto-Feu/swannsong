@@ -41,7 +41,7 @@ struct PstringsElement
 static std::vector<PstringsElement> pstrings_arr {};
 
 static void open_strfile(FILE **f);
-static void split_file_line(std::string* r_id, std::string* r_val, char* buf);
+static void split_file_line(std::string& r_id, std::string& r_val, char* buf);
 static void add_pstring_to_vec(std::string p_id, std::string p_val);
 
 void pstrings_copy_file_to_vec()
@@ -61,14 +61,14 @@ void pstrings_copy_file_to_vec()
 
         if(buf[0] != '\0')
         {
-            split_file_line(&r_id, &r_val, buf);
+            split_file_line(r_id, r_val, buf);
             add_pstring_to_vec(r_id, r_val);
         } else continue;
     }
     fclose(fp);
 }
 
-static void split_file_line(std::string* r_id, std::string* r_val, char* buf)
+static void split_file_line(std::string& r_id, std::string& r_val, char* buf)
 {
     int sp_ind = 0;
     int quote_ind = 0;
@@ -78,7 +78,7 @@ static void split_file_line(std::string* r_id, std::string* r_val, char* buf)
     {
         if(buf[i] == ' ' || buf[i] == '\t') break;
         sp_ind++;
-        *r_id += buf[i];
+        r_id += buf[i];
     }
     for(int i = sp_ind; buf[i] != '\0'; i++)
     {
@@ -97,7 +97,7 @@ static void split_file_line(std::string* r_id, std::string* r_val, char* buf)
     for(int i = quote_ind+1; buf[i] != '\0'; i++)
     {
         if(buf[i] == '"') break;
-        else *r_val += buf[i];
+        else r_val += buf[i];
     }
 }
 
