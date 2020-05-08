@@ -21,7 +21,6 @@ extern "C" {
 #include <curses.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
-#include "find.h"
 #include "pstrings.h"
 #include "perror.h"
 }
@@ -30,6 +29,7 @@ extern "C" {
 #include <string>
 #include "room.h"
 #include "room_io.h"
+#include "find.hpp"
 #include "interpreter/parser.h"
 #include "stringsm.h"
 
@@ -37,20 +37,22 @@ extern "C" {
 /*Choice constructor definition*/
 Choice::Choice(int ch_n, int ch_ln) : choice_n(ch_n), choice_line(ch_ln) { }
 
-/*Choice member functions definitions*/
-void Choice::displayChoice()
+/*Choice public member functions definitions*/
+void Choice::display()
 {
     bool textfound = false;
     int currln = choice_line + 1;
 
     for(int i = 0; !textfound; i++)
     {
-        char* buf = NULL;
         char arg[P_MAX_BUF_SIZE - 1] = {0};
         char type[P_MAX_BUF_SIZE - 1] = {0};
+        char temp_buf[P_MAX_BUF_SIZE] = {0};
+        std::string buf;
 
-        roomio_fetch_ln(&buf, currln);
-        parser_splitline(type, arg, buf);
+        roomio_fetch_ln(buf, currln);
+        strcpy(temp_buf, buf.c_str());
+        parser_splitline(type, arg, temp_buf);
 
         if(!strcmp(type, "TEXT"))
         {
@@ -69,13 +71,8 @@ void Choice::displayChoice()
             printw("\n");
 
             currln++;
-            free(buf);
         }
-        else if(!strcmp(type, "END"))
-        {
-            free(buf);
-            perror_disp("missing choice text", 1);
-        }
+        else if(!strcmp(type, "END")) perror_disp("missing choice text", true);
     }
 }
 
@@ -105,18 +102,68 @@ void Room::setRoomLine(int rln) { room_line = rln; }
 
 void Room::setChoicesLine(int chln) { choices_line = chln; }
 
-void Room::displayChoices()
+void Room::displayList()
 {
-    for(auto& current_choice : displayed_choices)
+    auto title_shown = false;
+    auto choice_n = 1;
+
+    for(auto i = 0; i < static_cast<decltype(i)>(display_order.size()); i++)
     {
-        current_choice.displayChoice();
+        if(display_order[i] == CHOICE)
+        {
+            displayed_choices[choice_n - 1].display();
+            choice_n++;
+        } else if(display_order[i] == TITLE) displayTitle(title_shown);
     }
+}
+
+void Room::addDisplayTitle()
+{
+    display_order.push_back(TITLE);
+}
+
+void Room::addDisplayDesc()
+{
+    display_order.push_back(DESC);
 }
 
 void Room::addDisplayChoice(int ch_ln)
 {
     Choice newChoice(displayed_choices.size() + 1, ch_ln);
     displayed_choices.push_back(newChoice);
+    display_order.push_back(CHOICE);
+}
+
+/*Choice private member functions definitions*/
+void Room::displayTitle(bool& title_shown)
+{
+    std::string value;
+    auto prop_fnd = find_room_property(value, "TITLE", getRoomLine());
+
+    if(prop_fnd)
+    {
+        std::string disp_value;
+
+        if(stringsm_is_str(value.c_str()))
+        {
+            stringsm_ext_str_quotes(disp_value, value.c_str());
+        }
+        else if(pstrings_check_exist(value.c_str()))
+        {
+            char* temp_arr = NULL;
+
+            pstrings_fetch(value.c_str(), &temp_arr);
+            disp_value = temp_arr;
+
+            free(temp_arr);
+        }
+
+        attron(A_BOLD);
+        printw("%s\n\n", disp_value.c_str());
+        attroff(A_BOLD);
+
+        title_shown = true;
+    } else perror_disp("TITLE property not found in room", false);
 }
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
@@ -135,11 +182,13 @@ static void room_atlaunch(int roomln, Room& currentRoom)
 
 void room_load(char* id)
 {
-    int roomln = 0;
+    int roomln = find_roomline(id);
     std::string str_id(id);
-    Room currentRoom(str_id);
 
-    find_roomline(id, &roomln);
+    Room currentRoom(str_id);
+    
+    currentRoom.setRoomLine(roomln);
+
     room_atlaunch(roomln, currentRoom);
-    currentRoom.displayChoices();
+    currentRoom.displayList();
 }

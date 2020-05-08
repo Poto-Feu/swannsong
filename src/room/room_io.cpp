@@ -24,16 +24,12 @@ extern "C"
 #include "vars/pvars.h"
 }
 
-#include <cstring>
 #include <string>
 #include <vector>
 #include "room/room_io.h"
 #include "stringsm.h"
 
-using std::string;
-using std::vector;
-
-static vector<string> roomfile_arr {};
+static std::vector<std::string> roomfile_arr {};
 
 static void open_strfile(FILE** fp);
 static void add_ln_to_vec(char* p_ln);
@@ -57,48 +53,39 @@ void roomio_copy_file_to_vec()
 }
 
 /*Return a char array containing the line from the specified index*/
-bool roomio_fetch_ln(char** p_ln, int ind)
+bool roomio_fetch_ln(std::string& p_ln, int ind)
 {
-    if(*p_ln != NULL) free(*p_ln);
-
-    if(ind > static_cast<int>(roomfile_arr.size()))
+    if(ind > static_cast<int>(roomfile_arr.size())) return false;
+    else
     {
-        return false;
-    } else
-    {
-        int str_len = P_MAX_BUF_SIZE;
-        string ind_ln(roomfile_arr[ind-1]);
+        p_ln = roomfile_arr[ind-1];
 
-        str_len = ind_ln.length();
-        *p_ln = (char*)malloc((str_len+1) * sizeof(char));
-        (*p_ln)[str_len] = '\0';
-        strcpy(*p_ln, ind_ln.c_str());
+        return true;
     }
-    return true;
 }
 
 /*Return the line number where the specified line is present*/
-bool roomio_find_ind(int* f_ln, const char* p_ln)
+bool roomio_find_ind(int& f_ln, const char* p_ln)
 {
     int i = 1;
-    string str_ln(p_ln);
+    std::string str_ln(p_ln);
 
     for(const auto& it : roomfile_arr)
     {
         if(it == str_ln)
         {
-            *f_ln = i;
+            f_ln = i;
             return true;
         } else i++;  
     }
-    *f_ln = -1;
+    f_ln = -1;
 
     return false;
 }
 
 static void add_ln_to_vec(char* p_ln)
 {
-    string str_ln(p_ln);
+    std::string str_ln(p_ln);
     roomfile_arr.push_back(str_ln);
 }
 

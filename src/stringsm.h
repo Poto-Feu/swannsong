@@ -21,9 +21,6 @@
 #define STRINGSM_H
 
 #ifdef __cplusplus
-
-#include <string>
-
 extern "C" {
 #endif
 
@@ -31,11 +28,13 @@ extern "C" {
 
 void stringsm_chomp(char* str);
 void stringsm_rtab(char* str);
-void stringsm_getfw(char* fw, char* s, int *index);
-bool stringsm_is_str(char* p_str);
+void stringsm_getfw(char* fw, const char* str, int *index);
+bool stringsm_is_str(const char* p_str);
 
 #ifdef __cplusplus
 }
+
+#include <string>
 
 void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
 #endif

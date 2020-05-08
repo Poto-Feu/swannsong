@@ -117,8 +117,9 @@ static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n)
 
             set_one_chr_tkn(temp_arr, *tkn_n, p_str[i]);
             temp_arr[*tkn_n].type = NOT;
-        } else if(p_str[i] == '"')
+        } else if(p_str[i] == '"' || p_str[i] == '\'')
         {
+            int quote_ch = p_str[i];
             bool in_string = true;
 
             (*tkn_n)++;
@@ -128,19 +129,16 @@ static void create_temp_arr(Token* temp_arr, const char* p_str, uint8_t* tkn_n)
             temp_arr[*tkn_n].type = STRING;
 
             /*Create a STRING token*/
-            for(int y = i+1; in_string; y++)
+            for(int y = i+1; in_string; ++y)
             {
-                if(p_str[y] != '"')
+                if(p_str[y] == '\\' && p_str[y+1] == quote_ch)
+                {
+                    temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y+1];
+                    ++y;
+                } else if(p_str[y] != quote_ch)
                 {
                     temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y];
                     tkn_letter_ind++;
-                } else if(p_str[y] == '\\')
-                {
-                    if(p_str[y+1] == '"')
-                    {
-                        temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y+1];
-                        y++;
-                    } else  temp_arr[*tkn_n].str[tkn_letter_ind] = p_str[y];
                 } else
                 {
                     i = y;

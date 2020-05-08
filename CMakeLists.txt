@@ -29,7 +29,7 @@ add_executable(swannsong
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.c
     src/room/room.cpp
-    src/room/find.c
+    src/room/find.cpp
     src/room/room_io.cpp
     src/fileio/fileio.c
     src/fileio/gameconf.c

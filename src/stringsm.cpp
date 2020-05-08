@@ -20,6 +20,7 @@
 extern "C" {
 #include <curses.h>
 }
+
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -45,7 +46,7 @@ void stringsm_rtab(char* str)
 }
 
 /*Get the first word of a string*/
-void stringsm_getfw(char* fw, char* str, int* index)
+void stringsm_getfw(char* fw, const char* str, int* index)
 {
     bool space = false;
     int len = strlen(str);
@@ -65,12 +66,11 @@ void stringsm_getfw(char* fw, char* str, int* index)
     {
         strcpy(fw, str);
         *index = 0;
-        return;
     }
 }
 
 /*Check if the passed char array is a string enclosed with quotes*/
-bool stringsm_is_str(char* p_str)
+bool stringsm_is_str(const char* p_str)
 {
     bool is_str = false;
     bool nulterm = false;

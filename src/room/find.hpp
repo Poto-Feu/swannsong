@@ -17,15 +17,17 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdbool.h>
 
 #ifndef FIND_H
 #define FIND_H
 
-void find_room(char* id, bool* inroom, char* lang);
-void find_roomline(char* id, int* ln);
+#include <string>
+
 bool find_atlaunchline(int* foundln, int ln);
 bool find_choicesline(int* foundln, int ln);
 bool find_onechoiceline(int num, int startln, int* ln);
+void find_room(char* id, bool* inroom, char* lang);
+int find_roomline(const char* id);
+bool find_room_property(std::string& value, const char* prop, int roomln);
 
 #endif

@@ -21,11 +21,8 @@ extern "C" {
 #include <curses.h>
 #include "vars/pconst.h"
 #include "vars/gvars.h"
-#include "room/find.h"
-#include "room/room_io.h"
 #include "room/interpreter/token.h"
 #include "perror.h"
-#include "pstrings.h"
 }
 
 #include <cstdlib>
@@ -33,10 +30,13 @@ extern "C" {
 #include <string>
 #include "parser.h"
 #include "room/room.h"
+#include "room/room_io.h"
+#include "room/find.hpp"
+#include "pstrings.h"
 #include "stringsm.h"
 
-static void parser_execins(char* p_line, Room& currentRoom);
-static bool check_condition(char* insln);
+static void parser_execins(const char* p_line, Room& currentRoom);
+static bool check_condition(const char* insln);
 int parser_skip_until_end(int blockln);
 
 /*Execute instructions until the end of the block*/
@@ -49,23 +49,21 @@ int parser_exec_until_end(int blockln, Room& currentRoom)
     for(int i = startln; !is_end; i++)
     {
         int ind = -1;
-        char* buf = NULL;
+        std::string buf;
         char fw[P_MAX_BUF_SIZE - 1] = {0};
 
         endln = i;
 
-        roomio_fetch_ln(&buf, i);
-        stringsm_getfw(fw, buf, &ind);
+        roomio_fetch_ln(buf, i);
+        stringsm_getfw(fw, buf.c_str(), &ind);
 
         if(!strcmp("END", fw)) is_end = true;
         else if(!strcmp("IF", fw)) 
         {
-            if(check_condition(buf)) i = parser_exec_until_end(i, currentRoom);
+            if(check_condition(buf.c_str())) i = parser_exec_until_end(i, currentRoom);
             else i = parser_skip_until_end(i);
         }
-        else parser_execins(buf, currentRoom);
-
-        free(buf);
+        else parser_execins(buf.c_str(), currentRoom);
     }
 
     return endln;
@@ -81,18 +79,16 @@ int parser_skip_until_end(int blockln)
     for(int i = startln; !is_end; i++)
     {
         int ind = -1;
-        char* buf = NULL;
         char fw[P_MAX_BUF_SIZE - 1] = {0};
+        std::string buf;
 
         endln = i;
 
-        roomio_fetch_ln(&buf, i);
-        stringsm_getfw(fw, buf, &ind);
+        roomio_fetch_ln(buf, i);
+        stringsm_getfw(fw, buf.c_str(), &ind);
 
         if(!strcmp("END", fw)) is_end = true;
         else if(!strcmp("IF", fw)) i = parser_skip_until_end(i);
-
-        free(buf);
     }
 
     return endln;
@@ -101,7 +97,7 @@ int parser_skip_until_end(int blockln)
 static void free_TokenArr(TokenArr* p_arr);
 static void interp_ins(TokenArr r_arr, Room& currentRoom);
 
-static void parser_execins(char* p_line, Room& currentRoom)
+static void parser_execins(const char* p_line, Room& currentRoom)
 {
     TokenArr r_arr = INIT_TKN_ARR;
 
@@ -142,10 +138,7 @@ static void interp_func_ins(TokenArr r_arr, Room& currentRoom)
 {
     if(!strcmp(r_arr.list[0].str, "DISPLAY"))
     {
-        if(r_arr.ln != 2)
-        {
-            perror_disp("too many tokens (DISPLAY)", 1);
-        }
+        if(r_arr.ln != 2) perror_disp("too many tokens (DISPLAY)", 1);
         interp_DISPLAY_func(r_arr.list, currentRoom);
     }
     else if(!strcmp(r_arr.list[0].str, "PRINT"))
@@ -168,7 +161,7 @@ static void interp_func_ins(TokenArr r_arr, Room& currentRoom)
 
 static bool check_COMP_condition(TokenArr* r_arr);
 
-static bool check_condition(char* insln)
+static bool check_condition(const char* insln)
 {
     bool rtrn_val = false;
     TokenArr r_arr = INIT_TKN_ARR;
@@ -181,8 +174,11 @@ static bool check_condition(char* insln)
         {
             free_TokenArr(&r_arr);
             perror_disp("wrong arg number in EXISTS IF", 1);
+        } else if(gvars_exist(r_arr.list[1].str))
+        {
+            rtrn_val = true;
+            free_TokenArr(&r_arr);
         }
-        if(gvars_exist(r_arr.list[1].str)) rtrn_val = true;
 
     } else if(r_arr.list[2].type == NOT && r_arr.list[3].type == EXISTS)
     {
@@ -190,18 +186,17 @@ static bool check_condition(char* insln)
         {
             free_TokenArr(&r_arr);
             perror_disp("wrong arg number in EXISTS IF", 1);
-        }
-        if(!gvars_exist(r_arr.list[1].str)) rtrn_val = true;
+        } else if(!gvars_exist(r_arr.list[1].str)) rtrn_val = true;
     } else if(r_arr.list[1].type == VARIABLE)
     {
         rtrn_val = check_COMP_condition(&r_arr);
+        free_TokenArr(&r_arr);
     } else 
     {
         free_TokenArr(&r_arr);
         perror_disp("IF type not recognized", 1);
     }
     
-    free_TokenArr(&r_arr);
     return rtrn_val;
 }
 
@@ -213,9 +208,7 @@ static bool check_COMP_condition(TokenArr* r_arr)
     {
         free_TokenArr(r_arr);
         perror_disp("wrong arg number in COMP IF", 1);
-    }
-
-    if(r_arr->list[3].type == NUMBER)
+    } else if(r_arr->list[3].type == NUMBER)
     {
         if(r_arr->list[2].type == EQUAL)
         {
@@ -280,14 +273,11 @@ static void interp_DISPLAY_func(Token* c_list, Room& currentRoom)
 
         currentRoom.getName(room_name);
 
-        if(currentRoom.isRoomLineSet()) roomln = currentRoom.getRoomLine();
-        else
-        {
-            find_roomline(room_name, &roomln);
-            currentRoom.setRoomLine(roomln);
-        }
+        roomln = currentRoom.getRoomLine();
         add_all_choices(roomln, currentRoom);
-    } else
+    } else if(!strcmp(c_list[1].str, "TITLE")) currentRoom.addDisplayTitle();
+    else if(!strcmp(c_list[1].str, "DESC")) currentRoom.addDisplayDesc();
+    else
     {
         perror_disp("displaying one choice is not yet implemented", 0);
     }
@@ -325,6 +315,7 @@ void parser_splitline(char* type, char* arg, char* ins)
     len = strlen(ins);
     ins[len] = '\0';
     stringsm_getfw(type, ins, &i);
+
     if(len != (int)strlen(type))
     {
         int findex = 0;
@@ -345,15 +336,13 @@ static void add_all_choices(int roomln, Room& currentRoom)
 {
     int choicesln = 0;
     bool choicesremain = true;
-    bool choicesexist = false;
     
     if(currentRoom.isChoicesLineSet())
     {
-        choicesexist = true;
         choicesln = currentRoom.getChoicesLine();
     } else
     {
-        choicesexist = find_choicesline(&choicesln, roomln);
+        bool choicesexist = find_choicesline(&choicesln, roomln);
 
         if(!choicesexist) perror_disp("Missing CHOICES block", true);
         else currentRoom.setChoicesLine(choicesln);
@@ -361,15 +350,12 @@ static void add_all_choices(int roomln, Room& currentRoom)
     for(int i = 1; choicesremain; i++)
     {
         int onechoiceln = 0;
-        bool choicesexist = find_onechoiceline((i), choicesln, &onechoiceln);
+        bool choiceexist = find_onechoiceline((i), choicesln, &onechoiceln);
 
-        if(!choicesexist)
+        if(!choiceexist)
         {
             if(i == 1) perror_disp("No CHOICE block found", true);
             choicesremain = false;
-        } else
-        {
-            currentRoom.addDisplayChoice(onechoiceln);
-        }
+        } else currentRoom.addDisplayChoice(onechoiceln);
     }
 }

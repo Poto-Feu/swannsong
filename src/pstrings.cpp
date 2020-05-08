@@ -107,10 +107,10 @@ static void add_pstring_to_vec(std::string p_id, std::string p_val)
     pstrings_arr.push_back(new_el);
 }
 
-void pstrings_fetch(char* id, char** rstr);
+void pstrings_fetch(const char* id, char** rstr);
 
 /*Display the string corresponding to the id*/
-void pstrings_display(char *id)
+void pstrings_display(const char* id)
 {
     char* rstring = new char[P_MAX_BUF_SIZE]();
 
@@ -122,7 +122,7 @@ void pstrings_display(char *id)
 
 
 /*Check if a string is defined in the lang file*/
-bool pstrings_check_exist(char* id)
+bool pstrings_check_exist(const char* id)
 {
     bool isfnd = false;
     auto str_id(id);
@@ -139,7 +139,7 @@ bool pstrings_check_exist(char* id)
     return isfnd;
 }
 /*Copy the corresponding string into the pointer of a char pointer*/
-void pstrings_fetch(char* id, char** r_str)
+void pstrings_fetch(const char* id, char** r_str)
 {
     auto str_id(id);
     bool isfnd = false;
