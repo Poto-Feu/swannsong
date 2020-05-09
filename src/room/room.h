@@ -35,13 +35,6 @@ void room_load(char* id);
 #include <string>
 #include <vector>
 
-enum display_type
-{
-    TITLE,
-    DESC,
-    CHOICE
-};
-
 class Choice
 {
     public:
@@ -86,10 +79,10 @@ class Room
         int room_line = 0;
         int choices_line = 0;
 
-        std::vector<display_type> display_order;
+        bool title_displayed = false;
         std::vector<Choice> displayed_choices;
 
-        void displayTitle(bool& title_shown);
+        void displayTitle();
 };
 #endif
 
