@@ -150,7 +150,7 @@ void Room::displayTitle(bool& title_shown)
         }
         else if(pstrings_check_exist(value.c_str()))
         {
-            char* temp_arr = NULL;
+            char* temp_arr = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
 
             pstrings_fetch(value.c_str(), &temp_arr);
             disp_value = temp_arr;
