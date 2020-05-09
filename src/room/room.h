@@ -80,9 +80,12 @@ class Room
         int choices_line = 0;
 
         bool title_displayed = false;
+        bool desc_displayed = false;
+
         std::vector<Choice> displayed_choices;
 
         void displayTitle();
+        void displayDesc();
 };
 #endif
 

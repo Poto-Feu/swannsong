@@ -105,6 +105,7 @@ void Room::setChoicesLine(int chln) { choices_line = chln; }
 void Room::displayList()
 {
     if(title_displayed) displayTitle();
+    if(desc_displayed) displayDesc();
 
     for(auto& ch : displayed_choices)
     {
@@ -150,6 +151,33 @@ void Room::displayTitle()
         printw("%s\n\n", disp_value.c_str());
         attroff(A_BOLD);
     } else perror_disp("TITLE property not found in room", false);
+}
+
+void Room::displayDesc()
+{
+    std::string value;
+    auto prop_fnd = find_room_property(value, "DESC", getRoomLine());
+
+    if(prop_fnd)
+    {
+        std::string disp_value;
+
+        if(stringsm_is_str(value.c_str()))
+        {
+            stringsm_ext_str_quotes(disp_value, value.c_str());
+        }
+        else if(pstrings_check_exist(value.c_str()))
+        {
+            char* temp_arr = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
+
+            pstrings_fetch(value.c_str(), &temp_arr);
+            disp_value = temp_arr;
+
+            free(temp_arr);
+        }
+
+        printw("%s\n\n", disp_value.c_str());
+    } else perror_disp("DESC property not found in room", false);
 }
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
