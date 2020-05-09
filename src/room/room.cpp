@@ -104,38 +104,26 @@ void Room::setChoicesLine(int chln) { choices_line = chln; }
 
 void Room::displayList()
 {
-    auto title_shown = false;
-    auto choice_n = 1;
+    if(title_displayed) displayTitle();
 
-    for(auto i = 0; i < static_cast<decltype(i)>(display_order.size()); i++)
+    for(auto& ch : displayed_choices)
     {
-        if(display_order[i] == CHOICE)
-        {
-            displayed_choices[choice_n - 1].display();
-            choice_n++;
-        } else if(display_order[i] == TITLE) displayTitle(title_shown);
+        ch.display();
     }
 }
 
-void Room::addDisplayTitle()
-{
-    display_order.push_back(TITLE);
-}
+void Room::addDisplayTitle() { title_displayed = true; }
 
-void Room::addDisplayDesc()
-{
-    display_order.push_back(DESC);
-}
+void Room::addDisplayDesc() { desc_displayed = true; }
 
 void Room::addDisplayChoice(int ch_ln)
 {
     Choice newChoice(displayed_choices.size() + 1, ch_ln);
     displayed_choices.push_back(newChoice);
-    display_order.push_back(CHOICE);
 }
 
 /*Choice private member functions definitions*/
-void Room::displayTitle(bool& title_shown)
+void Room::displayTitle()
 {
     std::string value;
     auto prop_fnd = find_room_property(value, "TITLE", getRoomLine());
@@ -161,8 +149,6 @@ void Room::displayTitle(bool& title_shown)
         attron(A_BOLD);
         printw("%s\n\n", disp_value.c_str());
         attroff(A_BOLD);
-
-        title_shown = true;
     } else perror_disp("TITLE property not found in room", false);
 }
 
