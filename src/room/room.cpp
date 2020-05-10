@@ -21,7 +21,6 @@ extern "C" {
 #include <curses.h>
 #include "vars/pvars.h"
 #include "vars/pconst.h"
-#include "pstrings.h"
 #include "perror.h"
 }
 
@@ -31,6 +30,8 @@ extern "C" {
 #include "room_io.h"
 #include "find.hpp"
 #include "interpreter/parser.h"
+#include "pcurses.hpp"
+#include "pstrings.h"
 #include "stringsm.h"
 
 
@@ -45,10 +46,15 @@ void Choice::display()
 
     for(int i = 0; !textfound; i++)
     {
+        int x = 0;
+        int y = 0;
         char arg[P_MAX_BUF_SIZE - 1] = {0};
         char type[P_MAX_BUF_SIZE - 1] = {0};
         char temp_buf[P_MAX_BUF_SIZE] = {0};
         std::string buf;
+        std::string disp_value;
+
+        getyx(stdscr, y, x);
 
         roomio_fetch_ln(buf, currln);
         strcpy(temp_buf, buf.c_str());
@@ -57,18 +63,16 @@ void Choice::display()
         if(!strcmp(type, "TEXT"))
         {
             textfound = true;
-            printw("%d. ", choice_n);
 
-            if(stringsm_is_str(arg))
+            if(stringsm_is_str(arg)) stringsm_ext_str_quotes(disp_value, arg);
+            else
             {
-                std::string disp_value;
-
-                stringsm_ext_str_quotes(disp_value, arg);
-                printw(disp_value.c_str());
+                disp_value = pstrings_fetch(arg);
+                disp_value.insert(0, ". ");
+                disp_value.insert(0, std::to_string(choice_n));
             }
-            else pstrings_display(arg);
 
-            printw("\n");
+            pcurses::display_string(disp_value, y);
 
             currln++;
         }
@@ -131,6 +135,7 @@ void Room::displayTitle()
 
     if(prop_fnd)
     {
+        int y = LINES / 2 - LINES / 6;
         std::string disp_value;
 
         if(stringsm_is_str(value.c_str()))
@@ -139,16 +144,12 @@ void Room::displayTitle()
         }
         else if(pstrings_check_exist(value.c_str()))
         {
-            char* temp_arr = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-
-            pstrings_fetch(value.c_str(), &temp_arr);
-            disp_value = temp_arr;
-
-            free(temp_arr);
+            disp_value = pstrings_fetch(value);
         }
 
         attron(A_BOLD);
-        printw("%s\n\n", disp_value.c_str());
+        pcurses::display_string(disp_value, y);
+        printw("\n");
         attroff(A_BOLD);
     } else perror_disp("TITLE property not found in room", false);
 }
@@ -160,7 +161,11 @@ void Room::displayDesc()
 
     if(prop_fnd)
     {
+        int x = 0;
+        int y = 0;
         std::string disp_value;
+
+        getyx(stdscr, y, x);
 
         if(stringsm_is_str(value.c_str()))
         {
@@ -168,15 +173,13 @@ void Room::displayDesc()
         }
         else if(pstrings_check_exist(value.c_str()))
         {
-            char* temp_arr = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-
-            pstrings_fetch(value.c_str(), &temp_arr);
-            disp_value = temp_arr;
-
-            free(temp_arr);
+            disp_value = pstrings_fetch(value);
         }
 
-        printw("%s\n\n", disp_value.c_str());
+        if(!title_displayed) y = LINES / 2 - LINES / 6 + 2;
+
+        pcurses::display_string(disp_value, y);
+        printw("\n");
     } else perror_disp("DESC property not found in room", false);
 }
 

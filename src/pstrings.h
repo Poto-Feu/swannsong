@@ -27,12 +27,16 @@ extern "C" {
 #include <stdbool.h>
 
 bool pstrings_check_exist(const char* id);
-void pstrings_fetch(const char* id, char** r_str);
 void pstrings_display(const char* id);
 void pstrings_copy_file_to_vec();
 
 #ifdef __cplusplus
 }
+
+#include <string>
+
+std::string pstrings_fetch(std::string const& id);
+
 #endif
 
 #endif

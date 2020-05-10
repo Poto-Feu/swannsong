@@ -107,17 +107,14 @@ static void add_pstring_to_vec(std::string p_id, std::string p_val)
     pstrings_arr.push_back(new_el);
 }
 
-void pstrings_fetch(const char* id, char** rstr);
+std::string pstrings_fetch(std::string const& id);
 
 /*Display the string corresponding to the id*/
 void pstrings_display(const char* id)
 {
-    char* rstring = new char[P_MAX_BUF_SIZE]();
+    std::string rstring = pstrings_fetch(id);
 
-    pstrings_fetch(id, &rstring);
-    printw(rstring);
-
-    delete[] rstring;
+    printw(rstring.c_str());
 }
 
 
@@ -139,22 +136,23 @@ bool pstrings_check_exist(const char* id)
     return isfnd;
 }
 /*Copy the corresponding string into the pointer of a char pointer*/
-void pstrings_fetch(const char* id, char** r_str)
+std::string pstrings_fetch(std::string const& id)
 {
-    auto str_id(id);
     bool isfnd = false;
+    std::string r_str;
 
     for(const auto& it : pstrings_arr)
     {
-        if(str_id == it.id)
+        if(id == it.id)
         {
             isfnd = true;
-            strcpy(*r_str, it.val.c_str());
+            r_str = it.val;
             break;
         }
     }
 
-    if(!isfnd) perror_disp("pstring not found", 0);
+    if(!isfnd) return "MissingStr";
+    else return r_str;
 }
 
 /*Set the file pointer to the file containing the strings correponding
