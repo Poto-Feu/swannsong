@@ -39,6 +39,7 @@ add_executable(swannsong
     src/init.c
     src/perror.c
     src/pstrings.cpp
+    src/pcurses.cpp
     src/stringsm.cpp
     src/exitgame.c
     src/inventory.cpp
