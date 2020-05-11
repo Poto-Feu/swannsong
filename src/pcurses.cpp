@@ -38,7 +38,7 @@ namespace pcurses
         return COLS / 2 - static_cast<int>(p_str.size()) / 2;
     }
 
-    void display_string(std::string p_str, int p_y)
+    void display_string(std::string p_str, int p_y, int space, bool newline)
     {
         bool end_of_str = false;
 
@@ -59,8 +59,10 @@ namespace pcurses
             {
                 int x = find_centered_x(p_str);
 
-                move(p_y, x);
-                printw("%s\n", p_str.c_str());
+                move(p_y, x + space);
+                printw("%s", p_str.c_str());
+                if(newline) printw("\n");
+
                 end_of_str = true;
             }
         }

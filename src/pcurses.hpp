@@ -45,7 +45,9 @@ namespace pcurses
     extern int margin;
 
     int find_centered_x(std::string& p_str);
-    void display_string(std::string p_str, int p_y);
+    void display_string(std::string p_str, int p_y, int space = 0,
+            bool newline = true);
+            
 }
 
 #endif
