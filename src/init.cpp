@@ -81,20 +81,54 @@ namespace init
     /*Show a prompt asking the user to choose the language*/
     void ask_lang()
     {
+        struct lang_item
+        {
+            lang_item(std::string p_id, std::string p_disp) : id(p_id),
+                disp(p_disp) {}
+                
+            std::string id;
+            std::string disp;
+        };
+
         bool validinp = false;
-        std::vector<std::string> langarr {"en", "fr"};
+        int y = pcurses::title_y - 1;
+        int x = 0;
+
+        std::string hint_str(
+            "Hint : make a choice by typing the corresponding number.");
+
+        std::vector<lang_item> langvec
+        {
+            lang_item("en", "English"),
+            lang_item("fr", "Français")
+        };
 
         clear();
-        printw("Hint : make a choice by typing the corresponding number.\n");
-        printw("\nSelect your language:"
-                "\n1. English"
-                "\n2. Français\n");
+
+        pcurses::display_string(hint_str, y);
+        printw("\n\n");
+        getyx(stdscr, y, x);
+        pcurses::display_string("Select your language:", y);
+
+        for(int i = 1; i <= static_cast<int>(langvec.size()); ++i)
+        {
+            std::string disp_str(std::to_string(i));
+
+            disp_str += ". ";
+            disp_str.append(langvec[i-1].disp);
+
+            getyx(stdscr, y, x);
+            pcurses::display_string(disp_str, y);
+        }
+
+        printw("\n");
 
         while(!validinp)
         {
             std::string buf;
 
-            printw("\nYour choice: ");
+            getyx(stdscr, y, x);
+            pcurses::display_string("Your choice: ", y, -10, false);
             refresh();
 
             buf = userio_gettextinput(2);
@@ -103,9 +137,9 @@ namespace init
             {
                 int intval = buf[0] - '0';
                 
-                if(intval > 0 && intval <= static_cast<int>(langarr.size()))
+                if(intval > 0 && intval <= static_cast<int>(langvec.size()))
                 {
-                    std::string lang = langarr[intval - 1];
+                    std::string lang = langvec[intval - 1].id;
 
                     pvars_setstdvars("lang", lang.c_str());
                     validinp = true;
