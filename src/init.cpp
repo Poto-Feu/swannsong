@@ -44,6 +44,11 @@ namespace init
         else pcurses::margin = 10;
     }
 
+    void set_title_y()
+    {
+        pcurses::title_y = LINES / 2 - LINES / 6;
+    }
+
     void set_curses()
     {
         initscr();
@@ -51,6 +56,7 @@ namespace init
         noecho();
 
         set_margin();
+        set_title_y();
     }
 
     void set_pvars(char** room_name)

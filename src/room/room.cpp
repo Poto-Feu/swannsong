@@ -135,7 +135,7 @@ void Room::displayTitle()
 
     if(prop_fnd)
     {
-        int y = LINES / 2 - LINES / 6;
+        int y = pcurses::title_y;
         std::string disp_value;
 
         if(stringsm_is_str(value.c_str()))
@@ -176,7 +176,7 @@ void Room::displayDesc()
             disp_value = pstrings_fetch(value);
         }
 
-        if(!title_displayed) y = LINES / 2 - LINES / 6 + 2;
+        if(!title_displayed) y = pcurses::title_y + 2;
 
         pcurses::display_string(disp_value, y);
         printw("\n");

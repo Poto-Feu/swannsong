@@ -28,6 +28,8 @@ extern "C" {
 namespace pcurses
 {
     int margin = 0;
+    int title_y = 0;
+
     int max_size_str()
     {
         return COLS - margin * 2;
