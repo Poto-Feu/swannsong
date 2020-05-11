@@ -42,7 +42,7 @@ struct pcur_struct
 
 namespace pcurses
 {
-    const int margin = 20;
+    extern int margin;
 
     int find_centered_x(std::string& p_str);
     void display_string(std::string p_str, int p_y);
