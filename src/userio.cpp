@@ -17,8 +17,12 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
+extern "C" {
 #include <curses.h>
+}
+
+#include <cstdlib>
+#include "userio.h"
 #include "stringsm.h"
 
 #define WIN_ENTER_KEY 13
@@ -38,11 +42,24 @@ void userio_waitenter()
 /*Get user text input and return it in a pointer*/
 void userio_gettextinput(char** buf, int max_n)
 {
-    *buf = calloc(max_n+1, sizeof(char));
+    *buf = (char*)calloc(max_n+1, sizeof(char));
 
     echo();
     getnstr(*buf, max_n);
     noecho();
 
     stringsm_chomp(*buf);
+}
+
+std::string userio_gettextinput(int max_n)
+{
+    char* buf = NULL;
+    std::string r_str;
+
+    userio_gettextinput(&buf, max_n);
+    r_str.assign(buf);
+
+    free(buf);
+
+    return r_str;
 }

@@ -17,17 +17,22 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
+extern "C" {
 #include <curses.h>
-#include "init.h"
-#include "vars/pvars.h"
 #include "fileio/gameconf.h"
+#include "vars/pvars.h"
+}
+
+#include <cstdlib>
+#include <cstring>
+#include "init.h"
 #include "room/room_io.h"
 #include "room/room.h"
-#include "userio.h"
 #include "pstrings.h"
+#include "userio.h"
+
+#include <string>
+#include <vector>
 
 static void init_curses();
 static void init_pvars(char** room_name);
@@ -77,9 +82,8 @@ static void init_pvars(char** room_name)
 /*Show a prompt asking the user to choose the language*/
 static void ask_lang()
 {
-    char* buf = NULL;
-    char* langarr[2] = {"en", "fr"};
     bool validinp = false;
+    std::vector<std::string> langarr {"en", "fr"};
 
     clear();
     printw("Hint : make a choice by typing the corresponding number.\n");
@@ -89,37 +93,37 @@ static void ask_lang()
 
     while(!validinp)
     {
+        std::string buf;
+
         printw("\nYour choice: ");
         refresh();
 
-        userio_gettextinput(&buf, 2);
+        buf = userio_gettextinput(2);
 
-        if(strlen(buf) == 1)
+        if(buf.size() == 1)
         {
             int intval = buf[0] - '0';
-            int langarrsize = (int)sizeof(langarr);
-            int langarr0size = (int)sizeof(langarr[0]);
             
-            if(intval > 0 && intval <= (langarrsize / langarr0size))
+            if(intval > 0 && intval <= static_cast<int>(langarr.size()))
             {
-                char* lang = calloc(3, sizeof(char));
+                std::string lang = langarr[intval - 1];
 
-                strcpy(lang, langarr[intval - 1]);
-                pvars_setstdvars("lang", lang);
+                pvars_setstdvars("lang", lang.c_str());
                 validinp = true;
                 pstrings_copy_file_to_vec();
-
-                free(lang);
             } else
             {
                 printw("Nope. (not a valid input)\n");
                 refresh();
             }
+        } else if(buf.size() == 0)
+        {
+            printw("Nope. (nothing !)\n");
+            refresh();
         } else
         {
             printw("Nope. (too long)\n");
             refresh();
         }
-        free(buf);
     }
 }

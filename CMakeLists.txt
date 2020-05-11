@@ -36,14 +36,14 @@ add_executable(swannsong
     src/vars/pvars.c
     src/vars/intvar.cpp
     src/vars/gvars.cpp
-    src/init.c
+    src/init.cpp
     src/perror.c
     src/pstrings.cpp
     src/pcurses.cpp
     src/stringsm.cpp
     src/exitgame.c
     src/inventory.cpp
-    src/userio.c)
+    src/userio.cpp)
 
 # Compile pdcurses if the user is on windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")

@@ -20,7 +20,20 @@
 #ifndef USERIO_H
 #define USERIO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void userio_waitenter();
 void userio_gettextinput(char** buf, int max_n);
+
+#ifdef __cplusplus
+}
+
+#include <string>
+
+std::string userio_gettextinput(int max_n);
+
+#endif
 
 #endif
