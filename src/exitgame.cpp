@@ -17,19 +17,19 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
+extern "C" {
 #include <curses.h>
+}
+
 #include "exitgame.h"
 #include "pstrings.h"
 #include "userio.h"
+#include "pcurses.hpp"
 
 void exitgame(int c)
 {
-    printw("\n");
-    if(c == 0) 
-    {
-        pstrings_display("exit_penter");
-    }
+    move(LINES - 3, pcurses::margin);
+    if(c == 0)  pstrings_display("exit_penter");
     else printw("Press Enter to exit");
 
     refresh();
