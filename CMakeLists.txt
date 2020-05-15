@@ -29,20 +29,21 @@ add_executable(swannsong
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.c
     src/room/room.cpp
-    src/room/find.c
+    src/room/find.cpp
     src/room/room_io.cpp
     src/fileio/fileio.c
     src/fileio/gameconf.c
     src/vars/pvars.c
     src/vars/intvar.cpp
     src/vars/gvars.cpp
-    src/init.c
+    src/init.cpp
     src/perror.c
     src/pstrings.cpp
-    src/stringsm.c
-    src/exitgame.c
+    src/pcurses.cpp
+    src/stringsm.cpp
+    src/exitgame.cpp
     src/inventory.cpp
-    src/userio.c)
+    src/userio.cpp)
 
 # Compile pdcurses if the user is on windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")

@@ -18,25 +18,75 @@
 */
 
 extern "C" {
-#include <string.h>
 #include <curses.h>
-#include "find.h"
 #include "vars/pvars.h"
+#include "vars/pconst.h"
+#include "perror.h"
 }
 
+#include <cstring>
 #include <string>
 #include "room.h"
+#include "room_io.h"
+#include "find.hpp"
 #include "interpreter/parser.h"
+#include "pcurses.hpp"
+#include "pstrings.h"
+#include "stringsm.h"
 
-/*Room constructor definitions*/
-Room::Room() : name("NAME_NOT_SET") { }
+
+/*Choice constructor definition*/
+Choice::Choice(int ch_n, int ch_ln) : choice_n(ch_n), choice_line(ch_ln) { }
+
+/*Choice public member functions definitions*/
+void Choice::display()
+{
+    bool textfound = false;
+    int currln = choice_line + 1;
+
+    for(int i = 0; !textfound; i++)
+    {
+        int x = 0;
+        int y = 0;
+        char arg[P_MAX_BUF_SIZE - 1] = {0};
+        char type[P_MAX_BUF_SIZE - 1] = {0};
+        char temp_buf[P_MAX_BUF_SIZE] = {0};
+        std::string buf;
+        std::string disp_value;
+
+        getyx(stdscr, y, x);
+
+        roomio_fetch_ln(buf, currln);
+        strcpy(temp_buf, buf.c_str());
+        parser_splitline(type, arg, temp_buf);
+
+        if(!strcmp(type, "TEXT"))
+        {
+            textfound = true;
+
+            if(stringsm_is_str(arg)) stringsm_ext_str_quotes(disp_value, arg);
+            else
+            {
+                disp_value = pstrings_fetch(arg);
+                disp_value.insert(0, ". ");
+                disp_value.insert(0, std::to_string(choice_n));
+            }
+
+            move(y, 0);
+            pcurses::display_pos_string(disp_value, 4);
+            printw("\n");
+
+            currln++;
+        }
+        else if(!strcmp(type, "END")) perror_disp("missing choice text", true);
+    }
+}
+
+/*Room constructor definition*/
 Room::Room(std::string room_name) : name(room_name) { }
 
 /*Room methods definitions*/
-void Room::getName(char* r_name) const
-{
-    strcpy(r_name, name.c_str());
-}
+void Room::getName(char* r_name) const { strcpy(r_name, name.c_str()); }
 
 bool Room::isRoomLineSet() const
 {
@@ -50,29 +100,88 @@ bool Room::isChoicesLineSet() const
     else return false;
 }
 
-int Room::getRoomLine() const
+int Room::getRoomLine() const { return room_line; }
+
+int Room::getChoicesLine() const { return choices_line; }
+
+void Room::setRoomLine(int rln) { room_line = rln; }
+
+void Room::setChoicesLine(int chln) { choices_line = chln; }
+
+void Room::displayList()
 {
-    return room_line;
+    if(title_displayed) displayTitle();
+    if(desc_displayed) displayDesc();
+
+    for(auto& ch : displayed_choices)
+    {
+        ch.display();
+    }
 }
 
-int Room::getChoicesLine() const
+void Room::addDisplayTitle() { title_displayed = true; }
+
+void Room::addDisplayDesc() { desc_displayed = true; }
+
+void Room::addDisplayChoice(int ch_ln)
 {
-    return choices_line;
+    Choice newChoice(displayed_choices.size() + 1, ch_ln);
+    displayed_choices.push_back(newChoice);
 }
 
-void Room::setRoomLine(int rln)
+/*Choice private member functions definitions*/
+void Room::displayTitle()
 {
-    room_line = rln;
+    std::string value;
+    auto prop_fnd = find_room_property(value, "TITLE", getRoomLine());
+
+    if(prop_fnd)
+    {
+        int y = pcurses::title_y;
+        std::string disp_value;
+
+        if(stringsm_is_str(value.c_str()))
+        {
+            stringsm_ext_str_quotes(disp_value, value.c_str());
+        }
+        else if(pstrings_check_exist(value.c_str()))
+        {
+            disp_value = pstrings_fetch(value);
+        }
+
+        attron(A_BOLD);
+        move(y, getcurx(stdscr));
+        pcurses::display_center_string(disp_value);
+        printw("\n\n");
+        attroff(A_BOLD);
+    } else perror_disp("TITLE property not found in room", false);
 }
 
-void Room::setChoicesLine(int chln)
+void Room::displayDesc()
 {
-    choices_line = chln;
-}
+    std::string value;
+    auto prop_fnd = find_room_property(value, "DESC", getRoomLine());
 
-void Room::addDisplayChoice(int ch_n)
-{
-    displayed_choices.push_back(ch_n);
+    if(prop_fnd)
+    {
+        int y = getcury(stdscr);
+        std::string disp_value;
+
+        if(stringsm_is_str(value.c_str()))
+        {
+            stringsm_ext_str_quotes(disp_value, value.c_str());
+        }
+        else if(pstrings_check_exist(value.c_str()))
+        {
+            disp_value = pstrings_fetch(value);
+        }
+
+        if(!title_displayed) y = pcurses::title_y + 2;
+
+        move(y, getcurx(stdscr));
+        pcurses::display_center_string(disp_value);
+        printw("\n\n");
+    } else perror_disp("DESC property not found in room", false);
 }
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
@@ -91,10 +200,13 @@ static void room_atlaunch(int roomln, Room& currentRoom)
 
 void room_load(char* id)
 {
-    int roomln = 0;
+    int roomln = find_roomline(id);
     std::string str_id(id);
-    Room currentRoom(str_id);
 
-    find_roomline(id, &roomln);
+    Room currentRoom(str_id);
+    
+    currentRoom.setRoomLine(roomln);
+
     room_atlaunch(roomln, currentRoom);
+    currentRoom.displayList();
 }

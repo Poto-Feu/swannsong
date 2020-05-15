@@ -35,11 +35,24 @@ void room_load(char* id);
 #include <string>
 #include <vector>
 
+class Choice
+{
+    public:
+
+        Choice(int ch_n, int ch_ln);
+
+        void display();
+
+    private:
+
+        int choice_n;
+        int choice_line;
+};
+
 class Room 
 {
     public:
 
-        Room();
         Room(std::string room_name);
 
         void getName(char* r_name) const;
@@ -53,7 +66,11 @@ class Room
         void setRoomLine(int rln);
         void setChoicesLine(int chln);
 
-        void addDisplayChoice(int ch_n);
+        void displayList();
+
+        void addDisplayTitle();
+        void addDisplayDesc();
+        void addDisplayChoice(int ch_ln);
 
     private:
 
@@ -62,7 +79,13 @@ class Room
         int room_line = 0;
         int choices_line = 0;
 
-        std::vector<int> displayed_choices;
+        bool title_displayed = false;
+        bool desc_displayed = false;
+
+        std::vector<Choice> displayed_choices;
+
+        void displayTitle();
+        void displayDesc();
 };
 #endif
 

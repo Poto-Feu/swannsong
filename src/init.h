@@ -20,6 +20,14 @@
 #ifndef INIT_H
 #define INIT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void init_game();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

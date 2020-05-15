@@ -24,10 +24,6 @@
 #include "tests/tests.h"
 #endif
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 int main (void)
 {
     init_game();

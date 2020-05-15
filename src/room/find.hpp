@@ -17,23 +17,17 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef USERIO_H
-#define USERIO_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void userio_waitenter();
-void userio_gettextinput(char** buf, int max_n);
-
-#ifdef __cplusplus
-}
+#ifndef FIND_H
+#define FIND_H
 
 #include <string>
 
-std::string userio_gettextinput(int max_n);
-
-#endif
+bool find_atlaunchline(int* foundln, int ln);
+bool find_choicesline(int* foundln, int ln);
+bool find_onechoiceline(int num, int startln, int* ln);
+void find_room(char* id, bool* inroom, char* lang);
+int find_roomline(const char* id);
+bool find_room_property(std::string& value, const char* prop, int roomln);
 
 #endif

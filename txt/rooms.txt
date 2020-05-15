@@ -1,4 +1,6 @@
 ROOM menu
+    TITLE "SwannSong"
+    DESC menu_desc
     CHOICES
         c1
             TEXT menu_c1
@@ -11,7 +13,8 @@ ROOM menu
         END
     END
     ATLAUNCH
-        PRINT menu_desc
+        DISPLAY TITLE
+        DISPLAY DESC
         DISPLAY CHOICES
     END
 END ROOM

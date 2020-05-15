@@ -17,15 +17,26 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdbool.h>
+extern "C" {
+#include <curses.h>
+}
 
-#ifndef FIND_H
-#define FIND_H
+#include "exitgame.h"
+#include "pstrings.h"
+#include "userio.h"
+#include "pcurses.hpp"
 
-void find_room(char* id, bool* inroom, char* lang);
-void find_roomline(char* id, int* ln);
-bool find_atlaunchline(int* foundln, int ln);
-bool find_choicesline(int* foundln, int ln);
-bool find_onechoiceline(int num, int startln, int* ln);
+void exitgame(int c)
+{
+    move(LINES - 3, pcurses::margin);
+    if(c == 0)  pstrings_display("exit_penter");
+    else printw("Press Enter to exit");
 
-#endif
+    refresh();
+    userio_waitenter();
+
+    endwin();
+
+    if(c == 0) exit(c);
+    else exit(1);
+}

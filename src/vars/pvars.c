@@ -50,23 +50,23 @@ static pvar gcvars[GCVARS_LN] =
 
 
 static bool fetch_pvarsid(const char* name, int* id, bool isgcvar);
-static void pvars_setpvars(const char* name, char* value, bool isgcvar);
+static void pvars_setpvars(const char* name, const char* value, bool isgcvar);
 static void pvars_getpvars(const char* name, char** value, bool isgcvar);
 
 
 /*Set the value of a standard program variable*/
-void pvars_setstdvars(const char* name, char* value)
+void pvars_setstdvars(const char* name, const char* value)
 {
     pvars_setpvars(name, value, false);
 }
 
 /*Set the value of a gameconf-defined variable*/
-void pvars_setgcvars(const char* name, char* value)
+void pvars_setgcvars(const char* name, const char* value)
 {
     pvars_setpvars(name, value, true);
 }
 
-static void pvars_setpvars(const char* name, char* value, bool isgcvar)
+static void pvars_setpvars(const char* name, const char* value, bool isgcvar)
 {
     int* varfndid = calloc(1, sizeof(int));
     bool isvarfnd = fetch_pvarsid(name, varfndid, isgcvar);

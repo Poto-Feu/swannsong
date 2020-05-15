@@ -17,26 +17,49 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
+extern "C" {
 #include <curses.h>
-#include "exitgame.h"
-#include "pstrings.h"
+}
+
+#include <cstdlib>
 #include "userio.h"
+#include "stringsm.h"
 
-void exitgame(int c)
+#define WIN_ENTER_KEY 13
+
+/*Pause the program until the user press Enter*/
+void userio_waitenter()
 {
-    printw("\n");
-    if(c == 0) 
-    {
-        pstrings_display("exit_penter");
-    }
-    else printw("Press Enter to exit");
+#ifdef _WIN32
+    int enter_ch = WIN_ENTER_KEY;
+#else
+    int enter_ch = '\n';
+#endif
 
-    refresh();
-    userio_waitenter();
+    while(getch() != enter_ch) {}
+}
 
-    endwin();
+/*Get user text input and return it in a pointer*/
+void userio_gettextinput(char** buf, int max_n)
+{
+    *buf = (char*)calloc(max_n+1, sizeof(char));
 
-    if(c == 0) exit(c);
-    else exit(1);
+    echo();
+    getnstr(*buf, max_n);
+    noecho();
+
+    stringsm_chomp(*buf);
+}
+
+std::string userio_gettextinput(int max_n)
+{
+    char* buf = NULL;
+    std::string r_str;
+
+    userio_gettextinput(&buf, max_n);
+    r_str.assign(buf);
+
+    free(buf);
+
+    return r_str;
 }

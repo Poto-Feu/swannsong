@@ -17,32 +17,39 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdlib.h>
-#include <curses.h>
-#include "stringsm.h"
+#ifndef PCURSES_H
+#define PCURSES_H
 
-#define WIN_ENTER_KEY 13
+#include <string>
+#include <vector>
 
-/*Pause the program until the user press Enter*/
-void userio_waitenter()
+struct pcur_str
 {
-#ifdef _WIN32
-    int enter_ch = WIN_ENTER_KEY;
-#else
-    int enter_ch = '\n';
+    pcur_str(std::string p_str) : str(p_str) { }
+
+    int x;
+    std::string str;
+};
+
+struct pcur_struct
+{
+    pcur_struct(std::string p_str, int p_y) : starty(p_y), full_str(p_str) { }
+
+    int starty;
+    std::string full_str;
+    std::vector<pcur_str> vec;
+};
+
+namespace pcurses
+{
+    extern int margin;
+    extern int title_y;
+    extern unsigned int lines;
+    extern unsigned int cols;
+
+    int find_centered_x(std::string& p_str);
+    void display_pos_string(std::string p_str, unsigned int x_space);
+    void display_center_string(std::string p_str, int space = 0);
+}
+
 #endif
-
-    while(getch() != enter_ch) {}
-}
-
-/*Get user text input and return it in a pointer*/
-void userio_gettextinput(char** buf, int max_n)
-{
-    *buf = calloc(max_n+1, sizeof(char));
-
-    echo();
-    getnstr(*buf, max_n);
-    noecho();
-
-    stringsm_chomp(*buf);
-}

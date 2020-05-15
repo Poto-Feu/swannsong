@@ -20,6 +20,14 @@
 #ifndef EXITGAME_H
 #define EXITGAME_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void exitgame(int c);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

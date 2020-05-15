@@ -20,9 +20,23 @@
 #ifndef STRINGSM_H
 #define STRINGSM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
+
 void stringsm_chomp(char* str);
 void stringsm_rtab(char* str);
-void stringsm_getfw(char* fw, char* s, int *index);
-void stringsm_ext_str_quotes(char** r_ext, char* p_str);
+void stringsm_getfw(char* fw, const char* str, int *index);
+bool stringsm_is_str(const char* p_str);
+
+#ifdef __cplusplus
+}
+
+#include <string>
+
+void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
+#endif
 
 #endif

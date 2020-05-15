@@ -21,16 +21,18 @@
 #define ROOM_IO_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 void roomio_copy_file_to_vec();
-bool roomio_fetch_ln(char** p_ln, int ind);
-bool roomio_find_ind(int* f_ln, const char* p_ln);
 
 #ifdef __cplusplus
 }
+
+#include <string>
+
+bool roomio_fetch_ln(std::string& p_ln, int ind);
+bool roomio_find_ind(int& f_ln, const char* p_ln);
 #endif
 
 #endif
