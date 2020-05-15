@@ -44,11 +44,12 @@ namespace pcurses
 {
     extern int margin;
     extern int title_y;
+    extern unsigned int lines;
+    extern unsigned int cols;
 
     int find_centered_x(std::string& p_str);
-    void display_string(std::string p_str, int p_y, int space = 0,
-            bool newline = true);
-            
+    void display_pos_string(std::string p_str, unsigned int x_space);
+    void display_center_string(std::string p_str, int space = 0);
 }
 
 #endif

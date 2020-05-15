@@ -49,6 +49,12 @@ namespace init
         pcurses::title_y = LINES / 2 - LINES / 6;
     }
 
+    void set_coord()
+    {
+        pcurses::lines = LINES;
+        pcurses::cols = COLS;
+    }
+
     void set_curses()
     {
         initscr();
@@ -57,6 +63,7 @@ namespace init
 
         set_margin();
         set_title_y();
+        set_coord();
     }
 
     void set_pvars(char** room_name)
@@ -91,8 +98,6 @@ namespace init
         };
 
         bool validinp = false;
-        int y = pcurses::title_y - 1;
-        int x = 0;
 
         std::string hint_str(
             "Hint : make a choice by typing the corresponding number.");
@@ -105,10 +110,11 @@ namespace init
 
         clear();
 
-        pcurses::display_string(hint_str, y);
+        move(pcurses::title_y, 0);
+        pcurses::display_center_string(hint_str);
+        printw("\n\n\n");
+        pcurses::display_center_string("Select your language:");
         printw("\n\n");
-        getyx(stdscr, y, x);
-        pcurses::display_string("Select your language:", y);
 
         for(int i = 1; i <= static_cast<int>(langvec.size()); ++i)
         {
@@ -117,8 +123,10 @@ namespace init
             disp_str += ". ";
             disp_str.append(langvec[i-1].disp);
 
-            getyx(stdscr, y, x);
-            pcurses::display_string(disp_str, y);
+
+            move(getcury(stdscr), 0);
+            pcurses::display_pos_string(disp_str, 6);
+            printw("\n");
         }
 
         printw("\n");
@@ -127,8 +135,7 @@ namespace init
         {
             std::string buf;
 
-            getyx(stdscr, y, x);
-            pcurses::display_string("Your choice: ", y, -10, false);
+            pcurses::display_pos_string("Your choice: ", 12);
             refresh();
 
             buf = userio_gettextinput(2);

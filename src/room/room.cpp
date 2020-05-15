@@ -72,7 +72,9 @@ void Choice::display()
                 disp_value.insert(0, std::to_string(choice_n));
             }
 
-            pcurses::display_string(disp_value, y);
+            move(y, 0);
+            pcurses::display_pos_string(disp_value, 4);
+            printw("\n");
 
             currln++;
         }
@@ -148,8 +150,9 @@ void Room::displayTitle()
         }
 
         attron(A_BOLD);
-        pcurses::display_string(disp_value, y);
-        printw("\n");
+        move(y, getcurx(stdscr));
+        pcurses::display_center_string(disp_value);
+        printw("\n\n");
         attroff(A_BOLD);
     } else perror_disp("TITLE property not found in room", false);
 }
@@ -161,11 +164,8 @@ void Room::displayDesc()
 
     if(prop_fnd)
     {
-        int x = 0;
-        int y = 0;
+        int y = getcury(stdscr);
         std::string disp_value;
-
-        getyx(stdscr, y, x);
 
         if(stringsm_is_str(value.c_str()))
         {
@@ -178,8 +178,9 @@ void Room::displayDesc()
 
         if(!title_displayed) y = pcurses::title_y + 2;
 
-        pcurses::display_string(disp_value, y);
-        printw("\n");
+        move(y, getcurx(stdscr));
+        pcurses::display_center_string(disp_value);
+        printw("\n\n");
     } else perror_disp("DESC property not found in room", false);
 }
 
