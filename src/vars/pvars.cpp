@@ -18,16 +18,14 @@
 */
 
 extern "C" {
-#include "pconst.h"
 #include "perror.h"
 }
 
 #include <cstdlib>
 #include <cstring>
-#include "pvars.h"
-
 #include <string>
 #include <vector>
+#include "pvars.hpp"
 
 namespace pvars
 {
@@ -151,40 +149,4 @@ namespace pvars
     {
         return pvars::get(p_name, true);
     }
-}
-
-/*C wrapper functions*/
-void pvars_setstdvars(const char* p_name, const char* p_value)
-{
-    std::string str_name(p_name);
-    std::string str_value(p_value);
-
-    pvars::set(p_name, p_value, false);
-}
-
-void pvars_setgcvars(const char* p_name, const char* p_value)
-{
-    std::string str_name(p_name);
-    std::string str_value(p_value);
-
-    pvars::set(str_name, str_value, true);
-}
-
-
-void pvars_getstdvars(const char* p_name, char** p_value)
-{
-    std::string str_name(p_name);
-    std::string str_value = pvars::get(str_name, false);
-
-    *p_value = (char*)calloc(str_value.size() + 1, sizeof(char));
-    strcpy(*p_value, str_value.c_str());
-}
-
-void pvars_getgcvars(const char* p_name, char** p_value)
-{
-    std::string str_name(p_name);
-    std::string str_value = pvars::get(str_name, true);
-
-    *p_value = (char*)calloc(str_value.size() + 1, sizeof(char));
-    strcpy(*p_value, str_value.c_str());
 }

@@ -21,7 +21,6 @@ extern "C"
 {
 #include <curses.h>
 #include <string.h>
-#include "vars/pconst.h"
 #include "fileio/fileio.h"
 #include "perror.h"
 }
@@ -29,7 +28,8 @@ extern "C"
 #include <string>
 #include <vector>
 #include "pstrings.h"
-#include "vars/pvars.h"
+#include "vars/pconst.hpp"
+#include "vars/pvars.hpp"
 #include "stringsm.h"
 
 struct PstringsElement

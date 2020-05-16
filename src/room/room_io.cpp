@@ -20,13 +20,13 @@
 extern "C"
 {
 #include "fileio/fileio.h"
-#include "vars/pconst.h"
 }
 
 #include <string>
 #include <vector>
-#include "room/room_io.h"
-#include "vars/pvars.h"
+#include "room_io.h"
+#include "vars/pconst.hpp"
+#include "vars/pvars.hpp"
 #include "stringsm.h"
 
 static std::vector<std::string> roomfile_arr {};

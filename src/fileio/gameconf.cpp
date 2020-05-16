@@ -25,7 +25,7 @@ extern "C"
 #include <fstream>
 #include <string>
 #include "gameconf.hpp"
-#include "vars/pvars.h"
+#include "vars/pvars.hpp"
 
 namespace gameconf
 {

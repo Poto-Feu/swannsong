@@ -19,7 +19,6 @@
 
 extern "C" {
 #include <curses.h>
-#include "vars/pconst.h"
 #include "perror.h"
 }
 
@@ -29,6 +28,7 @@ extern "C" {
 #include "room_io.h"
 #include "find.hpp"
 #include "interpreter/parser.h"
+#include "vars/pconst.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"

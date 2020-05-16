@@ -18,7 +18,6 @@
 */
 
 extern "C" {
-#include "vars/pconst.h"
 #include "perror.h"
 }
 

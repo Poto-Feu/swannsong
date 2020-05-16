@@ -19,7 +19,6 @@
 
 extern "C" {
 #include <curses.h>
-#include "vars/pconst.h"
 }
 
 #include <cstdlib>
@@ -28,7 +27,7 @@ extern "C" {
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
 #include "room/room.h"
-#include "vars/pvars.h"
+#include "vars/pvars.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -143,7 +142,7 @@ namespace init
                 {
                     std::string lang = langvec[intval - 1].id;
 
-                    pvars_setstdvars("lang", lang.c_str());
+                    pvars::setstdvars("lang", lang.c_str());
                     validinp = true;
                     pstrings_copy_file_to_vec();
                 } else

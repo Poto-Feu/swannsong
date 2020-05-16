@@ -17,10 +17,17 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PCONST_H
-#define PCONST_H
+#ifndef PVARS_HPP
+#define PVARS_HPP
 
-#define P_MAX_BUF_SIZE 500
-#define P_MAX_USERINPUT_SIZE 100
+#include <string>
+
+namespace pvars
+{
+    void setstdvars(std::string const p_name, std::string const p_value);
+    void setgcvars(std::string const p_name, std::string const p_value);
+    std::string getstdvars(std::string const p_name);
+    std::string getgcvars(std::string const p_name);
+}
 
 #endif
