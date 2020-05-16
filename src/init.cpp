@@ -20,7 +20,7 @@
 extern "C" {
 #include <curses.h>
 #include "fileio/gameconf.h"
-#include "vars/pvars.h"
+#include "vars/pconst.h"
 }
 
 #include <cstdlib>
@@ -28,6 +28,7 @@ extern "C" {
 #include "init.h"
 #include "room/room_io.h"
 #include "room/room.h"
+#include "vars/pvars.h"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -66,23 +67,17 @@ namespace init
         set_coord();
     }
 
-    void set_pvars(char** room_name)
+    void set_pvars(std::string& room_name)
     {
-        char* defaultlang = NULL;
-        char* roomfile = NULL;
+        std::string defaultlang;
+        std::string roomfile;
 
         gameconf_readfile();
-        pvars_getgcvars("defaultlang", &defaultlang);
-        pvars_getgcvars("firstroom", room_name);
-        pvars_getgcvars("roomfile", &roomfile);
-        pvars_setstdvars("lang", defaultlang);
-        pvars_setstdvars("roomfile", roomfile);
-        pvars_freegcvar("defaultlang");
-        pvars_freegcvar("firstroom");
-        pvars_freegcvar("roomfile");
-
-        free(defaultlang);
-        free(roomfile);
+        defaultlang = pvars::getgcvars("defaultlang");
+        room_name = pvars::getgcvars("firstroom");
+        roomfile = pvars::getgcvars("roomfile");
+        pvars::setstdvars("lang", defaultlang);
+        pvars::setstdvars("roomfile", roomfile);
     }
 
     /*Show a prompt asking the user to choose the language*/
@@ -171,16 +166,13 @@ namespace init
 
 void init_game()
 {
-    char* room_name = NULL; 
+    std::string room_name; 
 
     init::set_curses();
 
-    init::set_pvars(&room_name);
+    init::set_pvars(room_name);
     roomio_copy_file_to_vec();
 
     init::ask_lang();
-    room_load(room_name);
-
-    free(room_name);
+    room_load(room_name.c_str());
 }
-
