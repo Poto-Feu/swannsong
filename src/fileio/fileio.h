@@ -21,7 +21,7 @@
 #define FILEIO_H
 #include <stdio.h>
 
-void fileio_setfileptr(FILE** fp, char* path);
+void fileio_setfileptr(FILE** fp, const char* path);
 char* fileio_getfileln(char* buf, int size, FILE** ptr);
 
 #endif

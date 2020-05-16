@@ -20,13 +20,10 @@
 #include "fileio.h"
 #include "perror.h"
 
-void fileio_setfileptr(FILE** fp, char* path)
+void fileio_setfileptr(FILE** fp, const char* path)
 {
     *fp = fopen(path, "r");
-    if(*fp == NULL)
-    {
-        perror_disp("file cannot be open", 1);
-    }
+    if(*fp == NULL) perror_disp("file cannot be open", 1);
 }
 
 static void fileio_check_ln_length(char* buf, int size);
