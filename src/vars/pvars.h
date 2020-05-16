@@ -20,10 +20,27 @@
 #ifndef PVARS_H
 #define PVARS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void pvars_setstdvars(const char* name, const char* value);
 void pvars_getstdvars(const char* name, char** value);
 void pvars_setgcvars(const char* name, const char* value);
 void pvars_getgcvars(const char* name, char** value);
-void pvars_freegcvar(const char* name);
+
+#ifdef __cplusplus
+}
+
+#include <string>
+
+namespace pvars
+{
+    void setstdvars(std::string const p_name, std::string const p_value);
+    void setgcvars(std::string const p_name, std::string const p_value);
+    std::string getstdvars(std::string const p_name);
+    std::string getgcvars(std::string const p_name);
+}
+#endif
 
 #endif
