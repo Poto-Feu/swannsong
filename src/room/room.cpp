@@ -19,7 +19,6 @@
 
 extern "C" {
 #include <curses.h>
-#include "vars/pvars.h"
 #include "vars/pconst.h"
 #include "perror.h"
 }
@@ -198,7 +197,7 @@ static void room_atlaunch(int roomln, Room& currentRoom)
     refresh();
 }
 
-void room_load(char* id)
+void room_load(const char* id)
 {
     int roomln = find_roomline(id);
     std::string str_id(id);
