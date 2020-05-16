@@ -32,7 +32,7 @@ add_executable(swannsong
     src/room/find.cpp
     src/room/room_io.cpp
     src/fileio/fileio.c
-    src/fileio/gameconf.c
+    src/fileio/gameconf.cpp
     src/vars/pvars.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp

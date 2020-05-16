@@ -1,7 +1,7 @@
-* files path
+# files path
 langdir="txt/lang/"
 roomfile="txt/rooms.txt"
 
-* game vars
+# game vars
 defaultlang="en"
 firstroom="menu"

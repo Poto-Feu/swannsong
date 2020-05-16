@@ -19,13 +19,13 @@
 
 extern "C" {
 #include <curses.h>
-#include "fileio/gameconf.h"
 #include "vars/pconst.h"
 }
 
 #include <cstdlib>
 #include <cstring>
 #include "init.h"
+#include "fileio/gameconf.hpp"
 #include "room/room_io.h"
 #include "room/room.h"
 #include "vars/pvars.h"
@@ -72,7 +72,7 @@ namespace init
         std::string defaultlang;
         std::string roomfile;
 
-        gameconf_readfile();
+        gameconf::readfile();
         defaultlang = pvars::getgcvars("defaultlang");
         room_name = pvars::getgcvars("firstroom");
         roomfile = pvars::getgcvars("roomfile");
