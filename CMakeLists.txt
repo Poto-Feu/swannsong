@@ -25,7 +25,7 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 add_executable(swannsong
-    src/main.c
+    src/main.cpp
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.c
     src/room/room.cpp
