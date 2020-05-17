@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-void room_load(char* id);
+void room_load(const char* id);
 
 #ifdef __cplusplus
 }

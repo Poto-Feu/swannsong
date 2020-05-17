@@ -20,6 +20,9 @@
 #ifndef GAMECONF_H
 #define GAMECONF_H
 
-void gameconf_readfile();
+namespace gameconf
+{
+    void readfile();
+}
 
 #endif

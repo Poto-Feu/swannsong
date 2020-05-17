@@ -20,13 +20,13 @@
 extern "C"
 {
 #include "fileio/fileio.h"
-#include "vars/pconst.h"
-#include "vars/pvars.h"
 }
 
 #include <string>
 #include <vector>
-#include "room/room_io.h"
+#include "room_io.h"
+#include "vars/pconst.hpp"
+#include "vars/pvars.hpp"
 #include "stringsm.h"
 
 static std::vector<std::string> roomfile_arr {};
@@ -91,10 +91,6 @@ static void add_ln_to_vec(char* p_ln)
 
 static void open_strfile(FILE** fp)
 {
-    char* roomfile = NULL;
-
-    pvars_getstdvars("roomfile", &roomfile);
-    fileio_setfileptr(fp, roomfile);
-
-    free(roomfile);
+    std::string roomfile = pvars::getstdvars("roomfile");
+    fileio_setfileptr(fp, roomfile.c_str());
 }

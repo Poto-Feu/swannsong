@@ -21,8 +21,6 @@ extern "C"
 {
 #include <curses.h>
 #include <string.h>
-#include "vars/pvars.h"
-#include "vars/pconst.h"
 #include "fileio/fileio.h"
 #include "perror.h"
 }
@@ -30,6 +28,8 @@ extern "C"
 #include <string>
 #include <vector>
 #include "pstrings.h"
+#include "vars/pconst.hpp"
+#include "vars/pvars.hpp"
 #include "stringsm.h"
 
 struct PstringsElement
@@ -159,30 +159,16 @@ std::string pstrings_fetch(std::string const& id)
 to the selected language*/
 static void open_strfile(FILE **f)
 {
-    char* langdir = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* lang = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* langfile = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* txt = (char*)".txt";
-    int langdirln = 0;
+    char langfile_chr[P_MAX_BUF_SIZE] = {'\0'};
+    std::string langdir = pvars::getgcvars("langdir");
+    std::string lang = pvars::getstdvars("lang");
+    std::string langfile;
+   
+    langfile = langdir;
+    langfile.append(lang);
+    langfile.append(".txt");
 
-    pvars_getgcvars((char*)"langdir", &langdir);
-    pvars_getstdvars((char*)"lang", &lang);
-    strcpy(langfile, langdir);
-    langdirln = strlen(langdir);
+    strcpy(langfile_chr, langfile.c_str());
 
-    for(int i = 0; i < (int)strlen(lang); i++)
-    {
-        langfile[langdirln] = lang[i];
-        langdirln++;
-    }
-    for(int i = 0; i < (int)strlen(txt); i++)
-    {
-        langfile[langdirln] = txt[i];
-        langdirln++;
-    }
-    fileio_setfileptr(f, langfile);
-    
-    free(langdir);
-    free(lang);
-    free(langfile);
+    fileio_setfileptr(f, langfile_chr);
 }

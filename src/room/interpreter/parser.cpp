@@ -19,7 +19,6 @@
 
 extern "C" {
 #include <curses.h>
-#include "vars/pconst.h"
 #include "vars/gvars.h"
 #include "room/interpreter/token.h"
 #include "perror.h"
@@ -32,6 +31,7 @@ extern "C" {
 #include "room/room.h"
 #include "room/room_io.h"
 #include "room/find.hpp"
+#include "vars/pconst.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
 

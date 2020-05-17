@@ -19,15 +19,15 @@
 
 extern "C" {
 #include <curses.h>
-#include "fileio/gameconf.h"
-#include "vars/pvars.h"
 }
 
 #include <cstdlib>
 #include <cstring>
 #include "init.h"
+#include "fileio/gameconf.hpp"
 #include "room/room_io.h"
 #include "room/room.h"
+#include "vars/pvars.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -66,23 +66,17 @@ namespace init
         set_coord();
     }
 
-    void set_pvars(char** room_name)
+    void set_pvars(std::string& room_name)
     {
-        char* defaultlang = NULL;
-        char* roomfile = NULL;
+        std::string defaultlang;
+        std::string roomfile;
 
-        gameconf_readfile();
-        pvars_getgcvars("defaultlang", &defaultlang);
-        pvars_getgcvars("firstroom", room_name);
-        pvars_getgcvars("roomfile", &roomfile);
-        pvars_setstdvars("lang", defaultlang);
-        pvars_setstdvars("roomfile", roomfile);
-        pvars_freegcvar("defaultlang");
-        pvars_freegcvar("firstroom");
-        pvars_freegcvar("roomfile");
-
-        free(defaultlang);
-        free(roomfile);
+        gameconf::readfile();
+        defaultlang = pvars::getgcvars("defaultlang");
+        room_name = pvars::getgcvars("firstroom");
+        roomfile = pvars::getgcvars("roomfile");
+        pvars::setstdvars("lang", defaultlang);
+        pvars::setstdvars("roomfile", roomfile);
     }
 
     /*Show a prompt asking the user to choose the language*/
@@ -148,7 +142,7 @@ namespace init
                 {
                     std::string lang = langvec[intval - 1].id;
 
-                    pvars_setstdvars("lang", lang.c_str());
+                    pvars::setstdvars("lang", lang.c_str());
                     validinp = true;
                     pstrings_copy_file_to_vec();
                 } else
@@ -171,16 +165,13 @@ namespace init
 
 void init_game()
 {
-    char* room_name = NULL; 
+    std::string room_name; 
 
     init::set_curses();
 
-    init::set_pvars(&room_name);
+    init::set_pvars(room_name);
     roomio_copy_file_to_vec();
 
     init::ask_lang();
-    room_load(room_name);
-
-    free(room_name);
+    room_load(room_name.c_str());
 }
-
