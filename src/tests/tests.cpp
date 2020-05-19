@@ -17,37 +17,35 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "fileio.h"
-#include "perror.h"
+#include <cstdio>
+#include "tests.hpp"
+#include "room/interpreter/token.hpp"
+#include "exitgame.h"
+#include "stringsm.h"
 
-void fileio_setfileptr(FILE** fp, const char* path)
+#include <string>
+#include <vector>
+
+namespace tests
 {
-    *fp = fopen(path, "r");
-    if(*fp == NULL) perror_disp("file cannot be open", 1);
-}
-
-static void fileio_check_ln_length(char* buf, int size);
-
-char* fileio_getfileln(char* buf, int size, FILE** ptr)
-{
-    char* rtrn_val = fgets(buf, size, *ptr);
-
-    if(rtrn_val != NULL)
+    void stringsm()
     {
-        fileio_check_ln_length(buf, size);
+        std::string test_str("\"SwannSong\"");
+        if(stringsm::is_str(test_str)) printf("true\n");
+        else printf("false\n");
+
+        exitgame(0);
     }
 
-    return rtrn_val;
-}
-
-static void fileio_check_ln_length(char* buf, int size)
-{
-    int newline_fnd = false;
-
-    for(int i = 0; i < size; i++)
+    void token()
     {
-        if(buf[i] == '\n') newline_fnd = true;
-    }
+        std::string test_str("TITLE SwannSong");
+        TokenVec test_vec = token::create_arr(test_str);
 
-    if(!newline_fnd) perror_disp("file string is too long", true);
+        for(auto& it : test_vec)
+        {
+            printf("type: %d\nvalue: %s\n\n", it.type, it.str.c_str());
+        }
+        exitgame(0);
+    }
 }

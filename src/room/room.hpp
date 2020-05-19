@@ -17,23 +17,13 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOM_H
-#define ROOM_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void room_load(const char* id);
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
+#ifndef ROOM_HPP
+#define ROOM_HPP
 
 #include <string>
 #include <vector>
+
+void room_load(std::string id);
 
 class Choice
 {
@@ -87,6 +77,4 @@ class Room
         void displayTitle();
         void displayDesc();
 };
-#endif
-
 #endif

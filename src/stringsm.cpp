@@ -22,105 +22,104 @@ extern "C" {
 }
 
 #include <cstdlib>
-#include <cstring>
 #include <string>
 #include "stringsm.h"
 
+namespace stringsm
+{
+    void rtab(std::string& p_buf)
+    {
+        std::string temp_buf(p_buf);
+        for(const auto& it : temp_buf)
+        {
+            if(it == '\t' || it == ' ')
+            {
+                if(!p_buf.empty()) p_buf.erase(0, 1);
+                else return;
+            } else break;
+        }
+    }
+
+    /*Get the first word of a string*/
+    std::string getfw(std::string p_str)
+    {
+        unsigned int i = 0;
+        unsigned int str_size = p_str.size();
+        std::string fw;
+
+        for(auto& it : p_str)
+        {
+            if(it == ' ' || i + 1 == str_size)
+            {
+                if(i + 1 == str_size) ++i;
+                fw = p_str.substr(0, i);
+                break;
+            }
+            ++i;
+        }
+        return fw;
+    }
+
+    /*Check if the passed char array is a string enclosed with quotes*/
+    bool is_str(std::string const p_str)
+    {
+        //TODO : make a test for this function
+        int str_size = p_str.size();
+        char quote_ch = '\0';
+
+        if(p_str.at(0) != '"' && p_str.at(0) != '\'') return false;
+        else quote_ch = p_str.at(0);
+
+        for(int i = 1; i < str_size; ++i)
+        {
+            if(p_str[i] == '\\')
+            {
+                if(p_str[i+1] == quote_ch) ++i;
+            } else if(p_str[i] == quote_ch)
+            {
+                if(i + 1 < str_size)
+                {
+                    for(int j = i + 1; j < str_size; ++j)
+                    {
+                        if(p_str.at(j) != ' ' && p_str.at(j) != '\t')
+                        {
+                            return false;
+                        }
+                    } return true;
+                } else return true;
+            }
+        }
+        return false;
+    }
+
+    /*Extract string from quotations marks*/
+    std::string ext_str_quotes(std::string const p_str)
+    {
+        bool str_end = false;
+        char quote_ch = p_str[0];
+        std::string rtr_val;
+
+        for(int i = 1; !str_end && p_str[1] != quote_ch; ++i)
+        {
+            rtr_val += p_str[i];
+
+            if(p_str[i] == '\\' && p_str[i+1] == quote_ch)
+            {
+                rtr_val += quote_ch;
+                ++i;
+            } else if(p_str[i+1] == quote_ch) str_end = true;
+        }
+
+        return rtr_val;
+    }
+}
+
+/*Replace the newline character by a null terminator (deprecated, use
+std::string instead)*/
 void stringsm_chomp(char* str)
 {
     while (*str != '\n' && *str != '\0')
         str++;
 
     *str = '\0';
-}
-
-void stringsm_rtab(char* str)
-{
-    while(str[0] == '\t' || str[0] == ' ')
-    {
-        for(int i = 0; i < (int)strlen(str); i++)
-        {
-            str[i] = str[i+1];
-        }
-    }
-}
-
-/*Get the first word of a string*/
-void stringsm_getfw(char* fw, const char* str, int* index)
-{
-    bool space = false;
-    int len = strlen(str);
-
-    for(int i = 0; i < len; i++)
-    {
-        if(str[i] == ' ')
-        {
-            strncpy(fw, str, i);
-            *index = i+1;
-            space = true;
-            break;
-        }
-    }
-
-    if(!space)
-    {
-        strcpy(fw, str);
-        *index = 0;
-    }
-}
-
-/*Check if the passed char array is a string enclosed with quotes*/
-bool stringsm_is_str(const char* p_str)
-{
-    bool is_str = false;
-    bool nulterm = false;
-    char quote_ch = '\0';
-
-    if(p_str[0] != '"' && p_str[0] != '\'') return false;
-    else quote_ch = p_str[0];
-
-    for(int i = 1; !nulterm && !is_str ; ++i)
-    {
-        if(p_str[i] == '\0') nulterm = true;
-        else if(p_str[i] == '\\')
-        {
-            if(p_str[i+1] == quote_ch) ++i;
-        } else if(p_str[i] == quote_ch)
-        {
-            bool space_end = true;
-
-            if(p_str[i+1] != '\0')
-            {
-                for(int j = i + 1; space_end && !nulterm; j++)
-                {
-                    if(p_str[j] != '\0') nulterm = true;
-                    else if(p_str[j] != ' ' || p_str[j] != '\t') 
-                    {
-                        space_end = false;
-                    }
-                }
-            }
-            is_str = space_end;
-        }
-    }
-
-    return is_str;
-}
-
-/*Extract string from quotations marks*/
-void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str)
-{
-    auto str_end = false;
-    auto quote_ch = p_str[0];
-
-    for(int i = 1; !str_end && p_str[1] != quote_ch; i++)
-    {
-        r_ext += p_str[i];
-
-        if(p_str[i] == '\\' && p_str[i+1] == quote_ch)
-        {
-            r_ext += quote_ch;
-            ++i;
-        } else if(p_str[i+1] == quote_ch) str_end = true;
-    }
 }

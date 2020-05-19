@@ -17,80 +17,68 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C"
-{
-#include "fileio/fileio.h"
-}
-
 #include <string>
 #include <vector>
+#include <fstream>
 #include "room_io.h"
+#include "fileio/fileio.h"
 #include "vars/pconst.hpp"
 #include "vars/pvars.hpp"
 #include "stringsm.h"
 
-static std::vector<std::string> roomfile_arr {};
-
-static void open_strfile(FILE** fp);
-static void add_ln_to_vec(char* p_ln);
-
-/*Copy room file lines into a vector*/
-void roomio_copy_file_to_vec()
+namespace roomio
 {
-    char buf[P_MAX_BUF_SIZE]{0};
-    FILE* fp = NULL;
+    static std::vector<std::string> file_arr;
 
-    open_strfile(&fp);
-    
-    while(fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
+    static void add_ln_to_vec(std::string const p_ln)
     {
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
-
-        if(*buf != '\0') add_ln_to_vec(buf);
-        else continue;
+        file_arr.push_back(p_ln);
     }
-}
 
-/*Return a char array containing the line from the specified index*/
-bool roomio_fetch_ln(std::string& p_ln, int ind)
-{
-    if(ind > static_cast<int>(roomfile_arr.size())) return false;
-    else
+    /*Copy room file lines into a vector*/
+    void copy_file_to_vec()
     {
-        p_ln = roomfile_arr[ind-1];
-
-        return true;
-    }
-}
-
-/*Return the line number where the specified line is present*/
-bool roomio_find_ind(int& f_ln, const char* p_ln)
-{
-    int i = 1;
-    std::string str_ln(p_ln);
-
-    for(const auto& it : roomfile_arr)
-    {
-        if(it == str_ln)
+        std::string buf;
+        std::ifstream file_stream(pvars::getstdvars("roomfile"));
+        
+        while(fileio::getfileln(buf, file_stream))
         {
-            f_ln = i;
-            return true;
-        } else i++;  
+            stringsm::rtab(buf);
+
+            if(!buf.empty()) add_ln_to_vec(buf);
+            else continue;
+        }
     }
-    f_ln = -1;
 
-    return false;
-}
+    /*Return the line number where the specified line is present*/
+    bool find_ind(int& f_ln, std::string const p_ln)
+    {
+        int i = 1;
 
-static void add_ln_to_vec(char* p_ln)
-{
-    std::string str_ln(p_ln);
-    roomfile_arr.push_back(str_ln);
-}
+        for(const auto& it : roomio::file_arr)
+        {
+            if(it == p_ln)
+            {
+                f_ln = i;
+                return true;
+            } else i++;  
+        }
+        f_ln = -1;
 
-static void open_strfile(FILE** fp)
-{
-    std::string roomfile = pvars::getstdvars("roomfile");
-    fileio_setfileptr(fp, roomfile.c_str());
+        return false;
+    }
+
+    /*Return a char array containing the line from the specified index*/
+    bool fetch_ln(std::string& p_ln, int ind)
+    {
+        int real_ind = ind - 1;
+
+        if(ind > static_cast<int>(roomio::file_arr.size())) return false;
+        else
+        {
+            p_ln = roomio::file_arr[real_ind];
+
+            return true;
+        }
+    }
 }

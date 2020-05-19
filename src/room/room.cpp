@@ -24,7 +24,7 @@ extern "C" {
 
 #include <cstring>
 #include <string>
-#include "room.h"
+#include "room.hpp"
 #include "room_io.h"
 #include "find.hpp"
 #include "interpreter/parser.h"
@@ -47,26 +47,26 @@ void Choice::display()
     {
         int x = 0;
         int y = 0;
-        char arg[P_MAX_BUF_SIZE - 1] = {0};
-        char type[P_MAX_BUF_SIZE - 1] = {0};
-        char temp_buf[P_MAX_BUF_SIZE] = {0};
         std::string buf;
+        std::string type;
+        std::string arg;
         std::string disp_value;
 
         getyx(stdscr, y, x);
 
-        roomio_fetch_ln(buf, currln);
-        strcpy(temp_buf, buf.c_str());
-        parser_splitline(type, arg, temp_buf);
+        roomio::fetch_ln(buf, currln);
+        parser::splitline(type, arg, buf);
 
-        if(!strcmp(type, "TEXT"))
+        if(type == "TEXT")
         {
             textfound = true;
 
-            if(stringsm_is_str(arg)) stringsm_ext_str_quotes(disp_value, arg);
-            else
+            if(stringsm::is_str(arg))
             {
-                disp_value = pstrings_fetch(arg);
+                disp_value = stringsm::ext_str_quotes(arg);
+            } else
+            {
+                disp_value = pstrings::fetch(arg);
                 disp_value.insert(0, ". ");
                 disp_value.insert(0, std::to_string(choice_n));
             }
@@ -77,7 +77,7 @@ void Choice::display()
 
             currln++;
         }
-        else if(!strcmp(type, "END")) perror_disp("missing choice text", true);
+        else if(type == "END") perror_disp("missing choice text", true);
     }
 }
 
@@ -112,10 +112,7 @@ void Room::displayList()
     if(title_displayed) displayTitle();
     if(desc_displayed) displayDesc();
 
-    for(auto& ch : displayed_choices)
-    {
-        ch.display();
-    }
+    for(auto& ch : displayed_choices) ch.display();
 }
 
 void Room::addDisplayTitle() { title_displayed = true; }
@@ -132,20 +129,19 @@ void Room::addDisplayChoice(int ch_ln)
 void Room::displayTitle()
 {
     std::string value;
-    auto prop_fnd = find_room_property(value, "TITLE", getRoomLine());
+    bool prop_fnd = room_find::room_property(value, "TITLE", getRoomLine());
 
     if(prop_fnd)
     {
         int y = pcurses::title_y;
         std::string disp_value;
 
-        if(stringsm_is_str(value.c_str()))
+        if(stringsm::is_str(value))
         {
-            stringsm_ext_str_quotes(disp_value, value.c_str());
-        }
-        else if(pstrings_check_exist(value.c_str()))
+            disp_value = stringsm::ext_str_quotes(value);
+        } else if(pstrings::check_exist(value))
         {
-            disp_value = pstrings_fetch(value);
+            disp_value = pstrings::fetch(value);
         }
 
         attron(A_BOLD);
@@ -159,20 +155,20 @@ void Room::displayTitle()
 void Room::displayDesc()
 {
     std::string value;
-    auto prop_fnd = find_room_property(value, "DESC", getRoomLine());
+    auto prop_fnd = room_find::room_property(value, "DESC", getRoomLine());
 
     if(prop_fnd)
     {
         int y = getcury(stdscr);
         std::string disp_value;
 
-        if(stringsm_is_str(value.c_str()))
+        if(stringsm::is_str(value))
         {
-            stringsm_ext_str_quotes(disp_value, value.c_str());
+            disp_value = stringsm::ext_str_quotes(value);
         }
-        else if(pstrings_check_exist(value.c_str()))
+        else if(pstrings::check_exist(value))
         {
-            disp_value = pstrings_fetch(value);
+            disp_value = pstrings::fetch(value);
         }
 
         if(!title_displayed) y = pcurses::title_y + 2;
@@ -192,14 +188,14 @@ static void room_atlaunch(int roomln, Room& currentRoom)
     move(0, 0);
     clear();
 
-    atlfound = find_atlaunchline(&foundln, roomln);
-    if(atlfound == true) (void)parser_exec_until_end(foundln, currentRoom);
+    atlfound = room_find::atlaunchline(foundln, roomln);
+    if(atlfound == true) (void)parser::exec_until_end(foundln, currentRoom);
     refresh();
 }
 
-void room_load(const char* id)
+void room_load(std::string id)
 {
-    int roomln = find_roomline(id);
+    int roomln = room_find::roomline(id);
     std::string str_id(id);
 
     Room currentRoom(str_id);

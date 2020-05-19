@@ -24,12 +24,7 @@
 extern "C" {
 #endif
 
-#include <stdbool.h>
-
 void stringsm_chomp(char* str);
-void stringsm_rtab(char* str);
-void stringsm_getfw(char* fw, const char* str, int *index);
-bool stringsm_is_str(const char* p_str);
 
 #ifdef __cplusplus
 }
@@ -37,6 +32,14 @@ bool stringsm_is_str(const char* p_str);
 #include <string>
 
 void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
+
+namespace stringsm
+{
+    void rtab(std::string& p_buf);
+    std::string getfw(std::string p_str);
+    bool is_str(std::string const p_str);
+    std::string ext_str_quotes(std::string const p_str);
+}
 #endif
 
 #endif

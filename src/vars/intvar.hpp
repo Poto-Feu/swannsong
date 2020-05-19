@@ -17,11 +17,27 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_H
-#define TESTS_H
+#ifndef INTVAR_H
+#define INTVAR_H
 
-void tests_intvar();
-void tests_gvars();
-void tests_token();
+#include <string>
+#include <vector>
+
+struct intvar
+{
+    intvar(std::string p_name, int p_val) : name(p_name), val(p_val) { }
+
+    std::string name;
+    int val;
+};
+
+namespace intvarm
+{
+    void add_var_to_arr(std::vector<intvar>& p_arr, intvar p_var);
+    bool search_ind(int& p_ind, std::string p_name,
+            std::vector<intvar>& p_arr);
+    int return_value(int p_ind, std::vector<intvar>& p_vec);
+    void set_value(int p_val, int p_ind, std::vector<intvar>& p_arr);
+}
 
 #endif

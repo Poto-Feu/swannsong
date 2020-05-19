@@ -25,17 +25,18 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 add_executable(swannsong
-    src/main.c
+    src/main.cpp
     src/room/interpreter/parser.cpp
-    src/room/interpreter/token.c
+    src/room/interpreter/token.cpp
     src/room/room.cpp
     src/room/find.cpp
     src/room/room_io.cpp
-    src/fileio/fileio.c
+    src/fileio/fileio.cpp
     src/fileio/gameconf.cpp
     src/vars/pvars.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
+    src/tests/tests.cpp
     src/init.cpp
     src/perror.c
     src/pstrings.cpp
@@ -75,11 +76,4 @@ add_custom_command(TARGET swannsong POST_BUILD
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-endif()
-
-option(TESTS "Enable unit testing linking" OFF)
-if(TESTS)
-    include_directories(tests)
-    add_compile_definitions(UNIT_TESTING)
-    target_sources(swannsong PRIVATE src/tests/tests.c)
 endif()
