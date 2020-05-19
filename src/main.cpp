@@ -20,10 +20,6 @@
 #include "init.h"
 #include "exitgame.h"
 
-#ifdef UNIT_TESTING
-#include "tests/tests.h"
-#endif
-
 int main (void)
 {
     init_game();

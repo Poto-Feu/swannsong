@@ -26,7 +26,7 @@ extern "C" {
 #include "init.h"
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
-#include "room/room.h"
+#include "room/room.hpp"
 #include "vars/pvars.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -144,7 +144,7 @@ namespace init
 
                     pvars::setstdvars("lang", lang.c_str());
                     validinp = true;
-                    pstrings_copy_file_to_vec();
+                    pstrings::copy_file_to_vec();
                 } else
                 {
                     printw("Nope. (not a valid input)\n");
@@ -170,8 +170,8 @@ void init_game()
     init::set_curses();
 
     init::set_pvars(room_name);
-    roomio_copy_file_to_vec();
+    roomio::copy_file_to_vec();
 
     init::ask_lang();
-    room_load(room_name.c_str());
+    room_load(room_name);
 }

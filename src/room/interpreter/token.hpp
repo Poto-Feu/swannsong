@@ -17,20 +17,39 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GVARS_H
-#define GVARS_H
+#ifndef TOKEN_HPP
+#define TOKEN_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include <vector>
 
-void gvars_set_var(char* p_name, int p_val);
-int gvars_return_value(char* p_name);
-void gvars_change_val(char* p_name, int p_val);
-bool gvars_exist(char* p_name);
+enum token_type
+{
+    FUNCTION,
+    IF,
+    VARIABLE,
+    OPERATOR,
+    EQUAL,
+    NOT,
+    STRING,
+    NUMBER,
+    STRING_ID,
+    NEWVAR,
+    EXISTS,
+    UNKNOWN,
+    UNDEFINED
+} ;
 
-#ifdef __cplusplus
+struct Token
+{
+    std::string str = "";
+    token_type type = UNDEFINED;
+};
+
+typedef std::vector<Token> TokenVec;
+
+namespace token
+{
+    TokenVec create_arr(std::string p_str);
 }
-#endif
-
 #endif

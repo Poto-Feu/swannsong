@@ -17,42 +17,16 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TOKEN_H
-#define TOKEN_H
+#ifndef GVARS_H
+#define GVARS_H
 
-#include <stdint.h>
+#include <string>
 
-typedef enum
+namespace gvars
 {
-    FUNCTION,
-    IF,
-    VARIABLE,
-    OPERATOR,
-    EQUAL,
-    NOT,
-    STRING,
-    NUMBER,
-    STRING_ID,
-    NEWVAR,
-    EXISTS,
-    UNKNOWN,
-    UNDEFINED
-} token_type;
-
-typedef struct
-{
-    char* str;
-    token_type type;
-} Token;
-
-typedef struct
-{
-    uint8_t ln;
-    Token* list;
-} TokenArr;
-
-#define INIT_TKN_ARR {0, NULL}
-
-void token_create_arr(TokenArr* r_arr, const char* p_str);
-
+    void set_var(std::string const p_name, int p_val);
+    int return_value(std::string const p_name);
+    void change_val(std::string const p_name, int p_val);
+    bool exist(std::string const p_name);
+}
 #endif

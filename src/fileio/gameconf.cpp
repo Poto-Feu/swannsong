@@ -17,8 +17,7 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C"
-{
+extern "C" {
 #include "perror.h"
 }
 

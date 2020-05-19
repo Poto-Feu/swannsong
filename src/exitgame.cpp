@@ -29,7 +29,7 @@ extern "C" {
 void exitgame(int c)
 {
     move(LINES - 3, pcurses::margin);
-    if(c == 0)  pstrings_display("exit_penter");
+    if(c == 0)  pstrings::display("exit_penter");
     else printw("Press Enter to exit");
 
     refresh();

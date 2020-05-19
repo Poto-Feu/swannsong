@@ -23,45 +23,53 @@ extern "C" {
 
 #include <cstdint>
 #include <vector>
-#include "vars/intvar.h"
+#include "vars/intvar.hpp"
 
-/*Add an intvar into an std::vector<intvar>*/
-void intvar_add_var_to_arr(std::vector<intvar>* p_arr, intvar p_var)
+namespace intvarm
 {
-    (*p_arr).push_back(p_var);
-}
-
-/*Fetch the index of the specified intvar - returns false if not found*/
-bool intvar_search_ind(uint16_t* p_ind, char* p_name, std::vector<intvar>* p_arr)
-{
-    int i = 0;
-    bool isfnd = false;
-    std::string str_name(p_name);
-
-    *p_ind = -1;
-
-    for(const auto& x : (*p_arr))
+    /*Add an intvar into an std::vector<intvar>*/
+    void add_var_to_arr(std::vector<intvar>& p_arr, intvar p_var)
     {
-        if(x.name == str_name)
-        {
-            *p_ind = i;
-            isfnd = true;
-            break;
-        }
+        p_arr.push_back(p_var);
     }
 
-    return isfnd;
-}
+    /*Fetch the index of the specified intvar - returns false if not found*/
+    bool search_ind(int& p_ind, std::string p_name,
+            std::vector<intvar>& p_arr)
+    {
+        int i = 0;
+        bool isfnd = false;
+        std::string str_name(p_name);
 
-/*Return the value of the intvar on the specified index*/
-void intvar_return_value(int* r_val, uint16_t p_ind, std::vector<intvar>* p_arr)
-{
-    if(p_ind >= (int)(*p_arr).size()) perror_disp("OOR_ARR_INDEX", true);
-    else *r_val = (*p_arr)[p_ind].val;
-}
+        p_ind = -1;
 
-/*Set the value of the specified intvar*/
-void intvar_set_value(int p_val, uint16_t p_ind, std::vector<intvar>* p_arr)
-{
-    (*p_arr)[p_ind].val = p_val;
+        for(auto& x : p_arr)
+        {
+            if(x.name == str_name)
+            {
+                p_ind = i;
+                isfnd = true;
+                break;
+            }
+        }
+
+        return isfnd;
+    }
+
+    /*Return the value of the intvar on the specified index*/
+    int return_value(int p_ind, std::vector<intvar>& p_vec)
+    {
+        if(p_ind >= static_cast<int>(p_vec.size()))
+        {
+            perror_disp("OOR_ARR_INDEX", true);
+            return -1;
+        } else return p_vec[p_ind].val;
+       
+    }
+
+    /*Set the value of the specified intvar*/
+    void set_value(int p_val, int p_ind, std::vector<intvar>& p_arr)
+    {
+        p_arr[p_ind].val = p_val;
+    }
 }

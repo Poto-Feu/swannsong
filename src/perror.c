@@ -25,8 +25,6 @@
 /*Display an error message with the specified string*/
 void perror_disp(const char* id, bool fatal)
 {
-    clear();
-    move(0, 0);
     printw("ERROR : %s\n", id);
     refresh();
 

@@ -19,9 +19,27 @@
 
 #ifndef FILEIO_H
 #define FILEIO_H
+
+#ifdef __cplusplus
+extern "C" {
+#include <cstdio>
+#else
 #include <stdio.h>
+#endif
 
 void fileio_setfileptr(FILE** fp, const char* path);
 char* fileio_getfileln(char* buf, int size, FILE** ptr);
+
+#ifdef __cplusplus
+}
+
+#include <string>
+#include <fstream>
+
+namespace fileio
+{
+    bool getfileln(std::string& r_str, std::ifstream& p_stream);
+}
+#endif
 
 #endif
