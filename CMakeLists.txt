@@ -24,7 +24,7 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_options(-s)
 endif()
 
-add_executable(swannsong
+add_executable(swannsongadv
     src/main.cpp
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.cpp
@@ -50,26 +50,26 @@ add_executable(swannsong
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_package(Curses REQUIRED)
     include_directories(${CURSES_INCLUDE_DIRS})
-    target_link_libraries(swannsong ${CURSES_LIBRARIES})
+    target_link_libraries(swannsongadv ${CURSES_LIBRARIES})
 else()
     add_subdirectory(lib/pdcurses)
     include_directories(lib/pdcurses)
-    target_link_libraries(swannsong pdcurses)
+    target_link_libraries(swannsongadv pdcurses)
 endif()
 
 # Statically link libraries if compiled on MinGW (GCC C++ libs are rarely
 # installed on Windows)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(swannsong -static)
+    target_link_libraries(swannsongadv -static)
 endif()
 
 # Copy necessary text files
-add_custom_command(TARGET swannsong POST_BUILD
+add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/gameconf.txt
         ${CMAKE_CURRENT_BINARY_DIR}/gameconf.txt)
-add_custom_command(TARGET swannsong POST_BUILD
+add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/txt/
         ${CMAKE_CURRENT_BINARY_DIR}/txt/)
