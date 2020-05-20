@@ -25,7 +25,7 @@ extern "C" {
 #include <cstring>
 #include "find.hpp"
 #include "room/room_io.h"
-#include "interpreter/parser.h"
+#include "interpreter/parser.hpp"
 #include "stringsm.h"
 
 namespace room_find
