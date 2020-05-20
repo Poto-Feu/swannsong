@@ -18,7 +18,6 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
@@ -103,19 +102,15 @@ static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
 }
 
 /*Interpret a line which use the PRINT function*/
-static void interp_PRINT_func(TokenVec r_vec)
+static void interp_PRINT_func(TokenVec r_vec, DisplayManager& p_dispm)
 {
     switch(r_vec[1].type)
     {
         case STRING:
-            {
-                std::string r_str = stringsm::ext_str_quotes(r_vec[1].str);
-                printw("%s\n", r_str.c_str());
-            }
+            p_dispm.addString(r_vec[1].str);
             break;
         case STRING_ID:
-            pstrings::display(r_vec[1].str);
-            printw("\n\n");
+            p_dispm.addString(pstrings::fetch(r_vec[1].str));
             break;
         default:
             perror_disp("token cannot be displayed (PRINT)", 0);
@@ -134,18 +129,12 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
     }
     else if(r_vec[0].str == "PRINT")
     {
-        if(r_vec.size() != 2)
-        {
-            perror_disp("too many tokens (PRINT)", true);
-        }
-        interp_PRINT_func(r_vec);
+        if(r_vec.size() != 2) perror_disp("too many tokens (PRINT)", true);
+        interp_PRINT_func(r_vec, p_dispm);
     }
     else if(r_vec[0].str == "SET")
     {
-        if(r_vec.size() != 4)
-        {
-            perror_disp("wrong number of tokens (SET)", true);
-        }
+        if(r_vec.size() != 4) perror_disp("wrong number of tokens (SET)", true);
         interp_SET_func(r_vec);
     }
 }

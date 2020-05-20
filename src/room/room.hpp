@@ -74,10 +74,12 @@ class DisplayManager
         void addTitle();
         void addDesc();
         void addChoice(Choice p_choice);
+        void addString(std::string p_str);
 
         void displayTitle(Room p_room);
         void displayDesc(Room p_room);
         void displayChoices();
+        void displayStrings();
 
         bool is_title_displayed();
         bool is_desc_displayed();
@@ -88,6 +90,7 @@ class DisplayManager
         bool desc_displayed = false;
 
         std::vector<Choice> choice_list;
+        std::vector<std::string> string_list;
 };
 
 #endif

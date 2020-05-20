@@ -168,6 +168,11 @@ void DisplayManager::addChoice(Choice p_choice)
     choice_list.push_back(p_choice);
 }
 
+void DisplayManager::addString(std::string p_str)
+{
+    string_list.push_back(p_str);
+}
+
 void DisplayManager::displayDesc(Room p_room)
 {
     std::string value;
@@ -196,6 +201,21 @@ void DisplayManager::displayDesc(Room p_room)
     } else perror_disp("DESC property not found in room", false);
 }
 
+void DisplayManager::displayStrings()
+{
+    if(string_list.size() > 0)
+    {
+        if(!title_displayed && !desc_displayed) move(0, pcurses::title_y + 2);
+
+        for(auto& it : string_list)
+        {
+            pcurses::display_center_string(it);
+        }
+
+        printw("\n\n");
+    }
+}
+
 void DisplayManager::displayChoices()
 {
     for(auto& it : choice_list) it.display();
@@ -216,8 +236,9 @@ bool DisplayManager::is_desc_displayed()
 static void dispm_show(DisplayManager p_dispm, Room p_room)
 {
     if(p_dispm.is_title_displayed()) p_dispm.displayTitle(p_room);
-    if(p_dispm.is_desc_displayed()) p_dispm.displayTitle(p_room);
+    if(p_dispm.is_desc_displayed()) p_dispm.displayDesc(p_room);
 
+    p_dispm.displayStrings();
     p_dispm.displayChoices();
 }
 
