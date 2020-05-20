@@ -22,12 +22,11 @@ extern "C" {
 #include "perror.h"
 }
 
-#include <cstring>
 #include <string>
 #include "room.hpp"
 #include "room_io.h"
 #include "find.hpp"
-#include "interpreter/parser.h"
+#include "interpreter/parser.hpp"
 #include "vars/pconst.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -84,8 +83,11 @@ void Choice::display()
 /*Room constructor definition*/
 Room::Room(std::string room_name) : name(room_name) { }
 
-/*Room methods definitions*/
-void Room::getName(char* r_name) const { strcpy(r_name, name.c_str()); }
+/*Room member functions definitions*/
+std::string Room::getName() const
+{
+    return name;
+}
 
 bool Room::isRoomLineSet() const
 {
@@ -99,37 +101,32 @@ bool Room::isChoicesLineSet() const
     else return false;
 }
 
-int Room::getRoomLine() const { return room_line; }
-
-int Room::getChoicesLine() const { return choices_line; }
-
-void Room::setRoomLine(int rln) { room_line = rln; }
-
-void Room::setChoicesLine(int chln) { choices_line = chln; }
-
-void Room::displayList()
+int Room::getRoomLine() const 
 {
-    if(title_displayed) displayTitle();
-    if(desc_displayed) displayDesc();
-
-    for(auto& ch : displayed_choices) ch.display();
+    return room_line;
 }
 
-void Room::addDisplayTitle() { title_displayed = true; }
-
-void Room::addDisplayDesc() { desc_displayed = true; }
-
-void Room::addDisplayChoice(int ch_ln)
+int Room::getChoicesLine() const 
 {
-    Choice newChoice(displayed_choices.size() + 1, ch_ln);
-    displayed_choices.push_back(newChoice);
+    return choices_line;
+}
+
+void Room::setRoomLine(int rln) 
+{
+    room_line = rln;
+}
+
+void Room::setChoicesLine(int chln)
+{
+    choices_line = chln;
 }
 
 /*Choice private member functions definitions*/
-void Room::displayTitle()
+void DisplayManager::displayTitle(Room p_room)
 {
     std::string value;
-    bool prop_fnd = room_find::room_property(value, "TITLE", getRoomLine());
+    bool prop_fnd = room_find::room_property(value, "TITLE",
+            p_room.getRoomLine());
 
     if(prop_fnd)
     {
@@ -152,10 +149,35 @@ void Room::displayTitle()
     } else perror_disp("TITLE property not found in room", false);
 }
 
-void Room::displayDesc()
+/*DisplayManager constructor definition*/
+DisplayManager::DisplayManager() { }
+
+/*DisplayManager member functions definitions*/
+void DisplayManager::addTitle()
+{
+    title_displayed = true;
+}
+
+void DisplayManager::addDesc()
+{
+    desc_displayed = true;
+}
+
+void DisplayManager::addChoice(Choice p_choice)
+{
+    choice_list.push_back(p_choice);
+}
+
+void DisplayManager::addString(std::string p_str)
+{
+    string_list.push_back(p_str);
+}
+
+void DisplayManager::displayDesc(Room p_room)
 {
     std::string value;
-    auto prop_fnd = room_find::room_property(value, "DESC", getRoomLine());
+    auto prop_fnd = room_find::room_property(value, "DESC",
+            p_room.getRoomLine());
 
     if(prop_fnd)
     {
@@ -171,7 +193,7 @@ void Room::displayDesc()
             disp_value = pstrings::fetch(value);
         }
 
-        if(!title_displayed) y = pcurses::title_y + 2;
+        if(!is_title_displayed()) y = pcurses::title_y + 2;
 
         move(y, getcurx(stdscr));
         pcurses::display_center_string(disp_value);
@@ -179,29 +201,74 @@ void Room::displayDesc()
     } else perror_disp("DESC property not found in room", false);
 }
 
+void DisplayManager::displayStrings()
+{
+    if(string_list.size() > 0)
+    {
+        if(!title_displayed && !desc_displayed) move(0, pcurses::title_y + 2);
+
+        for(auto& it : string_list)
+        {
+            pcurses::display_center_string(it);
+        }
+
+        printw("\n\n");
+    }
+}
+
+void DisplayManager::displayChoices()
+{
+    for(auto& it : choice_list) it.display();
+}
+
+bool DisplayManager::is_title_displayed()
+{
+    if(title_displayed) return true;
+    else return false;
+}
+
+bool DisplayManager::is_desc_displayed()
+{
+    if(desc_displayed) return true;
+    else return false;
+}
+
+static void dispm_show(DisplayManager p_dispm, Room p_room)
+{
+    if(p_dispm.is_title_displayed()) p_dispm.displayTitle(p_room);
+    if(p_dispm.is_desc_displayed()) p_dispm.displayDesc(p_room);
+
+    p_dispm.displayStrings();
+    p_dispm.displayChoices();
+}
+
 /*Read the first ATLAUNCH block encountered starting from specified line*/
-static void room_atlaunch(int roomln, Room& currentRoom)
+static void room_atlaunch(Room& currentRoom, DisplayManager &currentDispm)
 {
     int foundln;
     bool atlfound = false;
 
-    move(0, 0);
-    clear();
-
-    atlfound = room_find::atlaunchline(foundln, roomln);
-    if(atlfound == true) (void)parser::exec_until_end(foundln, currentRoom);
-    refresh();
+    atlfound = room_find::atlaunchline(foundln, currentRoom.getRoomLine());
+    if(atlfound == true) (void)parser::exec_until_end(foundln, currentRoom,
+            currentDispm);
+    dispm_show(currentDispm, currentRoom);
 }
 
+/*Load the room with the specified id*/
 void room_load(std::string id)
 {
     int roomln = room_find::roomline(id);
     std::string str_id(id);
 
     Room currentRoom(str_id);
+    DisplayManager currentDispm;
     
+    move(0, 0);
+    clear();
+
     currentRoom.setRoomLine(roomln);
 
-    room_atlaunch(roomln, currentRoom);
-    currentRoom.displayList();
+    room_atlaunch(currentRoom, currentDispm);
+
+    refresh();
 }

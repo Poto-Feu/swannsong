@@ -18,14 +18,11 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
-#include <cstdlib>
-#include <cstring>
 #include <string>
-#include "parser.h"
+#include "parser.hpp"
 #include "room/interpreter/token.hpp"
 #include "room/room.hpp"
 #include "room/room_io.h"
@@ -35,22 +32,121 @@ extern "C" {
 #include "pstrings.h"
 #include "stringsm.h"
 
-static void interp_ins(TokenVec r_vec, Room& currentRoom);
-
-static void parser_execins(std::string p_line, Room& currentRoom)
+/*Add all room choices into a vector in the DisplayManager*/
+static void add_all_choices(int roomln, Room& currentRoom,
+        DisplayManager& p_dispm)
 {
-    TokenVec r_vec = token::create_arr(p_line);
-    interp_ins(r_vec, currentRoom);
+    int choicesln = 0;
+    bool choicesremain = true;
+    
+    if(currentRoom.isChoicesLineSet())
+    {
+        choicesln = currentRoom.getChoicesLine();
+    } else
+    {
+        bool choicesexist = room_find::choicesline(choicesln, roomln);
+
+        if(!choicesexist) perror_disp("Missing CHOICES block", true);
+        else currentRoom.setChoicesLine(choicesln);
+    }
+
+    for(int i = 1; choicesremain; i++)
+    {
+        int onechoiceln = 0;
+        bool choiceexist = room_find::onechoiceline(i, choicesln,
+                onechoiceln);
+
+        if(!choiceexist)
+        {
+            if(i == 1) perror_disp("No CHOICE block found", true);
+            choicesremain = false;
+        } else p_dispm.addChoice(Choice(i, onechoiceln));
+    }
 }
 
-static void interp_func_ins(TokenVec r_vec, Room& currentRoom);
+/*Interpret a line which use the SET function*/
+static void interp_SET_func(TokenVec r_vec)
+{
+    int val = -1;
 
-static void interp_ins(TokenVec r_vec, Room& currentRoom)
+    if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
+    if(r_vec[2].type != EQUAL)
+    {
+        perror_disp("missing EQUAL token (SET)", 1);
+    }
+    if(r_vec[3].type != NUMBER)
+    {
+        perror_disp("no value assigned to var during its init", 1);
+    }
+
+    val = std::stoi(r_vec[3].str);
+    gvars::set_var(r_vec[1].str, val);
+}
+
+/*Interpret a line which use the DISPLAY function*/
+static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
+        DisplayManager& p_dispm)
+{
+    if(r_vec[1].str == "CHOICES")
+    {
+        int roomln = -1;
+
+        roomln = currentRoom.getRoomLine();
+        add_all_choices(roomln, currentRoom, p_dispm);
+    } else if(r_vec[1].str == "TITLE") p_dispm.addTitle();
+    else if(r_vec[1].str == "DESC") p_dispm.addDesc();
+    else
+    {
+        perror_disp("displaying one choice is not yet implemented", false);
+    }
+}
+
+/*Interpret a line which use the PRINT function*/
+static void interp_PRINT_func(TokenVec r_vec, DisplayManager& p_dispm)
+{
+    switch(r_vec[1].type)
+    {
+        case STRING:
+            p_dispm.addString(r_vec[1].str);
+            break;
+        case STRING_ID:
+            p_dispm.addString(pstrings::fetch(r_vec[1].str));
+            break;
+        default:
+            perror_disp("token cannot be displayed (PRINT)", 0);
+            break;
+    }
+}
+
+/*Interpret a line which use a function*/
+static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
+        DisplayManager& p_dispm)
+{
+    if(r_vec[0].str == "DISPLAY")
+    {
+        if(r_vec.size() != 2) perror_disp("too many tokens (DISPLAY)", true);
+        interp_DISPLAY_func(r_vec, currentRoom, p_dispm);
+    }
+    else if(r_vec[0].str == "PRINT")
+    {
+        if(r_vec.size() != 2) perror_disp("too many tokens (PRINT)", true);
+        interp_PRINT_func(r_vec, p_dispm);
+    }
+    else if(r_vec[0].str == "SET")
+    {
+        if(r_vec.size() != 4) perror_disp("wrong number of tokens (SET)", true);
+        interp_SET_func(r_vec);
+    }
+}
+
+/*Interpret a line depending on its first token*/
+static void interp_ins(TokenVec r_vec, Room& currentRoom,
+        DisplayManager& p_dispm)
 {
     switch(r_vec[0].type)
     {
         case FUNCTION:
-            interp_func_ins(r_vec, currentRoom);
+            interp_func_ins(r_vec, currentRoom, p_dispm);
             break;
         default:
             perror_disp("this is not yet implemented by the parser", true);
@@ -58,64 +154,11 @@ static void interp_ins(TokenVec r_vec, Room& currentRoom)
     }
 }
 
-static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom);
-static void interp_PRINT_func(TokenVec r_vec);
-static void interp_SET_func(TokenVec r_vec);
-
-static void interp_func_ins(TokenVec r_vec, Room& currentRoom)
+static void parser_execins(std::string p_line, Room& currentRoom,
+        DisplayManager& p_dispm)
 {
-    if(r_vec[0].str == "DISPLAY")
-    {
-        if(r_vec.size() != 2) perror_disp("too many tokens (DISPLAY)", true);
-        interp_DISPLAY_func(r_vec, currentRoom);
-    }
-    else if(r_vec[0].str == "PRINT")
-    {
-        if(r_vec.size() != 2)
-        {
-            perror_disp("too many tokens (PRINT)", true);
-        }
-        interp_PRINT_func(r_vec);
-    }
-    else if(r_vec[0].str == "SET")
-    {
-        if(r_vec.size() != 4)
-        {
-            perror_disp("wrong number of tokens (SET)", true);
-        }
-        interp_SET_func(r_vec);
-    }
-}
-
-static bool check_COMP_condition(TokenVec r_vec);
-
-static bool check_condition(std::string insln)
-{
-    bool rtrn_val = false;
-    TokenVec r_vec = token::create_arr(insln);
-
-    if(r_vec[2].type == EXISTS)
-    {
-        if(r_vec.size() != 3)
-        {
-            perror_disp("wrong arg number in EXISTS IF", true);
-        } else if(gvars::exist(r_vec[1].str))
-        {
-            rtrn_val = true;
-        }
-
-    } else if(r_vec[2].type == NOT && r_vec[3].type == EXISTS)
-    {
-        if(r_vec.size() != 4)
-        {
-            perror_disp("wrong arg number in EXISTS IF", true);
-        } else if(!gvars::exist(r_vec[1].str)) rtrn_val = true;
-    } else if(r_vec[1].type == VARIABLE)
-    {
-        rtrn_val = check_COMP_condition(r_vec);
-    } else perror_disp("IF type not recognized", true);
-
-    return rtrn_val;
+    TokenVec r_vec = token::create_arr(p_line);
+    interp_ins(r_vec, currentRoom, p_dispm);
 }
 
 static bool check_COMP_condition(TokenVec r_vec)
@@ -147,97 +190,38 @@ static bool check_COMP_condition(TokenVec r_vec)
     return rtrn_val;
 }
 
-static void interp_PRINT_func(TokenVec r_vec)
+static bool check_condition(std::string insln)
 {
-    switch(r_vec[1].type)
+    bool rtrn_val = false;
+    TokenVec r_vec = token::create_arr(insln);
+
+    if(r_vec[2].type == EXISTS)
     {
-        case STRING:
-            {
-                std::string r_str = stringsm::ext_str_quotes(r_vec[1].str);
-                printw("%s\n", r_str.c_str());
-            }
-            break;
-        case STRING_ID:
-            pstrings::display(r_vec[1].str);
-            printw("\n\n");
-            break;
-        default:
-            perror_disp("token cannot be displayed (PRINT)", 0);
-            break;
-    }
-}
-
-static void add_all_choices(int roomln, Room& currentRoom);
-
-static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom)
-{
-    if(r_vec[1].str == "CHOICES")
-    {
-        int roomln = -1;
-        char room_name[P_MAX_BUF_SIZE - 1] = "\0";
-
-        currentRoom.getName(room_name);
-
-        roomln = currentRoom.getRoomLine();
-        add_all_choices(roomln, currentRoom);
-    } else if(r_vec[1].str == "TITLE") currentRoom.addDisplayTitle();
-    else if(r_vec[1].str == "DESC") currentRoom.addDisplayDesc();
-    else
-    {
-        perror_disp("displaying one choice is not yet implemented", false);
-    }
-}
-
-static void interp_SET_func(TokenVec r_vec)
-{
-    int val = -1;
-
-    if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
-    if(r_vec[2].type != EQUAL)
-    {
-        perror_disp("missing EQUAL token (SET)", 1);
-    }
-    if(r_vec[3].type != NUMBER)
-    {
-        perror_disp("no value assigned to var during its init", 1);
-    }
-
-    val = std::stoi(r_vec[3].str);
-    gvars::set_var(r_vec[1].str, val);
-}
-
-static void add_all_choices(int roomln, Room& currentRoom)
-{
-    int choicesln = 0;
-    bool choicesremain = true;
-    
-    if(currentRoom.isChoicesLineSet())
-    {
-        choicesln = currentRoom.getChoicesLine();
-    } else
-    {
-        bool choicesexist = room_find::choicesline(choicesln, roomln);
-
-        if(!choicesexist) perror_disp("Missing CHOICES block", true);
-        else currentRoom.setChoicesLine(choicesln);
-    }
-
-    for(int i = 1; choicesremain; i++)
-    {
-        int onechoiceln = 0;
-        bool choiceexist = room_find::onechoiceline(i, choicesln,
-                onechoiceln);
-
-        if(!choiceexist)
+        if(r_vec.size() != 3)
         {
-            if(i == 1) perror_disp("No CHOICE block found", true);
-            choicesremain = false;
-        } else currentRoom.addDisplayChoice(onechoiceln);
-    }
+            perror_disp("wrong arg number in EXISTS IF", true);
+        } else if(gvars::exist(r_vec[1].str))
+        {
+            rtrn_val = true;
+        }
+
+    } else if(r_vec[2].type == NOT && r_vec[3].type == EXISTS)
+    {
+        if(r_vec.size() != 4)
+        {
+            perror_disp("wrong arg number in EXISTS IF", true);
+        } else if(!gvars::exist(r_vec[1].str)) rtrn_val = true;
+    } else if(r_vec[1].type == VARIABLE)
+    {
+        rtrn_val = check_COMP_condition(r_vec);
+    } else perror_disp("IF type not recognized", true);
+
+    return rtrn_val;
 }
 
 namespace parser
 {
+    /*Split a line into an argument and a type string*/
     bool splitline(std::string& type, std::string& arg, std::string ins)
     {
         unsigned int ins_size = ins.size();
@@ -286,7 +270,7 @@ namespace parser
     }
 
     /*Execute instructions until the end of the block*/
-    int exec_until_end(int blockln, Room& currentRoom)
+    int exec_until_end(int blockln, Room& currentRoom, DisplayManager &p_dispm)
     {
         bool is_end = false;
         int startln = blockln + 1;
@@ -305,11 +289,13 @@ namespace parser
             if(fw == "END") is_end = true;
             else if(fw == "IF")
             {
-                if(check_condition(buf.c_str())) i = parser::exec_until_end(i,
-                        currentRoom);
+                if(check_condition(buf.c_str()))
+                {
+                    i = exec_until_end(i, currentRoom, p_dispm);
+                }
                 else i = parser::skip_until_end(i);
             }
-            else parser_execins(buf.c_str(), currentRoom);
+            else parser_execins(buf, currentRoom, p_dispm);
         }
         return endln;
     }

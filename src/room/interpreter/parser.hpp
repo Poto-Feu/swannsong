@@ -21,34 +21,13 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#ifdef __cplusplus
-
 #include "room/room.hpp"
-
-int parser_exec_until_end(int blockln, Room& currentRoom);
-
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#else
-
-#include <stdbool.h>
-
-#endif
-
-int parser_skip_until_end(int blockln);
-void parser_splitline(char* type, char* arg, char* ins);
-
-#ifdef __cplusplus
-}
 
 namespace parser
 {
     int skip_until_end(int blockln);
-    int exec_until_end(int blockln, Room& currentRoom);
+    int exec_until_end(int blockln, Room& currentRoom, DisplayManager& p_dispm);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }
-#endif
 
 #endif
