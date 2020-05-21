@@ -9,7 +9,7 @@ ROOM menu
         END
         c2
             TEXT menu_c2
-            GO aboutscreen
+            CUTSCENE about
         END
     END
     ATLAUNCH

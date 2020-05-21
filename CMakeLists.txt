@@ -37,6 +37,7 @@ add_executable(swannsongadv
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp
+    src/cutscenes.cpp
     src/init.cpp
     src/perror.c
     src/pstrings.cpp
