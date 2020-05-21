@@ -61,22 +61,24 @@ namespace pstrings
         int sp_ind = 0;
         int quote_ind = 0;
         bool quote_inc = false;
+        char quote_ch;
 
         for(const auto& it : buf)
         {
             if(it == ' ' || it == '\t') break;
             else
             {
-                sp_ind++;
+                ++sp_ind;
                 r_id += it;
             }
         }
 
-        for(int i = sp_ind; buf[i] != '\0'; i++)
+        for(int i = sp_ind; buf[i] != '\0'; ++i)
         {
-            if(buf.at(i) == '"')
+            if(buf[i] == '"' || buf[i] == '\'')
             {
                 quote_inc = true;
+                quote_ch = buf[i];
                 quote_ind = i;
                 break;
             }
@@ -84,9 +86,14 @@ namespace pstrings
 
         if(!quote_inc) perror_disp("wrong pstring format", true);
 
-        for(int i = quote_ind+1; buf[i] != '\0'; i++)
+        for(int i = quote_ind+1; buf[i] != '\0'; ++i)
         {
-            if(buf[i] == '"') break;
+            if(buf[i] == quote_ch) break;
+            else if(buf[i] == '\\' && buf[i+1] == quote_ch)
+            {
+                r_val += quote_ch;
+                ++i;
+            }
             else r_val += buf[i];
         }
     }
