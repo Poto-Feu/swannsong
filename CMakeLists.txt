@@ -66,11 +66,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
 endif()
 
 # Copy necessary text files
-add_custom_command(TARGET swannsongadv POST_BUILD
+add_custom_command(TARGET swannsongadv PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/gameconf.txt
         ${CMAKE_CURRENT_BINARY_DIR}/gameconf.txt)
-add_custom_command(TARGET swannsongadv POST_BUILD
+add_custom_command(TARGET swannsongadv PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/txt/
         ${CMAKE_CURRENT_BINARY_DIR}/txt/)
