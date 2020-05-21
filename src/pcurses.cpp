@@ -21,7 +21,6 @@ extern "C" {
 #include <curses.h>
 }
 
-#include <cstdint>
 #include <string>
 #include <vector>
 #include "pcurses.hpp"

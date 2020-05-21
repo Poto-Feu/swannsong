@@ -87,7 +87,7 @@ namespace cutscenes
     /*Display a cutscene*/
     void display(std::string const p_name)
     {
-        const int x_start = 3;
+        const int y_start = 3;
         bool is_fnd = false;
 
         for(auto const& it : vec)
@@ -96,7 +96,7 @@ namespace cutscenes
             {
                 clear();
                 is_fnd = true;
-                move(x_start, pcurses::margin);
+                move(y_start, pcurses::margin);
 
                 for(auto const& curr_action: it.vec)
                 {
@@ -106,7 +106,7 @@ namespace cutscenes
                         pstrings::display("continue_penter");
                         userio_waitenter();
                         clear();
-                        move(x_start, pcurses::margin);
+                        move(y_start, pcurses::margin);
                     } else
                     {
                         pcurses::display_center_string(curr_action.content);
