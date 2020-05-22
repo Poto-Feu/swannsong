@@ -118,6 +118,17 @@ static void interp_PRINT_func(TokenVec r_vec, DisplayManager& p_dispm)
     }
 }
 
+/*Interpret a line which use the CUTSCENE function*/
+static void interp_CUTSCENE_func(TokenVec r_vec, DisplayManager& p_dispm)
+{
+    if(cutscenes::check_exist(r_vec[1].str)) p_dispm.addCutscene(r_vec[1].str);
+    else
+    {
+        std::string err_str = "unknown CUTSCENE id (" + r_vec[1].str + ")";
+        perror_disp(err_str.c_str(), false);
+    }
+}
+
 /*Interpret a line which use a function*/
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         DisplayManager& p_dispm)
@@ -126,16 +137,20 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
     {
         if(r_vec.size() != 2) perror_disp("too many tokens (DISPLAY)", true);
         interp_DISPLAY_func(r_vec, currentRoom, p_dispm);
-    }
-    else if(r_vec[0].str == "PRINT")
+    } else if(r_vec[0].str == "PRINT")
     {
         if(r_vec.size() != 2) perror_disp("too many tokens (PRINT)", true);
         interp_PRINT_func(r_vec, p_dispm);
-    }
-    else if(r_vec[0].str == "SET")
+    } else if(r_vec[0].str == "SET")
     {
         if(r_vec.size() != 4) perror_disp("wrong number of tokens (SET)", true);
         interp_SET_func(r_vec);
+    } else if(r_vec[0].str == "CUTSCENE")
+    {
+        if(r_vec.size() != 2)
+        {
+            perror_disp("wrong number of tokens (CUTSCENE)", true);
+        } else interp_CUTSCENE_func(r_vec, p_dispm);
     }
 }
 
@@ -265,7 +280,6 @@ namespace parser
             if(fw == "END") is_end = true;
             else if(fw == "IF") i = skip_until_end(i);
         }
-
         return endln;
     }
 
@@ -294,8 +308,7 @@ namespace parser
                     i = exec_until_end(i, currentRoom, p_dispm);
                 }
                 else i = parser::skip_until_end(i);
-            }
-            else parser_execins(buf, currentRoom, p_dispm);
+            } else parser_execins(buf, currentRoom, p_dispm);
         }
         return endln;
     }

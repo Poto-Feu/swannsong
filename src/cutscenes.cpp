@@ -67,11 +67,11 @@ namespace cutscenes
                 if(fw == "PAUSE") curr_action.type = PAUSE;
                 else if(stringsm::is_str(buf))
                 {
-                    curr_action.type = STRING;
+                    curr_action.type = DISPSTRING;
                     curr_action.content = stringsm::ext_str_quotes(buf);
                 } else if(pstrings::check_exist(fw))
                 {
-                    curr_action.type = STRING;
+                    curr_action.type = DISPSTRING;
                     curr_action.content = pstrings::fetch(fw);
                 } else if(fw == "END")
                 {
@@ -116,6 +116,7 @@ namespace cutscenes
                 move(LINES - 3, pcurses::margin);
                 pstrings::display("continue_penter");
                 userio_waitenter();
+                clear();
             }
         }
 
@@ -125,5 +126,14 @@ namespace cutscenes
 
             perror_disp(err_str.c_str(), true);
         }
+    }
+
+    bool check_exist(std::string const p_name)
+    {
+        for(auto const& it : vec)
+        {
+            if(it.name == p_name) return true;
+        }
+        return false;
     }
 }

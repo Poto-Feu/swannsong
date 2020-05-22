@@ -173,6 +173,11 @@ void DisplayManager::addString(std::string p_str)
     string_list.push_back(p_str);
 }
 
+void DisplayManager::addCutscene(std::string const p_cs)
+{
+    cs_list.push_back(p_cs);
+}
+
 void DisplayManager::displayDesc(Room p_room)
 {
     std::string value;
@@ -216,6 +221,14 @@ void DisplayManager::displayStrings()
     }
 }
 
+void DisplayManager::displayCutscenes()
+{
+    for(auto const& it : cs_list)
+    {
+        cutscenes::display(it);
+    }
+}
+
 void DisplayManager::displayChoices()
 {
     for(auto& it : choice_list) it.display();
@@ -235,6 +248,8 @@ bool DisplayManager::is_desc_displayed()
 
 static void dispm_show(DisplayManager p_dispm, Room p_room)
 {
+    p_dispm.displayCutscenes();
+
     if(p_dispm.is_title_displayed()) p_dispm.displayTitle(p_room);
     if(p_dispm.is_desc_displayed()) p_dispm.displayDesc(p_room);
 

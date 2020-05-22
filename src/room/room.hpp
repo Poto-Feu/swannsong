@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+#include "cutscenes.hpp"
 
 void room_load(std::string id);
 
@@ -75,11 +76,13 @@ class DisplayManager
         void addDesc();
         void addChoice(Choice p_choice);
         void addString(std::string p_str);
+        void addCutscene(std::string const p_cs);
 
         void displayTitle(Room p_room);
         void displayDesc(Room p_room);
         void displayChoices();
         void displayStrings();
+        void displayCutscenes();
 
         bool is_title_displayed();
         bool is_desc_displayed();
@@ -91,6 +94,7 @@ class DisplayManager
 
         std::vector<Choice> choice_list;
         std::vector<std::string> string_list;
+        std::vector<std::string> cs_list;
 };
 
 #endif
