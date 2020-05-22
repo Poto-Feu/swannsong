@@ -61,7 +61,7 @@ namespace pstrings
         int sp_ind = 0;
         int quote_ind = 0;
         bool quote_inc = false;
-        char quote_ch;
+        char quote_ch = '\0';
 
         for(const auto& it : buf)
         {
