@@ -26,7 +26,7 @@
 namespace parser
 {
     int skip_until_end(int blockln);
-    int exec_until_end(int blockln, Room& currentRoom, DisplayManager& p_dispm);
+    int exec_until_end(int blockln, Room& currentRoom, RoomManager& p_roomman);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }
 

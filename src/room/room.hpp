@@ -66,11 +66,11 @@ class Room
         int choices_line = 0;
 };
 
-class DisplayManager
+class RoomManager
 {
     public:
 
-        DisplayManager();
+        RoomManager();
 
         void addTitle();
         void addDesc();

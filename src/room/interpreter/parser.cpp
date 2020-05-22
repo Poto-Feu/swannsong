@@ -32,9 +32,9 @@ extern "C" {
 #include "pstrings.h"
 #include "stringsm.h"
 
-/*Add all room choices into a vector in the DisplayManager*/
+/*Add all room choices into a vector in the RoomManager*/
 static void add_all_choices(int roomln, Room& currentRoom,
-        DisplayManager& p_dispm)
+        RoomManager& p_roomman)
 {
     int choicesln = 0;
     bool choicesremain = true;
@@ -60,7 +60,7 @@ static void add_all_choices(int roomln, Room& currentRoom,
         {
             if(i == 1) perror_disp("No CHOICE block found", true);
             choicesremain = false;
-        } else p_dispm.addChoice(Choice(i, onechoiceln));
+        } else p_roomman.addChoice(Choice(i, onechoiceln));
     }
 }
 
@@ -85,16 +85,16 @@ static void interp_SET_func(TokenVec r_vec)
 
 /*Interpret a line which use the DISPLAY function*/
 static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
-        DisplayManager& p_dispm)
+        RoomManager& p_roomman)
 {
     if(r_vec[1].str == "CHOICES")
     {
         int roomln = -1;
 
         roomln = currentRoom.getRoomLine();
-        add_all_choices(roomln, currentRoom, p_dispm);
-    } else if(r_vec[1].str == "TITLE") p_dispm.addTitle();
-    else if(r_vec[1].str == "DESC") p_dispm.addDesc();
+        add_all_choices(roomln, currentRoom, p_roomman);
+    } else if(r_vec[1].str == "TITLE") p_roomman.addTitle();
+    else if(r_vec[1].str == "DESC") p_roomman.addDesc();
     else
     {
         perror_disp("displaying one choice is not yet implemented", false);
@@ -102,15 +102,15 @@ static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
 }
 
 /*Interpret a line which use the PRINT function*/
-static void interp_PRINT_func(TokenVec r_vec, DisplayManager& p_dispm)
+static void interp_PRINT_func(TokenVec r_vec, RoomManager& p_roomman)
 {
     switch(r_vec[1].type)
     {
         case STRING:
-            p_dispm.addString(r_vec[1].str);
+            p_roomman.addString(r_vec[1].str);
             break;
         case STRING_ID:
-            p_dispm.addString(pstrings::fetch(r_vec[1].str));
+            p_roomman.addString(pstrings::fetch(r_vec[1].str));
             break;
         default:
             perror_disp("token cannot be displayed (PRINT)", 0);
@@ -119,9 +119,9 @@ static void interp_PRINT_func(TokenVec r_vec, DisplayManager& p_dispm)
 }
 
 /*Interpret a line which use the CUTSCENE function*/
-static void interp_CUTSCENE_func(TokenVec r_vec, DisplayManager& p_dispm)
+static void interp_CUTSCENE_func(TokenVec r_vec, RoomManager& p_roomman)
 {
-    if(cutscenes::check_exist(r_vec[1].str)) p_dispm.addCutscene(r_vec[1].str);
+    if(cutscenes::check_exist(r_vec[1].str)) p_roomman.addCutscene(r_vec[1].str);
     else
     {
         std::string err_str = "unknown CUTSCENE id (" + r_vec[1].str + ")";
@@ -131,16 +131,16 @@ static void interp_CUTSCENE_func(TokenVec r_vec, DisplayManager& p_dispm)
 
 /*Interpret a line which use a function*/
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
-        DisplayManager& p_dispm)
+        RoomManager& p_roomman)
 {
     if(r_vec[0].str == "DISPLAY")
     {
         if(r_vec.size() != 2) perror_disp("too many tokens (DISPLAY)", true);
-        interp_DISPLAY_func(r_vec, currentRoom, p_dispm);
+        interp_DISPLAY_func(r_vec, currentRoom, p_roomman);
     } else if(r_vec[0].str == "PRINT")
     {
         if(r_vec.size() != 2) perror_disp("too many tokens (PRINT)", true);
-        interp_PRINT_func(r_vec, p_dispm);
+        interp_PRINT_func(r_vec, p_roomman);
     } else if(r_vec[0].str == "SET")
     {
         if(r_vec.size() != 4) perror_disp("wrong number of tokens (SET)", true);
@@ -150,18 +150,18 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         if(r_vec.size() != 2)
         {
             perror_disp("wrong number of tokens (CUTSCENE)", true);
-        } else interp_CUTSCENE_func(r_vec, p_dispm);
+        } else interp_CUTSCENE_func(r_vec, p_roomman);
     }
 }
 
 /*Interpret a line depending on its first token*/
 static void interp_ins(TokenVec r_vec, Room& currentRoom,
-        DisplayManager& p_dispm)
+        RoomManager& p_roomman)
 {
     switch(r_vec[0].type)
     {
         case FUNCTION:
-            interp_func_ins(r_vec, currentRoom, p_dispm);
+            interp_func_ins(r_vec, currentRoom, p_roomman);
             break;
         default:
             perror_disp("this is not yet implemented by the parser", true);
@@ -170,10 +170,10 @@ static void interp_ins(TokenVec r_vec, Room& currentRoom,
 }
 
 static void parser_execins(std::string p_line, Room& currentRoom,
-        DisplayManager& p_dispm)
+        RoomManager& p_roomman)
 {
     TokenVec r_vec = token::create_arr(p_line);
-    interp_ins(r_vec, currentRoom, p_dispm);
+    interp_ins(r_vec, currentRoom, p_roomman);
 }
 
 static bool check_COMP_condition(TokenVec r_vec)
@@ -284,7 +284,7 @@ namespace parser
     }
 
     /*Execute instructions until the end of the block*/
-    int exec_until_end(int blockln, Room& currentRoom, DisplayManager &p_dispm)
+    int exec_until_end(int blockln, Room& currentRoom, RoomManager &p_roomman)
     {
         bool is_end = false;
         int startln = blockln + 1;
@@ -305,10 +305,10 @@ namespace parser
             {
                 if(check_condition(buf.c_str()))
                 {
-                    i = exec_until_end(i, currentRoom, p_dispm);
+                    i = exec_until_end(i, currentRoom, p_roomman);
                 }
                 else i = parser::skip_until_end(i);
-            } else parser_execins(buf, currentRoom, p_dispm);
+            } else parser_execins(buf, currentRoom, p_roomman);
         }
         return endln;
     }
