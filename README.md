@@ -1,6 +1,8 @@
 # SwannSong Adventure
 A text-adventure game with some humor. Please note that this game is in a pre-alpha stage and is far from being finished.
 
+**WARNING:** this game contains infrequent strong language.
+
 ## Building the game
 
 ### Building prerequisites
