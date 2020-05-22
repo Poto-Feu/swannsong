@@ -1,7 +1,7 @@
 CC = gcc
 CXX = g++
 
-LIBS = -lcurses
+LIBS = -lncurses
 INC = -Isrc
 
 WARN_FLAGS = -Wall -Wextra -pedantic
