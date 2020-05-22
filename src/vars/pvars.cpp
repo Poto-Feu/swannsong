@@ -41,13 +41,15 @@ namespace pvars
     {
         {"lang", pvars_undef},
         {"nextroom", pvars_undef},
-        {"roomfile", pvars_undef}
+        {"roomfile", pvars_undef},
+        {"csfile", pvars_undef}
     };
 
     std::vector<pvar_struct> gcvars =
     {
         {"langdir", pvars_undef},
         {"roomfile", pvars_undef},
+        {"csfile", pvars_undef},
         {"defaultlang", pvars_undef},
         {"firstroom", pvars_undef}
     };

@@ -29,7 +29,8 @@ static const std::vector<std::string> func_list =
     "SET",
     "GO",
     "TEXT",
-    "IF"
+    "IF",
+    "CUTSCENE"
 };
 
 static const std::vector<char> oper_list =
@@ -180,7 +181,7 @@ static bool is_if(std::string p_tkn)
 }
 static bool is_func(std::string p_tkn)
 {
-    for(auto& it : func_list)
+    for(auto const& it : func_list)
     {
         if(p_tkn == it) return true;
     }
@@ -195,7 +196,7 @@ static bool is_variable(std::string p_tkn)
 
 static bool is_oper(char p_chr)
 {
-    for(auto& it : oper_list)
+    for(auto const& it : oper_list)
     {
         if(p_chr == it) return true;
     }

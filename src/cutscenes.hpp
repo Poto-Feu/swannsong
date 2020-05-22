@@ -17,17 +17,38 @@
     along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef CUTSCENES_HPP
+#define CUTSCENES_HPP
 
-#ifndef PARSER_H
-#define PARSER_H
+#include <string>
+#include <vector>
 
-#include "room/room.hpp"
-
-namespace parser
+enum cs_action_type
 {
-    int skip_until_end(int blockln);
-    int exec_until_end(int blockln, Room& currentRoom, RoomManager& p_roomman);
-    bool splitline(std::string& type, std::string& arg, std::string ins);
-}
+    DISPSTRING,
+    PAUSE
+};
 
+struct cs_action
+{
+    cs_action_type type;
+    std::string content;
+};
+
+class Cutscene
+{
+    public:
+
+    Cutscene();
+
+    std::string name;
+    std::vector<cs_action> vec;
+};
+
+namespace cutscenes
+{
+    void copy_file_to_vec();
+    void display(std::string const p_name);
+    bool check_exist(std::string const p_name);
+}
 #endif

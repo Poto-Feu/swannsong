@@ -1,6 +1,11 @@
 ROOM menu
     TITLE "SwannSong"
     DESC menu_desc
+    ATLAUNCH
+        DISPLAY TITLE
+        DISPLAY DESC
+        DISPLAY CHOICES
+    END
     CHOICES
         c1
             TEXT menu_c1
@@ -9,26 +14,15 @@ ROOM menu
         END
         c2
             TEXT menu_c2
-            GO aboutscreen
+            CUTSCENE about
         END
-    END
-    ATLAUNCH
-        DISPLAY TITLE
-        DISPLAY DESC
-        DISPLAY CHOICES
-    END
-END ROOM
-
-ROOM aboutscreen
-    CHOICES
-    END
-    ATLAUNCH
     END
 END ROOM
 
 ROOM firstroom
-    CHOICES
-    END
     ATLAUNCH
+        CUTSCENE welcome
+    END
+    CHOICES
     END
 END ROOM

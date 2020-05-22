@@ -28,6 +28,7 @@ extern "C" {
 #include "room/room_io.h"
 #include "room/room.hpp"
 #include "vars/pvars.hpp"
+#include "cutscenes.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -75,6 +76,7 @@ namespace init
         defaultlang = pvars::getgcvars("defaultlang");
         room_name = pvars::getgcvars("firstroom");
         roomfile = pvars::getgcvars("roomfile");
+        pvars::setstdvars("csfile", pvars::getgcvars("csfile"));
         pvars::setstdvars("lang", defaultlang);
         pvars::setstdvars("roomfile", roomfile);
     }
@@ -173,5 +175,8 @@ void init_game()
     roomio::copy_file_to_vec();
 
     init::ask_lang();
+
+    cutscenes::copy_file_to_vec();
+
     room_load(room_name);
 }
