@@ -23,9 +23,9 @@
 #include <string>
 #include <vector>
 
-enum cs_action_type
+enum class cs_action_type
 {
-    DISPSTRING,
+    STRING,
     PAUSE
 };
 

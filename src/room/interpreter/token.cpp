@@ -70,21 +70,21 @@ static TokenVec create_token_vector(std::string p_str)
             Token new_tkn;
 
             new_tkn.str += p_str[i];
-            new_tkn.type = OPERATOR;
+            new_tkn.type = token_type::OPERATOR;
             rtrn_val.push_back(new_tkn);
         } else if(p_str[i] == '=')
         {
             Token new_tkn;
 
             new_tkn.str += p_str[i];
-            new_tkn.type = EQUAL;
+            new_tkn.type = token_type::EQUAL;
             rtrn_val.push_back(new_tkn);
         } else if(p_str[i] == '!')
         {
             Token new_tkn;
 
             new_tkn.str += p_str[i];
-            new_tkn.type = NOT;
+            new_tkn.type = token_type::NOT;
             rtrn_val.push_back(new_tkn);
         } else if(p_str[i] == '"' || p_str[i] == '\'')
         {
@@ -92,7 +92,7 @@ static TokenVec create_token_vector(std::string p_str)
             bool in_string = true;
             Token new_tkn;
 
-            new_tkn.type = STRING;
+            new_tkn.type = token_type::STRING;
 
             /*Create a STRING token*/
             for(int y = i+1; in_string; ++y)
@@ -154,21 +154,21 @@ static void set_tokens_type(TokenVec& p_vec)
     int i = 0;
     for(auto& it : p_vec)
     {
-        if(it.type == UNDEFINED)
+        if(it.type == token_type::UNDEFINED)
         {
-            if(is_if(it.str)) it.type = IF;
-            else if(is_func(it.str)) it.type = FUNCTION;
-            else if(is_number(it.str)) it.type = NUMBER;
+            if(is_if(it.str)) it.type = token_type::IF;
+            else if(is_func(it.str)) it.type = token_type::FUNCTION;
+            else if(is_number(it.str)) it.type = token_type::NUMBER;
             else if(is_variable(it.str))
             {
-                it.type = VARIABLE;
-            } else if(is_string(it.str)) it.type = STRING;
+                it.type = token_type::VARIABLE;
+            } else if(is_string(it.str)) it.type = token_type::STRING;
             else if(is_string_id(it.str))
             {
-                it.type = STRING_ID;
-            } else if(is_new_var(p_vec, i)) it.type = NEWVAR;
-            else if(is_exists(it.str)) it.type = EXISTS;
-            else it.type = UNKNOWN;
+                it.type = token_type::STRING_ID;
+            } else if(is_new_var(p_vec, i)) it.type = token_type::NEWVAR;
+            else if(is_exists(it.str)) it.type = token_type::EXISTS;
+            else it.type = token_type::UNKNOWN;
         }
         ++i;
     }

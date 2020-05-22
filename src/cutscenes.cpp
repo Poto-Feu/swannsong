@@ -64,14 +64,14 @@ namespace cutscenes
                 stringsm::rtab(buf);
                 fw = stringsm::getfw(buf);
 
-                if(fw == "PAUSE") curr_action.type = PAUSE;
+                if(fw == "PAUSE") curr_action.type = cs_action_type::PAUSE;
                 else if(stringsm::is_str(buf))
                 {
-                    curr_action.type = DISPSTRING;
+                    curr_action.type = cs_action_type::STRING;
                     curr_action.content = stringsm::ext_str_quotes(buf);
                 } else if(pstrings::check_exist(fw))
                 {
-                    curr_action.type = DISPSTRING;
+                    curr_action.type = cs_action_type::STRING;
                     curr_action.content = pstrings::fetch(fw);
                 } else if(fw == "END")
                 {
@@ -100,7 +100,7 @@ namespace cutscenes
 
                 for(auto const& curr_action: it.vec)
                 {
-                    if(curr_action.type == PAUSE)
+                    if(curr_action.type == cs_action_type::PAUSE)
                     {
                         move(LINES - 3, pcurses::margin);
                         pstrings::display("continue_penter");

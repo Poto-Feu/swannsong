@@ -70,11 +70,11 @@ static void interp_SET_func(TokenVec r_vec)
     int val = -1;
 
     if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
-    if(r_vec[2].type != EQUAL)
+    if(r_vec[2].type != token_type::EQUAL)
     {
         perror_disp("missing EQUAL token (SET)", 1);
     }
-    if(r_vec[3].type != NUMBER)
+    if(r_vec[3].type != token_type::NUMBER)
     {
         perror_disp("no value assigned to var during its init", 1);
     }
@@ -106,10 +106,10 @@ static void interp_PRINT_func(TokenVec r_vec, RoomManager& p_roomman)
 {
     switch(r_vec[1].type)
     {
-        case STRING:
+        case token_type::STRING:
             p_roomman.addString(r_vec[1].str);
             break;
-        case STRING_ID:
+        case token_type::STRING_ID:
             p_roomman.addString(pstrings::fetch(r_vec[1].str));
             break;
         default:
@@ -160,7 +160,7 @@ static void interp_ins(TokenVec r_vec, Room& currentRoom,
 {
     switch(r_vec[0].type)
     {
-        case FUNCTION:
+        case token_type::FUNCTION:
             interp_func_ins(r_vec, currentRoom, p_roomman);
             break;
         default:
@@ -184,17 +184,18 @@ static bool check_COMP_condition(TokenVec r_vec)
     if(vec_size < 4 || vec_size > 5)
     {
         perror_disp("wrong arg number in COMP IF", true);
-    } else if(r_vec[3].type == NUMBER)
+    } else if(r_vec[3].type == token_type::NUMBER)
     {
-        if(r_vec[2].type == EQUAL)
+        if(r_vec[2].type == token_type::EQUAL)
         {
             int varval = gvars::return_value(r_vec[1].str);
             int compval = std::stoi(r_vec[3].str);
 
             if(compval == varval) rtrn_val = true;
         } else perror_disp("missing equal token in COMP IF", true);
-    } else if(r_vec[2].type == NOT && r_vec[3].type == EQUAL
-            && r_vec[4].type == NUMBER)
+    } else if(r_vec[2].type == token_type::NOT
+            && r_vec[3].type == token_type::EQUAL
+            && r_vec[4].type == token_type::NUMBER)
     {
         int varval = gvars::return_value(r_vec[1].str);
         int compval = std::stoi(r_vec[3].str);
@@ -210,7 +211,7 @@ static bool check_condition(std::string insln)
     bool rtrn_val = false;
     TokenVec r_vec = token::create_arr(insln);
 
-    if(r_vec[2].type == EXISTS)
+    if(r_vec[2].type == token_type::EXISTS)
     {
         if(r_vec.size() != 3)
         {
@@ -220,13 +221,14 @@ static bool check_condition(std::string insln)
             rtrn_val = true;
         }
 
-    } else if(r_vec[2].type == NOT && r_vec[3].type == EXISTS)
+    } else if(r_vec[2].type == token_type::NOT
+            && r_vec[3].type == token_type::EXISTS)
     {
         if(r_vec.size() != 4)
         {
             perror_disp("wrong arg number in EXISTS IF", true);
         } else if(!gvars::exist(r_vec[1].str)) rtrn_val = true;
-    } else if(r_vec[1].type == VARIABLE)
+    } else if(r_vec[1].type == token_type::VARIABLE)
     {
         rtrn_val = check_COMP_condition(r_vec);
     } else perror_disp("IF type not recognized", true);

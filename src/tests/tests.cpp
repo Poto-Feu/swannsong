@@ -44,7 +44,8 @@ namespace tests
 
         for(auto& it : test_vec)
         {
-            printf("type: %d\nvalue: %s\n\n", it.type, it.str.c_str());
+            printf("type: %d\nvalue: %s\n\n", static_cast<int>(it.type),
+                    it.str.c_str());
         }
         exitgame(0);
     }
