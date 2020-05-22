@@ -1,5 +1,5 @@
 ROOM menu
-    TITLE "SwannSong"
+    TITLE "SwannSong Adventure"
     DESC menu_desc
     ATLAUNCH
         DISPLAY TITLE

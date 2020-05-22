@@ -1,5 +1,5 @@
-# SwannSong
-A text-adventure game with some humour. Please note that this game is in a pre-alpha stage and is far from being finished.
+# SwannSong Adventure
+A text-adventure game with some humor. Please note that this game is in a pre-alpha stage and is far from being finished.
 
 ## Building the game
 
@@ -38,7 +38,7 @@ TO-DO
 
 
 ## Licensing
-**SwannSong** is licensed under the GPL v3 License.
+**SwannSong Adventure** is licensed under the GPL v3 License.
 
 ncurses is licensed under the MIT X11 License.
 
