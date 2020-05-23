@@ -35,6 +35,8 @@ void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
 
 namespace stringsm
 {
+    std::string to_upper(std::string p_str);
+    bool is_number(std::string const p_str);
     void rtab(std::string& p_buf);
     std::string getfw(std::string p_str);
     bool is_str(std::string const p_str);
