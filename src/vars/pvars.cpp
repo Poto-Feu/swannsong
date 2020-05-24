@@ -40,7 +40,6 @@ namespace pvars
     std::vector<pvar_struct> stdvars =
     {
         {"lang", pvars_undef},
-        {"nextroom", pvars_undef},
         {"roomfile", pvars_undef},
         {"csfile", pvars_undef}
     };
