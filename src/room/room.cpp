@@ -436,6 +436,12 @@ static void room_load(std::string const id, RoomManager &p_rmm)
 
     p_rmm.setNextRoom(id);
     room_atlaunch(currentRoom, p_rmm);
+
+    if(p_rmm.is_endgame())
+    {
+        return;
+    }
+
     process_input(p_rmm, currentRoom);
 
     if(!room_fnd) room_list.push_back(currentRoom);

@@ -18,6 +18,7 @@
 */
 
 extern "C" {
+#include <curses.h>
 #include "perror.h"
 }
 
@@ -29,6 +30,7 @@ extern "C" {
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
 #include "vars/pconst.hpp"
+#include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
 
@@ -166,6 +168,17 @@ static void interp_GO_func(TokenVec r_vec, RoomManager& p_roomman)
     } else p_roomman.setNextRoom(r_vec[1].str);
 }
 
+/*Interpret a line which use the UNFINISHED function, which tells the player
+they have reached an unfinished part of the program*/
+static void interp_UNFINISHED_func(RoomManager& p_rmm)
+{
+    p_rmm.endLoop();
+
+    clear();
+    move(3, pcurses::margin);
+    pstrings::display("unfinished_str");
+}
+
 /*Interpret a line which use a function*/
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
@@ -190,6 +203,10 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
     {
         if(r_vec.size() != 2) wrg_tkn_num("GO");
         else interp_GO_func(r_vec, p_roomman);
+    } else if(r_vec[0].str == "UNFINISHED")
+    {
+        if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
+        else interp_UNFINISHED_func(p_roomman);
     }
 }
 
@@ -331,6 +348,8 @@ namespace parser
         {
             std::string buf;
             std::string fw;
+
+            if(p_roomman.is_endgame()) break;
 
             endln = i;
 

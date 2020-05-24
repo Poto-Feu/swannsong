@@ -30,7 +30,8 @@ static const std::vector<std::string> func_list =
     "GO",
     "TEXT",
     "IF",
-    "CUTSCENE"
+    "CUTSCENE",
+    "UNFINISHED"
 };
 
 static const std::vector<char> oper_list =
