@@ -23,7 +23,14 @@ ROOM house
     TITLE house_title
     DESC house_desc
     ATLAUNCH
+        UNFINISHED
     END
     CHOICES
+        c1
+            TEXT house_c1
+        END
+        c2
+            TEXT house_c2
+        END
     END
 END ROOM

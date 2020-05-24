@@ -8,13 +8,17 @@ continue_penter "Appuyez sur Entrée pour continuer..."
 room_prompt_text "Ton choix : "
 incorrect_input "Pardon ?"
 
+# Rooms
 menu_desc "Menu"
 menu_c1 "Jouer"
 menu_c2 "A propos"
 
 house_title "Maison"
 house_desc "Vous êtes chez vous. Les voisins sont assez calmes."
+house_c1 "Prendre la voiture"
+house_c2 "Tondre le gazon"
 
+# Cutscenes
 cs_about_1 "2020 Adrien Saad"
 cs_about_2 "Swannsong Adventure est distribué sous licence GPL v3. Consultez le fichier COPYING pour plus d'informations."
 cs_about_3 "Ce programme a été compilé avec GNU GCC. La version Unix-like de ce programme utilise ncurses, qui est distribué sous la licence MIT X11. La version Windows de ce programme utilise PDCurses, qui est dans le domaine public."
