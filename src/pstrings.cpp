@@ -120,7 +120,7 @@ namespace pstrings
 
             stringsm::rtab(buf);
 
-            if(!buf.empty())
+            if(!buf.empty() && buf[0] != '#')
             {
                 split_file_line(r_id, r_val, buf);
                 add_to_vec(r_id, r_val);
