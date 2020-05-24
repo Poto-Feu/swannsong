@@ -65,6 +65,7 @@ namespace cutscenes
                 fw = stringsm::getfw(buf);
 
                 if(fw == "PAUSE") curr_action.type = cs_action_type::PAUSE;
+                else if(fw == "BLANK") curr_action.type = cs_action_type::BLANK;
                 else if(stringsm::is_str(buf))
                 {
                     curr_action.type = cs_action_type::STRING;
@@ -104,9 +105,12 @@ namespace cutscenes
                     {
                         move(LINES - 3, pcurses::margin);
                         pstrings::display("continue_penter");
-                        userio_waitenter();
+                        userio::waitenter();
                         clear();
                         move(y_start, pcurses::margin);
+                    } else if (curr_action.type == cs_action_type::BLANK)
+                    {
+                        printw("\n");
                     } else
                     {
                         pcurses::display_center_string(curr_action.content);
@@ -115,7 +119,7 @@ namespace cutscenes
                 }
                 move(LINES - 3, pcurses::margin);
                 pstrings::display("continue_penter");
-                userio_waitenter();
+                userio::waitenter();
                 clear();
             }
         }

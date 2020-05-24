@@ -26,7 +26,8 @@
 enum class cs_action_type
 {
     STRING,
-    PAUSE
+    PAUSE,
+    BLANK
 };
 
 struct cs_action
