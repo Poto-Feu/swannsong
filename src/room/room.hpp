@@ -109,14 +109,12 @@ class RoomManager
         bool is_endgame() const;
         bool is_title_displayed() const;
         bool is_desc_displayed() const;
-        bool is_go_room() const;
 
     private:
 
         bool endgame = false;
         bool title_displayed = false;
         bool desc_displayed = false;
-        bool go_room = false;
 
         bt block_type;
 
