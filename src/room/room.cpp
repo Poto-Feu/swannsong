@@ -139,6 +139,9 @@ void RoomManager::endLoop()
 
 void RoomManager::reset()
 {
+    title_displayed = false;
+    desc_displayed = false;
+
     choice_list.clear();
     string_list.clear();
     cs_list.clear();
