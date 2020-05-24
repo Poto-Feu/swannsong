@@ -185,11 +185,11 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
 {
     if(r_vec[0].str == "DISPLAY")
     {
-        if(r_vec.size() != 2) perror_disp("too many tokens (DISPLAY)", true);
+        if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
         else interp_DISPLAY_func(r_vec, currentRoom, p_roomman);
     } else if(r_vec[0].str == "PRINT")
     {
-        if(r_vec.size() != 2) perror_disp("too many tokens (PRINT)", true);
+        if(r_vec.size() != 2) wrg_tkn_num("PRINT");
         else interp_PRINT_func(r_vec, p_roomman);
     } else if(r_vec[0].str == "SET")
     {
