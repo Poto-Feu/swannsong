@@ -8,6 +8,8 @@ continue_penter "Appuyez sur Entrée pour continuer..."
 room_prompt_text "Ton choix : "
 incorrect_input "Pardon ?"
 
+unfinished_str "Tu as atteins l'une des parties non terminées de ce programme. Merci d'avoir joué à ce jeu ! Si tu as rencontré un problème, n'hésite pas à le me faire savoir sur Github."
+
 # Rooms
 menu_desc "Menu"
 menu_c1 "Jouer"

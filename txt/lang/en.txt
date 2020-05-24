@@ -5,6 +5,8 @@ filenotf "ERR : Missing data file."
 exit_penter "Press Enter to exit..."
 continue_penter "Press Enter to continue..."
 
+unfinished_str "You have reached one of the unfinished parts of this program. Thank you for playing this work-in-progress game! If you have encountered any issue, feel free to let me know on Github."
+
 room_prompt_text "Your choice: "
 incorrect_input "Eh?"
 
