@@ -24,7 +24,10 @@
 #include <vector>
 #include "cutscenes.hpp"
 
-void room_load(std::string id);
+namespace roommod
+{
+    void start_loop(std::string id);
+}
 
 class Choice
 {
@@ -32,7 +35,8 @@ class Choice
 
         Choice(int ch_n, int ch_ln);
 
-        void display();
+        void display() const;
+        unsigned int getLine() const;
 
     private:
 
@@ -44,6 +48,7 @@ class Room
 {
     public:
 
+        Room();
         Room(std::string room_name);
 
         void getName(char* r_name) const;
@@ -70,7 +75,16 @@ class RoomManager
 {
     public:
 
+        enum class bt
+        {
+            ATLAUNCH,
+            CHOICE
+        };
+
         RoomManager();
+
+        void endLoop();
+        void reset();
 
         void addTitle();
         void addDesc();
@@ -78,19 +92,35 @@ class RoomManager
         void addString(std::string p_str);
         void addCutscene(std::string const p_cs);
 
+        void setBlockType(bt p_bt);
+        void setNextRoom(std::string const p_id);
+
+        unsigned int getChoicesSize() const;
+        unsigned int getChoiceLine(unsigned int ch_n) const;
+        bt getBlockType() const;
+        std::string getNextRoom() const;
+
         void displayTitle(Room p_room);
         void displayDesc(Room p_room);
         void displayChoices();
         void displayStrings();
         void displayCutscenes();
 
-        bool is_title_displayed();
-        bool is_desc_displayed();
+        bool is_endgame() const;
+        bool is_title_displayed() const;
+        bool is_desc_displayed() const;
+        bool is_go_room() const;
 
     private:
 
+        bool endgame = false;
         bool title_displayed = false;
         bool desc_displayed = false;
+        bool go_room = false;
+
+        bt block_type;
+
+        std::string next_room;
 
         std::vector<Choice> choice_list;
         std::vector<std::string> string_list;

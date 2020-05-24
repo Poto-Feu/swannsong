@@ -38,7 +38,7 @@ enum class token_type
     EXISTS,
     UNKNOWN,
     UNDEFINED
-} ;
+};
 
 struct Token
 {

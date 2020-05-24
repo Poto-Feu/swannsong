@@ -179,6 +179,7 @@ static bool is_if(std::string p_tkn)
     if(p_tkn == "IF") return true;
     return false;
 }
+
 static bool is_func(std::string p_tkn)
 {
     for(auto const& it : func_list)

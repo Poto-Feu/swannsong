@@ -33,7 +33,7 @@ void exitgame(int c)
     else printw("Press Enter to exit");
 
     refresh();
-    userio_waitenter();
+    userio::waitenter();
 
     endwin();
 

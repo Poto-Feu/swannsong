@@ -5,9 +5,15 @@ filenotf "ERR : Missing data file."
 exit_penter "Press Enter to exit..."
 continue_penter "Press Enter to continue..."
 
+room_prompt_text "Your choice: "
+incorrect_input "Eh?"
+
 menu_desc "Menu"
 menu_c1 "Play"
 menu_c2 "About"
+
+house_title "House"
+house_desc "Well... That's your house. The neighbors are pretty quiet."
 
 cs_about_1 "2020 Adrien Saad"
 cs_about_2 "Swannsong Adventure is licensed under GPL v3. See the COPYING file for more information."

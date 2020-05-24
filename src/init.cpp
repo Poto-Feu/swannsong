@@ -134,7 +134,7 @@ namespace init
             pcurses::display_pos_string("Your choice: ", 12);
             refresh();
 
-            buf = userio_gettextinput(2);
+            buf = userio::gettextinput(2);
 
             if(buf.size() == 1)
             {
@@ -178,5 +178,5 @@ void init_game()
 
     cutscenes::copy_file_to_vec();
 
-    room_load(room_name);
+    roommod::start_loop(room_name);
 }

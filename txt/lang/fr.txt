@@ -5,9 +5,15 @@ filenotf "ERR : Fichier de données manquant."
 exit_penter "Appuyez sur Entrée pour quitter..."
 continue_penter "Appuyez sur Entrée pour continuer..."
 
+room_prompt_text "Ton choix : "
+incorrect_input "Pardon ?"
+
 menu_desc "Menu"
 menu_c1 "Jouer"
 menu_c2 "A propos"
+
+house_title "Maison"
+house_desc "Vous êtes chez vous. Les voisins sont assez calmes."
 
 cs_about_1 "2020 Adrien Saad"
 cs_about_2 "Swannsong Adventure est distribué sous licence GPL v3. Consultez le fichier COPYING pour plus d'informations."
