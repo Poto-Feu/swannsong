@@ -84,7 +84,11 @@ namespace pstrings
             }
         }
 
-        if(!quote_inc) perror_disp("wrong pstring format", true);
+        if(!quote_inc)
+        {
+            std::string err_msg = "wrong pstring format(\"" + buf + "\"";
+            perror_disp(err_msg.c_str(), true);
+        }
 
         for(int i = quote_ind+1; buf[i] != '\0'; ++i)
         {
