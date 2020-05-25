@@ -176,7 +176,7 @@ static void interp_UNFINISHED_func(RoomManager& p_rmm)
 
     clear();
     move(3, pcurses::margin);
-    pstrings::display("unfinished_str");
+    pcurses::display_center_string(pstrings::fetch("unfinished_str"));
 }
 
 /*Interpret a line which use a function*/
