@@ -22,7 +22,8 @@
 
 namespace tests
 {
-    void stringsm();
+    void stringsm_is_str();
+    void cutscenes_test();
     void token();
 }
 
