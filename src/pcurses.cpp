@@ -37,7 +37,37 @@ namespace pcurses
         return COLS - margin * 2;
     }
 
-    int find_centered_x(std::string& p_str)
+    static void multiline_center_string(std::string const& p_str)
+    {
+        bool end_of_str = false;
+        std::string remain_str = p_str;
+        std::vector<std::string> str_vec;
+
+        while(!end_of_str)
+        {
+            std::string vec_item;
+
+            if(remain_str.size() > max_size_str()) {
+                vec_item = remain_str.substr(0, max_size_str());
+                remain_str.erase(0, max_size_str());
+                str_vec.push_back(vec_item);
+            } else {
+                end_of_str = true;
+            }
+
+        }
+
+        for(auto const& vec_it : str_vec)
+        {
+            move(getcury(stdscr), pcurses::margin);
+            printw("%s\n", vec_it.c_str());
+        }
+
+        move(getcury(stdscr), pcurses::margin);
+        printw("%s", remain_str.c_str());
+    }
+
+    int find_centered_x(std::string const& p_str)
     {
         return COLS / 2 - static_cast<int>(p_str.size()) / 2;
     }
@@ -86,33 +116,17 @@ namespace pcurses
         }
     }
 
-    void display_center_string(std::string p_str, int space)
+    void display_center_string(std::string const& p_str)
     {
-        bool end_of_str = false;
-        bool end_of_zone = false;
-        unsigned int str_size = p_str.size();
+        unsigned int max_size_func = max_size_str();
 
-        while(!end_of_str && !end_of_zone)
-        {
-            unsigned int cy = getcury(stdscr);
+        if(p_str.size() < max_size_func) {
+            unsigned int p_x = find_centered_x(p_str);
 
-            if(cy > lines - 5) end_of_zone = true;
-            else if(str_size > max_size_str())
-            {
-                std::string curr_str = p_str.substr(0, max_size_str());
-
-                move(getcury(stdscr), margin);
-                p_str.erase(0, max_size_str());
-                printw("%s\n", curr_str.c_str());
-            } else
-            {
-                int x = find_centered_x(p_str);
-
-                move(getcury(stdscr), x + space);
-                printw("%s", p_str.c_str());
-
-                end_of_str = true;
-            }
+            move(getcury(stdscr), p_x);
+            printw("%s", p_str.c_str());
+        } else {
+            multiline_center_string(p_str);
         }
     }
 }

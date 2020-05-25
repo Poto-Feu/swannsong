@@ -42,6 +42,8 @@ struct pcur_struct
 
 namespace pcurses
 {
+    const int top_margin = 3;
+
     extern int margin;
     extern int title_y;
     extern unsigned int lines;
@@ -49,7 +51,7 @@ namespace pcurses
 
     int find_centered_x(std::string& p_str);
     void display_pos_string(std::string p_str, unsigned int x_space);
-    void display_center_string(std::string p_str, int space = 0);
+    void display_center_string(std::string const& p_str);
 }
 
 #endif
