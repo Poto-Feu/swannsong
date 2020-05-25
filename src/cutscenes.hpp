@@ -43,13 +43,13 @@ class Cutscene
     Cutscene();
 
     std::string name;
-    std::vector<cs_action> vec;
+    std::vector<cs_action> actions_vec;
 };
 
 namespace cutscenes
 {
     void copy_file_to_vec();
-    void display(std::string const p_name);
+    void display(std::string const& p_name);
     bool check_exist(std::string const p_name);
 }
 #endif

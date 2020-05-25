@@ -33,6 +33,40 @@ extern "C" {
 
 Cutscene::Cutscene() { }
 
+static void execute_all_actions(std::vector<cs_action> const& p_vec)
+{
+    std::string penter_msg = pstrings::fetch("continue_penter");
+
+    for(auto const& action_it : p_vec)
+    {
+        switch(action_it.type)
+        {
+            case cs_action_type::STRING:
+                pcurses::display_center_string(action_it.content);
+                printw("\n");
+                break;
+            case cs_action_type::BLANK:
+                printw("\n");
+                break;
+            case cs_action_type::PAUSE:
+                move(LINES - 3, pcurses::margin);
+                printw("%s", penter_msg.c_str());
+                userio::waitenter();
+                clear();
+                refresh();
+                move(pcurses::top_margin, pcurses::margin);
+                break;
+        }
+
+        refresh();
+    }
+
+    move(LINES - 3, pcurses::margin);
+    printw("%s", penter_msg.c_str());
+    userio::waitenter();
+    clear();
+}
+
 namespace cutscenes
 {
     std::vector<Cutscene> vec;
@@ -79,57 +113,34 @@ namespace cutscenes
                     in_cutscene = false;
                     break;
                 }
-                curr_cs.vec.push_back(curr_action);
+                curr_cs.actions_vec.push_back(curr_action);
             }
             vec.push_back(curr_cs);
         }
     }
 
-    /*Display a cutscene*/
-    void display(std::string const p_name)
+    //Display a cutscene
+    void display(std::string const& p_name)
     {
-        const int y_start = 3;
-        bool is_fnd = false;
+        clear();
+        move(pcurses::top_margin, pcurses::margin);
 
-        for(auto const& it : vec)
+        for(auto const& cs_it : vec)
         {
-            if(it.name == p_name)
+            if(cs_it.name == p_name)
             {
-                clear();
-                is_fnd = true;
-                move(y_start, pcurses::margin);
-
-                for(auto const& curr_action: it.vec)
-                {
-                    if(curr_action.type == cs_action_type::PAUSE)
-                    {
-                        move(LINES - 3, pcurses::margin);
-                        pstrings::display("continue_penter");
-                        userio::waitenter();
-                        clear();
-                        move(y_start, pcurses::margin);
-                    } else if (curr_action.type == cs_action_type::BLANK)
-                    {
-                        printw("\n");
-                    } else
-                    {
-                        pcurses::display_center_string(curr_action.content);
-                        printw("\n");
-                    }
-                }
-                move(LINES - 3, pcurses::margin);
-                pstrings::display("continue_penter");
-                userio::waitenter();
-                clear();
+                execute_all_actions(cs_it.actions_vec);
+                return;
             }
         }
 
-        if(!is_fnd)
-        {
-            std::string err_str("cutscene not found(" + p_name + ")");
+        std::string penter_msg = pstrings::fetch("continue_penter");
 
-            perror_disp(err_str.c_str(), true);
-        }
+        pcurses::display_center_string("missingCutscene");
+        move(LINES - 3, pcurses::margin);
+        printw(penter_msg.c_str());
+        userio::waitenter();
+        refresh();
     }
 
     bool check_exist(std::string const p_name)
