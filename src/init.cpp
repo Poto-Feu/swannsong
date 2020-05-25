@@ -170,13 +170,9 @@ void init_game()
     std::string room_name; 
 
     init::set_curses();
-
     init::set_pvars(room_name);
     roomio::copy_file_to_vec();
-
     init::ask_lang();
-
     cutscenes::copy_file_to_vec();
-
     roommod::start_loop(room_name);
 }
