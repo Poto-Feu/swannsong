@@ -29,7 +29,8 @@ namespace room_find
     bool onechoiceline(int num, int startln, int& ln);
     bool blockline(int& foundln, int p_ln, std::string ins);
     bool atlaunchline(int& foundln, int ln);
-    bool choicesline(int& foundln, int ln);
+    bool choicesline(int& foundln, int room_ln);
     int roomline(std::string id);
+    bool roomline(int* r_ln, std::string id);
 }
 #endif

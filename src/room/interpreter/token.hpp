@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-enum token_type
+enum class token_type
 {
     FUNCTION,
     IF,
@@ -38,12 +38,12 @@ enum token_type
     EXISTS,
     UNKNOWN,
     UNDEFINED
-} ;
+};
 
 struct Token
 {
     std::string str = "";
-    token_type type = UNDEFINED;
+    token_type type = token_type::UNDEFINED;
 };
 
 typedef std::vector<Token> TokenVec;

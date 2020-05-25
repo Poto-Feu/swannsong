@@ -24,7 +24,6 @@
 extern "C" {
 #endif
 
-void userio_waitenter();
 void userio_gettextinput(char** buf, int max_n);
 
 #ifdef __cplusplus
@@ -32,7 +31,11 @@ void userio_gettextinput(char** buf, int max_n);
 
 #include <string>
 
-std::string userio_gettextinput(int max_n);
+namespace userio
+{
+    void waitenter();
+    std::string gettextinput(int max_n);
+}
 
 #endif
 

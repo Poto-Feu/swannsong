@@ -33,11 +33,20 @@ extern "C" {
 #include "pstrings.h"
 #include "userio.h"
 
+#include <array>
 #include <string>
-#include <vector>
 
 namespace init
 {
+    struct lang_item
+    {
+        lang_item(std::string p_id, std::string p_disp) : id(p_id),
+            disp(p_disp) {}
+            
+        std::string id;
+        std::string disp;
+    };
+
     void set_margin()
     {
         if(COLS < 100) pcurses::margin = 4;
@@ -81,30 +90,10 @@ namespace init
         pvars::setstdvars("roomfile", roomfile);
     }
 
-    /*Show a prompt asking the user to choose the language*/
-    void ask_lang()
+    static void show_lang_prompt(std::array<lang_item, 2> p_arr)
     {
-        struct lang_item
-        {
-            lang_item(std::string p_id, std::string p_disp) : id(p_id),
-                disp(p_disp) {}
-                
-            std::string id;
-            std::string disp;
-        };
-
-        bool validinp = false;
-
         std::string hint_str(
             "Hint : make a choice by typing the corresponding number.");
-
-        std::vector<lang_item> langvec
-        {
-            lang_item("en", "English"),
-            lang_item("fr", "Français")
-        };
-
-        clear();
 
         move(pcurses::title_y, 0);
         pcurses::display_center_string(hint_str);
@@ -112,54 +101,68 @@ namespace init
         pcurses::display_center_string("Select your language:");
         printw("\n\n");
 
-        for(int i = 1; i <= static_cast<int>(langvec.size()); ++i)
-        {
+        for(unsigned int i = 1; i <= p_arr.size(); ++i) {
             std::string disp_str(std::to_string(i));
 
             disp_str += ". ";
-            disp_str.append(langvec[i-1].disp);
-
-
+            disp_str.append(p_arr[i-1].disp);
             move(getcury(stdscr), 0);
             pcurses::display_pos_string(disp_str, 6);
-            printw("\n");
+            move(getcury(stdscr) + 1, pcurses::margin);
         }
 
-        printw("\n");
+        move(getcury(stdscr) + 1, pcurses::margin);
+        pcurses::display_pos_string("Your choice: ", 12);
+        refresh();
+    }
 
-        while(!validinp)
-        {
+    //Show a prompt asking the user to choose the language
+    static void ask_lang()
+    {
+        bool validinp = false;
+        std::array<lang_item, 2> langarr {
+            lang_item("en", "English"),
+            lang_item("fr", "Français")
+        };
+
+        clear();
+
+        while(!validinp) {
             std::string buf;
 
-            pcurses::display_pos_string("Your choice: ", 12);
+            show_lang_prompt(langarr);
             refresh();
+            buf = userio::gettextinput(2);
 
-            buf = userio_gettextinput(2);
-
-            if(buf.size() == 1)
-            {
+            if(buf.size() == 1) {
                 int intval = buf[0] - '0';
                 
-                if(intval > 0 && intval <= static_cast<int>(langvec.size()))
-                {
-                    std::string lang = langvec[intval - 1].id;
+                if(intval > 0 && intval <= static_cast<int>(langarr.size())) {
+                    std::string lang = langarr[intval - 1].id;
 
                     pvars::setstdvars("lang", lang.c_str());
                     validinp = true;
                     pstrings::copy_file_to_vec();
-                } else
-                {
+                } else {
+                    clear();
+                    move(LINES - 3, pcurses::margin);
+                    attron(A_BOLD);
                     printw("Nope. (not a valid input)\n");
+                    attroff(A_BOLD);
                     refresh();
                 }
-            } else if(buf.size() == 0)
-            {
+            } else if(buf.size() == 0) {
+                clear();
+                attron(A_BOLD);
+                move(LINES - 3, pcurses::margin);
                 printw("Nope. (nothing !)\n");
-                refresh();
-            } else
-            {
+                attroff(A_BOLD);
+            } else {
+                clear();
+                attron(A_BOLD);
+                move(LINES - 3, pcurses::margin);
                 printw("Nope. (too long)\n");
-                refresh();
+                attroff(A_BOLD);
             }
         }
     }
@@ -170,13 +173,9 @@ void init_game()
     std::string room_name; 
 
     init::set_curses();
-
     init::set_pvars(room_name);
     roomio::copy_file_to_vec();
-
     init::ask_lang();
-
     cutscenes::copy_file_to_vec();
-
-    room_load(room_name);
+    roommod::start_loop(room_name);
 }

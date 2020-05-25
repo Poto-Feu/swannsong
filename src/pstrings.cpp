@@ -84,7 +84,11 @@ namespace pstrings
             }
         }
 
-        if(!quote_inc) perror_disp("wrong pstring format", true);
+        if(!quote_inc)
+        {
+            std::string err_msg = "wrong pstring format(\"" + buf + "\"";
+            perror_disp(err_msg.c_str(), true);
+        }
 
         for(int i = quote_ind+1; buf[i] != '\0'; ++i)
         {
@@ -116,7 +120,7 @@ namespace pstrings
 
             stringsm::rtab(buf);
 
-            if(!buf.empty())
+            if(!buf.empty() && buf[0] != '#')
             {
                 split_file_line(r_id, r_val, buf);
                 add_to_vec(r_id, r_val);

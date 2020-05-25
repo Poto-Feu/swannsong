@@ -157,10 +157,10 @@ namespace room_find
     }
 
     /*Return the line where the CHOICES block start*/
-    bool choicesline(int& foundln, int ln)
+    bool choicesline(int& foundln, int room_ln)
     {
         const std::string ins = "CHOICES";
-        return blockline(foundln, ln, ins);
+        return blockline(foundln, room_ln, ins);
     }
 
     /*Fetch the beginning line of the room definition in file*/
@@ -174,8 +174,23 @@ namespace room_find
 
         if(!roomio::find_ind(ln, roomline))
         {
-            perror_disp("room not found in file", true);
+            std::string err_msg = "room not found in file (" + id + ")";
+
+            perror_disp(err_msg.c_str(), true);
         }
         return ln;
+    }
+
+    bool roomline(int* r_ln, std::string id)
+    {
+        std::string roomline = "ROOM";
+
+        roomline += ' ';
+        roomline += id;
+
+        if(!roomio::find_ind(*r_ln, roomline))
+        {
+            return false;
+        } else return true;
     }
 }

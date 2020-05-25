@@ -21,12 +21,36 @@ extern "C" {
 #include <curses.h>
 }
 
+#include <cctype>
 #include <cstdlib>
 #include <string>
 #include "stringsm.h"
 
 namespace stringsm
 {
+    /*Return an uppercased string*/
+    std::string to_upper(std::string p_str)
+    {
+        for(auto& it : p_str)
+        {
+            it = toupper(it);
+        }
+
+        return p_str;
+    }
+
+    /*Check if the content of a string is an unsigned number*/
+    bool is_number(std::string const p_str)
+    {
+        if(p_str.size() == 0) return false;
+        for(auto const& it : p_str)
+        {
+            if(!isdigit(it)) return false;
+        }
+        return true;
+    }
+
+    /*Remove space and tab characters at the beginning of a string*/
     void rtab(std::string& p_buf)
     {
         std::string temp_buf(p_buf);
@@ -63,7 +87,6 @@ namespace stringsm
     /*Check if the passed char array is a string enclosed with quotes*/
     bool is_str(std::string const p_str)
     {
-        //TODO : make a test for this function
         int str_size = p_str.size();
         char quote_ch = '\0';
 

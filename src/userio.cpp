@@ -27,18 +27,6 @@ extern "C" {
 
 #define WIN_ENTER_KEY 13
 
-/*Pause the program until the user press Enter*/
-void userio_waitenter()
-{
-#ifdef _WIN32
-    int enter_ch = WIN_ENTER_KEY;
-#else
-    int enter_ch = '\n';
-#endif
-
-    while(getch() != enter_ch) {}
-}
-
 /*Get user text input and return it in a pointer*/
 void userio_gettextinput(char** buf, int max_n)
 {
@@ -51,15 +39,30 @@ void userio_gettextinput(char** buf, int max_n)
     stringsm_chomp(*buf);
 }
 
-std::string userio_gettextinput(int max_n)
+namespace userio
 {
-    char* buf = NULL;
-    std::string r_str;
+    /*Pause the program until the user press Enter*/
+    void waitenter()
+    {
+        #ifdef _WIN32
+        int enter_ch = WIN_ENTER_KEY;
+        #else
+        int enter_ch = '\n';
+        #endif
 
-    userio_gettextinput(&buf, max_n);
-    r_str.assign(buf);
+        while(getch() != enter_ch) {}
+    }
 
-    free(buf);
+    std::string gettextinput(int max_n)
+    {
+        char* buf = NULL;
+        std::string r_str;
 
-    return r_str;
+        userio_gettextinput(&buf, max_n);
+        r_str.assign(buf);
+
+        free(buf);
+
+        return r_str;
+    }
 }

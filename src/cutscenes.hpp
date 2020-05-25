@@ -23,10 +23,11 @@
 #include <string>
 #include <vector>
 
-enum cs_action_type
+enum class cs_action_type
 {
-    DISPSTRING,
-    PAUSE
+    STRING,
+    PAUSE,
+    BLANK
 };
 
 struct cs_action
@@ -42,13 +43,13 @@ class Cutscene
     Cutscene();
 
     std::string name;
-    std::vector<cs_action> vec;
+    std::vector<cs_action> actions_vec;
 };
 
 namespace cutscenes
 {
     void copy_file_to_vec();
-    void display(std::string const p_name);
+    void display(std::string const& p_name);
     bool check_exist(std::string const p_name);
 }
 #endif

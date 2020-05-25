@@ -27,17 +27,17 @@ extern "C" {
 #include "room_io.h"
 #include "find.hpp"
 #include "interpreter/parser.hpp"
-#include "vars/pconst.hpp"
+#include "exitgame.h"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
-
+#include "userio.h"
 
 /*Choice constructor definition*/
 Choice::Choice(int ch_n, int ch_ln) : choice_n(ch_n), choice_line(ch_ln) { }
 
 /*Choice public member functions definitions*/
-void Choice::display()
+void Choice::display() const
 {
     bool textfound = false;
     int currln = choice_line + 1;
@@ -80,7 +80,13 @@ void Choice::display()
     }
 }
 
-/*Room constructor definition*/
+unsigned int Choice::getLine() const
+{
+    return choice_line;
+}
+
+/*Room constructors definitions*/
+Room::Room() { }
 Room::Room(std::string room_name) : name(room_name) { }
 
 /*Room member functions definitions*/
@@ -121,36 +127,25 @@ void Room::setChoicesLine(int chln)
     choices_line = chln;
 }
 
-/*Choice private member functions definitions*/
-void RoomManager::displayTitle(Room p_room)
-{
-    std::string value;
-    bool prop_fnd = room_find::room_property(value, "TITLE",
-            p_room.getRoomLine());
-
-    if(prop_fnd)
-    {
-        int y = pcurses::title_y;
-        std::string disp_value;
-
-        if(stringsm::is_str(value))
-        {
-            disp_value = stringsm::ext_str_quotes(value);
-        } else if(pstrings::check_exist(value))
-        {
-            disp_value = pstrings::fetch(value);
-        }
-
-        attron(A_BOLD);
-        move(y, getcurx(stdscr));
-        pcurses::display_center_string(disp_value);
-        printw("\n\n");
-        attroff(A_BOLD);
-    } else perror_disp("TITLE property not found in room", false);
-}
-
 /*RoomManager constructor definition*/
 RoomManager::RoomManager() { }
+
+/*Set the variable which serve as a signal indicating if the room loop should
+end*/
+void RoomManager::endLoop()
+{
+    endgame = true;
+}
+
+void RoomManager::reset()
+{
+    title_displayed = false;
+    desc_displayed = false;
+
+    choice_list.clear();
+    string_list.clear();
+    cs_list.clear();
+}
 
 /*RoomManager member functions definitions*/
 void RoomManager::addTitle()
@@ -176,6 +171,71 @@ void RoomManager::addString(std::string p_str)
 void RoomManager::addCutscene(std::string const p_cs)
 {
     cs_list.push_back(p_cs);
+}
+
+void RoomManager::setBlockType(RoomManager::bt const p_bt)
+{
+    block_type = p_bt;
+}
+
+void RoomManager::setNextRoom(std::string const p_id)
+{
+    next_room = p_id;
+}
+
+unsigned int RoomManager::getChoicesSize() const
+{
+    return choice_list.size();
+}
+
+unsigned int RoomManager::getChoiceLine(unsigned int ch_n) const
+{
+    if(ch_n <= choice_list.size() && ch_n != 0)
+    {
+        return choice_list[ch_n - 1].getLine();
+    } else
+    {
+        perror_disp("out-of-range parameter in RoomManager::getChoiceLine",
+                true);
+        return 0;
+    }
+}
+
+RoomManager::bt RoomManager::getBlockType() const
+{
+    return block_type;
+}
+
+std::string RoomManager::getNextRoom() const
+{
+    return next_room;
+}
+
+void RoomManager::displayTitle(Room p_room)
+{
+    std::string value;
+    bool prop_fnd = room_find::room_property(value, "TITLE",
+            p_room.getRoomLine());
+
+    if(prop_fnd)
+    {
+        int y = pcurses::title_y;
+        std::string disp_value;
+
+        if(stringsm::is_str(value))
+        {
+            disp_value = stringsm::ext_str_quotes(value);
+        } else if(pstrings::check_exist(value))
+        {
+            disp_value = pstrings::fetch(value);
+        }
+
+        attron(A_BOLD);
+        move(y, getcurx(stdscr));
+        pcurses::display_center_string(disp_value);
+        printw("\n\n");
+        attroff(A_BOLD);
+    } else perror_disp("TITLE property not found in room", false);
 }
 
 void RoomManager::displayDesc(Room p_room)
@@ -206,6 +266,11 @@ void RoomManager::displayDesc(Room p_room)
     } else perror_disp("DESC property not found in room", false);
 }
 
+void RoomManager::displayChoices()
+{
+    for(auto& it : choice_list) it.display();
+}
+
 void RoomManager::displayStrings()
 {
     if(string_list.size() > 0)
@@ -229,23 +294,22 @@ void RoomManager::displayCutscenes()
     }
 }
 
-void RoomManager::displayChoices()
+bool RoomManager::is_endgame() const
 {
-    for(auto& it : choice_list) it.display();
+    return endgame;
 }
 
-bool RoomManager::is_title_displayed()
+bool RoomManager::is_title_displayed() const
 {
-    if(title_displayed) return true;
-    else return false;
+    return title_displayed;
 }
 
-bool RoomManager::is_desc_displayed()
+bool RoomManager::is_desc_displayed() const
 {
-    if(desc_displayed) return true;
-    else return false;
+    return desc_displayed;
 }
 
+//Display the current room according to the RoomManager data
 static void roomman_show(RoomManager p_roomman, Room p_room)
 {
     p_roomman.displayCutscenes();
@@ -258,32 +322,149 @@ static void roomman_show(RoomManager p_roomman, Room p_room)
 }
 
 /*Read the first ATLAUNCH block encountered starting from specified line*/
-static void room_atlaunch(Room& currentRoom, RoomManager &currentRoomman)
+static void room_atlaunch(Room& currentRoom, RoomManager& p_rmm)
 {
     int foundln = 0;
     bool atlfound = false;
 
     atlfound = room_find::atlaunchline(foundln, currentRoom.getRoomLine());
-    if(atlfound == true) (void)parser::exec_until_end(foundln, currentRoom,
-            currentRoomman);
-    roomman_show(currentRoomman, currentRoom);
+
+    if(atlfound)
+    {
+        p_rmm.setBlockType(RoomManager::bt::ATLAUNCH);
+        (void)parser::exec_until_end(foundln, currentRoom, p_rmm);
+        roomman_show(p_rmm, currentRoom);
+    } else
+    {
+        std::string err_str = "missing ATLAUNCH block ("
+            + currentRoom.getName() + ")";
+
+        perror_disp(err_str.c_str(), true);
+    }
+}
+
+static void show_prompt()
+{
+    printw("\n");
+    pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12);
+}
+
+//Process the input if it is a number corresponding to a choice
+static void choice_input(unsigned int const p_inp, RoomManager& p_rmm,
+        Room p_room)
+{
+    unsigned int choice_ln = p_rmm.getChoiceLine(p_inp);
+
+    p_rmm.setBlockType(RoomManager::bt::CHOICE);
+
+    parser::exec_until_end(choice_ln, p_room, p_rmm);
+
+    p_rmm.displayCutscenes();
+    p_rmm.reset();
+}
+
+/*Reset the room screen with an added message to notify the user that its input
+is not correct.*/
+static void incorrect_input(RoomManager& p_rmm, Room p_room)
+{
+    clear();
+    move(LINES - 5, pcurses::margin);
+    printw("%s", (pstrings::fetch("incorrect_input")).c_str());
+    roomman_show(p_rmm, p_room);
+}
+
+//Show the room prompt and process the input
+static void process_input(RoomManager& p_rmm, Room p_room)
+{
+    bool correct_input = false;
+
+    while(!correct_input)
+    {
+        show_prompt();
+        refresh();
+
+        std::string user_inp = userio::gettextinput(5);
+
+        if(stringsm::is_number(user_inp))
+        {
+            unsigned int str_digit = std::stoi(user_inp);
+            unsigned int choices_n = p_rmm.getChoicesSize();
+
+            if(str_digit > choices_n || str_digit == 0)
+            {
+                incorrect_input(p_rmm, p_room);
+            } else
+            {
+                correct_input = true;
+                choice_input(str_digit, p_rmm, p_room);
+                clear();
+            }
+        } else if(stringsm::to_upper(user_inp) == "EXIT")
+        {
+            correct_input = true;
+            p_rmm.endLoop();
+            clear();
+        } else incorrect_input(p_rmm, p_room);
+    }
 }
 
 /*Load the room with the specified id*/
-void room_load(std::string id)
+static void room_load(std::string const id, RoomManager &p_rmm)
 {
-    int roomln = room_find::roomline(id);
-    std::string str_id(id);
+    static std::vector<Room> room_list;
+    bool room_fnd = false;
+    Room currentRoom;
 
-    Room currentRoom(str_id);
-    RoomManager currentRoomman;
-    
+    for(auto const& it : room_list)
+    {
+        if(it.getName() == id)
+        {
+            room_fnd = true;
+            currentRoom = it;
+            break;
+        }
+    }
+
+    if(!room_fnd)
+    {
+        int roomln = room_find::roomline(id);
+        std::string str_id(id);
+
+        currentRoom = Room(str_id);
+        currentRoom.setRoomLine(roomln);
+    }
+
     move(0, 0);
     clear();
 
-    currentRoom.setRoomLine(roomln);
+    p_rmm.setNextRoom(id);
+    room_atlaunch(currentRoom, p_rmm);
 
-    room_atlaunch(currentRoom, currentRoomman);
+    if(p_rmm.is_endgame())
+    {
+        return;
+    }
 
-    refresh();
+    process_input(p_rmm, currentRoom);
+
+    if(!room_fnd) room_list.push_back(currentRoom);
+}
+
+namespace roommod
+{
+    //Start the game loop which loads rooms until the end signal is enabled
+    void start_loop(std::string id)
+    {
+        std::string curr_room_id = id;
+        RoomManager rmm;
+
+        while(!rmm.is_endgame())
+        {
+            clear();
+            room_load(curr_room_id, rmm);
+            curr_room_id = rmm.getNextRoom();
+        }
+
+        exitgame(0);
+    }
 }

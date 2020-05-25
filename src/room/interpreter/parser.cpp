@@ -18,6 +18,7 @@
 */
 
 extern "C" {
+#include <curses.h>
 #include "perror.h"
 }
 
@@ -29,8 +30,23 @@ extern "C" {
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
 #include "vars/pconst.hpp"
+#include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
+
+static void CHOICE_block_err(std::string const func_name)
+{
+    std::string err_msg = func_name 
+        + " function cannot be used in CHOICE block";
+    perror_disp(err_msg.c_str(), true);
+}
+
+static void wrg_tkn_num(std::string const func_name)
+{
+    std::string err_msg = "wrong number of tokens (" + func_name + ")";
+
+    perror_disp(err_msg.c_str(), true);
+}
 
 /*Add all room choices into a vector in the RoomManager*/
 static void add_all_choices(int roomln, Room& currentRoom,
@@ -70,11 +86,11 @@ static void interp_SET_func(TokenVec r_vec)
     int val = -1;
 
     if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
-    if(r_vec[2].type != EQUAL)
+    if(r_vec[2].type != token_type::EQUAL)
     {
         perror_disp("missing EQUAL token (SET)", 1);
     }
-    if(r_vec[3].type != NUMBER)
+    if(r_vec[3].type != token_type::NUMBER)
     {
         perror_disp("no value assigned to var during its init", 1);
     }
@@ -87,6 +103,11 @@ static void interp_SET_func(TokenVec r_vec)
 static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
 {
+    if(p_roomman.getBlockType() == RoomManager::bt::CHOICE)
+    {
+        CHOICE_block_err("DISPLAY");
+    }
+
     if(r_vec[1].str == "CHOICES")
     {
         int roomln = -1;
@@ -104,12 +125,17 @@ static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
 /*Interpret a line which use the PRINT function*/
 static void interp_PRINT_func(TokenVec r_vec, RoomManager& p_roomman)
 {
+    if(p_roomman.getBlockType() == RoomManager::bt::CHOICE)
+    {
+        CHOICE_block_err("PRINT");
+    }
+
     switch(r_vec[1].type)
     {
-        case STRING:
+        case token_type::STRING:
             p_roomman.addString(r_vec[1].str);
             break;
-        case STRING_ID:
+        case token_type::STRING_ID:
             p_roomman.addString(pstrings::fetch(r_vec[1].str));
             break;
         default:
@@ -129,28 +155,58 @@ static void interp_CUTSCENE_func(TokenVec r_vec, RoomManager& p_roomman)
     }
 }
 
+/*Intepret a line which use the GO function*/
+static void interp_GO_func(TokenVec r_vec, RoomManager& p_roomman)
+{
+    int roomln = 0;
+
+    if(!room_find::roomline(&roomln, r_vec[1].str))
+    {
+        std::string err_msg =  "\"" + r_vec[1].str + "\" room was not found";
+
+        perror_disp(err_msg.c_str(), true);
+    } else p_roomman.setNextRoom(r_vec[1].str);
+}
+
+/*Interpret a line which use the UNFINISHED function, which tells the player
+they have reached an unfinished part of the program*/
+static void interp_UNFINISHED_func(RoomManager& p_rmm)
+{
+    p_rmm.endLoop();
+
+    clear();
+    move(3, pcurses::margin);
+    pcurses::display_center_string(pstrings::fetch("unfinished_str"));
+}
+
 /*Interpret a line which use a function*/
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
 {
     if(r_vec[0].str == "DISPLAY")
     {
-        if(r_vec.size() != 2) perror_disp("too many tokens (DISPLAY)", true);
-        interp_DISPLAY_func(r_vec, currentRoom, p_roomman);
+        if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
+        else interp_DISPLAY_func(r_vec, currentRoom, p_roomman);
     } else if(r_vec[0].str == "PRINT")
     {
-        if(r_vec.size() != 2) perror_disp("too many tokens (PRINT)", true);
-        interp_PRINT_func(r_vec, p_roomman);
+        if(r_vec.size() != 2) wrg_tkn_num("PRINT");
+        else interp_PRINT_func(r_vec, p_roomman);
     } else if(r_vec[0].str == "SET")
     {
-        if(r_vec.size() != 4) perror_disp("wrong number of tokens (SET)", true);
-        interp_SET_func(r_vec);
+        if(r_vec.size() != 4) wrg_tkn_num("SET");
+        else interp_SET_func(r_vec);
     } else if(r_vec[0].str == "CUTSCENE")
     {
-        if(r_vec.size() != 2)
-        {
-            perror_disp("wrong number of tokens (CUTSCENE)", true);
-        } else interp_CUTSCENE_func(r_vec, p_roomman);
+        if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
+        else interp_CUTSCENE_func(r_vec, p_roomman);
+    } else if(r_vec[0].str == "GO")
+    {
+        if(r_vec.size() != 2) wrg_tkn_num("GO");
+        else interp_GO_func(r_vec, p_roomman);
+    } else if(r_vec[0].str == "UNFINISHED")
+    {
+        if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
+        else interp_UNFINISHED_func(p_roomman);
     }
 }
 
@@ -160,7 +216,7 @@ static void interp_ins(TokenVec r_vec, Room& currentRoom,
 {
     switch(r_vec[0].type)
     {
-        case FUNCTION:
+        case token_type::FUNCTION:
             interp_func_ins(r_vec, currentRoom, p_roomman);
             break;
         default:
@@ -184,17 +240,18 @@ static bool check_COMP_condition(TokenVec r_vec)
     if(vec_size < 4 || vec_size > 5)
     {
         perror_disp("wrong arg number in COMP IF", true);
-    } else if(r_vec[3].type == NUMBER)
+    } else if(r_vec[3].type == token_type::NUMBER)
     {
-        if(r_vec[2].type == EQUAL)
+        if(r_vec[2].type == token_type::EQUAL)
         {
             int varval = gvars::return_value(r_vec[1].str);
             int compval = std::stoi(r_vec[3].str);
 
             if(compval == varval) rtrn_val = true;
         } else perror_disp("missing equal token in COMP IF", true);
-    } else if(r_vec[2].type == NOT && r_vec[3].type == EQUAL
-            && r_vec[4].type == NUMBER)
+    } else if(r_vec[2].type == token_type::NOT
+            && r_vec[3].type == token_type::EQUAL
+            && r_vec[4].type == token_type::NUMBER)
     {
         int varval = gvars::return_value(r_vec[1].str);
         int compval = std::stoi(r_vec[3].str);
@@ -210,23 +267,20 @@ static bool check_condition(std::string insln)
     bool rtrn_val = false;
     TokenVec r_vec = token::create_arr(insln);
 
-    if(r_vec[2].type == EXISTS)
+    if(r_vec[2].type == token_type::EXISTS)
     {
         if(r_vec.size() != 3)
         {
             perror_disp("wrong arg number in EXISTS IF", true);
-        } else if(gvars::exist(r_vec[1].str))
-        {
-            rtrn_val = true;
-        }
-
-    } else if(r_vec[2].type == NOT && r_vec[3].type == EXISTS)
+        } else if(gvars::exist(r_vec[1].str)) rtrn_val = true;
+    } else if(r_vec[2].type == token_type::NOT
+            && r_vec[3].type == token_type::EXISTS)
     {
         if(r_vec.size() != 4)
         {
             perror_disp("wrong arg number in EXISTS IF", true);
         } else if(!gvars::exist(r_vec[1].str)) rtrn_val = true;
-    } else if(r_vec[1].type == VARIABLE)
+    } else if(r_vec[1].type == token_type::VARIABLE)
     {
         rtrn_val = check_COMP_condition(r_vec);
     } else perror_disp("IF type not recognized", true);
@@ -294,6 +348,8 @@ namespace parser
         {
             std::string buf;
             std::string fw;
+
+            if(p_roomman.is_endgame()) break;
 
             endln = i;
 

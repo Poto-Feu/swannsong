@@ -17,10 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <cstdio>
 #include "tests.hpp"
 #include "room/interpreter/token.hpp"
+#include "cutscenes.hpp"
 #include "exitgame.h"
+#include "pcurses.hpp"
 #include "stringsm.h"
 
 #include <string>
@@ -28,11 +29,18 @@
 
 namespace tests
 {
-    void stringsm()
+    void stringsm_is_str()
     {
         std::string test_str("\"SwannSong Adventure\"");
         if(stringsm::is_str(test_str)) printf("true\n");
         else printf("false\n");
+
+        exitgame(0);
+    }
+
+    void cutscenes_test()
+    {
+        cutscenes::display("about");
 
         exitgame(0);
     }
@@ -42,10 +50,11 @@ namespace tests
         std::string test_str("TITLE SwannSong Adventure");
         TokenVec test_vec = token::create_arr(test_str);
 
-        for(auto& it : test_vec)
-        {
-            printf("type: %d\nvalue: %s\n\n", it.type, it.str.c_str());
+        for(auto& it : test_vec) {
+            printf("type: %d\nvalue: %s\n\n", static_cast<int>(it.type),
+                    it.str.c_str());
         }
+
         exitgame(0);
     }
 }

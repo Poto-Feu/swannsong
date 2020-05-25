@@ -10,7 +10,7 @@ ROOM menu
         c1
             TEXT menu_c1
             CUTSCENE welcome
-            GO firstroom
+            GO house
         END
         c2
             TEXT menu_c2
@@ -19,10 +19,18 @@ ROOM menu
     END
 END ROOM
 
-ROOM firstroom
+ROOM house
+    TITLE house_title
+    DESC house_desc
     ATLAUNCH
-        CUTSCENE welcome
+        UNFINISHED
     END
     CHOICES
+        c1
+            TEXT house_c1
+        END
+        c2
+            TEXT house_c2
+        END
     END
 END ROOM
