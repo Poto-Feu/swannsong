@@ -17,26 +17,52 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef USERIO_H
-#define USERIO_H
-
-#ifdef __cplusplus
 extern "C" {
-#endif
-
-void userio_gettextinput(char** buf, int max_n);
-
-#ifdef __cplusplus
+#include <curses.h>
 }
 
-#include <string>
+#include <cstdlib>
+#include "userio.h"
+#include "stringsm.h"
+
+#define WIN_ENTER_KEY 13
+
+/*Get user text input and return it in a pointer*/
+void userio_gettextinput(char** buf, int max_n)
+{
+    *buf = (char*)calloc(max_n+1, sizeof(char));
+
+    echo();
+    getnstr(*buf, max_n);
+    noecho();
+
+    stringsm_chomp(*buf);
+}
 
 namespace userio
 {
-    void waitenter();
-    std::string gettextinput(int max_n);
+    /*Pause the program until the user press Enter*/
+    void waitenter()
+    {
+        #ifdef _WIN32
+        int enter_ch = WIN_ENTER_KEY;
+        #else
+        int enter_ch = '\n';
+        #endif
+
+        while(getch() != enter_ch) {}
+    }
+
+    std::string gettextinput(int max_n)
+    {
+        char* buf = NULL;
+        std::string r_str;
+
+        userio_gettextinput(&buf, max_n);
+        r_str.assign(buf);
+
+        free(buf);
+
+        return r_str;
+    }
 }
-
-#endif
-
-#endif

@@ -1,190 +1,174 @@
 /*
     Copyright (C) 2020 Adrien Saad
 
-    This file is part of SwannSong.
+    This file is part of SwannSong Adventure.
 
-    SwannSong is free software: you can redistribute it and/or modify
+    SwannSong Adventure is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    SwannSong is distributed in the hope that it will be useful,
+    SwannSong Adventure is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" 
-{
+extern "C"  {
 #include <curses.h>
-#include <string.h>
-#include "vars/pvars.h"
-#include "vars/pconst.h"
-#include "fileio/fileio.h"
 #include "perror.h"
-#include "stringsm.h"
 }
 
 #include <string>
 #include <vector>
 #include "pstrings.h"
+#include "fileio/fileio.h"
+#include "vars/pconst.hpp"
+#include "vars/pvars.hpp"
+#include "stringsm.h"
 
-struct PstringsElement
+namespace pstrings
 {
-    std::string id;
-    std::string val;
-};
-
-static std::vector<PstringsElement> pstrings_arr {};
-
-static void open_strfile(FILE **f);
-static void split_file_line(std::string* r_id, std::string* r_val, char* buf);
-static void add_pstring_to_vec(std::string p_id, std::string p_val);
-
-void pstrings_copy_file_to_vec()
-{
-    FILE* fp = NULL;
-    char buf[P_MAX_BUF_SIZE]{0};
-
-    open_strfile(&fp);
-
-    while(fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
+    struct PstringsElement
     {
-        std::string r_id;
-        std::string r_val;
+        std::string id;
+        std::string val;
+    };
 
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
+    static std::vector<PstringsElement> arr {};
 
-        if(buf[0] != '\0')
-        {
-            split_file_line(&r_id, &r_val, buf);
-            add_pstring_to_vec(r_id, r_val);
-        } else continue;
+    /*Set the file pointer to the file containing the strings correponding
+    to the selected language*/
+    static std::ifstream open_strfile()
+    {
+        std::string langdir = pvars::getgcvars("langdir");
+        std::string lang = pvars::getstdvars("lang");
+        std::string langfile;
+       
+        langfile = langdir;
+        langfile.append(lang);
+        langfile.append(".txt");
+
+        return std::ifstream(langfile);
     }
-    fclose(fp);
-}
 
-static void split_file_line(std::string* r_id, std::string* r_val, char* buf)
-{
-    int sp_ind = 0;
-    int quote_ind = 0;
-    bool quote_inc = false;
+    static void split_file_line(std::string& r_id, std::string& r_val,
+            std::string buf)
+    {
+        int sp_ind = 0;
+        int quote_ind = 0;
+        bool quote_inc = false;
+        char quote_ch = '\0';
 
-    for(int i = 0; buf[i] != '\0'; i++)
-    {
-        if(buf[i] == ' ' || buf[i] == '\t') break;
-        sp_ind++;
-        *r_id += buf[i];
-    }
-    for(int i = sp_ind; buf[i] != '\0'; i++)
-    {
-        if(buf[i] == '"')
+        for(const auto& it : buf)
         {
-            quote_inc = true;
-            quote_ind = i;
-            break;
+            if(it == ' ' || it == '\t') break;
+            else
+            {
+                ++sp_ind;
+                r_id += it;
+            }
+        }
+
+        for(int i = sp_ind; buf[i] != '\0'; ++i)
+        {
+            if(buf[i] == '"' || buf[i] == '\'')
+            {
+                quote_inc = true;
+                quote_ch = buf[i];
+                quote_ind = i;
+                break;
+            }
+        }
+
+        if(!quote_inc)
+        {
+            std::string err_msg = "wrong pstring format(\"" + buf + "\"";
+            perror_disp(err_msg.c_str(), true);
+        }
+
+        for(int i = quote_ind+1; buf[i] != '\0'; ++i)
+        {
+            if(buf[i] == quote_ch) break;
+            else if(buf[i] == '\\' && buf[i+1] == quote_ch)
+            {
+                r_val += quote_ch;
+                ++i;
+            }
+            else r_val += buf[i];
         }
     }
 
-    if(!quote_inc)
+    static void add_to_vec(std::string p_id, std::string p_val)
     {
-        perror_disp("wrong pstring format", 1);
+        PstringsElement new_el = {p_id, p_val};
+        arr.push_back(new_el);
     }
-    for(int i = quote_ind+1; buf[i] != '\0'; i++)
+
+    void copy_file_to_vec()
     {
-        if(buf[i] == '"') break;
-        else *r_val += buf[i];
-    }
-}
+        std::string buf;
+        std::ifstream file_stream = open_strfile();
 
-static void add_pstring_to_vec(std::string p_id, std::string p_val)
-{
-    PstringsElement new_el = {p_id, p_val};
-    pstrings_arr.push_back(new_el);
-}
-
-void pstrings_fetch(char* id, char** rstr);
-
-/*Display the string corresponding to the id*/
-void pstrings_display(char *id)
-{
-    char* rstring = new char[P_MAX_BUF_SIZE]();
-
-    pstrings_fetch(id, &rstring);
-    printw(rstring);
-
-    delete[] rstring;
-}
-
-
-/*Check if a string is defined in the lang file*/
-bool pstrings_check_exist(char* id)
-{
-    bool isfnd = false;
-    auto str_id(id);
-
-    for(const auto& it : pstrings_arr)
-    {
-        if(str_id == it.id)
+        while(fileio::getfileln(buf, file_stream))
         {
-            isfnd = true;
-            break;
-        }
-    }
-    
-    return isfnd;
-}
-/*Copy the corresponding string into the pointer of a char pointer*/
-void pstrings_fetch(char* id, char** r_str)
-{
-    auto str_id(id);
-    bool isfnd = false;
+            std::string r_id;
+            std::string r_val;
 
-    for(const auto& it : pstrings_arr)
-    {
-        if(str_id == it.id)
-        {
-            isfnd = true;
-            strcpy(*r_str, it.val.c_str());
-            break;
+            stringsm::rtab(buf);
+
+            if(!buf.empty() && buf[0] != '#')
+            {
+                split_file_line(r_id, r_val, buf);
+                add_to_vec(r_id, r_val);
+            } else continue;
         }
     }
 
-    if(!isfnd) perror_disp("pstring not found", 0);
-}
-
-/*Set the file pointer to the file containing the strings correponding
-to the selected language*/
-static void open_strfile(FILE **f)
-{
-    char* langdir = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* lang = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* langfile = (char*)calloc(P_MAX_BUF_SIZE, sizeof(char));
-    char* txt = (char*)".txt";
-    int langdirln = 0;
-
-    pvars_getgcvars((char*)"langdir", &langdir);
-    pvars_getstdvars((char*)"lang", &lang);
-    strcpy(langfile, langdir);
-    langdirln = strlen(langdir);
-
-    for(int i = 0; i < (int)strlen(lang); i++)
+    /*Copy the corresponding string into the pointer of a char pointer*/
+    std::string fetch(std::string const id)
     {
-        langfile[langdirln] = lang[i];
-        langdirln++;
+        bool isfnd = false;
+        std::string r_str;
+
+        for(const auto& it : arr)
+        {
+            if(id == it.id)
+            {
+                isfnd = true;
+                r_str = it.val;
+                break;
+            }
+        }
+
+        if(!isfnd) return "MissingStr";
+        else return r_str;
     }
-    for(int i = 0; i < (int)strlen(txt); i++)
+
+    void display(std::string const id)
     {
-        langfile[langdirln] = txt[i];
-        langdirln++;
+        std::string rstring = fetch(id);
+
+        printw(rstring.c_str());
     }
-    fileio_setfileptr(f, langfile);
-    
-    free(langdir);
-    free(lang);
-    free(langfile);
+
+    /*Check if a string is defined in the lang file*/
+    bool check_exist(std::string const id)
+    {
+        bool isfnd = false;
+        auto str_id(id);
+
+        for(const auto& it : pstrings::arr)
+        {
+            if(str_id == it.id)
+            {
+                isfnd = true;
+                break;
+            }
+        }
+        return isfnd;
+    }
 }

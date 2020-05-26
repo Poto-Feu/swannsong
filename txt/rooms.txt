@@ -1,31 +1,40 @@
 ROOM menu
+    TITLE "SwannSong Adventure"
+    DESC menu_desc
+    ATLAUNCH
+        DISPLAY TITLE
+        DISPLAY DESC
+        DISPLAY CHOICES
+    END
     CHOICES
         c1
             TEXT menu_c1
             CUTSCENE welcome
-            GO firstroom
+            GO house
         END
         c2
             TEXT menu_c2
-            GO aboutscreen
+            CUTSCENE about
         END
     END
+END ROOM
+
+ROOM house
+    TITLE house_title
+    DESC house_desc
     ATLAUNCH
-        PRINT menu_desc
+        DISPLAY TITLE
+        DISPLAY DESC
         DISPLAY CHOICES
     END
-END ROOM
-
-ROOM aboutscreen
     CHOICES
-    END
-    ATLAUNCH
-    END
-END ROOM
-
-ROOM firstroom
-    CHOICES
-    END
-    ATLAUNCH
+        c1
+            TEXT house_c1
+            UNFINISHED
+        END
+        c2
+            TEXT house_c2
+            UNFINISHED
+        END
     END
 END ROOM

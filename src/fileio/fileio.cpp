@@ -17,29 +17,46 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef FILEIO_H
-#define FILEIO_H
-
-#ifdef __cplusplus
 extern "C" {
-#include <cstdio>
-#else
-#include <stdio.h>
-#endif
-
-void fileio_setfileptr(FILE** fp, const char* path);
-char* fileio_getfileln(char* buf, int size, FILE** ptr);
-
-#ifdef __cplusplus
+#include "perror.h"
 }
 
 #include <string>
 #include <fstream>
+#include "fileio.h"
 
 namespace fileio
 {
-    bool getfileln(std::string& r_str, std::ifstream& p_stream);
-}
-#endif
+    void check_ln_length(char* buf, int size)
+    {
+        int newline_fnd = false;
 
-#endif
+        for(int i = 0; i < size; i++)
+        {
+            if(buf[i] == '\n') newline_fnd = true;
+        }
+
+        if(!newline_fnd) perror_disp("file string is too long", true);
+    }
+
+    bool getfileln(std::string& r_str, std::ifstream& p_stream)
+    {
+        if(std::getline(p_stream, r_str)) return true;
+        else return false;
+    }
+}
+
+void fileio_setfileptr(FILE** fp, const char* path)
+{
+    *fp = fopen(path, "r");
+    if(*fp == NULL) perror_disp("file cannot be open", 1);
+}
+
+char* fileio_getfileln(char* buf, int size, FILE** ptr)
+{
+    char* rtrn_val = fgets(buf, size, *ptr);
+
+    if(rtrn_val != NULL) fileio::check_ln_length(buf, size);
+
+    return rtrn_val;
+}

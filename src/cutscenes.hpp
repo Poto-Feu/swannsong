@@ -17,17 +17,39 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EXITGAME_H
-#define EXITGAME_H
+#ifndef CUTSCENES_HPP
+#define CUTSCENES_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include <vector>
 
-void exitgame(int c);
+enum class cs_action_type
+{
+    STRING,
+    PAUSE,
+    BLANK
+};
 
-#ifdef __cplusplus
+struct cs_action
+{
+    cs_action_type type;
+    std::string content;
+};
+
+class Cutscene
+{
+    public:
+
+    Cutscene();
+
+    std::string name;
+    std::vector<cs_action> actions_vec;
+};
+
+namespace cutscenes
+{
+    void copy_file_to_vec();
+    void display(std::string const& p_name);
+    bool check_exist(std::string const p_name);
 }
-#endif
-
 #endif

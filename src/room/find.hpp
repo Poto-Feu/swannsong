@@ -17,17 +17,20 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EXITGAME_H
-#define EXITGAME_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef FIND_H
+#define FIND_H
 
-void exitgame(int c);
+#include <string>
 
-#ifdef __cplusplus
+namespace room_find
+{
+    bool room_property(std::string& value, std::string prop, int roomln);
+    bool onechoiceline(int num, int startln, int& ln);
+    bool blockline(int& foundln, int p_ln, std::string ins);
+    bool atlaunchline(int& foundln, int ln);
+    bool choicesline(int& foundln, int room_ln);
+    int roomline(std::string id);
+    bool roomline(int* r_ln, std::string id);
 }
-#endif
-
 #endif

@@ -17,17 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EXITGAME_H
-#define EXITGAME_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef PARSER_H
+#define PARSER_H
 
-void exitgame(int c);
+#include "room/room.hpp"
 
-#ifdef __cplusplus
+namespace parser
+{
+    int skip_until_end(int blockln);
+    int exec_until_end(int blockln, Room& currentRoom, RoomManager& p_roomman);
+    bool splitline(std::string& type, std::string& arg, std::string ins);
 }
-#endif
 
 #endif

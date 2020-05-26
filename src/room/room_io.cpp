@@ -1,113 +1,84 @@
 /*
     Copyright (C) 2020 Adrien Saad
 
-    This file is part of SwannSong.
+    This file is part of SwannSong Adventure.
 
-    SwannSong is free software: you can redistribute it and/or modify
+    SwannSong Adventure is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    SwannSong is distributed in the hope that it will be useful,
+    SwannSong Adventure is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C"
-{
-#include "fileio/fileio.h"
-#include "vars/pconst.h"
-#include "vars/pvars.h"
-#include "stringsm.h"
-}
-
-#include <cstring>
 #include <string>
 #include <vector>
-#include "room/room_io.h"
+#include <fstream>
+#include "room_io.h"
+#include "fileio/fileio.h"
+#include "vars/pconst.hpp"
+#include "vars/pvars.hpp"
+#include "stringsm.h"
 
-using std::string;
-using std::vector;
-
-static vector<string> roomfile_arr {};
-
-static void open_strfile(FILE** fp);
-static void add_ln_to_vec(char* p_ln);
-
-/*Copy room file lines into a vector*/
-void roomio_copy_file_to_vec()
+namespace roomio
 {
-    char buf[P_MAX_BUF_SIZE]{0};
-    FILE* fp = NULL;
+    static std::vector<std::string> file_arr;
 
-    open_strfile(&fp);
-    
-    while(fileio_getfileln(buf, P_MAX_BUF_SIZE, &fp) != NULL)
+    static void add_ln_to_vec(std::string const p_ln)
     {
-        stringsm_chomp(buf);
-        stringsm_rtab(buf);
-
-        if(*buf != '\0') add_ln_to_vec(buf);
-        else continue;
+        file_arr.push_back(p_ln);
     }
-}
 
-/*Return a char array containing the line from the specified index*/
-bool roomio_fetch_ln(char** p_ln, int ind)
-{
-    if(*p_ln != NULL) free(*p_ln);
-
-    if(ind > static_cast<int>(roomfile_arr.size()))
+    /*Copy room file lines into a vector*/
+    void copy_file_to_vec()
     {
-        return false;
-    } else
-    {
-        int str_len = P_MAX_BUF_SIZE;
-        string ind_ln(roomfile_arr[ind-1]);
-
-        str_len = ind_ln.length();
-        *p_ln = (char*)malloc((str_len+1) * sizeof(char));
-        (*p_ln)[str_len] = '\0';
-        strcpy(*p_ln, ind_ln.c_str());
-    }
-    return true;
-}
-
-/*Return the line number where the specified line is present*/
-bool roomio_find_ind(int* f_ln, const char* p_ln)
-{
-    int i = 1;
-    string str_ln(p_ln);
-
-    for(const auto& it : roomfile_arr)
-    {
-        if(it == str_ln)
+        std::string buf;
+        std::ifstream file_stream(pvars::getstdvars("roomfile"));
+        
+        while(fileio::getfileln(buf, file_stream))
         {
-            *f_ln = i;
-            return true;
-        } else i++;  
+            stringsm::rtab(buf);
+
+            if(!buf.empty()) add_ln_to_vec(buf);
+            else continue;
+        }
     }
-    *f_ln = -1;
 
-    return false;
-}
+    /*Return the line number where the specified line is present*/
+    bool find_ind(int& f_ln, std::string const p_ln)
+    {
+        int i = 1;
 
-static void add_ln_to_vec(char* p_ln)
-{
-    string str_ln(p_ln);
-    roomfile_arr.push_back(str_ln);
-}
+        for(const auto& it : roomio::file_arr)
+        {
+            if(it == p_ln)
+            {
+                f_ln = i;
+                return true;
+            } else i++;  
+        }
+        f_ln = -1;
 
-static void open_strfile(FILE** fp)
-{
-    char* roomfile = NULL;
+        return false;
+    }
 
-    pvars_getstdvars("roomfile", &roomfile);
-    fileio_setfileptr(fp, roomfile);
+    /*Return a char array containing the line from the specified index*/
+    bool fetch_ln(std::string& p_ln, int ind)
+    {
+        int real_ind = ind - 1;
 
-    free(roomfile);
+        if(ind > static_cast<int>(roomio::file_arr.size())) return false;
+        else
+        {
+            p_ln = roomio::file_arr[real_ind];
+
+            return true;
+        }
+    }
 }

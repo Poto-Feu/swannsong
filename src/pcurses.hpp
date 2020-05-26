@@ -17,17 +17,42 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EXITGAME_H
-#define EXITGAME_H
+#ifndef PCURSES_H
+#define PCURSES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include <vector>
 
-void exitgame(int c);
+struct pcur_str
+{
+    pcur_str(std::string p_str) : str(p_str) { }
 
-#ifdef __cplusplus
+    int x;
+    std::string str;
+};
+
+struct pcur_struct
+{
+    pcur_struct(std::string p_str, int p_y) : starty(p_y), full_str(p_str) { }
+
+    int starty;
+    std::string full_str;
+    std::vector<pcur_str> vec;
+};
+
+namespace pcurses
+{
+    const int top_margin = 3;
+    const int choice_space = 8;
+
+    extern int margin;
+    extern int title_y;
+    extern unsigned int lines;
+    extern unsigned int cols;
+
+    int find_centered_x(std::string& p_str);
+    void display_pos_string(std::string p_str, unsigned int x_space);
+    void display_center_string(std::string const& p_str);
 }
-#endif
 
 #endif

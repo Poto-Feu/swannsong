@@ -17,17 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EXITGAME_H
-#define EXITGAME_H
+#ifndef PVARS_HPP
+#define PVARS_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
 
-void exitgame(int c);
-
-#ifdef __cplusplus
+namespace pvars
+{
+    void setstdvars(std::string const p_name, std::string const p_value);
+    void setgcvars(std::string const p_name, std::string const p_value);
+    std::string getstdvars(std::string const p_name);
+    std::string getgcvars(std::string const p_name);
 }
-#endif
 
 #endif

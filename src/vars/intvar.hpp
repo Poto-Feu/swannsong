@@ -17,17 +17,27 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef EXITGAME_H
-#define EXITGAME_H
+#ifndef INTVAR_H
+#define INTVAR_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include <vector>
 
-void exitgame(int c);
+struct intvar
+{
+    intvar(std::string p_name, int p_val) : name(p_name), val(p_val) { }
 
-#ifdef __cplusplus
+    std::string name;
+    int val;
+};
+
+namespace intvarm
+{
+    void add_var_to_arr(std::vector<intvar>& p_arr, intvar p_var);
+    bool search_ind(int& p_ind, std::string p_name,
+            std::vector<intvar>& p_arr);
+    int return_value(int p_ind, std::vector<intvar>& p_vec);
+    void set_value(int p_val, int p_ind, std::vector<intvar>& p_arr);
 }
-#endif
 
 #endif
