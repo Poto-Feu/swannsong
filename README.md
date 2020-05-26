@@ -40,10 +40,10 @@ TO-DO
 
 
 ## Licensing
-**SwannSong Adventure** is licensed under the GPL v3 License.
+**SwannSong Adventure** is licensed under the GPL v3 License. Libraries licenses can be found in the *licenses* folder.
 
 ncurses is licensed under the MIT X11 License.
 
 The following only applies to the MingGW compiled version :
 
-PDCurses is in the public domain.
+winpthreads is licensed under the Zope Public License v2.1. PDCurses was developed by Mark Hessling and William McBrine and is in the public domain.

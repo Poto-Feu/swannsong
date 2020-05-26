@@ -43,6 +43,7 @@ struct pcur_struct
 namespace pcurses
 {
     const int top_margin = 3;
+    const int choice_space = 8;
 
     extern int margin;
     extern int title_y;
