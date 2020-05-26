@@ -32,7 +32,7 @@ Major changes will be documented here. For minor changes such as typos or more d
 * Add a Room choice prompt
 * Create a textual cutscenes system
 
-### Change
+### Changed
 
 * Polish the textual UI
 * Refactor most modules into C++
