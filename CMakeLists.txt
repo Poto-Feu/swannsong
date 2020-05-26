@@ -62,7 +62,14 @@ endif()
 # installed on Windows)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(swannsongadv -static)
+    target_link_libraries(swannsongadv
+        -static-libgcc
+        -static-libstdc++)
+
+    add_custom_command(TARGET swannsongadv POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/lib/pdcurses/libpdcurses.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/libpdcurses.dll)
 endif()
 
 # Copy necessary text files
@@ -74,6 +81,10 @@ add_custom_command(TARGET swannsongadv PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/txt/
         ${CMAKE_CURRENT_BINARY_DIR}/txt/)
+add_custom_command(TARGET swannsongadv PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/licenses/
+        ${CMAKE_CURRENT_BINARY_DIR}/licenses/)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
