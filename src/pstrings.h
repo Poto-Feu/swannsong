@@ -37,9 +37,9 @@ void pstrings_display(const char* id);
 namespace pstrings
 {
     void copy_file_to_vec();
-    std::string fetch(std::string const id);
-    void display(std::string id);
-    bool check_exist(std::string const id);
+    std::string fetch(std::string const& id);
+    void display(std::string const& id);
+    bool check_exist(std::string const& id);
 }
 
 #endif

@@ -26,7 +26,6 @@ extern "C"  {
 #include <vector>
 #include "pstrings.h"
 #include "fileio/fileio.h"
-#include "vars/pconst.hpp"
 #include "vars/pvars.hpp"
 #include "stringsm.h"
 
@@ -63,20 +62,16 @@ namespace pstrings
         bool quote_inc = false;
         char quote_ch = '\0';
 
-        for(const auto& it : buf)
-        {
+        for(const auto& it : buf) {
             if(it == ' ' || it == '\t') break;
-            else
-            {
+            else {
                 ++sp_ind;
                 r_id += it;
             }
         }
 
-        for(int i = sp_ind; buf[i] != '\0'; ++i)
-        {
-            if(buf[i] == '"' || buf[i] == '\'')
-            {
+        for(int i = sp_ind; buf[i] != '\0'; ++i) {
+            if(buf[i] == '"' || buf[i] == '\'') {
                 quote_inc = true;
                 quote_ch = buf[i];
                 quote_ind = i;
@@ -84,17 +79,16 @@ namespace pstrings
             }
         }
 
-        if(!quote_inc)
-        {
+        if(!quote_inc) {
             std::string err_msg = "wrong pstring format(\"" + buf + "\"";
+
             perror_disp(err_msg.c_str(), true);
         }
 
         for(int i = quote_ind+1; buf[i] != '\0'; ++i)
         {
             if(buf[i] == quote_ch) break;
-            else if(buf[i] == '\\' && buf[i+1] == quote_ch)
-            {
+            else if(buf[i] == '\\' && buf[i+1] == quote_ch) {
                 r_val += quote_ch;
                 ++i;
             }
@@ -113,31 +107,27 @@ namespace pstrings
         std::string buf;
         std::ifstream file_stream = open_strfile();
 
-        while(fileio::getfileln(buf, file_stream))
-        {
+        while(fileio::getfileln(buf, file_stream)) {
             std::string r_id;
             std::string r_val;
 
             stringsm::rtab(buf);
 
-            if(!buf.empty() && buf[0] != '#')
-            {
+            if(!buf.empty() && buf[0] != '#') {
                 split_file_line(r_id, r_val, buf);
                 add_to_vec(r_id, r_val);
             } else continue;
         }
     }
 
-    /*Copy the corresponding string into the pointer of a char pointer*/
-    std::string fetch(std::string const id)
+    //Copy the corresponding string into the pointer of a char pointer
+    std::string fetch(std::string const& id)
     {
         bool isfnd = false;
         std::string r_str;
 
-        for(const auto& it : arr)
-        {
-            if(id == it.id)
-            {
+        for(const auto& it : arr) {
+            if(id == it.id) {
                 isfnd = true;
                 r_str = it.val;
                 break;
@@ -148,23 +138,21 @@ namespace pstrings
         else return r_str;
     }
 
-    void display(std::string const id)
+    void display(std::string const& id)
     {
         std::string rstring = fetch(id);
 
         printw(rstring.c_str());
     }
 
-    /*Check if a string is defined in the lang file*/
-    bool check_exist(std::string const id)
+    //Check if a string is defined in the lang file
+    bool check_exist(std::string const& id)
     {
         bool isfnd = false;
         auto str_id(id);
 
-        for(const auto& it : pstrings::arr)
-        {
-            if(str_id == it.id)
-            {
+        for(const auto& it : pstrings::arr) {
+            if(str_id == it.id) {
                 isfnd = true;
                 break;
             }
