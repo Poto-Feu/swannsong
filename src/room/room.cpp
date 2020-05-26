@@ -360,6 +360,11 @@ static void choice_input(unsigned int const p_inp, RoomManager& p_rmm,
     parser::exec_until_end(choice_ln, p_room, p_rmm);
 
     p_rmm.displayCutscenes();
+
+    if(p_rmm.is_endgame()) {
+        exitgame(0);
+    }
+
     p_rmm.reset();
 }
 
