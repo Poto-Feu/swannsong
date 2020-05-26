@@ -20,10 +20,6 @@ else()
     used")
 endif()
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_compile_options(-s)
-endif()
-
 add_executable(swannsongadv
     src/main.cpp
     src/room/interpreter/parser.cpp
@@ -63,13 +59,18 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_libraries(swannsongadv
-        -static-libgcc
-        -static-libstdc++)
+        -static)
 
     add_custom_command(TARGET swannsongadv POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_CURRENT_BINARY_DIR}/lib/pdcurses/libpdcurses.dll
             ${CMAKE_CURRENT_BINARY_DIR}/libpdcurses.dll)
+endif()
+
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
+        AND CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_link_libraries(swannsongadv
+        -s)
 endif()
 
 # Copy necessary text files
