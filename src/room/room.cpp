@@ -71,7 +71,7 @@ void Choice::display() const
             }
 
             move(y, 0);
-            pcurses::display_pos_string(disp_value, 4);
+            pcurses::display_pos_string(disp_value, pcurses::choice_space);
             printw("\n");
 
             currln++;

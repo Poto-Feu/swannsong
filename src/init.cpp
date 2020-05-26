@@ -107,7 +107,7 @@ namespace init
             disp_str += ". ";
             disp_str.append(p_arr[i-1].disp);
             move(getcury(stdscr), 0);
-            pcurses::display_pos_string(disp_str, 6);
+            pcurses::display_pos_string(disp_str, pcurses::choice_space);
             move(getcury(stdscr) + 1, pcurses::margin);
         }
 
