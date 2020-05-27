@@ -17,8 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C"
-{
+extern "C" {
 #include "perror.h"
 }
 
@@ -31,7 +30,7 @@ typedef intvar gvar;
 
 static std::vector<intvar> gvar_vec;
 
-static void add_to_list(std::string const p_name, int p_val)
+static void add_to_list(std::string const& p_name, int p_val)
 {
     gvar elem(p_name, p_val);
 
@@ -40,40 +39,37 @@ static void add_to_list(std::string const p_name, int p_val)
 
 namespace gvars
 {
-    void set_var(std::string const p_name, int p_val)
+    void set_var(std::string const& p_name, int p_val)
     {
         int p_ind = 0;
 
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec))
-        {
+        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) {
             perror_disp("gvar already exists", true);
         } else add_to_list(p_name, p_val);
     }
 
-    int return_value(std::string const p_name)
+    int return_value(std::string const& p_name)
     {
         int r_val = -1;
         int p_ind = 0;
 
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec))
-        {
+        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) {
             r_val = intvarm::return_value(p_ind, gvar_vec);
         } else perror_disp("gvar does not exist", true);
 
         return r_val;
     }
 
-    void change_val(std::string const p_name, int p_val)
+    void change_val(std::string const& p_name, int p_val)
     {
         int p_ind = 0;
 
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec))
-        {
+        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) {
             intvarm::set_value(p_val, p_ind, gvar_vec);
         } else perror_disp("gvar does not exist", true);
     }
 
-    bool exist(std::string const p_name)
+    bool exist(std::string const& p_name)
     {
         int p_ind = 0;
 

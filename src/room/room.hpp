@@ -26,7 +26,7 @@
 
 namespace roommod
 {
-    void start_loop(std::string id);
+    void start_loop(std::string const& id);
 }
 
 class Choice
@@ -49,12 +49,11 @@ class Room
     public:
 
         Room();
-        Room(std::string room_name);
+        explicit Room(std::string const& room_name);
 
         void getName(char* r_name) const;
         std::string getName() const;
 
-        bool isRoomLineSet() const;
         bool isChoicesLineSet() const;
 
         int getRoomLine() const;
@@ -88,20 +87,20 @@ class RoomManager
 
         void addTitle();
         void addDesc();
-        void addChoice(Choice p_choice);
-        void addString(std::string p_str);
-        void addCutscene(std::string const p_cs);
+        void addChoice(Choice const& p_choice);
+        void addString(std::string const& p_str);
+        void addCutscene(std::string const& p_cs);
 
-        void setBlockType(bt p_bt);
-        void setNextRoom(std::string const p_id);
+        void setBlockType(bt const p_bt);
+        void setNextRoom(std::string const& p_id);
 
         unsigned int getChoicesSize() const;
         unsigned int getChoiceLine(unsigned int ch_n) const;
         bt getBlockType() const;
         std::string getNextRoom() const;
 
-        void displayTitle(Room p_room);
-        void displayDesc(Room p_room);
+        void displayTitle(Room const& p_room);
+        void displayDesc(Room const& p_room);
         void displayChoices();
         void displayStrings();
         void displayCutscenes();
@@ -116,7 +115,7 @@ class RoomManager
         bool title_displayed = false;
         bool desc_displayed = false;
 
-        bt block_type;
+        bt block_type = bt::ATLAUNCH;
 
         std::string next_room;
 

@@ -21,8 +21,6 @@ extern "C" {
 #include <curses.h>
 }
 
-#include <cstdlib>
-#include <cstring>
 #include "init.h"
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
@@ -40,9 +38,9 @@ namespace init
 {
     struct lang_item
     {
-        lang_item(std::string p_id, std::string p_disp) : id(p_id),
-            disp(p_disp) {}
-            
+        lang_item(std::string const& p_id, std::string const& p_disp) :
+            id(p_id), disp(p_disp) {}
+
         std::string id;
         std::string disp;
     };

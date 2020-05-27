@@ -25,12 +25,12 @@
 
 namespace room_find
 {
-    bool room_property(std::string& value, std::string prop, int roomln);
+    bool room_property(std::string& value, std::string const& prop, int roomln);
     bool onechoiceline(int num, int startln, int& ln);
-    bool blockline(int& foundln, int p_ln, std::string ins);
+    bool blockline(int& foundln, int p_ln, std::string const& ins);
     bool atlaunchline(int& foundln, int ln);
     bool choicesline(int& foundln, int room_ln);
-    int roomline(std::string id);
-    bool roomline(int* r_ln, std::string id);
+    int roomline(std::string const& id);
+    bool roomline(int* r_ln, std::string const& id);
 }
 #endif

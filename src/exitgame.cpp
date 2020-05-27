@@ -26,17 +26,17 @@ extern "C" {
 #include "userio.h"
 #include "pcurses.hpp"
 
-void exitgame(int c)
+void exitgame(int const c)
 {
     move(LINES - 3, pcurses::margin);
-    if(c == 0)  pstrings::display("exit_penter");
+
+    if(c == 0) pstrings::display("exit_penter");
     else printw("Press Enter to exit");
 
     refresh();
     userio::waitenter();
-
     endwin();
 
     if(c == 0) exit(c);
-    else exit(1);
+    else exit(c);
 }

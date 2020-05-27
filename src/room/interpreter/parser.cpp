@@ -34,14 +34,14 @@ extern "C" {
 #include "pstrings.h"
 #include "stringsm.h"
 
-static void CHOICE_block_err(std::string const func_name)
+static void CHOICE_block_err(std::string const& func_name)
 {
     std::string err_msg = func_name 
         + " function cannot be used in CHOICE block";
     perror_disp(err_msg.c_str(), true);
 }
 
-static void wrg_tkn_num(std::string const func_name)
+static void wrg_tkn_num(std::string const& func_name)
 {
     std::string err_msg = "wrong number of tokens (" + func_name + ")";
 
@@ -359,7 +359,7 @@ namespace parser
             if(fw == "END") is_end = true;
             else if(fw == "IF")
             {
-                if(check_condition(buf.c_str()))
+                if(check_condition(buf))
                 {
                     i = exec_until_end(i, currentRoom, p_roomman);
                 }

@@ -31,21 +31,18 @@ namespace pvars
 {
     const std::string pvars_undef = "undefined";
 
-    struct pvar_struct
-    {
+    struct pvar_struct {
         std::string name;
         std::string value;
     };
 
-    std::vector<pvar_struct> stdvars =
-    {
+    std::vector<pvar_struct> stdvars = {
         {"lang", pvars_undef},
         {"roomfile", pvars_undef},
         {"csfile", pvars_undef}
     };
 
-    std::vector<pvar_struct> gcvars =
-    {
+    std::vector<pvar_struct> gcvars = {
         {"langdir", pvars_undef},
         {"roomfile", pvars_undef},
         {"csfile", pvars_undef},
@@ -53,7 +50,7 @@ namespace pvars
         {"firstroom", pvars_undef}
     };
 
-    bool fetch_pvarsid(std::string const p_name, int& p_id, bool isgcvar)
+    bool fetch_pvarsid(std::string const& p_name, int& p_id, bool isgcvar)
     {
         bool isvarfnd = false;
         int varfndid = -1;
@@ -62,19 +59,14 @@ namespace pvars
         if(isgcvar) arrlen = gcvars.size();
         else arrlen = stdvars.size();
 
-        for(int i = 0; i < arrlen; i++)
-        {
-            if(isgcvar)
-            {
-                if(p_name == gcvars[i].name)
-                {
+        for(int i = 0; i < arrlen; i++) {
+            if(isgcvar) {
+                if(p_name == gcvars[i].name) {
                     isvarfnd = true;
                     varfndid = i;
                 }
-            } else
-            {
-                if(p_name == stdvars[i].name)
-                {
+            } else {
+                if(p_name == stdvars[i].name) {
                     isvarfnd = true;
                     varfndid = i;
                 }
@@ -85,69 +77,58 @@ namespace pvars
         return isvarfnd;
     }
 
-    void set(std::string const p_name, std::string const p_value, bool isgcvar)
+    void setvar(std::string const& p_name, std::string const& p_value,
+            bool isgcvar)
     {
         int varfndid = 0;
         bool isvarfnd = fetch_pvarsid(p_name, varfndid, isgcvar);
 
-        if(isvarfnd)
-        {
-            if(isgcvar)
-            {
-                gcvars[varfndid].value = p_value;
-            } else
-            {
-                stdvars[varfndid].value = p_value;
-            }
-            
-        } else
-        {
+        if(isvarfnd) {
+            if(isgcvar) gcvars[varfndid].value = p_value;
+            else stdvars[varfndid].value = p_value;
+        } else {
             if(isgcvar) perror_disp("gcvar not found", 0);
             else perror_disp("stdvar not found", 0);
         }
     }
 
-    std::string get(std::string const name, bool isgcvar)
+    std::string getvar(std::string const& name, bool isgcvar)
     {
         int id = -1;
         bool isvarfnd = fetch_pvarsid(name, id, isgcvar);
         std::string rtr_val;
 
-        if(isvarfnd)
-        {
+        if(isvarfnd) {
             if(isgcvar) rtr_val = gcvars[id].value;
             else rtr_val = stdvars[id].value;
-
-        } else
-        {
-            if(isgcvar) perror_disp("gameconf var does not exist", 1);
+        } else {
+            if(isgcvar) perror_disp("gameconf var does not exist", true);
             else perror_disp("std var does not exist", 1);
         }
 
         return rtr_val;
     }
 
-    /*Set the value of a standard program variable*/
-    void setstdvars(std::string const p_name, std::string const p_value)
+    //Set the value of a standard program variable
+    void setstdvars(std::string const& p_name, std::string const& p_value)
     {
-        pvars::set(p_name, p_value, false);
+        pvars::setvar(p_name, p_value, false);
     }
 
-    /*Set the value of a gameconf-defined variable*/
-    void setgcvars(std::string const p_name, std::string const p_value)
-    {
-        pvars::set(p_name, p_value, true);
+    //Set the value of a gameconf-defined variable
+    void setgcvars(std::string const& p_name, std::string const& p_value) {
+        pvars::setvar(p_name, p_value, true);
     }
 
-    /*Copy the value of a standard program variable*/
-    std::string getstdvars(std::string const p_name)
+    //Copy the value of a standard program variable
+    std::string getstdvars(std::string const& p_name)
     {
-        return pvars::get(p_name, false);
+        return pvars::getvar(p_name, false);
     }
 
-    /*Copy the value of a gameconf-defined variable*/
-    std::string getgcvars(std::string const p_name)
+    //Copy the value of a gameconf-defined variable
+    std::string getgcvars(std::string const& p_name)
     {
-        return pvars::get(p_name, true);
+        return pvars::getvar(p_name, true);
     }
 }

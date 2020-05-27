@@ -27,36 +27,9 @@ extern "C" {
 
 namespace fileio
 {
-    void check_ln_length(char* buf, int size)
-    {
-        int newline_fnd = false;
-
-        for(int i = 0; i < size; i++)
-        {
-            if(buf[i] == '\n') newline_fnd = true;
-        }
-
-        if(!newline_fnd) perror_disp("file string is too long", true);
-    }
-
     bool getfileln(std::string& r_str, std::ifstream& p_stream)
     {
         if(std::getline(p_stream, r_str)) return true;
         else return false;
     }
-}
-
-void fileio_setfileptr(FILE** fp, const char* path)
-{
-    *fp = fopen(path, "r");
-    if(*fp == NULL) perror_disp("file cannot be open", 1);
-}
-
-char* fileio_getfileln(char* buf, int size, FILE** ptr)
-{
-    char* rtrn_val = fgets(buf, size, *ptr);
-
-    if(rtrn_val != NULL) fileio::check_ln_length(buf, size);
-
-    return rtrn_val;
 }

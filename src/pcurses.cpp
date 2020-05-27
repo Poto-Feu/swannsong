@@ -43,8 +43,7 @@ namespace pcurses
         std::string remain_str = p_str;
         std::vector<std::string> str_vec;
 
-        while(!end_of_str)
-        {
+        while(!end_of_str) {
             std::string vec_item;
 
             if(remain_str.size() > max_size_str()) {
@@ -57,8 +56,7 @@ namespace pcurses
 
         }
 
-        for(auto const& vec_it : str_vec)
-        {
+        for(auto const& vec_it : str_vec) {
             move(getcury(stdscr), pcurses::margin);
             printw("%s\n", vec_it.c_str());
         }
@@ -81,33 +79,27 @@ namespace pcurses
     void display_pos_string(std::string p_str, unsigned int x_space)
     {
         const unsigned int multiline_space = 3;
-
         bool end_of_str = false;
         bool end_of_zone = false;
         unsigned int cur_y = getcury(stdscr);
         unsigned int pos_str_max_size = max_size_str() / 2 + x_space;
-        unsigned int str_size = p_str.size();
 
-        for(auto i = 0; !end_of_str && !end_of_zone; ++i)
-        {
-            str_size = p_str.size();
+        for(auto i = 0; !end_of_str && !end_of_zone; ++i) {
+            unsigned int str_size = p_str.size();
 
             if(cur_y > lines - 5) end_of_zone = true;
-            else if(str_size > pos_str_max_size)
-            {
+            else if(str_size > pos_str_max_size) {
                 std::string curr_str = p_str.substr(0, pos_str_max_size);
 
                 p_str.erase(0, pos_str_max_size);
                 disp_str(curr_str, cols / 2 - x_space);
                 printw("\n");
-            } else
-            {
+            } else {
                 disp_str(p_str, cols / 2 - x_space);
                 end_of_str = true;
             }
 
-            if(i == 0)
-            {
+            if(i == 0) {
                 x_space += multiline_space;
                 pos_str_max_size -= multiline_space;
             }

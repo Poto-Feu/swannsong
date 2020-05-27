@@ -23,23 +23,6 @@
 #include <string>
 #include <vector>
 
-struct pcur_str
-{
-    pcur_str(std::string p_str) : str(p_str) { }
-
-    int x;
-    std::string str;
-};
-
-struct pcur_struct
-{
-    pcur_struct(std::string p_str, int p_y) : starty(p_y), full_str(p_str) { }
-
-    int starty;
-    std::string full_str;
-    std::vector<pcur_str> vec;
-};
-
 namespace pcurses
 {
     const int top_margin = 3;
