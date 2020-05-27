@@ -33,9 +33,6 @@ TO-DO
 
 ## Roadmap
 * Refactor some parts of the source code
-* Add essential features to the rooms file interpreter such as conditions
-* Add room choice prompt
-* Add a cutscene system
 * Develop a storyline
 
 
