@@ -22,6 +22,7 @@ extern "C" {
 #include "perror.h"
 }
 
+#include <algorithm>
 #include <string>
 #include "room.hpp"
 #include "room_io.h"
@@ -90,12 +91,6 @@ std::string Room::getName() const
     return name;
 }
 
-bool Room::isRoomLineSet() const
-{
-    if(room_line != 0) return true;
-    else return false;
-}
-
 bool Room::isChoicesLineSet() const
 {
     if(choices_line != 0) return true;
@@ -153,17 +148,17 @@ void RoomManager::addDesc()
     desc_displayed = true;
 }
 
-void RoomManager::addChoice(Choice p_choice)
+void RoomManager::addChoice(Choice const& p_choice)
 {
     choice_list.push_back(p_choice);
 }
 
-void RoomManager::addString(std::string p_str)
+void RoomManager::addString(std::string const& p_str)
 {
     string_list.push_back(p_str);
 }
 
-void RoomManager::addCutscene(std::string const p_cs)
+void RoomManager::addCutscene(std::string const& p_cs)
 {
     cs_list.push_back(p_cs);
 }
@@ -173,7 +168,7 @@ void RoomManager::setBlockType(RoomManager::bt const p_bt)
     block_type = p_bt;
 }
 
-void RoomManager::setNextRoom(std::string const p_id)
+void RoomManager::setNextRoom(std::string const& p_id)
 {
     next_room = p_id;
 }
@@ -204,7 +199,7 @@ std::string RoomManager::getNextRoom() const
     return next_room;
 }
 
-void RoomManager::displayTitle(Room p_room)
+void RoomManager::displayTitle(Room const& p_room)
 {
     std::string value;
     bool prop_fnd = room_find::room_property(value, "TITLE",
@@ -228,7 +223,7 @@ void RoomManager::displayTitle(Room p_room)
     } else perror_disp("TITLE property not found in room", false);
 }
 
-void RoomManager::displayDesc(Room p_room)
+void RoomManager::displayDesc(Room const& p_room)
 {
     std::string value;
     auto prop_fnd = room_find::room_property(value, "DESC",
@@ -289,7 +284,7 @@ bool RoomManager::is_desc_displayed() const
 }
 
 //Display the current room according to the RoomManager data
-static void roomman_show(RoomManager p_roomman, Room p_room)
+static void roomman_show(RoomManager p_roomman, Room const& p_room)
 {
     p_roomman.displayCutscenes();
 
@@ -347,7 +342,7 @@ static void choice_input(unsigned int const p_inp, RoomManager& p_rmm,
 
 /*Reset the room screen with an added message to notify the user that its input
 is not correct.*/
-static void incorrect_input(RoomManager& p_rmm, Room p_room)
+static void incorrect_input(RoomManager const& p_rmm, Room const& p_room)
 {
     clear();
     move(LINES - 5, pcurses::margin);
@@ -356,7 +351,7 @@ static void incorrect_input(RoomManager& p_rmm, Room p_room)
 }
 
 //Show the room prompt and process the input
-static void process_input(RoomManager& p_rmm, Room p_room)
+static void process_input(RoomManager& p_rmm, Room const& p_room)
 {
     bool correct_input = false;
 
@@ -386,31 +381,30 @@ static void process_input(RoomManager& p_rmm, Room p_room)
 }
 
 //Load the room with the specified id
-static void room_load(std::string const id, RoomManager &p_rmm)
+static void room_load(std::string const& p_id, RoomManager &p_rmm)
 {
     static std::vector<Room> room_list;
     bool room_fnd = false;
     Room currentRoom;
 
-    for(auto const& it : room_list) {
-        if(it.getName() == id) {
-            room_fnd = true;
-            currentRoom = it;
-            break;
-        }
-    }
+    auto it = std::find_if(room_list.cbegin(), room_list.cend(),
+            [p_id](Room const& crm) {
+            return crm.getName() == p_id;
+            });
 
-    if(!room_fnd) {
-        int roomln = room_find::roomline(id);
-        std::string str_id(id);
+    if(it != room_list.cend()) {
+        room_fnd = true;
+        currentRoom = *it;
+    } else {
+        int roomln = room_find::roomline(p_id);
 
-        currentRoom = Room(str_id);
+        currentRoom = Room(p_id);
         currentRoom.setRoomLine(roomln);
     }
 
     move(0, 0);
     clear();
-    p_rmm.setNextRoom(id);
+    p_rmm.setNextRoom(p_id);
     room_atlaunch(currentRoom, p_rmm);
 
     if(p_rmm.is_endgame()) return;
@@ -423,7 +417,7 @@ static void room_load(std::string const id, RoomManager &p_rmm)
 namespace roommod
 {
     //Start the game loop which loads rooms until the end signal is enabled
-    void start_loop(std::string id)
+    void start_loop(std::string const& id)
     {
         std::string curr_room_id = id;
         RoomManager rmm;
@@ -433,7 +427,6 @@ namespace roommod
             room_load(curr_room_id, rmm);
             curr_room_id = rmm.getNextRoom();
         }
-
         exitgame(0);
     }
 }

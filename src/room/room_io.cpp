@@ -28,21 +28,20 @@
 
 namespace roomio
 {
-    static std::vector<std::string> file_arr;
+    static std::vector<std::string> file_vec;
 
-    static void add_ln_to_vec(std::string const p_ln)
+    static void add_ln_to_vec(std::string const& p_ln)
     {
-        file_arr.push_back(p_ln);
+        file_vec.push_back(p_ln);
     }
 
-    /*Copy room file lines into a vector*/
+    //Copy room file lines into a vector
     void copy_file_to_vec()
     {
         std::string buf;
         std::ifstream file_stream(pvars::getstdvars("roomfile"));
         
-        while(fileio::getfileln(buf, file_stream))
-        {
+        while(fileio::getfileln(buf, file_stream)) {
             stringsm::rtab(buf);
 
             if(!buf.empty()) add_ln_to_vec(buf);
@@ -50,33 +49,30 @@ namespace roomio
         }
     }
 
-    /*Return the line number where the specified line is present*/
-    bool find_ind(int& f_ln, std::string const p_ln)
+    //Return the line number where the specified line is present
+    bool find_ind(int& f_ln, std::string const& p_ln)
     {
         int i = 1;
 
-        for(const auto& it : roomio::file_arr)
-        {
-            if(it == p_ln)
-            {
+        for(const auto& it : roomio::file_vec) {
+            if(it == p_ln) {
                 f_ln = i;
                 return true;
-            } else i++;  
+            } else ++i;  
         }
-        f_ln = -1;
+        f_ln = 0;
 
         return false;
     }
 
-    /*Return a char array containing the line from the specified index*/
+    //Return a char array containing the line from the specified index
     bool fetch_ln(std::string& p_ln, int ind)
     {
         int real_ind = ind - 1;
 
-        if(ind > static_cast<int>(roomio::file_arr.size())) return false;
-        else
-        {
-            p_ln = roomio::file_arr[real_ind];
+        if(ind > static_cast<int>(roomio::file_vec.size())) return false;
+        else {
+            p_ln = roomio::file_vec[real_ind];
 
             return true;
         }

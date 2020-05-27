@@ -50,6 +50,6 @@ typedef std::vector<Token> TokenVec;
 
 namespace token
 {
-    TokenVec create_arr(std::string p_str);
+    TokenVec create_arr(std::string const& p_str);
 }
 #endif

@@ -22,6 +22,7 @@ extern "C"  {
 #include "perror.h"
 }
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include "pstrings.h"
@@ -37,7 +38,7 @@ namespace pstrings
         std::string val;
     };
 
-    static std::vector<PstringsElement> arr {};
+    static std::vector<PstringsElement> pstr_vec {};
 
     /*Set the file pointer to the file containing the strings correponding
     to the selected language*/
@@ -99,7 +100,7 @@ namespace pstrings
     static void add_to_vec(std::string p_id, std::string p_val)
     {
         PstringsElement new_el = {p_id, p_val};
-        arr.push_back(new_el);
+        pstr_vec.push_back(new_el);
     }
 
     void copy_file_to_vec()
@@ -120,22 +121,28 @@ namespace pstrings
         }
     }
 
-    //Copy the corresponding string into the pointer of a char pointer
-    std::string fetch(std::string const& id)
+    static auto find_it_vec(std::string const& p_id)
     {
-        bool isfnd = false;
-        std::string r_str;
+        return std::find_if(pstr_vec.cbegin(), pstr_vec.cend(),
+                [p_id](PstringsElement const& cid) {
+                return p_id == cid.id;
+                });
+    }
 
-        for(const auto& it : arr) {
-            if(id == it.id) {
-                isfnd = true;
-                r_str = it.val;
-                break;
-            }
-        }
+    //Copy the corresponding string into the pointer of a char pointer
+    std::string fetch(std::string const& p_id)
+    {
+        auto it = find_it_vec(p_id);
 
-        if(!isfnd) return "MissingStr";
-        else return r_str;
+        if(it != pstr_vec.cend()) {
+            return it->val;
+        } else return "MissingStr";
+    }
+
+    //Check if a string is defined in the lang file
+    bool check_exist(std::string const& p_id)
+    {
+        return find_it_vec(p_id) != pstr_vec.cend();
     }
 
     void display(std::string const& id)
@@ -143,20 +150,5 @@ namespace pstrings
         std::string rstring = fetch(id);
 
         printw(rstring.c_str());
-    }
-
-    //Check if a string is defined in the lang file
-    bool check_exist(std::string const& id)
-    {
-        bool isfnd = false;
-        auto str_id(id);
-
-        for(const auto& it : pstrings::arr) {
-            if(str_id == it.id) {
-                isfnd = true;
-                break;
-            }
-        }
-        return isfnd;
     }
 }

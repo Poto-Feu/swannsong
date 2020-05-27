@@ -24,9 +24,9 @@
 
 namespace gvars
 {
-    void set_var(std::string const p_name, int p_val);
-    int return_value(std::string const p_name);
-    void change_val(std::string const p_name, int p_val);
-    bool exist(std::string const p_name);
+    void set_var(std::string const& p_name, int p_val);
+    int return_value(std::string const& p_name);
+    void change_val(std::string const& p_name, int p_val);
+    bool exist(std::string const& p_name);
 }
 #endif

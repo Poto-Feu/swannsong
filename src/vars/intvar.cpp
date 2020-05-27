@@ -35,7 +35,7 @@ namespace intvarm
 
     /*Fetch the index of the specified intvar - returns false if not found*/
     bool search_ind(int& p_ind, std::string p_name,
-            std::vector<intvar>& p_arr)
+            std::vector<intvar> const& p_arr)
     {
         int i = 0;
         bool isfnd = false;
@@ -43,10 +43,8 @@ namespace intvarm
 
         p_ind = -1;
 
-        for(auto& x : p_arr)
-        {
-            if(x.name == str_name)
-            {
+        for(auto const& x : p_arr) {
+            if(x.name == str_name) {
                 p_ind = i;
                 isfnd = true;
                 break;
@@ -59,8 +57,7 @@ namespace intvarm
     /*Return the value of the intvar on the specified index*/
     int return_value(int p_ind, std::vector<intvar>& p_vec)
     {
-        if(p_ind >= static_cast<int>(p_vec.size()))
-        {
+        if(p_ind >= static_cast<int>(p_vec.size())) {
             perror_disp("OOR_ARR_INDEX", true);
             return -1;
         } else return p_vec[p_ind].val;

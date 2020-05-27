@@ -30,33 +30,26 @@ extern "C" {
 
 namespace room_find
 {
-    /*Fetch the line where a Room property is present*/
-    bool room_property(std::string& value, std::string const prop, int roomln)
+    //Fetch the line where a Room property is present
+    bool room_property(std::string& value, std::string const& prop, int roomln)
     {
         bool propfound = false;
         bool is_end = false;
 
         ++roomln;
 
-        for(int i = roomln; !propfound && !is_end; ++i)
-        {
+        for(int i = roomln; !propfound && !is_end; ++i) {
             std::string buf;
             std::string fw;
-
             bool is_eof = !roomio::fetch_ln(buf, i);
 
-            if(is_eof)
-            {
-                perror_disp("find_room_property has hit EOF", true);
-            } else
-            {
+            if(is_eof) perror_disp("find_room_property has hit EOF", true);
+            else {
                 fw = stringsm::getfw(buf);
 
-                if(fw == "CHOICES" || fw == "ATLAUNCH")
-                {
+                if(fw == "CHOICES" || fw == "ATLAUNCH") {
                     i = parser::skip_until_end(i);
-                } else if(fw == prop)
-                {
+                } else if(fw == prop) {
                     buf.erase(0, fw.size());
 
                     while(buf[0] == ' ' || buf[0] == '\t') buf.erase(0, 1);
@@ -80,65 +73,53 @@ namespace room_find
 
         if(num < 0 || num > 9) perror_disp("choice number not allowed", 1);
 
-        for(int i = currln; !choicefound && !is_end; i++)
-        {
+        for(int i = currln; !choicefound && !is_end; i++) {
             std::string buf;
             bool is_eof = !roomio::fetch_ln(buf, i);
 
             if(is_eof) perror_disp("find_onechoiceline has hit EOF", 1);
-            if(buf[0] == 'c' && buf[1] == num + '0' && buf.size() == 2)
-            {
+            if(buf[0] == 'c' && buf[1] == num + '0' && buf.size() == 2) {
                 ln = i;
                 choicefound = true;
-            } else if(buf[0] == 'c' && buf[1] != num + '0' && buf.size() == 2)
-            {
+            } else if(buf[0] == 'c' && buf[1] != num + '0' && buf.size() == 2) {
                 i = parser::skip_until_end(i);
             } else if(buf  == "END") is_end = true;
-            else  perror_disp("wrong input in find_onechoiceline", true);
+            else perror_disp("wrong input in find_onechoiceline", true);
         }
         return choicefound;
     }
 
     /*Fetch the line where a specific block is present beginning from a 
     specified line*/
-    bool blockline(int& foundln, int p_ln, std::string ins)
+    bool blockline(int& foundln, int p_ln, std::string const& ins)
     {
         bool is_fnd = false;
         bool is_end = false;
         bool in_choices = false;
         int currln = p_ln + 1;
         
-        for(int i = currln; !is_fnd && !is_end; ++i)
-        {
+        for(int i = currln; !is_fnd && !is_end; ++i) {
             std::string buf;
             bool is_eof = !roomio::fetch_ln(buf, i);
             
             if(is_eof) perror_disp("find_blockline has hit EOF", true);
-            if(ins == buf && !in_choices)
-            {
+            if(ins == buf && !in_choices) {
                 is_fnd = true;
                 foundln = i;
-            } else if(buf == "ATLAUNCH")
-            {
-                if(in_choices)
-                {
+            } else if(buf == "ATLAUNCH") {
+                if(in_choices) {
                     perror_disp("ATLAUNCH instruction inside CHOICES list",
                             true);
-                }
-                else i = parser::skip_until_end(i);
-            } else if(buf == "CHOICES")
-            {
-                if(in_choices)
-                {
+                } else i = parser::skip_until_end(i);
+            } else if(buf == "CHOICES") {
+                if(in_choices) {
                     perror_disp("CHOICES instruction inside CHOICES list",
                             true);
                 } else in_choices = true;
-            } else if(buf[0] == 'c' && isdigit(buf[1]) && buf.size() == 2)
-            {
+            } else if(buf[0] == 'c' && isdigit(buf[1]) && buf.size() == 2) {
                 if(in_choices) i = parser::skip_until_end(i);
                 else perror_disp("CHOICE block outside CHOICES list", true);
-            } else if(buf == "END")
-            {
+            } else if(buf == "END") {
                 if(in_choices) in_choices = false;
                 else is_end = true;
             }
@@ -149,22 +130,22 @@ namespace room_find
         return is_fnd;
     }
 
-    /*Return the line where the ATLAUNCH block start*/
+    //Return the line where the ATLAUNCH block start
     bool atlaunchline(int& foundln, int ln)
     {
         const std::string ins = "ATLAUNCH";
         return blockline(foundln, ln, ins);
     }
 
-    /*Return the line where the CHOICES block start*/
+    //Return the line where the CHOICES block start
     bool choicesline(int& foundln, int room_ln)
     {
         const std::string ins = "CHOICES";
         return blockline(foundln, room_ln, ins);
     }
 
-    /*Fetch the beginning line of the room definition in file*/
-    int roomline(std::string id)
+    //Fetch the beginning line of the room definition in file
+    int roomline(std::string const& id)
     {
         int ln = 0;
         std::string roomline = "ROOM";
@@ -181,7 +162,7 @@ namespace room_find
         return ln;
     }
 
-    bool roomline(int* r_ln, std::string id)
+    bool roomline(int* r_ln, std::string const& id)
     {
         std::string roomline = "ROOM";
 

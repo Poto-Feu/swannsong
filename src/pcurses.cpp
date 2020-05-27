@@ -79,15 +79,13 @@ namespace pcurses
     void display_pos_string(std::string p_str, unsigned int x_space)
     {
         const unsigned int multiline_space = 3;
-
         bool end_of_str = false;
         bool end_of_zone = false;
         unsigned int cur_y = getcury(stdscr);
         unsigned int pos_str_max_size = max_size_str() / 2 + x_space;
-        unsigned int str_size = p_str.size();
 
         for(auto i = 0; !end_of_str && !end_of_zone; ++i) {
-            str_size = p_str.size();
+            unsigned int str_size = p_str.size();
 
             if(cur_y > lines - 5) end_of_zone = true;
             else if(str_size > pos_str_max_size) {

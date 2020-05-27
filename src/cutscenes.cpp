@@ -42,7 +42,7 @@ namespace cutscenes
     {
         return std::find_if(cs_vec.cbegin(), cs_vec.cend(),
                 [p_name](Cutscene const& ccut) {
-                return ccut.name == p_name;
+                return p_name == ccut.name;
                 });
     }
 
