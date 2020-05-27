@@ -50,6 +50,6 @@ namespace cutscenes
 {
     void copy_file_to_vec();
     void display(std::string const& p_name);
-    bool check_exist(std::string const p_name);
+    bool check_exist(std::string const& p_name);
 }
 #endif

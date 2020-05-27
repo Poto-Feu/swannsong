@@ -22,6 +22,7 @@ extern "C" {
 #include "perror.h"
 }
 
+#include <algorithm>
 #include <fstream>
 #include "cutscenes.hpp"
 #include "fileio/fileio.h"
@@ -33,45 +34,51 @@ extern "C" {
 
 Cutscene::Cutscene() { }
 
-static void execute_all_actions(std::vector<cs_action> const& p_vec)
-{
-    std::string penter_msg = pstrings::fetch("continue_penter");
-
-    for(auto const& action_it : p_vec)
-    {
-        switch(action_it.type)
-        {
-            case cs_action_type::STRING:
-                pcurses::display_center_string(action_it.content);
-                printw("\n");
-                break;
-            case cs_action_type::BLANK:
-                printw("\n");
-                break;
-            case cs_action_type::PAUSE:
-                move(LINES - 3, pcurses::margin);
-                printw("%s", penter_msg.c_str());
-                userio::waitenter();
-                clear();
-                refresh();
-                move(pcurses::top_margin, pcurses::margin);
-                break;
-        }
-
-        refresh();
-    }
-
-    move(LINES - 3, pcurses::margin);
-    printw("%s", penter_msg.c_str());
-    userio::waitenter();
-    clear();
-}
-
 namespace cutscenes
 {
-    std::vector<Cutscene> vec;
+    static std::vector<Cutscene> cs_vec;
 
-    /*Initialize the vector by reading the cutscenes file*/
+    static auto find_vec_it(std::string const& p_name)
+    {
+        return std::find_if(cs_vec.cbegin(), cs_vec.cend(),
+                [p_name](Cutscene const& ccut) {
+                return ccut.name == p_name;
+                });
+    }
+
+    static void execute_all_actions(std::vector<cs_action> const& p_vec)
+    {
+        std::string penter_msg = pstrings::fetch("continue_penter");
+
+        for(auto const& action_it : p_vec) {
+            switch(action_it.type) {
+                case cs_action_type::STRING:
+                    pcurses::display_center_string(action_it.content);
+                    printw("\n");
+                    break;
+                case cs_action_type::BLANK:
+                    printw("\n");
+                    break;
+                case cs_action_type::PAUSE:
+                    move(LINES - 3, pcurses::margin);
+                    printw("%s", penter_msg.c_str());
+                    userio::waitenter();
+                    clear();
+                    refresh();
+                    move(pcurses::top_margin, pcurses::margin);
+                    break;
+            }
+
+            refresh();
+        }
+
+        move(LINES - 3, pcurses::margin);
+        printw("%s", penter_msg.c_str());
+        userio::waitenter();
+        clear();
+    }
+
+    //Initialize the vector by reading the cutscenes file
     void copy_file_to_vec()
     {
         bool in_cutscene = false;
@@ -79,8 +86,7 @@ namespace cutscenes
         std::string cs_file = pvars::getstdvars("csfile");
         std::ifstream file_stream (pvars::getstdvars("csfile"));
 
-        while(fileio::getfileln(buf, file_stream))
-        {
+        while(fileio::getfileln(buf, file_stream)) {
             Cutscene curr_cs;
 
             stringsm::rtab(buf);
@@ -90,8 +96,7 @@ namespace cutscenes
             in_cutscene = true;
             curr_cs.name = stringsm::getfw(buf);
 
-            while(fileio::getfileln(buf, file_stream) && in_cutscene)
-            {
+            while(fileio::getfileln(buf, file_stream) && in_cutscene) {
                 std::string fw;
                 cs_action curr_action;
 
@@ -100,55 +105,44 @@ namespace cutscenes
 
                 if(fw == "PAUSE") curr_action.type = cs_action_type::PAUSE;
                 else if(fw == "BLANK") curr_action.type = cs_action_type::BLANK;
-                else if(stringsm::is_str(buf))
-                {
+                else if(stringsm::is_str(buf)) {
                     curr_action.type = cs_action_type::STRING;
                     curr_action.content = stringsm::ext_str_quotes(buf);
-                } else if(pstrings::check_exist(fw))
-                {
+                } else if(pstrings::check_exist(fw)) {
                     curr_action.type = cs_action_type::STRING;
                     curr_action.content = pstrings::fetch(fw);
-                } else if(fw == "END")
-                {
+                } else if(fw == "END") {
                     in_cutscene = false;
                     break;
                 }
                 curr_cs.actions_vec.push_back(curr_action);
             }
-            vec.push_back(curr_cs);
+            cs_vec.push_back(curr_cs);
         }
     }
 
     //Display a cutscene
     void display(std::string const& p_name)
     {
+        auto it = find_vec_it(p_name);
+
         clear();
         move(pcurses::top_margin, pcurses::margin);
 
-        for(auto const& cs_it : vec)
-        {
-            if(cs_it.name == p_name)
-            {
-                execute_all_actions(cs_it.actions_vec);
-                return;
-            }
+        if(it != cs_vec.cend()) execute_all_actions(it->actions_vec);
+        else {
+            std::string penter_msg = pstrings::fetch("continue_penter");
+
+            pcurses::display_center_string("missingCutscene");
+            move(LINES - 3, pcurses::margin);
+            printw(penter_msg.c_str());
+            userio::waitenter();
+            refresh();
         }
-
-        std::string penter_msg = pstrings::fetch("continue_penter");
-
-        pcurses::display_center_string("missingCutscene");
-        move(LINES - 3, pcurses::margin);
-        printw(penter_msg.c_str());
-        userio::waitenter();
-        refresh();
     }
 
-    bool check_exist(std::string const p_name)
+    bool check_exist(std::string const& p_name)
     {
-        for(auto const& it : vec)
-        {
-            if(it.name == p_name) return true;
-        }
-        return false;
+        return find_vec_it(p_name) != cs_vec.cend();
     }
 }
