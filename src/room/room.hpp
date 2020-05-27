@@ -49,7 +49,7 @@ class Room
     public:
 
         Room();
-        Room(std::string room_name);
+        explicit Room(std::string const& room_name);
 
         void getName(char* r_name) const;
         std::string getName() const;
