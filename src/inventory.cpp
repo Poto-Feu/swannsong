@@ -22,57 +22,57 @@ extern "C" {
 }
 
 #include <vector>
-#include "inventory.h"
+#include "inventory.hpp"
 #include "vars/intvar.hpp"
 
-/*Not named item in order to prevent conflict with some libs*/
-typedef intvar gitem;
-
-static std::vector<gitem> inventory_arr;
-
-static void inventory_additem_tolist(std::string pname, int val);
-static void inventory_add_n_item(int p_ind, int val);
-
-/*Add the specified number of an item - if it doesn't exist in inventory_list,
-the function adds the item to it*/
-void inventory_player_getitem(std::string p_name, int val)
+namespace inventory
 {
-    int p_ind = 0;
+    //Not named item in order to prevent conflict with some libs
+    typedef intvar gitem;
 
-    if(intvarm::search_ind(p_ind, p_name, inventory_arr))
+    static std::vector<gitem> inventory_vec;
+
+    //Create an entry for the specified item in inventory_list
+    static void additem_tolist(std::string const& p_name, int p_val)
     {
-        inventory_add_n_item(p_ind, val);
-    } else inventory_additem_tolist(p_name, val);
-}
+        intvar elem(p_name, p_val);
 
-/*Return the number of pieces of an item present in the inventory*/
-int inventory_return_item_n(char* p_name)
-{
-    int r_val = -1;
-    int p_ind = 0;
+        intvarm::add_var_to_arr(inventory_vec, elem);
+    }
 
-    if(intvarm::search_ind(p_ind, p_name, inventory_arr))
+    //Add the specified number of item to an inventory
+    static void add_n_item(int p_ind, unsigned int p_val)
     {
-        r_val = intvarm::return_value(p_ind, inventory_arr);
-    } else perror_disp("Inventory item not found", true);
+        int r_val = intvarm::return_value(p_ind, inventory_vec);
 
-    return r_val;
-}
+        r_val += p_val;
+        intvarm::set_value(r_val, p_ind, inventory_vec);
+    }
 
-/*Create an entry for the specified item in inventory_list*/
-static void inventory_additem_tolist(std::string p_name, int p_val)
-{
-    intvar elem(p_name, p_val);
+    /*Add the specified number of an item - if it doesn't exist in
+    inventory_vec, the function adds the item to it*/
+    void player_getitem(std::string const& p_name, unsigned int val)
+    {
+        int p_ind = 0;
 
-    intvarm::add_var_to_arr(inventory_arr, elem);
-}
+        if(intvarm::search_ind(p_ind, p_name, inventory_vec))
+        {
+            add_n_item(p_ind, val);
+        } else additem_tolist(p_name, val);
+    }
 
-/*Add the specified number of item to an inventory*/
-static void inventory_add_n_item(int p_ind, int p_val)
-{
-    int r_val = -1;
+    //Return the number of pieces of an item present in the inventory
+    unsigned int return_item_n(std::string const& p_name)
+    {
+        int r_val = -1;
+        int p_ind = 0;
 
-    r_val = intvarm::return_value(p_ind, inventory_arr);
-    p_val += r_val;
-    intvarm::set_value(r_val, p_ind, inventory_arr);
+        if(intvarm::search_ind(p_ind, p_name, inventory_vec)) {
+            r_val = intvarm::return_value(p_ind, inventory_vec);
+        } else {
+            std::string err_msg = "Inventory item not found (" + p_name + ")";
+            perror_disp(err_msg.c_str(), true);
+        }
+        return r_val;
+    }
 }
