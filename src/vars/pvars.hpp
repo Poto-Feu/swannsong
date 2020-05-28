@@ -22,12 +22,17 @@
 
 #include <string>
 
+struct pvar_struct {
+    std::string name;
+    std::string value;
+};
+
 namespace pvars
 {
+    void setvar(std::string const& p_name, std::string const& p_value);
     void setstdvars(std::string const& p_name, std::string const& p_value);
-    void setgcvars(std::string const& p_name, std::string const& p_value);
+    std::string getvar(std::string const& p_name);
     std::string getstdvars(std::string const& p_name);
-    std::string getgcvars(std::string const& p_name);
 }
 
 #endif
