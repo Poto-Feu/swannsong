@@ -30,6 +30,7 @@ extern "C" {
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
 #include "vars/pconst.hpp"
+#include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -163,43 +164,57 @@ static void interp_UNFINISHED_func(RoomManager& p_rmm)
     pcurses::display_center_string(pstrings::fetch("unfinished_str"));
 }
 
+/*Interpret a line which use the GET function, which add an item to the player's
+inventory*/
+static void interp_GET_func(TokenVec const& p_vec)
+{
+    int item_name_pos = 1;
+    unsigned int item_n = 1;
+
+    if (p_vec.size() == 3) {
+        if(p_vec[1].type == token_type::NUMBER) {
+            item_name_pos = 2;
+            item_n = std::stoi(p_vec[1].str);
+        } else {
+            perror_disp(
+                "second part of a GET instruction must be a NUMBER or an ITEM",
+                true);
+        }
+    } else if(p_vec.size() != 2) wrg_tkn_num("GET");
+
+    inventory::player_getitem(p_vec[item_name_pos].str, item_n);
+}
+
 //Interpret a line which use a function
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
 {
-    if(r_vec[0].str == "DISPLAY")
-    {
+    if(r_vec[0].str == "DISPLAY") {
         if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
         else interp_DISPLAY_func(r_vec, currentRoom, p_roomman);
-    } else if(r_vec[0].str == "PRINT")
-    {
+    } else if(r_vec[0].str == "PRINT") {
         if(r_vec.size() != 2) wrg_tkn_num("PRINT");
         else interp_PRINT_func(r_vec, p_roomman);
-    } else if(r_vec[0].str == "SET")
-    {
+    } else if(r_vec[0].str == "SET") {
         if(r_vec.size() != 4) wrg_tkn_num("SET");
         else interp_SET_func(r_vec);
-    } else if(r_vec[0].str == "CUTSCENE")
-    {
+    } else if(r_vec[0].str == "CUTSCENE") {
         if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
         else interp_CUTSCENE_func(r_vec, p_roomman);
-    } else if(r_vec[0].str == "GO")
-    {
+    } else if(r_vec[0].str == "GO") {
         if(r_vec.size() != 2) wrg_tkn_num("GO");
         else interp_GO_func(r_vec, p_roomman);
-    } else if(r_vec[0].str == "UNFINISHED")
-    {
+    } else if(r_vec[0].str == "UNFINISHED") {
         if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
         else interp_UNFINISHED_func(p_roomman);
-    }
+    } else if(r_vec[0].str == "GET") interp_GET_func(r_vec);
 }
 
 //Interpret a line depending on its first token
 static void interp_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
 {
-    switch(r_vec[0].type)
-    {
+    switch(r_vec[0].type) {
         case token_type::FUNCTION:
             interp_func_ins(r_vec, currentRoom, p_roomman);
             break;
@@ -283,7 +298,6 @@ namespace parser
                 else arg += ins.at(i);
             }
         } else correct_syntax = false;
-
         return correct_syntax;
     }
 
@@ -299,7 +313,6 @@ namespace parser
             std::string buf;
 
             endln = i;
-
             roomio::fetch_ln(buf, i);
             fw = stringsm::getfw(buf);
 
@@ -323,7 +336,6 @@ namespace parser
             if(p_roomman.is_endgame()) break;
 
             endln = i;
-
             roomio::fetch_ln(buf, i);
             fw = stringsm::getfw(buf);
 
