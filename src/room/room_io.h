@@ -26,7 +26,7 @@ bool roomio_find_ind(int& f_ln, std::string p_ln);
 
 namespace roomio
 {
-    void copy_file_to_vec();
+    void copy_file_to_vec(std::string const& roomfile);
     bool find_ind(int& f_ln, std::string const& p_ln);
     bool fetch_ln(std::string& p_ln, int ind);
 }

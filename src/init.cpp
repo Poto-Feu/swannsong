@@ -19,8 +19,12 @@
 
 extern "C" {
 #include <curses.h>
+#include "perror.h"
 }
 
+#include <algorithm>
+#include <array>
+#include <string>
 #include "init.h"
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
@@ -31,11 +35,14 @@ extern "C" {
 #include "pstrings.h"
 #include "userio.h"
 
-#include <array>
-#include <string>
-
 namespace init
 {
+    static void missing_gcvar(std::string const& p_name)
+    {
+        std::string err_msg = "missing gameconf var (" + p_name +")";
+        perror_disp(err_msg.c_str(), true);
+    }
+
     struct lang_item
     {
         lang_item(std::string const& p_id, std::string const& p_disp) :
@@ -74,18 +81,31 @@ namespace init
         set_coord();
     }
 
-    void set_pvars(std::string& room_name)
+    /*Fetch variables from the gameconf file, set some of them as pvars and
+    return a vector containing them*/
+    std::vector<pvar_struct> fetch_gameconf_vars()
     {
-        std::string defaultlang;
-        std::string roomfile;
+        auto gc_vec = gameconf::readfile();
 
-        gameconf::readfile();
-        defaultlang = pvars::getgcvars("defaultlang");
-        room_name = pvars::getgcvars("firstroom");
-        roomfile = pvars::getgcvars("roomfile");
-        pvars::setstdvars("csfile", pvars::getgcvars("csfile"));
-        pvars::setstdvars("lang", defaultlang);
-        pvars::setstdvars("roomfile", roomfile);
+        auto get_gcvar_it = [gc_vec](std::string const& p_name) {
+            return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
+                [p_name](pvar_struct const& ccpvar) {
+                return ccpvar.name == p_name;
+                });
+        };
+
+        auto defaultlang_it = get_gcvar_it("defaultlang");
+        auto langdir_it = get_gcvar_it("langdir");
+
+        if(defaultlang_it != gc_vec.cend()) {
+            pvars::setstdvars("lang", defaultlang_it->value);
+        } else missing_gcvar("defaultlang");
+
+        if(langdir_it != gc_vec.cend()) {
+            pvars::setstdvars("langdir", langdir_it->value);
+        } else missing_gcvar("langdir");
+
+        return gc_vec;
     }
 
     static void show_lang_prompt(std::array<lang_item, 2> p_arr)
@@ -115,7 +135,7 @@ namespace init
     }
 
     //Show a prompt asking the user to choose the language
-    static void ask_lang()
+    static void ask_lang(std::string const& p_langdir)
     {
         bool validinp = false;
         std::array<lang_item, 2> langarr {
@@ -140,7 +160,7 @@ namespace init
 
                     pvars::setstdvars("lang", lang.c_str());
                     validinp = true;
-                    pstrings::copy_file_to_vec();
+                    pstrings::copy_file_to_vec(p_langdir);
                 } else {
                     clear();
                     move(LINES - 3, pcurses::margin);
@@ -168,12 +188,34 @@ namespace init
 
 void init_game()
 {
-    std::string room_name; 
-
     init::set_curses();
-    init::set_pvars(room_name);
-    roomio::copy_file_to_vec();
-    init::ask_lang();
-    cutscenes::copy_file_to_vec();
-    roommod::start_loop(room_name);
+
+    auto gc_vec = init::fetch_gameconf_vars();
+
+    auto get_gcvar_it = [gc_vec](std::string const& p_name) {
+        return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
+            [p_name](pvar_struct const& ccpvar) {
+            return ccpvar.name == p_name;
+            });
+    };
+
+    auto langdir_it = get_gcvar_it("langdir");
+    auto roomfile_it = get_gcvar_it("roomfile");
+    auto csfile_it = get_gcvar_it("csfile");
+    auto firstroom_it = get_gcvar_it("firstroom");
+
+    if(langdir_it != gc_vec.cend()) init::ask_lang(langdir_it->value);
+    else init::missing_gcvar("langdir");
+
+    if(roomfile_it != gc_vec.cend()) {
+        roomio::copy_file_to_vec(roomfile_it->value);
+    } else init::missing_gcvar("roomfile");
+
+    if(csfile_it != gc_vec.cend()) {
+        cutscenes::copy_file_to_vec(csfile_it->value);
+    } else init::missing_gcvar("csfile");
+
+    if(firstroom_it != gc_vec.cend()) roommod::start_loop(firstroom_it->value);
+    else init::missing_gcvar("firstroom");
+
 }

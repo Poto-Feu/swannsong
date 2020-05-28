@@ -42,14 +42,11 @@ namespace pstrings
 
     /*Set the file pointer to the file containing the strings correponding
     to the selected language*/
-    static std::ifstream open_strfile()
+    static std::ifstream open_strfile(std::string const& p_langdir)
     {
-        std::string langdir = pvars::getgcvars("langdir");
-        std::string lang = pvars::getstdvars("lang");
-        std::string langfile;
+        std::string langfile = p_langdir;
        
-        langfile = langdir;
-        langfile.append(lang);
+        langfile.append(pvars::getvar("lang"));
         langfile.append(".txt");
 
         return std::ifstream(langfile);
@@ -103,10 +100,10 @@ namespace pstrings
         pstr_vec.push_back(new_el);
     }
 
-    void copy_file_to_vec()
+    void copy_file_to_vec(std::string const& p_langdir)
     {
         std::string buf;
-        std::ifstream file_stream = open_strfile();
+        std::ifstream file_stream = open_strfile(p_langdir);
 
         while(fileio::getfileln(buf, file_stream)) {
             std::string r_id;

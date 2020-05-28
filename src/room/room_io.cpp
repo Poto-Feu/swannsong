@@ -36,10 +36,10 @@ namespace roomio
     }
 
     //Copy room file lines into a vector
-    void copy_file_to_vec()
+    void copy_file_to_vec(std::string const& roomfile)
     {
         std::string buf;
-        std::ifstream file_stream(pvars::getstdvars("roomfile"));
+        std::ifstream file_stream(roomfile);
         
         while(fileio::getfileln(buf, file_stream)) {
             stringsm::rtab(buf);

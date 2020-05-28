@@ -20,9 +20,12 @@
 #ifndef GAMECONF_H
 #define GAMECONF_H
 
+#include <vector>
+#include "vars/pvars.hpp"
+
 namespace gameconf
 {
-    void readfile();
+    std::vector<pvar_struct> readfile();
 }
 
 #endif

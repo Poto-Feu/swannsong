@@ -23,6 +23,7 @@ extern "C" {
 
 #include <fstream>
 #include <string>
+#include <vector>
 #include "gameconf.hpp"
 #include "vars/pvars.hpp"
 
@@ -65,8 +66,9 @@ namespace gameconf
 
     /*Read data contained in the gameconf file and set the gameconf variable to
     the appropriate value*/
-    void readfile()
+    std::vector<pvar_struct> readfile()
     {
+        std::vector<pvar_struct> rtrn_vec;
         std::ifstream gc_stream("gameconf.txt");
         std::string curr_line;
 
@@ -84,13 +86,14 @@ namespace gameconf
                 std::string var;
                 std::string value;
 
-                if(!gameconf::splitins(var, value, curr_line))
+                if(gameconf::splitins(var, value, curr_line))
                 {
-                    perror_disp("incorrect gameconf syntax", false);
-                } else pvars::setgcvars(var, value);
+                    rtrn_vec.push_back(pvar_struct {var, value});
+                } else perror_disp("incorrect gameconf syntax", false);
             }
 
             curr_line.clear();
         }
+        return rtrn_vec;
     }
 }

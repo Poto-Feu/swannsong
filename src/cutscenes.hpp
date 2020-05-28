@@ -48,7 +48,7 @@ class Cutscene
 
 namespace cutscenes
 {
-    void copy_file_to_vec();
+    void copy_file_to_vec(std::string const& csfile);
     void display(std::string const& p_name);
     bool check_exist(std::string const& p_name);
 }
