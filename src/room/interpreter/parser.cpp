@@ -278,13 +278,13 @@ parameter equals to true - if there is no parameter specified, 1 is used as a
 value*/
 static bool check_HAS_condition(TokenVec r_vec)
 {
-    bool not_cond = false;
     int vec_size = r_vec.size();
-    unsigned int req_item_n = 1;
-    int has_pos = 1;
-    int item_pos = 2;
 
     if(vec_size == 4 || vec_size == 5) {
+        bool not_cond = false;
+        int has_pos = 1;
+        int item_pos = 2;
+
         if(r_vec[1].type == token_type::NOT) {
             not_cond = true;
             ++has_pos;
@@ -292,6 +292,8 @@ static bool check_HAS_condition(TokenVec r_vec)
         }
 
         if(r_vec[has_pos].type == token_type::HAS) {
+            unsigned int req_item_n = 1;
+
             if(r_vec[item_pos].type == token_type::NUMBER) {
                 req_item_n = std::stoi(r_vec[item_pos].str);
                 ++item_pos;
