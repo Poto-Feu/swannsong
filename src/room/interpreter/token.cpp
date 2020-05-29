@@ -19,9 +19,10 @@
 
 #include <algorithm>
 #include "token.hpp"
+#include "vars/gvars.hpp"
 #include "perror.h"
 #include "pstrings.h"
-#include "vars/gvars.hpp"
+#include "stringsm.h"
 
 static const std::vector<std::string> func_list = 
 {
@@ -32,6 +33,8 @@ static const std::vector<std::string> func_list =
     "TEXT",
     "IF",
     "CUTSCENE",
+    "GET",
+    "USE",
     "UNFINISHED"
 };
 
@@ -119,7 +122,6 @@ static TokenVec create_token_vector(std::string p_str)
             }
         }
     }
-    
     return rtrn_val;
 }
 
@@ -149,15 +151,18 @@ static bool is_func(std::string const& p_tkn)
 static bool is_variable(std::string const& p_tkn)
 {
     if(gvars::exist(p_tkn)) return true;
+    else return false;
+}
+
+static bool is_has(std::string const& p_tkn)
+{
+    if(p_tkn == "HAS") return true;
     return false;
 }
 
 static bool is_number(std::string const& p_tkn)
 {
-    for(int i = 0; p_tkn[i] != '\0'; i++) {
-        if(!isdigit(p_tkn[i])) return false;
-    }
-    return true;
+    return stringsm::is_number(p_tkn);
 }
 
 static bool is_string(std::string p_tkn)
@@ -184,28 +189,36 @@ static bool is_string(std::string p_tkn)
 static bool is_string_id(std::string p_tkn)
 {
     if(pstrings::check_exist(p_tkn)) return true;
-    return false;
+    else return false;
+}
+
+static bool is_item(TokenVec const& p_vec, int p_ind)
+{
+    if(p_vec[0].str == "GET" && (p_ind == 1 || p_ind == 2)) return true;
+    else return false;
 }
 
 static bool is_new_var(TokenVec const& p_vec, int p_ind)
 {
     if(p_vec[0].str == "SET" && p_ind == 1) return true;
-    return false;
+    else return false;
 }
 
 static bool is_exists(std::string const& p_tkn)
 {
-    if(p_tkn == "EXISTS" || p_tkn ==  "EXIST") return true;
-    return false;
+    if(p_tkn == "EXISTS") return true;
+    else return false;
 }
 
 //Set the appropriate type to each Token in a TokenVec
 static void set_tokens_type(TokenVec& p_vec)
 {
     int i = 0;
+
     for(auto& it : p_vec) {
         if(it.type == token_type::UNDEFINED) {
             if(is_if(it.str)) it.type = token_type::IF;
+            if(is_has(it.str)) it.type = token_type::HAS;
             else if(is_func(it.str)) it.type = token_type::FUNCTION;
             else if(is_number(it.str)) it.type = token_type::NUMBER;
             else if(is_variable(it.str)) it.type = token_type::VARIABLE;
@@ -213,6 +226,7 @@ static void set_tokens_type(TokenVec& p_vec)
             else if(is_string_id(it.str)) it.type = token_type::STRING_ID;
             else if(is_new_var(p_vec, i)) it.type = token_type::NEWVAR;
             else if(is_exists(it.str)) it.type = token_type::EXISTS;
+            else if(is_item(p_vec, i)) it.type = token_type::ITEM;
             else it.type = token_type::UNKNOWN;
         }
         ++i;

@@ -21,58 +21,82 @@ extern "C" {
 #include "perror.h"
 }
 
-#include <vector>
-#include "inventory.h"
+#include <algorithm>
+#include "inventory.hpp"
 #include "vars/intvar.hpp"
 
-/*Not named item in order to prevent conflict with some libs*/
-typedef intvar gitem;
-
-static std::vector<gitem> inventory_arr;
-
-static void inventory_additem_tolist(std::string pname, int val);
-static void inventory_add_n_item(int p_ind, int val);
-
-/*Add the specified number of an item - if it doesn't exist in inventory_list,
-the function adds the item to it*/
-void inventory_player_getitem(std::string p_name, int val)
+namespace inventory
 {
-    int p_ind = 0;
+    struct gitem {
+        std::string name;
+        unsigned int val;
+    };
 
-    if(intvarm::search_ind(p_ind, p_name, inventory_arr))
+    static std::vector<gitem> inventory_vec;
+
+    static auto return_it(std::string const& p_name)
     {
-        inventory_add_n_item(p_ind, val);
-    } else inventory_additem_tolist(p_name, val);
-}
+        return std::find_if(inventory_vec.begin(), inventory_vec.end(),
+                [&p_name](gitem const& citem) {
+                return citem.name == p_name;
+                });
+    }
 
-/*Return the number of pieces of an item present in the inventory*/
-int inventory_return_item_n(char* p_name)
-{
-    int r_val = -1;
-    int p_ind = 0;
-
-    if(intvarm::search_ind(p_ind, p_name, inventory_arr))
+    //Create an entry for the specified item in inventory_list
+    static void add_item_to_list(std::string const& p_name, unsigned int p_val)
     {
-        r_val = intvarm::return_value(p_ind, inventory_arr);
-    } else perror_disp("Inventory item not found", true);
+        inventory_vec.push_back(gitem{p_name, p_val});
+    }
 
-    return r_val;
-}
+    //Add the specified number of item to an inventory
+    static void add_n_item(std::string const& p_name, unsigned int p_val)
+    {
+        auto it = return_it(p_name);
 
-/*Create an entry for the specified item in inventory_list*/
-static void inventory_additem_tolist(std::string p_name, int p_val)
-{
-    intvar elem(p_name, p_val);
+        if(it != inventory_vec.end()) it->val += p_val;
+        else {
+            std::string err_msg = "no item corresponding (" + p_name + ")";
+            perror_disp(err_msg.c_str(), true);
+        }
+    }
 
-    intvarm::add_var_to_arr(inventory_arr, elem);
-}
+    /*Add the specified number of an item - if it doesn't exist in
+    inventory_vec, the function adds the item to it*/
+    void player_getitem(std::string const& p_name, unsigned int val)
+    {
+        auto it = return_it(p_name);
 
-/*Add the specified number of item to an inventory*/
-static void inventory_add_n_item(int p_ind, int p_val)
-{
-    int r_val = -1;
+        if(it != inventory_vec.cend()) {
+            add_n_item(p_name, val);
+        } else add_item_to_list(p_name, val);
+    }
 
-    r_val = intvarm::return_value(p_ind, inventory_arr);
-    p_val += r_val;
-    intvarm::set_value(r_val, p_ind, inventory_arr);
+    /*Reduce the specified number of item - and remove the item from the vector
+    if the result is equal to 0 or less*/
+    void player_useitem(std::string const& p_name, unsigned int p_val)
+    {
+        auto it = return_it(p_name);
+
+        if(it != inventory_vec.end()) {
+            if(p_val < it->val) {
+                it->val -= p_val;
+            } else inventory_vec.erase(it);
+        } else {
+            std::string err_msg = "item not found in inventory (" + p_name +
+                ")";
+            perror_disp(err_msg.c_str(), false);
+        }
+    }
+
+    //Return the number of pieces of an item present in the inventory
+    unsigned int return_item_n(std::string const& p_name)
+    {
+        unsigned int rtrn_val = 0;
+        auto it = return_it(p_name);
+
+        if(it != inventory_vec.cend()) rtrn_val = it->val;
+        else rtrn_val = 0;
+
+        return rtrn_val;
+    }
 }

@@ -20,15 +20,13 @@
 #ifndef INVENTORY_H
 #define INVENTORY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
 
-void inventory_player_getitem(char* p_name, int val);
-int inventory_return_item_n(char* p_name);
-
-#ifdef __cplusplus
+namespace inventory
+{
+    void player_getitem(std::string const& p_name, unsigned int val);
+    void player_useitem(std::string const& p_name, unsigned int val);
+    unsigned int return_item_n(std::string const& p_name);
 }
-#endif
 
 #endif

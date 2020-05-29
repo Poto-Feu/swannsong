@@ -11,6 +11,7 @@ ROOM menu
             TEXT menu_c1
             CUTSCENE welcome
             GO house
+            GET 3 Coin
         END
         c2
             TEXT menu_c2
