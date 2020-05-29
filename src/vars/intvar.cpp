@@ -27,15 +27,15 @@ extern "C" {
 
 namespace intvarm
 {
-    /*Add an intvar into an std::vector<intvar>*/
-    void add_var_to_arr(std::vector<intvar>& p_arr, intvar p_var)
+    //Add an intvar into an std::vector<intvar>
+    void add_var_to_arr(std::vector<intvar>& p_vec, intvar p_var)
     {
-        p_arr.push_back(p_var);
+        p_vec.push_back(p_var);
     }
 
-    /*Fetch the index of the specified intvar - returns false if not found*/
+    //Fetch the index of the specified intvar - returns false if not found
     bool search_ind(int& p_ind, std::string p_name,
-            std::vector<intvar> const& p_arr)
+            std::vector<intvar> const& p_vec)
     {
         int i = 0;
         bool isfnd = false;
@@ -43,7 +43,7 @@ namespace intvarm
 
         p_ind = -1;
 
-        for(auto const& x : p_arr) {
+        for(auto const& x : p_vec) {
             if(x.name == str_name) {
                 p_ind = i;
                 isfnd = true;
@@ -54,7 +54,7 @@ namespace intvarm
         return isfnd;
     }
 
-    /*Return the value of the intvar on the specified index*/
+    //Return the value of the intvar on the specified index
     int return_value(int p_ind, std::vector<intvar>& p_vec)
     {
         if(p_ind >= static_cast<int>(p_vec.size())) {
@@ -64,9 +64,9 @@ namespace intvarm
        
     }
 
-    /*Set the value of the specified intvar*/
-    void set_value(int p_val, int p_ind, std::vector<intvar>& p_arr)
+    //Set the value of the specified intvar
+    void set_value(int p_val, int p_ind, std::vector<intvar>& p_vec)
     {
-        p_arr[p_ind].val = p_val;
+        p_vec[p_ind].val = p_val;
     }
 }
