@@ -25,6 +25,7 @@
 namespace inventory
 {
     void player_getitem(std::string const& p_name, unsigned int val);
+    void player_useitem(std::string const& p_name, unsigned int val);
     unsigned int return_item_n(std::string const& p_name);
 }
 

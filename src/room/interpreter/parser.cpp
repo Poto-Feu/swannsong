@@ -185,6 +185,25 @@ static void interp_GET_func(TokenVec const& p_vec)
     inventory::player_getitem(p_vec[item_name_pos].str, item_n);
 }
 
+static void interp_USE_func(TokenVec const& p_vec)
+{
+    int item_name_pos = 1;
+    unsigned int item_n = 1;
+
+    if (p_vec.size() == 3) {
+        if(p_vec[1].type == token_type::NUMBER) {
+            item_name_pos = 2;
+            item_n = std::stoi(p_vec[1].str);
+        } else {
+            perror_disp(
+                "second part of an USE instruction must be a NUMBER or an ITEM",
+                true);
+        }
+    } else if(p_vec.size() != 2) wrg_tkn_num("USE");
+
+    inventory::player_useitem(p_vec[item_name_pos].str, item_n);
+}
+
 //Interpret a line which use a function
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
@@ -208,6 +227,7 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
         else interp_UNFINISHED_func(p_roomman);
     } else if(r_vec[0].str == "GET") interp_GET_func(r_vec);
+    else if(r_vec[0].str == "USE") interp_USE_func(r_vec);
 }
 
 //Interpret a line depending on its first token

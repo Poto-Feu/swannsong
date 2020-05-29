@@ -33,6 +33,7 @@ static const std::vector<std::string> func_list =
     "IF",
     "CUTSCENE",
     "GET",
+    "USE",
     "UNFINISHED"
 };
 
