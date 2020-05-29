@@ -22,7 +22,6 @@ extern "C" {
 }
 
 #include <algorithm>
-#include <vector>
 #include "inventory.hpp"
 #include "vars/intvar.hpp"
 
