@@ -273,6 +273,9 @@ static bool check_COMP_condition(TokenVec r_vec)
     return false;
 }
 
+/*Check if the condition comparing the number of items with the specifed
+parameter equals to true - if there is no parameter specified, 1 is used as a
+value*/
 static bool check_HAS_condition(TokenVec r_vec)
 {
     bool not_cond = false;
