@@ -22,14 +22,11 @@ extern "C" {
 #include "perror.h"
 }
 
-#include <string>
 #include "parser.hpp"
 #include "room/interpreter/token.hpp"
-#include "room/room.hpp"
 #include "room/room_io.h"
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
-#include "vars/pconst.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -253,7 +250,6 @@ static void parser_execins(std::string p_line, Room& currentRoom,
 
 static bool check_COMP_condition(TokenVec r_vec)
 {
-    bool rtrn_val = false;
     int vec_size = r_vec.size();
 
     if(vec_size < 4 || vec_size > 5) {
@@ -263,7 +259,7 @@ static bool check_COMP_condition(TokenVec r_vec)
             int varval = gvars::return_value(r_vec[1].str);
             int compval = std::stoi(r_vec[3].str);
 
-            if(compval == varval) rtrn_val = true;
+            if(compval == varval) return true;
         } else perror_disp("missing equal token in COMP IF", true);
     } else if(r_vec[2].type == token_type::NOT
             && r_vec[3].type == token_type::EQUAL
@@ -271,36 +267,81 @@ static bool check_COMP_condition(TokenVec r_vec)
         int varval = gvars::return_value(r_vec[1].str);
         int compval = std::stoi(r_vec[3].str);
 
-        if(compval != varval) rtrn_val = true;
+        if(compval != varval) return true;
     } else perror_disp("wrong token order in COMP IF", true);
 
-    return rtrn_val;
+    return false;
+}
+
+static bool check_HAS_condition(TokenVec r_vec)
+{
+    bool not_cond = false;
+    int vec_size = r_vec.size();
+    unsigned int req_item_n = 1;
+    int has_pos = 1;
+    int item_pos = 2;
+
+    if(vec_size == 4 || vec_size == 5) {
+        if(r_vec[1].type == token_type::NOT) {
+            not_cond = true;
+            ++has_pos;
+            ++item_pos;
+        }
+
+        if(r_vec[has_pos].type == token_type::HAS) {
+            if(r_vec[item_pos].type == token_type::NUMBER) {
+                req_item_n = std::stoi(r_vec[item_pos].str);
+                ++item_pos;
+            }
+
+            if(r_vec[item_pos].type != token_type::NUMBER
+                    && r_vec[item_pos].type != token_type::IF
+                    && r_vec[item_pos].type != token_type::HAS) {
+                bool rtrn_val = false;
+                auto item_n = inventory::return_item_n(r_vec[item_pos].str);
+
+                if(item_n >= req_item_n) rtrn_val = true;
+                if(not_cond) rtrn_val = !rtrn_val;
+
+                return rtrn_val;
+            } else perror_disp(
+                    "missing ITEM token (are the tokens in the right order ?)",
+                    true);
+        } else perror_disp(
+            "missing HAS token (are the tokens in the right order ?)", true);
+
+    } else wrg_tkn_num("HAS IF");
+
+    return false;
 }
 
 static bool check_condition(std::string insln)
 {
-    bool rtrn_val = false;
     TokenVec r_vec = token::create_arr(insln);
 
     if(r_vec[2].type == token_type::EXISTS) {
         if(r_vec.size() != 3) {
-            perror_disp("wrong arg number in EXISTS IF", true);
-        } else if(gvars::exist(r_vec[1].str)) rtrn_val = true;
+            wrg_tkn_num("EXISTS IF");
+        } else if(gvars::exist(r_vec[1].str)) return true;
     } else if(r_vec[2].type == token_type::NOT
             && r_vec[3].type == token_type::EXISTS) {
         if(r_vec.size() != 4) {
             perror_disp("wrong arg number in EXISTS IF", true);
-        } else if(!gvars::exist(r_vec[1].str)) rtrn_val = true;
+        } else if(!gvars::exist(r_vec[1].str)) return true;
     } else if(r_vec[1].type == token_type::VARIABLE) {
-        rtrn_val = check_COMP_condition(r_vec);
-    } else perror_disp("IF type not recognized", true);
+        return check_COMP_condition(r_vec);
+    } else if(r_vec[1].type == token_type::HAS
+            || (r_vec[1].type == token_type::NOT
+             && r_vec[2].type == token_type::HAS)) {
+        return check_HAS_condition(r_vec);
+    } else perror_disp("IF condition type not recognized", true);
 
-    return rtrn_val;
+    return false;
 }
 
 namespace parser
 {
-    /*Split a line into an argument and a type string*/
+    //Split a line into an argument and a type string
     bool splitline(std::string& type, std::string& arg, std::string ins)
     {
         unsigned int ins_size = ins.size();

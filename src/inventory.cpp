@@ -28,7 +28,6 @@ extern "C" {
 
 namespace inventory
 {
-
     struct gitem {
         std::string name;
         unsigned int val;
@@ -39,11 +38,11 @@ namespace inventory
     static auto return_it(std::string const& p_name)
     {
         return std::find_if(inventory_vec.begin(), inventory_vec.end(),
-                [p_name](gitem const& citem) {
+                [&p_name](gitem const& citem) {
                 return citem.name == p_name;
                 });
     }
-    //
+
     //Create an entry for the specified item in inventory_list
     static void add_item_to_list(std::string const& p_name, unsigned int p_val)
     {
@@ -55,9 +54,8 @@ namespace inventory
     {
         auto it = return_it(p_name);
 
-        if(it != inventory_vec.end()) {
-            it->val += p_val;
-        } else {
+        if(it != inventory_vec.end()) it->val += p_val;
+        else {
             std::string err_msg = "no item corresponding (" + p_name + ")";
             perror_disp(err_msg.c_str(), true);
         }
@@ -97,12 +95,9 @@ namespace inventory
         unsigned int rtrn_val = 0;
         auto it = return_it(p_name);
 
-        if(it != inventory_vec.cend()) {
-            rtrn_val = it->val;
-        } else {
-            std::string err_msg = "inventory item not found (" + p_name + ")";
-            perror_disp(err_msg.c_str(), true);
-        }
+        if(it != inventory_vec.cend()) rtrn_val = it->val;
+        else rtrn_val = 0;
+
         return rtrn_val;
     }
 }

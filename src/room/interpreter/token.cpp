@@ -19,9 +19,10 @@
 
 #include <algorithm>
 #include "token.hpp"
+#include "vars/gvars.hpp"
 #include "perror.h"
 #include "pstrings.h"
-#include "vars/gvars.hpp"
+#include "stringsm.h"
 
 static const std::vector<std::string> func_list = 
 {
@@ -121,7 +122,6 @@ static TokenVec create_token_vector(std::string p_str)
             }
         }
     }
-    
     return rtrn_val;
 }
 
@@ -154,12 +154,15 @@ static bool is_variable(std::string const& p_tkn)
     else return false;
 }
 
+static bool is_has(std::string const& p_tkn)
+{
+    if(p_tkn == "HAS") return true;
+    return false;
+}
+
 static bool is_number(std::string const& p_tkn)
 {
-    for(int i = 0; p_tkn[i] != '\0'; i++) {
-        if(!isdigit(p_tkn[i])) return false;
-    }
-    return true;
+    return stringsm::is_number(p_tkn);
 }
 
 static bool is_string(std::string p_tkn)
@@ -211,9 +214,11 @@ static bool is_exists(std::string const& p_tkn)
 static void set_tokens_type(TokenVec& p_vec)
 {
     int i = 0;
+
     for(auto& it : p_vec) {
         if(it.type == token_type::UNDEFINED) {
             if(is_if(it.str)) it.type = token_type::IF;
+            if(is_has(it.str)) it.type = token_type::HAS;
             else if(is_func(it.str)) it.type = token_type::FUNCTION;
             else if(is_number(it.str)) it.type = token_type::NUMBER;
             else if(is_variable(it.str)) it.type = token_type::VARIABLE;

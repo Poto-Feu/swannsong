@@ -31,6 +31,7 @@ enum class token_type
     OPERATOR,
     EQUAL,
     NOT,
+    HAS,
     STRING,
     NUMBER,
     STRING_ID,
