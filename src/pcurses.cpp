@@ -70,7 +70,7 @@ namespace pcurses
         return COLS / 2 - static_cast<int>(p_str.size()) / 2;
     }
 
-    void disp_str(std::string& str, int p_x)
+    static void disp_str(std::string& str, int p_x)
     {
         move(getcury(stdscr), p_x);
         printw("%s", str.c_str());
