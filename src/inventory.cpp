@@ -18,12 +18,16 @@
 */
 
 extern "C" {
+#include <curses.h>
 #include "perror.h"
 }
 
 #include <algorithm>
 #include "inventory.hpp"
 #include "vars/intvar.hpp"
+#include "pcurses.hpp"
+#include "pstrings.h"
+#include "userio.h"
 
 namespace inventory
 {
@@ -60,8 +64,8 @@ namespace inventory
         }
     }
 
-    /*Add the specified number of an item - if it doesn't exist in
-    inventory_vec, the function adds the item to it*/
+    /*Add the specified number of an item - if it doesn't exist in inventory_vec, the 
+    function adds the item to it*/
     void player_getitem(std::string const& p_name, unsigned int val)
     {
         auto it = return_it(p_name);
@@ -71,8 +75,8 @@ namespace inventory
         } else add_item_to_list(p_name, val);
     }
 
-    /*Reduce the specified number of item - and remove the item from the vector
-    if the result is equal to 0 or less*/
+    /*Reduce the specified number of item - and remove the item from the vector if the
+    result is equal to 0 or less*/
     void player_useitem(std::string const& p_name, unsigned int p_val)
     {
         auto it = return_it(p_name);
@@ -98,5 +102,37 @@ namespace inventory
         else rtrn_val = 0;
 
         return rtrn_val;
+    }
+
+    //Display the inventory screen
+    void display_screen()
+    {
+        clear();
+        move(pcurses::top_margin, pcurses::margin);
+
+        for(auto const& it : inventory_vec) {
+            std::string disp_str = it.name;
+            std::string str_name = "item_" + it.name;
+
+            if(pstrings::check_exist(str_name)) disp_str = pstrings::fetch(str_name);
+
+            disp_str += "   ";
+            disp_str += std::to_string(return_item_n(it.name));
+            pcurses::display_center_string(disp_str);
+            move(getcury(stdscr) + 1, pcurses::margin);
+
+            if(getcury(stdscr) >= LINES - 6) {
+                if(pstrings::check_exist("inventory_more")) {
+                    pcurses::display_center_string(
+                            pstrings::fetch("inventory_more"));
+                } else pcurses::display_center_string("(And more...)");
+                break;
+            }
+        }
+
+        move(LINES - 3, pcurses::margin);
+        printw("%s", pstrings::fetch("continue_penter").c_str());
+        refresh();
+        userio::waitenter();
     }
 }

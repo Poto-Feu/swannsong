@@ -7,6 +7,10 @@ continue_penter "Press Enter to continue..."
 
 unfinished_str "You have reached one of the unfinished parts of this program. Thank you for playing this work-in-progress game! If you have encountered any issue, feel free to let me know on Github."
 
+# Inventory
+inventory_more "(And more...)"
+
+# Room prompt
 room_prompt_text "Your choice: "
 incorrect_input "Eh?"
 
