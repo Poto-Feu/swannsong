@@ -21,52 +21,49 @@ extern "C" {
 #include "perror.h"
 }
 
-#include <cstdint>
+#include <algorithm>
 #include <vector>
 #include "vars/intvar.hpp"
 
 namespace intvarm
 {
+    //Return a constant iterator
+    auto return_it(std::string const& p_name, std::vector<intvar>& p_vec)
+    {
+        return std::find_if(p_vec.begin(), p_vec.end(), [p_name](intvar const& cvar) {
+                return cvar.name == p_name;
+                });
+    }
+
     //Add an intvar into an std::vector<intvar>
-    void add_var_to_arr(std::vector<intvar>& p_vec, intvar p_var)
+    void add_var_to_arr(std::vector<intvar>& p_vec, intvar& p_var)
     {
         p_vec.push_back(p_var);
     }
 
-    //Fetch the index of the specified intvar - returns false if not found
-    bool search_ind(int& p_ind, std::string p_name,
-            std::vector<intvar> const& p_vec)
+    //Return the value of the intvar on the specified index
+    int return_value(std::string const& p_name, std::vector<intvar>& p_vec)
     {
-        int i = 0;
-        bool isfnd = false;
-        std::string str_name(p_name);
+        int rtrn_val = -1;
+        auto it = return_it(p_name, p_vec);
 
-        p_ind = -1;
-
-        for(auto const& x : p_vec) {
-            if(x.name == str_name) {
-                p_ind = i;
-                isfnd = true;
-                break;
-            }
+        if(it != p_vec.end()) {
+            rtrn_val = it->val;
         }
 
-        return isfnd;
-    }
-
-    //Return the value of the intvar on the specified index
-    int return_value(int p_ind, std::vector<intvar>& p_vec)
-    {
-        if(p_ind >= static_cast<int>(p_vec.size())) {
-            perror_disp("OOR_ARR_INDEX", true);
-            return -1;
-        } else return p_vec[p_ind].val;
-       
+        return rtrn_val;
     }
 
     //Set the value of the specified intvar
-    void set_value(int p_val, int p_ind, std::vector<intvar>& p_vec)
+    void set_value(int p_val, std::string const& p_name,
+            std::vector<intvar>& p_vec)
     {
-        p_vec[p_ind].val = p_val;
+        auto it = return_it(p_name, p_vec);
+
+        if(it != p_vec.end()) it->val = p_val;
+        else {
+            std::string err_msg = "game var does not exists (" + p_name + ")";
+            perror_disp(err_msg.c_str(), true);
+        }
     }
 }

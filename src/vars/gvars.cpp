@@ -21,8 +21,7 @@ extern "C" {
 #include "perror.h"
 }
 
-#include <string>
-#include <vector>
+#include <algorithm>
 #include "gvars.hpp"
 #include "intvar.hpp"
 
@@ -33,28 +32,33 @@ static std::vector<intvar> gvar_vec;
 static void add_to_list(std::string const& p_name, int p_val)
 {
     gvar elem(p_name, p_val);
-
     intvarm::add_var_to_arr(gvar_vec, elem);
 }
 
 namespace gvars
 {
+    static auto check_exist(std::string const& p_name)
+    {
+        return std::find_if(gvar_vec.cbegin(), gvar_vec.cend(),
+                [&p_name](gvar const& cvar) {
+                return cvar.name == p_name;
+                }) != gvar_vec.cend();
+    }
+
     void set_var(std::string const& p_name, int p_val)
     {
-        int p_ind = 0;
-
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) {
-            perror_disp("gvar already exists", true);
+        if(check_exist(p_name)) {
+            std::string err_msg = "gvar already exists (" + p_name + ")";
+            perror_disp(err_msg.c_str(), true);
         } else add_to_list(p_name, p_val);
     }
 
     int return_value(std::string const& p_name)
     {
         int r_val = -1;
-        int p_ind = 0;
 
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) {
-            r_val = intvarm::return_value(p_ind, gvar_vec);
+        if(check_exist(p_name)) {
+            r_val = intvarm::return_value(p_name, gvar_vec);
         } else perror_disp("gvar does not exist", true);
 
         return r_val;
@@ -62,18 +66,13 @@ namespace gvars
 
     void change_val(std::string const& p_name, int p_val)
     {
-        int p_ind = 0;
-
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) {
-            intvarm::set_value(p_val, p_ind, gvar_vec);
-        } else perror_disp("gvar does not exist", true);
+        if(check_exist(p_name)) intvarm::set_value(p_val, p_name, gvar_vec);
+        else perror_disp("gvar does not exist", true);
     }
 
     bool exist(std::string const& p_name)
     {
-        int p_ind = 0;
-
-        if(intvarm::search_ind(p_ind, p_name, gvar_vec)) return true;
-        return false;
+        if(check_exist(p_name)) return true;
+        else return false;
     }
 }
