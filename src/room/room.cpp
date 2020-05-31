@@ -29,6 +29,7 @@ extern "C" {
 #include "find.hpp"
 #include "interpreter/parser.hpp"
 #include "exitgame.h"
+#include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -328,16 +329,12 @@ static void choice_input(unsigned int const p_inp, RoomManager& p_rmm,
     unsigned int choice_ln = p_rmm.getChoiceLine(p_inp);
 
     p_rmm.setBlockType(RoomManager::bt::CHOICE);
-
     parser::exec_until_end(choice_ln, p_room, p_rmm);
-
     p_rmm.displayCutscenes();
 
     if(p_rmm.is_endgame()) {
         exitgame(0);
     }
-
-    p_rmm.reset();
 }
 
 /*Reset the room screen with an added message to notify the user that its input
@@ -375,6 +372,11 @@ static void process_input(RoomManager& p_rmm, Room const& p_room)
         } else if(stringsm::to_upper(user_inp) == "EXIT") {
             correct_input = true;
             p_rmm.endLoop();
+            clear();
+        } else if(stringsm::to_upper(user_inp) == "INV"
+                || stringsm::to_upper(user_inp) == "INVENTORY") {
+            correct_input = true;
+            inventory::display_screen();
             clear();
         } else incorrect_input(p_rmm, p_room);
     }
@@ -424,6 +426,7 @@ namespace roommod
 
         while(!rmm.is_endgame()) {
             clear();
+            rmm.reset();
             room_load(curr_room_id, rmm);
             curr_room_id = rmm.getNextRoom();
         }

@@ -33,11 +33,10 @@ struct intvar
 
 namespace intvarm
 {
-    void add_var_to_arr(std::vector<intvar>& p_vec, intvar p_var);
-    bool search_ind(int& p_ind, std::string const& p_name,
-            std::vector<intvar> const& p_vec);
-    int return_value(int p_ind, std::vector<intvar>& p_vec);
-    void set_value(int p_val, int p_ind, std::vector<intvar>& p_vec);
+    void add_var_to_arr(std::vector<intvar>& p_vec, intvar& p_var);
+    int return_value(std::string const& p_name, std::vector<intvar>& p_vec);
+    void set_value(int p_val, std::string const& p_name,
+            std::vector<intvar>& p_vec);
 }
 
 #endif
