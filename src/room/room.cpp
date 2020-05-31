@@ -335,8 +335,6 @@ static void choice_input(unsigned int const p_inp, RoomManager& p_rmm,
     if(p_rmm.is_endgame()) {
         exitgame(0);
     }
-
-    p_rmm.reset();
 }
 
 /*Reset the room screen with an added message to notify the user that its input
@@ -380,7 +378,6 @@ static void process_input(RoomManager& p_rmm, Room const& p_room)
             correct_input = true;
             inventory::display_screen();
             clear();
-            p_rmm.reset();
         } else incorrect_input(p_rmm, p_room);
     }
 }
@@ -429,6 +426,7 @@ namespace roommod
 
         while(!rmm.is_endgame()) {
             clear();
+            rmm.reset();
             room_load(curr_room_id, rmm);
             curr_room_id = rmm.getNextRoom();
         }
