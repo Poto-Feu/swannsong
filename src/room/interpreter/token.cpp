@@ -41,10 +41,7 @@ static const std::vector<std::string> func_list =
 static const std::vector<char> oper_list =
 {
     '+',
-    '-',
-    '*',
-    '/',
-    '%'
+    '-'
 };
 
 static void set_tokens_type(TokenVec& p_arr);
