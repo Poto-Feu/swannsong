@@ -48,8 +48,7 @@ static void set_tokens_type(TokenVec& p_arr);
 
 static bool is_oper(char p_chr)
 {
-    return std::find_if(oper_list.cbegin(), oper_list.cend(),
-            [p_chr](char cch) {
+    return std::find_if(oper_list.cbegin(), oper_list.cend(), [=](char cch) {
             return p_chr == cch;
             }) != oper_list.cend();
 }
@@ -160,7 +159,7 @@ static bool is_not(std::string const& p_tkn)
 static bool is_has(std::string const& p_tkn)
 {
     if(p_tkn == "HAS") return true;
-    return false;
+    else return false;
 }
 
 static bool is_number(std::string& p_tkn)
@@ -252,7 +251,6 @@ namespace token
     TokenVec create_arr(std::string const& p_str)
     {
         TokenVec rtrn_vec = add_tokens_to_arr(p_str);
-
         return rtrn_vec;
     }
 }

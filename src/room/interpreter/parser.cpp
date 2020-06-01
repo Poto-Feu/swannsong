@@ -193,15 +193,14 @@ static void interp_USE_func(TokenVec const& p_vec)
             item_n = std::stoi(p_vec[1].str);
         } else {
             perror_disp(
-                "second part of an USE instruction must be a NUMBER or an ITEM",
-                true);
+                "second part of an USE instruction must be a NUMBER or an ITEM", true);
         }
     } else if(p_vec.size() != 2) wrg_tkn_num("USE");
 
     inventory::player_useitem(p_vec[item_name_pos].str, item_n);
 }
 
-//Interpret a line which use a function
+//Interpret a line which uses a function
 static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
 {
@@ -425,16 +424,14 @@ static bool check_condition(std::string insln)
         if(r_vec.size() != 3) {
             wrg_tkn_num("EXISTS IF");
         } else if(gvars::exist(r_vec[1].str)) return true;
-    } else if(r_vec[2].type == token_type::NOT
-            && r_vec[3].type == token_type::EXISTS) {
+    } else if(r_vec[2].type == token_type::NOT && r_vec[3].type == token_type::EXISTS) {
         if(r_vec.size() != 4) {
             perror_disp("wrong arg number in EXISTS IF", true);
         } else if(!gvars::exist(r_vec[1].str)) return true;
     } else if(r_vec[1].type == token_type::VARIABLE) {
         return check_COMP_condition(r_vec);
     } else if(r_vec[1].type == token_type::HAS
-            || (r_vec[1].type == token_type::NOT
-             && r_vec[2].type == token_type::HAS)) {
+            || (r_vec[1].type == token_type::NOT && r_vec[2].type == token_type::HAS)) {
         return check_HAS_condition(r_vec);
     } else perror_disp("IF condition type not recognized", true);
 
