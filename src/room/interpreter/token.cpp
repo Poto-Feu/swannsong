@@ -163,8 +163,17 @@ static bool is_has(std::string const& p_tkn)
     return false;
 }
 
-static bool is_number(std::string const& p_tkn)
+static bool is_number(std::string& p_tkn)
 {
+    //Make true and false aliases for integers values
+    if(p_tkn == "true") {
+        p_tkn = "1";
+        return true;
+    } else if(p_tkn == "false") {
+        p_tkn = "0";
+        return true;
+    }
+
     return stringsm::is_number(p_tkn);
 }
 
