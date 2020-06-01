@@ -227,6 +227,100 @@ static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
     else if(r_vec[0].str == "USE") interp_USE_func(r_vec);
 }
 
+//Interpret a line which changes a gvar value
+static void interp_gvar_ins(TokenVec r_vec)
+{
+    if(r_vec[1].type != token_type::EQUAL) {
+        perror_disp("second token of a gvars instruction must be an equal sign", true);
+    } else if(r_vec.size() == 3 && r_vec[2].type == token_type::NUMBER) {
+        gvars::change_val(r_vec[0].str, std::stoi(r_vec[2].str));
+    }
+    
+    enum class func_tkn_type {
+        EQUAL,
+        OPERATOR,
+        NUMBER
+    };
+
+    enum class oper_type {
+        NONE,
+        PLUS,
+        MINUS
+    };
+
+    bool continue_func = true;
+    int result_value = 0;
+    func_tkn_type last_tkn = func_tkn_type::EQUAL;
+    oper_type last_oper = oper_type::NONE;
+
+    for(unsigned int i = 2; i < r_vec.size() && continue_func; ++i) {
+        auto number_tkn_lambda = [=, &r_vec, &result_value, &last_tkn]() {
+            switch(last_tkn) {
+                case func_tkn_type::EQUAL:
+                    result_value = std::stoi(r_vec[i].str);
+                    break;
+                case func_tkn_type::OPERATOR:
+                    switch(last_oper) {
+                        case oper_type::PLUS:
+                            result_value += std::stoi(r_vec[i].str);
+                            break;
+                        case oper_type::MINUS:
+                            result_value -= std::stoi(r_vec[i].str);
+                            break;
+                        case oper_type::NONE:
+                            perror_disp("NONE operator used in gvars instruction", false);
+                            return false;
+                            break;
+                    }
+                    return true;
+                    break;
+                case func_tkn_type::NUMBER:
+                    perror_disp("NUMBER token before same type token in gvars"
+                            "instruction", false);
+                    return false;
+                    break;
+            }
+
+            last_tkn = func_tkn_type::NUMBER;
+            return true;
+        };
+
+        switch(r_vec[i].type) {
+            case token_type::EQUAL:
+                perror_disp("too many equal tokens in gvars instruction", true);
+                break;
+            case token_type::NUMBER:
+                continue_func = number_tkn_lambda();
+                last_tkn = func_tkn_type::NUMBER;
+                break;
+            case token_type::VARIABLE:
+                r_vec[i].str = std::to_string(gvars::return_value(r_vec[i].str));
+                r_vec[i].type = token_type::NUMBER;
+                continue_func = number_tkn_lambda();
+                break;
+            case token_type::OPERATOR:
+                if(last_tkn == func_tkn_type::OPERATOR) {
+                    perror_disp("OPERATOR token before same token type in gvars"
+                            "instruction",
+                            false);
+                    continue_func = false;
+                }
+
+                if(r_vec[i].str == "+") last_oper = oper_type::PLUS;
+                else if(r_vec[i].str == "-") last_oper = oper_type::MINUS;
+                else last_oper = oper_type::NONE;
+
+                last_tkn = func_tkn_type::OPERATOR;
+                break;
+            default:
+                perror_disp("wrong token type in gvars instruction", false);
+                continue_func = false;
+                break;
+        }
+    }
+    gvars::change_val(r_vec[0].str, result_value);
+}
+
 //Interpret a line depending on its first token
 static void interp_ins(TokenVec r_vec, Room& currentRoom,
         RoomManager& p_roomman)
@@ -234,6 +328,9 @@ static void interp_ins(TokenVec r_vec, Room& currentRoom,
     switch(r_vec[0].type) {
         case token_type::FUNCTION:
             interp_func_ins(r_vec, currentRoom, p_roomman);
+            break;
+        case token_type::VARIABLE:
+            interp_gvar_ins(r_vec);
             break;
         default:
             perror_disp("this is not yet implemented by the parser", true);
