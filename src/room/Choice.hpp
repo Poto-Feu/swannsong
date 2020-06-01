@@ -17,14 +17,22 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOM_HPP
-#define ROOM_HPP
+#ifndef CHOICE_HPP
+#define CHOICE_HPP
 
-#include <string>
-
-namespace roommod
+class Choice
 {
-    void start_loop(std::string const& id);
-}
+    public:
+
+        Choice(int ch_n, int ch_ln);
+
+        void display() const;
+        unsigned int getLine() const;
+
+    private:
+
+        int choice_n;
+        int choice_line;
+};
 
 #endif

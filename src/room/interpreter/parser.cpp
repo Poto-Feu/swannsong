@@ -27,6 +27,7 @@ extern "C" {
 #include "room/room_io.h"
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
+#include "cutscenes.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"

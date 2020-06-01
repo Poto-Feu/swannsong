@@ -17,14 +17,38 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOM_HPP
-#define ROOM_HPP
+#include "RoomClass.hpp"
 
-#include <string>
+Room::Room() { }
+Room::Room(std::string const& room_name) : name(room_name) { }
 
-namespace roommod
+std::string Room::getName() const
 {
-    void start_loop(std::string const& id);
+    return name;
 }
 
-#endif
+bool Room::isChoicesLineSet() const
+{
+    if(choices_line != 0) return true;
+    else return false;
+}
+
+int Room::getRoomLine() const 
+{
+    return room_line;
+}
+
+int Room::getChoicesLine() const 
+{
+    return choices_line;
+}
+
+void Room::setRoomLine(int rln) 
+{
+    room_line = rln;
+}
+
+void Room::setChoicesLine(int chln)
+{
+    choices_line = chln;
+}

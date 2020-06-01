@@ -24,7 +24,10 @@ add_executable(swannsongadv
     src/main.cpp
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.cpp
+    src/room/Choice.cpp
     src/room/room.cpp
+    src/room/RoomClass.cpp
+    src/room/RoomManager.cpp
     src/room/find.cpp
     src/room/room_io.cpp
     src/fileio/fileio.cpp

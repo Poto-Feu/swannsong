@@ -22,6 +22,7 @@
 #define PARSER_H
 
 #include "room/room.hpp"
+#include "room/RoomManager.hpp"
 
 namespace parser
 {
