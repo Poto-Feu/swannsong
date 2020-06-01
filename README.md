@@ -1,6 +1,8 @@
 # SwannSong Adventure
 A text-adventure game with some humor. Please note that this game is in a pre-alpha stage and is far from being finished.
 
+I started this project in order to improve my skills in C++. Do not take source files from this program as an example of optimized and well-written code.
+
 **WARNING:** this game contains infrequent strong language.
 
 ## Building the game
