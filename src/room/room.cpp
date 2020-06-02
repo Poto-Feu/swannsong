@@ -34,34 +34,20 @@ extern "C" {
 #include "stringsm.h"
 #include "userio.h"
 
-//Display the current room according to the RoomManager data
-static void roomman_show(RoomManager p_roomman, Room const& p_room)
-{
-    p_roomman.displayCutscenes();
-
-    if(p_roomman.is_title_displayed()) p_roomman.displayTitle(p_room);
-    if(p_roomman.is_desc_displayed()) p_roomman.displayDesc(p_room);
-
-    p_roomman.displayStrings();
-    p_roomman.displayChoices();
-}
-
 //Read the first ATLAUNCH block encountered starting from specified line
-static void room_atlaunch(Room& currentRoom, RoomManager& p_rmm)
+static void room_atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
 {
     int foundln = 0;
     bool atlfound = false;
 
-    atlfound = room_find::atlaunchline(foundln, currentRoom.getRoomLine());
+    atlfound = room_find::atlaunchline(foundln, p_struct.currRoom.getRoomLine());
 
     if(atlfound) {
-        p_rmm.setBlockType(RoomManager::bt::ATLAUNCH);
-        (void)parser::exec_until_end(foundln, currentRoom, p_rmm);
-        roomman_show(p_rmm, currentRoom);
+        p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
+        (void)parser::exec_until_end(foundln, p_struct, p_rmm);
+        p_struct.currState.displayAll(p_struct.currRoom);
     } else {
-        std::string err_str = "missing ATLAUNCH block ("
-            + currentRoom.getName() + ")";
-
+        std::string err_str = "missing ATLAUNCH block (" + p_struct.currRoom.getName() + ")";
         perror_disp(err_str.c_str(), true);
     }
 }
@@ -73,32 +59,30 @@ static void show_prompt()
 }
 
 //Process the input if it is a number corresponding to a choice
-static void choice_input(unsigned int const p_inp, RoomManager& p_rmm,
-        Room p_room)
+static void choice_input(unsigned int const p_inp, roommod::room_struct& p_struct,
+        RoomManager& p_roomman)
 {
-    unsigned int choice_ln = p_rmm.getChoiceLine(p_inp);
+    unsigned int choice_ln = p_struct.currState.getChoiceLine(p_inp);
 
-    p_rmm.setBlockType(RoomManager::bt::CHOICE);
-    parser::exec_until_end(choice_ln, p_room, p_rmm);
-    p_rmm.displayCutscenes();
+    p_struct.currState.setBlockType(RoomState::bt::CHOICE);
+    parser::exec_until_end(choice_ln, p_struct, p_roomman);
+    p_struct.currState.displayCutscenes();
 
-    if(p_rmm.is_endgame()) {
-        exitgame(0);
-    }
+    if(p_roomman.is_endgame()) exitgame(0);
 }
 
 /*Reset the room screen with an added message to notify the user that its input
 is not correct.*/
-static void incorrect_input(RoomManager const& p_rmm, Room const& p_room)
+static void incorrect_input(roommod::room_struct& p_struct)
 {
     clear();
     move(LINES - 5, pcurses::margin);
     printw("%s", (pstrings::fetch("incorrect_input")).c_str());
-    roomman_show(p_rmm, p_room);
+    p_struct.currState.displayAll(p_struct.currRoom);
 }
 
 //Show the room prompt and process the input
-static void process_input(RoomManager& p_rmm, Room const& p_room)
+static void process_input(roommod::room_struct p_struct, RoomManager& p_rmm)
 {
     bool correct_input = false;
 
@@ -110,13 +94,13 @@ static void process_input(RoomManager& p_rmm, Room const& p_room)
 
         if(stringsm::is_number(user_inp)) {
             unsigned int str_digit = std::stoi(user_inp);
-            unsigned int choices_n = p_rmm.getChoicesSize();
+            unsigned int choices_n = p_struct.currState.getChoicesSize();
 
             if(str_digit > choices_n || str_digit == 0) {
-                incorrect_input(p_rmm, p_room);
+                incorrect_input(p_struct);
             } else {
                 correct_input = true;
-                choice_input(str_digit, p_rmm, p_room);
+                choice_input(str_digit, p_struct, p_rmm);
                 clear();
             }
         } else if(stringsm::to_upper(user_inp) == "EXIT") {
@@ -128,7 +112,7 @@ static void process_input(RoomManager& p_rmm, Room const& p_room)
             correct_input = true;
             inventory::display_screen();
             clear();
-        } else incorrect_input(p_rmm, p_room);
+        } else incorrect_input(p_struct);
     }
 }
 
@@ -138,6 +122,7 @@ static void room_load(std::string const& p_id, RoomManager &p_rmm)
     static std::vector<Room> room_list;
     bool room_fnd = false;
     Room currentRoom;
+    RoomState currentState;
 
     auto it = std::find_if(room_list.cbegin(), room_list.cend(),
             [p_id](Room const& crm) {
@@ -154,14 +139,16 @@ static void room_load(std::string const& p_id, RoomManager &p_rmm)
         currentRoom.setRoomLine(roomln);
     }
 
+    roommod::room_struct p_struct { currentRoom, currentState };
+
     move(0, 0);
     clear();
     p_rmm.setNextRoom(p_id);
-    room_atlaunch(currentRoom, p_rmm);
+    room_atlaunch(p_struct, p_rmm);
 
     if(p_rmm.is_endgame()) return;
 
-    process_input(p_rmm, currentRoom);
+    process_input(p_struct, p_rmm);
 
     if(!room_fnd) room_list.push_back(currentRoom);
 }
@@ -176,7 +163,6 @@ namespace roommod
 
         while(!rmm.is_endgame()) {
             clear();
-            rmm.reset();
             room_load(curr_room_id, rmm);
             curr_room_id = rmm.getNextRoom();
         }

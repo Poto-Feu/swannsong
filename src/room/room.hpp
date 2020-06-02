@@ -21,9 +21,17 @@
 #define ROOM_HPP
 
 #include <string>
+#include "RoomClass.hpp"
+#include "RoomState.hpp"
 
 namespace roommod
 {
+    struct room_struct
+    {
+        Room currRoom;
+        RoomState currState;
+    };
+
     void start_loop(std::string const& id);
 }
 

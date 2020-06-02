@@ -28,6 +28,7 @@ add_executable(swannsongadv
     src/room/room.cpp
     src/room/RoomClass.cpp
     src/room/RoomManager.cpp
+    src/room/RoomState.cpp
     src/room/find.cpp
     src/room/room_io.cpp
     src/fileio/fileio.cpp
