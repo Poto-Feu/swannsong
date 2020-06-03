@@ -27,7 +27,7 @@ extern "C"  {
 #include <vector>
 #include "pstrings.h"
 #include "fileio/fileio.h"
-#include "vars/pvars.hpp"
+#include "lang.hpp"
 #include "stringsm.h"
 
 namespace pstrings
@@ -46,7 +46,7 @@ namespace pstrings
     {
         std::string langfile = p_langdir;
        
-        langfile.append(pvars::getvar("lang"));
+        langfile.append(langmod::get_lang());
         langfile.append(".txt");
 
         return std::ifstream(langfile);

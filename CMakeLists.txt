@@ -33,12 +33,12 @@ add_executable(swannsongadv
     src/room/room_io.cpp
     src/fileio/fileio.cpp
     src/fileio/gameconf.cpp
-    src/vars/pvars.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp
     src/cutscenes.cpp
     src/init.cpp
+    src/lang.cpp
     src/perror.c
     src/pstrings.cpp
     src/pcurses.cpp

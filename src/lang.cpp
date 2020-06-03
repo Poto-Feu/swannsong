@@ -17,22 +17,36 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PVARS_HPP
-#define PVARS_HPP
+#include <cstdint>
+#include <stdexcept>
+#include "lang.hpp"
 
-#include <string>
-
-struct pvar_struct {
-    std::string name;
-    std::string value;
-};
-
-namespace pvars
+namespace langmod
 {
-    void setvar(std::string const& p_name, std::string const& p_value);
-    void setstdvars(std::string const& p_name, std::string const& p_value);
-    std::string getvar(std::string const& p_name);
-    std::string getstdvars(std::string const& p_name);
-}
+    static const uint8_t LANG_SIZE = 3;
 
-#endif
+    static std::string game_lang;
+    static std::string langdir;
+
+    std::string get_lang()
+    {
+        return game_lang;
+    }
+
+    std::string get_langdir()
+    {
+        return langdir;
+    }
+
+    void set_lang(std::string const& p_lang)
+    {
+        if(p_lang.size() != LANG_SIZE) throw std::runtime_error("incorrect lang string size (" +
+                p_lang + ")");
+        else game_lang = p_lang;
+    }
+
+    void set_langdir(std::string const& p_lang)
+    {
+        game_lang = p_lang;
+    }
+}

@@ -17,13 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <string>
 #include <vector>
 #include <fstream>
 #include "room_io.h"
 #include "fileio/fileio.h"
 #include "vars/pconst.hpp"
-#include "vars/pvars.hpp"
 #include "stringsm.h"
 
 namespace roomio
