@@ -33,6 +33,11 @@ void RoomManager::setNextRoom(std::string const& p_id)
     next_room = p_id;
 }
 
+void RoomManager::setUnfinished()
+{
+    unfinished = true;
+}
+
 std::string RoomManager::getNextRoom() const
 {
     return next_room;
@@ -41,4 +46,9 @@ std::string RoomManager::getNextRoom() const
 bool RoomManager::is_endgame() const
 {
     return endgame;
+}
+
+bool RoomManager::is_unfinished() const
+{
+    return unfinished;
 }

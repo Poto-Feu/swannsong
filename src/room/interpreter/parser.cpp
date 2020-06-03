@@ -149,11 +149,7 @@ static void interp_GO_func(TokenVec r_vec, RoomManager& p_roomman)
 they have reached an unfinished part of the program*/
 static void interp_UNFINISHED_func(RoomManager& p_rmm)
 {
-    p_rmm.endLoop();
-
-    clear();
-    move(3, pcurses::margin);
-    pcurses::display_center_string(pstrings::fetch("unfinished_str"));
+    p_rmm.setUnfinished();
 }
 
 /*Interpret a line which use the GET function, which add an item to the player's
@@ -477,7 +473,7 @@ namespace parser
         int startln = blockln + 1;
         int endln = startln;
 
-        for(int i = startln; !is_end; i++) {
+        for(int i = startln; !is_end && !p_roomman.is_unfinished(); i++) {
             std::string buf;
             std::string fw;
 
@@ -489,9 +485,7 @@ namespace parser
 
             if(fw == "END") is_end = true;
             else if(fw == "IF") {
-                if(check_condition(buf)) {
-                    i = exec_until_end(i, p_struct, p_roomman);
-                }
+                if(check_condition(buf)) i = exec_until_end(i, p_struct, p_roomman);
                 else i = parser::skip_until_end(i);
             } else parser_execins(buf, p_struct, p_roomman);
         }

@@ -146,7 +146,7 @@ static void room_load(std::string const& p_id, RoomManager &p_rmm)
     p_rmm.setNextRoom(p_id);
     room_atlaunch(p_struct, p_rmm);
 
-    if(p_rmm.is_endgame()) return;
+    if(p_rmm.is_endgame() && p_rmm.is_unfinished()) return;
 
     process_input(p_struct, p_rmm);
 
@@ -155,17 +155,26 @@ static void room_load(std::string const& p_id, RoomManager &p_rmm)
 
 namespace roommod
 {
+    static void unfinished_game()
+    {
+        clear();
+        move(3, pcurses::margin);
+        pcurses::display_center_string(pstrings::fetch("unfinished_str"));
+    }
+
     //Start the game loop which loads rooms until the end signal is enabled
     void start_loop(std::string const& id)
     {
         std::string curr_room_id = id;
         RoomManager rmm;
 
-        while(!rmm.is_endgame()) {
+        while(!rmm.is_endgame() && !rmm.is_unfinished()) {
             clear();
             room_load(curr_room_id, rmm);
             curr_room_id = rmm.getNextRoom();
         }
+        
+        if(rmm.is_unfinished()) unfinished_game();
         exitgame(0);
     }
 }

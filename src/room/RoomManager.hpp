@@ -20,9 +20,7 @@
 #ifndef ROOM_MANAGER_HPP
 #define ROOM_MANAGER_HPP
 
-#include <vector>
-#include "Choice.hpp"
-#include "RoomClass.hpp"
+#include <string>
 
 class RoomManager
 {
@@ -32,15 +30,18 @@ class RoomManager
 
         void endLoop();
 
+        void setUnfinished();
         void setNextRoom(std::string const& p_id);
 
         std::string getNextRoom() const;
 
         bool is_endgame() const;
+        bool is_unfinished() const;
 
     private:
 
         bool endgame = false;
+        bool unfinished = false;
 
         std::string next_room;
 };
