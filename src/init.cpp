@@ -24,7 +24,6 @@ extern "C" {
 
 #include <algorithm>
 #include <array>
-#include <string>
 #include "init.hpp"
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
@@ -138,8 +137,8 @@ namespace init
     {
         bool validinp = false;
         std::array<lang_item, 2> langarr {
-            lang_item("en", "English"),
-            lang_item("fr", "Français")
+            lang_item("eng", "English"),
+            lang_item("fra", "Français")
         };
 
         clear();

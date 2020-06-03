@@ -23,7 +23,7 @@
 
 namespace langmod
 {
-    static const uint8_t LANG_SIZE = 2;
+    static const uint8_t LANG_SIZE = 3;
 
     static std::string game_lang;
     static std::string langdir;
@@ -40,7 +40,8 @@ namespace langmod
 
     void set_lang(std::string const& p_lang)
     {
-        if(p_lang.size() != LANG_SIZE) throw std::runtime_error("incorrect lang string size");
+        if(p_lang.size() != LANG_SIZE) throw std::runtime_error("incorrect lang string size (" +
+                p_lang + ")");
         else game_lang = p_lang;
     }
 
