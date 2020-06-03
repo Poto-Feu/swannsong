@@ -35,6 +35,7 @@ void exitgame(int const c)
 
     refresh();
     userio::waitenter();
+    delwin(stdscr);
     endwin();
 
     if(c == 0) exit(c);
