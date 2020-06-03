@@ -29,8 +29,8 @@ extern "C" {
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
 #include "room/room.hpp"
-#include "vars/pvars.hpp"
 #include "cutscenes.hpp"
+#include "lang.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -81,16 +81,15 @@ namespace init
         set_coord();
     }
 
-    /*Fetch variables from the gameconf file, set some of them as pvars and
-    return a vector containing them*/
-    std::vector<pvar_struct> fetch_gameconf_vars()
+    /*Fetch variables from the gameconf file and return a vector containing them*/
+    std::vector<gameconf::gcvar_struct> fetch_gameconf_vars()
     {
         auto gc_vec = gameconf::readfile();
 
         auto get_gcvar_it = [gc_vec](std::string const& p_name) {
             return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
-                [p_name](pvar_struct const& ccpvar) {
-                return ccpvar.name == p_name;
+                [p_name](gameconf::gcvar_struct const& cgcvar) {
+                return cgcvar.name == p_name;
                 });
         };
 
@@ -98,11 +97,11 @@ namespace init
         auto langdir_it = get_gcvar_it("langdir");
 
         if(defaultlang_it != gc_vec.cend()) {
-            pvars::setstdvars("lang", defaultlang_it->value);
+            langmod::set_lang(defaultlang_it->value);
         } else missing_gcvar("defaultlang");
 
         if(langdir_it != gc_vec.cend()) {
-            pvars::setstdvars("langdir", langdir_it->value);
+            langmod::set_langdir(langdir_it->value);
         } else missing_gcvar("langdir");
 
         return gc_vec;
@@ -158,7 +157,7 @@ namespace init
                 if(intval > 0 && intval <= static_cast<int>(langarr.size())) {
                     std::string lang = langarr[intval - 1].id;
 
-                    pvars::setstdvars("lang", lang.c_str());
+                    langmod::set_lang(lang);
                     validinp = true;
                     pstrings::copy_file_to_vec(p_langdir);
                 } else {
@@ -193,7 +192,7 @@ namespace init
 
         auto get_gcvar_it = [gc_vec](std::string const& p_name) {
             return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
-                [p_name](pvar_struct const& ccpvar) {
+                [p_name](gameconf::gcvar_struct const& ccpvar) {
                 return ccpvar.name == p_name;
                 });
         };

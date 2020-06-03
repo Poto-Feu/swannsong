@@ -17,20 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GAMECONF_H
-#define GAMECONF_H
+#ifndef LANG_HPP
+#define LANG_HPP
 
 #include <string>
-#include <vector>
 
-namespace gameconf
+namespace langmod
 {
-    struct gcvar_struct {
-        std::string name;
-        std::string value;
-    };
-
-    std::vector<gcvar_struct> readfile();
+    std::string get_lang();
+    std::string get_langdir();
+    void set_lang(std::string const& p_lang);
+    void set_langdir(std::string const& p_lang);
 }
 
 #endif

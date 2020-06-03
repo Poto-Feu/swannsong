@@ -22,10 +22,7 @@ extern "C" {
 }
 
 #include <fstream>
-#include <string>
-#include <vector>
 #include "gameconf.hpp"
-#include "vars/pvars.hpp"
 
 namespace gameconf
 {
@@ -64,11 +61,11 @@ namespace gameconf
 
     }
 
-    /*Read data contained in the gameconf file and set the gameconf variable to
-    the appropriate value*/
-    std::vector<pvar_struct> readfile()
+    /*Read data contained in the gameconf file and set the gameconf variable to the appropriate
+    value*/
+    std::vector<gcvar_struct> readfile()
     {
-        std::vector<pvar_struct> rtrn_vec;
+        std::vector<gcvar_struct> rtrn_vec;
         std::ifstream gc_stream("gameconf.txt");
         std::string curr_line;
 
@@ -88,7 +85,7 @@ namespace gameconf
 
                 if(gameconf::splitins(var, value, curr_line))
                 {
-                    rtrn_vec.push_back(pvar_struct {var, value});
+                    rtrn_vec.push_back(gcvar_struct {var, value});
                 } else perror_disp("incorrect gameconf syntax", false);
             }
 
