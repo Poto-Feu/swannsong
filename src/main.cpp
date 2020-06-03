@@ -17,12 +17,12 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "init.h"
+#include "init.hpp"
 #include "exitgame.h"
 
 int main (void)
 {
-    init_game();
+    init::start_game();
     exitgame(0);
 
     return 0;

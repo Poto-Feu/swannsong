@@ -17,17 +17,12 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef INIT_H
-#define INIT_H
+#ifndef INIT_HPP
+#define INIT_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void init_game();
-
-#ifdef __cplusplus
+namespace init
+{
+    void start_game();
 }
-#endif
 
 #endif

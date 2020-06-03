@@ -25,7 +25,7 @@ extern "C" {
 #include <algorithm>
 #include <array>
 #include <string>
-#include "init.h"
+#include "init.hpp"
 #include "fileio/gameconf.hpp"
 #include "room/room_io.h"
 #include "room/room.hpp"
@@ -184,38 +184,44 @@ namespace init
             }
         }
     }
-}
 
-void init_game()
-{
-    init::set_curses();
+    static void init_game(std::string& room_name)
+    {
+        init::set_curses();
 
-    auto gc_vec = init::fetch_gameconf_vars();
+        auto gc_vec = init::fetch_gameconf_vars();
 
-    auto get_gcvar_it = [gc_vec](std::string const& p_name) {
-        return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
-            [p_name](pvar_struct const& ccpvar) {
-            return ccpvar.name == p_name;
-            });
-    };
+        auto get_gcvar_it = [gc_vec](std::string const& p_name) {
+            return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
+                [p_name](pvar_struct const& ccpvar) {
+                return ccpvar.name == p_name;
+                });
+        };
 
-    auto langdir_it = get_gcvar_it("langdir");
-    auto roomfile_it = get_gcvar_it("roomfile");
-    auto csfile_it = get_gcvar_it("csfile");
-    auto firstroom_it = get_gcvar_it("firstroom");
+        auto langdir_it = get_gcvar_it("langdir");
+        auto roomfile_it = get_gcvar_it("roomfile");
+        auto csfile_it = get_gcvar_it("csfile");
+        auto firstroom_it = get_gcvar_it("firstroom");
 
-    if(langdir_it != gc_vec.cend()) init::ask_lang(langdir_it->value);
-    else init::missing_gcvar("langdir");
+        if(langdir_it != gc_vec.cend()) init::ask_lang(langdir_it->value);
+        else init::missing_gcvar("langdir");
 
-    if(roomfile_it != gc_vec.cend()) {
-        roomio::copy_file_to_vec(roomfile_it->value);
-    } else init::missing_gcvar("roomfile");
+        if(roomfile_it != gc_vec.cend()) roomio::copy_file_to_vec(roomfile_it->value);
+        else init::missing_gcvar("roomfile");
 
-    if(csfile_it != gc_vec.cend()) {
-        cutscenes::copy_file_to_vec(csfile_it->value);
-    } else init::missing_gcvar("csfile");
+        if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value);
+        else init::missing_gcvar("csfile");
 
-    if(firstroom_it != gc_vec.cend()) roommod::start_loop(firstroom_it->value);
-    else init::missing_gcvar("firstroom");
+        if(firstroom_it != gc_vec.cend()) room_name = firstroom_it->value;
+        else init::missing_gcvar("firstroom");
 
+    }
+
+    void start_game()
+    {
+        std::string room_name;
+
+        init_game(room_name);
+        roommod::start_loop(room_name);
+    }
 }
