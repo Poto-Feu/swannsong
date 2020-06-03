@@ -21,107 +21,18 @@
 #define ROOM_HPP
 
 #include <string>
-#include <vector>
-#include "cutscenes.hpp"
+#include "RoomClass.hpp"
+#include "RoomState.hpp"
 
 namespace roommod
 {
+    struct room_struct
+    {
+        Room currRoom;
+        RoomState currState;
+    };
+
     void start_loop(std::string const& id);
 }
-
-class Choice
-{
-    public:
-
-        Choice(int ch_n, int ch_ln);
-
-        void display() const;
-        unsigned int getLine() const;
-
-    private:
-
-        int choice_n;
-        int choice_line;
-};
-
-class Room 
-{
-    public:
-
-        Room();
-        explicit Room(std::string const& room_name);
-
-        void getName(char* r_name) const;
-        std::string getName() const;
-
-        bool isChoicesLineSet() const;
-
-        int getRoomLine() const;
-        int getChoicesLine() const;
-
-        void setRoomLine(int rln);
-        void setChoicesLine(int chln);
-
-    private:
-
-        std::string name;
-
-        int room_line = 0;
-        int choices_line = 0;
-};
-
-class RoomManager
-{
-    public:
-
-        enum class bt
-        {
-            ATLAUNCH,
-            CHOICE
-        };
-
-        RoomManager();
-
-        void endLoop();
-        void reset();
-
-        void addTitle();
-        void addDesc();
-        void addChoice(Choice const& p_choice);
-        void addString(std::string const& p_str);
-        void addCutscene(std::string const& p_cs);
-
-        void setBlockType(bt const p_bt);
-        void setNextRoom(std::string const& p_id);
-
-        unsigned int getChoicesSize() const;
-        unsigned int getChoiceLine(unsigned int ch_n) const;
-        bt getBlockType() const;
-        std::string getNextRoom() const;
-
-        void displayTitle(Room const& p_room);
-        void displayDesc(Room const& p_room);
-        void displayChoices();
-        void displayStrings();
-        void displayCutscenes();
-
-        bool is_endgame() const;
-        bool is_title_displayed() const;
-        bool is_desc_displayed() const;
-
-    private:
-
-        bool endgame = false;
-        bool title_displayed = false;
-        bool desc_displayed = false;
-
-        bt block_type = bt::ATLAUNCH;
-
-        std::string next_room;
-
-        std::vector<Choice> choice_list;
-        std::vector<std::string> string_list;
-        std::vector<std::string> cs_list;
-};
 
 #endif

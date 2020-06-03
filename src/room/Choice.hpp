@@ -17,18 +17,22 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef CHOICE_HPP
+#define CHOICE_HPP
 
-#ifndef PARSER_H
-#define PARSER_H
-
-#include "room/room.hpp"
-#include "room/RoomManager.hpp"
-
-namespace parser
+class Choice
 {
-    int skip_until_end(int blockln);
-    int exec_until_end(int blockln, roommod::room_struct& p_struct, RoomManager& p_roomman);
-    bool splitline(std::string& type, std::string& arg, std::string ins);
-}
+    public:
+
+        Choice(int ch_n, int ch_ln);
+
+        void display() const;
+        unsigned int getLine() const;
+
+    private:
+
+        int choice_n;
+        int choice_line;
+};
 
 #endif

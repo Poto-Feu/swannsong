@@ -27,6 +27,7 @@ extern "C" {
 #include "room/room_io.h"
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
+#include "cutscenes.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -46,19 +47,18 @@ static void wrg_tkn_num(std::string const& func_name)
 }
 
 //Add all room choices into a vector in the RoomManager
-static void add_all_choices(int roomln, Room& currentRoom,
-        RoomManager& p_roomman)
+static void add_all_choices(int roomln, roommod::room_struct& p_struct)
 {
     int choicesln = 0;
     bool choicesremain = true;
     
-    if(currentRoom.isChoicesLineSet()) {
-        choicesln = currentRoom.getChoicesLine();
+    if(p_struct.currRoom.isChoicesLineSet()) {
+        choicesln = p_struct.currRoom.getChoicesLine();
     } else {
         bool choicesexist = room_find::choicesline(choicesln, roomln);
 
         if(!choicesexist) perror_disp("Missing CHOICES block", true);
-        else currentRoom.setChoicesLine(choicesln);
+        else p_struct.currRoom.setChoicesLine(choicesln);
     }
 
     for(int i = 1; choicesremain; i++) {
@@ -69,7 +69,7 @@ static void add_all_choices(int roomln, Room& currentRoom,
         if(!choiceexist) {
             if(i == 1) perror_disp("No CHOICE block found", true);
             choicesremain = false;
-        } else p_roomman.addChoice(Choice(i, onechoiceln));
+        } else p_struct.currState.addChoice(Choice(i, onechoiceln));
     }
 }
 
@@ -90,36 +90,31 @@ static void interp_SET_func(TokenVec r_vec)
 }
 
 //Interpret a line which use the DISPLAY function
-static void interp_DISPLAY_func(TokenVec r_vec, Room& currentRoom,
-        RoomManager& p_roomman)
+static void interp_DISPLAY_func(TokenVec r_vec, roommod::room_struct& p_struct)
 {
-    if(p_roomman.getBlockType() == RoomManager::bt::CHOICE) {
-        CHOICE_block_err("DISPLAY");
-    }
+    if(p_struct.currState.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("DISPLAY");
 
     if(r_vec[1].str == "CHOICES") {
         int roomln = -1;
 
-        roomln = currentRoom.getRoomLine();
-        add_all_choices(roomln, currentRoom, p_roomman);
-    } else if(r_vec[1].str == "TITLE") p_roomman.addTitle();
-    else if(r_vec[1].str == "DESC") p_roomman.addDesc();
+        roomln = p_struct.currRoom.getRoomLine();
+        add_all_choices(roomln, p_struct);
+    } else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
+    else if(r_vec[1].str == "DESC") p_struct.currState.addDesc();
     else perror_disp("displaying one choice is not yet implemented", false);
 }
 
 //Interpret a line which use the PRINT function
-static void interp_PRINT_func(TokenVec r_vec, RoomManager& p_roomman)
+static void interp_PRINT_func(TokenVec r_vec, RoomState& p_state)
 {
-    if(p_roomman.getBlockType() == RoomManager::bt::CHOICE) {
-        CHOICE_block_err("PRINT");
-    }
+    if(p_state.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("PRINT");
 
     switch(r_vec[1].type) {
         case token_type::STRING:
-            p_roomman.addString(r_vec[1].str);
+            p_state.addString(r_vec[1].str);
             break;
         case token_type::STRING_ID:
-            p_roomman.addString(pstrings::fetch(r_vec[1].str));
+            p_state.addString(pstrings::fetch(r_vec[1].str));
             break;
         default:
             perror_disp("token cannot be displayed (PRINT)", 0);
@@ -128,10 +123,10 @@ static void interp_PRINT_func(TokenVec r_vec, RoomManager& p_roomman)
 }
 
 //Interpret a line which use the CUTSCENE function
-static void interp_CUTSCENE_func(TokenVec r_vec, RoomManager& p_roomman)
+static void interp_CUTSCENE_func(TokenVec r_vec, RoomState& p_state)
 {
     if(cutscenes::check_exist(r_vec[1].str)) {
-        p_roomman.addCutscene(r_vec[1].str);
+        p_state.addCutscene(r_vec[1].str);
     } else {
         std::string err_str = "unknown CUTSCENE id (" + r_vec[1].str + ")";
         perror_disp(err_str.c_str(), false);
@@ -154,11 +149,7 @@ static void interp_GO_func(TokenVec r_vec, RoomManager& p_roomman)
 they have reached an unfinished part of the program*/
 static void interp_UNFINISHED_func(RoomManager& p_rmm)
 {
-    p_rmm.endLoop();
-
-    clear();
-    move(3, pcurses::margin);
-    pcurses::display_center_string(pstrings::fetch("unfinished_str"));
+    p_rmm.setUnfinished();
 }
 
 /*Interpret a line which use the GET function, which add an item to the player's
@@ -201,21 +192,20 @@ static void interp_USE_func(TokenVec const& p_vec)
 }
 
 //Interpret a line which uses a function
-static void interp_func_ins(TokenVec r_vec, Room& currentRoom,
-        RoomManager& p_roomman)
+static void interp_func_ins(TokenVec r_vec, roommod::room_struct& p_struct, RoomManager& p_roomman)
 {
     if(r_vec[0].str == "DISPLAY") {
         if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
-        else interp_DISPLAY_func(r_vec, currentRoom, p_roomman);
+        else interp_DISPLAY_func(r_vec, p_struct);
     } else if(r_vec[0].str == "PRINT") {
         if(r_vec.size() != 2) wrg_tkn_num("PRINT");
-        else interp_PRINT_func(r_vec, p_roomman);
+        else interp_PRINT_func(r_vec, p_struct.currState);
     } else if(r_vec[0].str == "SET") {
         if(r_vec.size() != 4) wrg_tkn_num("SET");
         else interp_SET_func(r_vec);
     } else if(r_vec[0].str == "CUTSCENE") {
         if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
-        else interp_CUTSCENE_func(r_vec, p_roomman);
+        else interp_CUTSCENE_func(r_vec, p_struct.currState);
     } else if(r_vec[0].str == "GO") {
         if(r_vec.size() != 2) wrg_tkn_num("GO");
         else interp_GO_func(r_vec, p_roomman);
@@ -321,12 +311,11 @@ static void interp_gvar_ins(TokenVec r_vec)
 }
 
 //Interpret a line depending on its first token
-static void interp_ins(TokenVec r_vec, Room& currentRoom,
-        RoomManager& p_roomman)
+static void interp_ins(TokenVec r_vec, roommod::room_struct& p_struct, RoomManager& p_roomman)
 {
     switch(r_vec[0].type) {
         case token_type::FUNCTION:
-            interp_func_ins(r_vec, currentRoom, p_roomman);
+            interp_func_ins(r_vec, p_struct, p_roomman);
             break;
         case token_type::VARIABLE:
             interp_gvar_ins(r_vec);
@@ -337,11 +326,11 @@ static void interp_ins(TokenVec r_vec, Room& currentRoom,
     }
 }
 
-static void parser_execins(std::string p_line, Room& currentRoom,
+static void parser_execins(std::string p_line, roommod::room_struct& p_struct,
         RoomManager& p_roomman)
 {
     TokenVec r_vec = token::create_arr(p_line);
-    interp_ins(r_vec, currentRoom, p_roomman);
+    interp_ins(r_vec, p_struct, p_roomman);
 }
 
 static bool check_COMP_condition(TokenVec r_vec)
@@ -395,8 +384,7 @@ static bool check_HAS_condition(TokenVec r_vec)
                 ++item_pos;
             }
 
-            if(r_vec[item_pos].type != token_type::NUMBER
-                    && r_vec[item_pos].type != token_type::IF
+            if(r_vec[item_pos].type != token_type::NUMBER && r_vec[item_pos].type != token_type::IF
                     && r_vec[item_pos].type != token_type::HAS) {
                 bool rtrn_val = false;
                 auto item_n = inventory::return_item_n(r_vec[item_pos].str);
@@ -405,12 +393,8 @@ static bool check_HAS_condition(TokenVec r_vec)
                 if(not_cond) rtrn_val = !rtrn_val;
 
                 return rtrn_val;
-            } else perror_disp(
-                    "missing ITEM token (are the tokens in the right order ?)",
-                    true);
-        } else perror_disp(
-            "missing HAS token (are the tokens in the right order ?)", true);
-
+            } else perror_disp("missing ITEM token (are the tokens in the right order ?)", true);
+        } else perror_disp("missing HAS token (are the tokens in the right order ?)", true);
     } else wrg_tkn_num("HAS IF");
 
     return false;
@@ -483,13 +467,13 @@ namespace parser
     }
 
     //Execute instructions until the end of the block
-    int exec_until_end(int blockln, Room& currentRoom, RoomManager &p_roomman)
+    int exec_until_end(int blockln, roommod::room_struct& p_struct, RoomManager& p_roomman)
     {
         bool is_end = false;
         int startln = blockln + 1;
         int endln = startln;
 
-        for(int i = startln; !is_end; i++) {
+        for(int i = startln; !is_end && !p_roomman.is_unfinished(); i++) {
             std::string buf;
             std::string fw;
 
@@ -501,11 +485,9 @@ namespace parser
 
             if(fw == "END") is_end = true;
             else if(fw == "IF") {
-                if(check_condition(buf)) {
-                    i = exec_until_end(i, currentRoom, p_roomman);
-                }
+                if(check_condition(buf)) i = exec_until_end(i, p_struct, p_roomman);
                 else i = parser::skip_until_end(i);
-            } else parser_execins(buf, currentRoom, p_roomman);
+            } else parser_execins(buf, p_struct, p_roomman);
         }
         return endln;
     }

@@ -17,18 +17,38 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "RoomManager.hpp"
 
-#ifndef PARSER_H
-#define PARSER_H
+RoomManager::RoomManager() { }
 
-#include "room/room.hpp"
-#include "room/RoomManager.hpp"
-
-namespace parser
+/*Set the variable which serve as a signal indicating if the room loop should
+end*/
+void RoomManager::endLoop()
 {
-    int skip_until_end(int blockln);
-    int exec_until_end(int blockln, roommod::room_struct& p_struct, RoomManager& p_roomman);
-    bool splitline(std::string& type, std::string& arg, std::string ins);
+    endgame = true;
 }
 
-#endif
+void RoomManager::setNextRoom(std::string const& p_id)
+{
+    next_room = p_id;
+}
+
+void RoomManager::setUnfinished()
+{
+    unfinished = true;
+}
+
+std::string RoomManager::getNextRoom() const
+{
+    return next_room;
+}
+
+bool RoomManager::is_endgame() const
+{
+    return endgame;
+}
+
+bool RoomManager::is_unfinished() const
+{
+    return unfinished;
+}
