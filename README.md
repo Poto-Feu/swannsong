@@ -10,12 +10,12 @@ I started this project in order to improve my skills in C++. Do not take source 
 ### Building prerequisites
 
 #### Unix-like (including GNU/Linux)
-* GCC/Clang
+* a C++14-compatible version of GCC or Clang
 * ncurses
 * CMake
 
 #### Windows
-* MinGW
+* a C++14-compatible version of MinGW
 * CMake
 
 Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
