@@ -22,11 +22,11 @@
 #include "perror.h"
 #include "exitgame.h"
 
-/*Display an error message with the specified string*/
+//Display an error message with the specified string
 void perror_disp(const char* id, bool fatal)
 {
     printw("ERROR : %s\n", id);
     refresh();
 
-    if (fatal) exitgame(1);
+    if(fatal) exitgame(1);
 }
