@@ -18,7 +18,6 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
@@ -27,12 +26,21 @@ extern "C" {
 #include "find.hpp"
 #include "RoomManager.hpp"
 #include "room/interpreter/parser.hpp"
+#include "display_server.hpp"
 #include "exitgame.h"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
 #include "userio.h"
+
+static void show_prompt()
+{
+    int str_line = display_server::get_last_line() + 2;
+
+    if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
+    pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
+}
 
 //Read the first ATLAUNCH block encountered starting from specified line
 static void room_atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
@@ -46,16 +54,12 @@ static void room_atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
         p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
         (void)parser::exec_until_end(foundln, p_struct, p_rmm);
         p_struct.currState.displayAll(p_struct.currRoom);
+        show_prompt();
+        display_server::show_screen();
     } else {
         std::string err_str = "missing ATLAUNCH block (" + p_struct.currRoom.getName() + ")";
         perror_disp(err_str.c_str(), true);
     }
-}
-
-static void show_prompt()
-{
-    printw("\n");
-    pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12);
 }
 
 //Process the input if it is a number corresponding to a choice
@@ -71,14 +75,13 @@ static void choice_input(unsigned int const p_inp, roommod::room_struct& p_struc
     if(p_roomman.is_endgame()) exitgame(0);
 }
 
-/*Reset the room screen with an added message to notify the user that its input
-is not correct.*/
-static void incorrect_input(roommod::room_struct& p_struct)
+//Reset the room screen with an added message to notify the user that its input is not correct.
+static void incorrect_input()
 {
-    clear();
-    move(LINES - 5, pcurses::margin);
-    printw("%s", (pstrings::fetch("incorrect_input")).c_str());
-    p_struct.currState.displayAll(p_struct.currRoom);
+    display_server::add_string(pstrings::fetch("incorrect_input"),
+            {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+    display_server::load_save();
+    display_server::show_screen();
 }
 
 //Show the room prompt and process the input
@@ -86,33 +89,29 @@ static void process_input(roommod::room_struct p_struct, RoomManager& p_rmm)
 {
     bool correct_input = false;
 
-    while(!correct_input) {
-        show_prompt();
-        refresh();
+    display_server::save_screen();
 
-        std::string user_inp = userio::gettextinput(5);
+    while(!correct_input) {
+        display_server::clear_screen();
+        std::string user_inp = userio::gettextinput(9);
 
         if(stringsm::is_number(user_inp)) {
             unsigned int str_digit = std::stoi(user_inp);
             unsigned int choices_n = p_struct.currState.getChoicesSize();
 
-            if(str_digit > choices_n || str_digit == 0) {
-                incorrect_input(p_struct);
-            } else {
+            if(str_digit > choices_n || str_digit == 0) incorrect_input();
+            else {
                 correct_input = true;
                 choice_input(str_digit, p_struct, p_rmm);
-                clear();
             }
         } else if(stringsm::to_upper(user_inp) == "EXIT") {
             correct_input = true;
             p_rmm.endLoop();
-            clear();
         } else if(stringsm::to_upper(user_inp) == "INV"
                 || stringsm::to_upper(user_inp) == "INVENTORY") {
             correct_input = true;
             inventory::display_screen();
-            clear();
-        } else incorrect_input(p_struct);
+        } else incorrect_input();
     }
 }
 
@@ -124,10 +123,9 @@ static void room_load(std::string const& p_id, RoomManager &p_rmm)
     Room currentRoom;
     RoomState currentState;
 
-    auto it = std::find_if(room_list.cbegin(), room_list.cend(),
-            [p_id](Room const& crm) {
+    auto it = std::find_if(room_list.cbegin(), room_list.cend(), [p_id](Room const& crm) {
             return crm.getName() == p_id;
-            });
+    });
 
     if(it != room_list.cend()) {
         room_fnd = true;
@@ -141,15 +139,13 @@ static void room_load(std::string const& p_id, RoomManager &p_rmm)
 
     roommod::room_struct p_struct { currentRoom, currentState };
 
-    move(0, 0);
-    clear();
+    display_server::clear_screen();
     p_rmm.setNextRoom(p_id);
     room_atlaunch(p_struct, p_rmm);
 
-    if(p_rmm.is_endgame() && p_rmm.is_unfinished()) return;
+    if(p_rmm.is_endgame() || p_rmm.is_unfinished()) return;
 
     process_input(p_struct, p_rmm);
-
     if(!room_fnd) room_list.push_back(currentRoom);
 }
 
@@ -157,9 +153,8 @@ namespace roommod
 {
     static void unfinished_game()
     {
-        clear();
-        move(3, pcurses::margin);
-        pcurses::display_center_string(pstrings::fetch("unfinished_str"));
+        display_server::clear_screen();
+        pcurses::display_center_string(pstrings::fetch("unfinished_str"), pcurses::top_margin);
     }
 
     //Start the game loop which loads rooms until the end signal is enabled
@@ -169,11 +164,11 @@ namespace roommod
         RoomManager rmm;
 
         while(!rmm.is_endgame() && !rmm.is_unfinished()) {
-            clear();
             room_load(curr_room_id, rmm);
             curr_room_id = rmm.getNextRoom();
         }
         
+        display_server::clear_screen();
         if(rmm.is_unfinished()) unfinished_game();
         exitgame(0);
     }

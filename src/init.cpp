@@ -18,7 +18,6 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
@@ -29,6 +28,7 @@ extern "C" {
 #include "room/room_io.h"
 #include "room/room.hpp"
 #include "cutscenes.hpp"
+#include "display_server.hpp"
 #include "lang.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -51,25 +51,25 @@ namespace init
         std::string disp;
     };
 
-    void set_margin()
+    static void set_margin()
     {
         if(COLS < 100) pcurses::margin = 4;
         else if(COLS > 200) pcurses::margin = 15;
         else pcurses::margin = 10;
     }
 
-    void set_title_y()
+    static void set_title_y()
     {
         pcurses::title_y = LINES / 2 - LINES / 6;
     }
 
-    void set_coord()
+    static void set_coord()
     {
         pcurses::lines = LINES;
         pcurses::cols = COLS;
     }
 
-    void set_curses()
+    static void set_curses()
     {
         initscr();
         raw();
@@ -80,7 +80,7 @@ namespace init
         set_coord();
     }
 
-    /*Fetch variables from the gameconf file and return a vector containing them*/
+    //Fetch variables from the gameconf file and return a vector containing them
     std::vector<gameconf::gcvar_struct> fetch_gameconf_vars()
     {
         auto gc_vec = gameconf::readfile();
@@ -108,46 +108,54 @@ namespace init
 
     static void show_lang_prompt(std::array<lang_item, 2> p_arr)
     {
+        int str_line = pcurses::title_y;
         std::string hint_str(
             "Hint : make a choice by typing the corresponding number.");
 
-        move(pcurses::title_y, 0);
-        pcurses::display_center_string(hint_str);
-        printw("\n\n\n");
-        pcurses::display_center_string("Select your language:");
-        printw("\n\n");
+        pcurses::display_center_string(hint_str, str_line);
+        str_line = display_server::get_last_line() + 3;
+        pcurses::display_center_string("Select your language:", str_line);
+        str_line = display_server::get_last_line() + 2;
 
         for(unsigned int i = 1; i <= p_arr.size(); ++i) {
             std::string disp_str(std::to_string(i));
 
             disp_str += ". ";
             disp_str.append(p_arr[i-1].disp);
-            move(getcury(stdscr), 0);
-            pcurses::display_pos_string(disp_str, pcurses::choice_space);
-            move(getcury(stdscr) + 1, pcurses::margin);
+            pcurses::display_pos_string(disp_str, pcurses::choice_space, str_line);
+            str_line = display_server::get_last_line() + 1;
         }
 
-        move(getcury(stdscr) + 1, pcurses::margin);
-        pcurses::display_pos_string("Your choice: ", 12);
-        refresh();
+        str_line += 1;
+        pcurses::display_pos_string("Your choice: ", 12, str_line);
+        display_server::show_screen();
     }
 
     //Show a prompt asking the user to choose the language
     static void ask_lang(std::string const& p_langdir)
     {
         bool validinp = false;
+
         std::array<lang_item, 2> langarr {
             lang_item("eng", "English"),
             lang_item("fra", "Français")
         };
 
-        clear();
+        display_server::clear_screen();
+        show_lang_prompt(langarr);
+        display_server::save_screen();
 
         while(!validinp) {
             std::string buf;
 
-            show_lang_prompt(langarr);
-            refresh();
+            auto show_err_msg = [](std::string const& p_msg)
+            {
+                display_server::clear_screen();
+                display_server::add_string(p_msg, {LINES - 3, pcurses::margin}, A_BOLD);
+                display_server::load_save();
+                display_server::show_screen();
+            };
+
             buf = userio::gettextinput(2);
 
             if(buf.size() == 1) {
@@ -159,27 +167,9 @@ namespace init
                     langmod::set_lang(lang);
                     validinp = true;
                     pstrings::copy_file_to_vec(p_langdir);
-                } else {
-                    clear();
-                    move(LINES - 3, pcurses::margin);
-                    attron(A_BOLD);
-                    printw("Nope. (not a valid input)\n");
-                    attroff(A_BOLD);
-                    refresh();
-                }
-            } else if(buf.size() == 0) {
-                clear();
-                attron(A_BOLD);
-                move(LINES - 3, pcurses::margin);
-                printw("Nope. (nothing !)\n");
-                attroff(A_BOLD);
-            } else {
-                clear();
-                attron(A_BOLD);
-                move(LINES - 3, pcurses::margin);
-                printw("Nope. (too long)\n");
-                attroff(A_BOLD);
-            }
+                } else show_err_msg("Nope. (not a valid input)");
+            } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
+            else show_err_msg("Nope. (too long)");
         }
     }
 

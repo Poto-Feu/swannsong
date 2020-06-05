@@ -17,32 +17,33 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PCURSES_H
-#define PCURSES_H
+#ifndef DISPLAY_SERVER_HPP
+#define DISPLAY_SERVER_HPP
 
 extern "C" {
 #include <curses.h>
 }
 
 #include <string>
-#include <vector>
-#include "display_server.hpp"
 
-namespace pcurses
+namespace display_server
 {
-    const int top_margin = 3;
-    const int choice_space = 8;
+    const int NULL_ATTR = 0;
+    const int LAST_LINE_ERR = 0;
 
-    extern int margin;
-    extern int title_y;
-    extern int lines;
-    extern int cols;
+    struct coord_struct
+    {
+        int y = getcury(stdscr);
+        int x = getcurx(stdscr);
+    };
 
-    int find_centered_x(std::string& p_str);
-    void display_pos_string(std::string p_str, int x_space, int startline = getcury(stdscr),
-            int p_attr = display_server::NULL_ATTR);
-    void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
-            int p_attr = display_server::NULL_ATTR);
+    void add_string(std::string const& p_str,
+            coord_struct p_struct = {getcury(stdscr), getcurx(stdscr)}, int p_attr = NULL_ATTR);
+    void clear_screen();
+    int get_last_line();
+    void load_save();
+    void save_screen();
+    void show_screen();
 }
 
 #endif
