@@ -20,8 +20,13 @@
 #ifndef PCURSES_H
 #define PCURSES_H
 
+extern "C" {
+#include <curses.h>
+}
+
 #include <string>
 #include <vector>
+#include "display_server.hpp"
 
 namespace pcurses
 {
@@ -30,12 +35,14 @@ namespace pcurses
 
     extern int margin;
     extern int title_y;
-    extern unsigned int lines;
-    extern unsigned int cols;
+    extern int lines;
+    extern int cols;
 
     int find_centered_x(std::string& p_str);
-    void display_pos_string(std::string p_str, unsigned int x_space);
-    void display_center_string(std::string const& p_str);
+    void display_pos_string(std::string p_str, int x_space, int startline = getcury(stdscr),
+            int p_attr = display_server::NULL_ATTR);
+    void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
+            int p_attr = display_server::NULL_ATTR);
 }
 
 #endif

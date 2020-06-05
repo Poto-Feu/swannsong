@@ -39,35 +39,29 @@ void Choice::display() const
     int currln = choice_line + 1;
 
     for(int i = 0; !textfound; i++) {
-        int x = 0;
-        int y = 0;
         std::string buf;
         std::string type;
         std::string arg;
         std::string disp_value;
 
-        getyx(stdscr, y, x);
         roomio::fetch_ln(buf, currln);
         parser::splitline(type, arg, buf);
 
         if(type == "TEXT") {
+            int str_line = display_server::get_last_line() + 1;
             textfound = true;
 
-            if(stringsm::is_str(arg)) {
-                disp_value = stringsm::ext_str_quotes(arg);
-            } else {
+            if(stringsm::is_str(arg)) disp_value = stringsm::ext_str_quotes(arg);
+            else {
                 disp_value = pstrings::fetch(arg);
                 disp_value.insert(0, ". ");
                 disp_value.insert(0, std::to_string(choice_n));
             }
 
-            move(y, 0);
-            pcurses::display_pos_string(disp_value, pcurses::choice_space);
-            printw("\n");
-
+            if(str_line == display_server::LAST_LINE_ERR + 1) str_line = pcurses::title_y + 4;
+            pcurses::display_pos_string(disp_value, pcurses::choice_space, str_line);
             currln++;
-        }
-        else if(type == "END") perror_disp("missing choice text", true);
+        } else if(type == "END") perror_disp("missing choice text", true);
     }
 }
 

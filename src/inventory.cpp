@@ -18,13 +18,13 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
 #include <algorithm>
 #include "inventory.hpp"
 #include "vars/intvar.hpp"
+#include "display_server.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -107,10 +107,11 @@ namespace inventory
     //Display the inventory screen
     void display_screen()
     {
-        clear();
+        display_server::clear_screen();
         move(pcurses::top_margin, pcurses::margin);
 
         for(auto const& it : inventory_vec) {
+            int str_line = pcurses::top_margin;
             std::string disp_str = it.name;
             std::string str_name = "item_" + it.name;
 
@@ -118,21 +119,20 @@ namespace inventory
 
             disp_str += "   ";
             disp_str += std::to_string(return_item_n(it.name));
-            pcurses::display_center_string(disp_str);
-            move(getcury(stdscr) + 1, pcurses::margin);
+            pcurses::display_center_string(disp_str, str_line);
+            ++str_line;
 
-            if(getcury(stdscr) >= LINES - 6) {
+            if(str_line >= LINES - 6) {
                 if(pstrings::check_exist("inventory_more")) {
-                    pcurses::display_center_string(
-                            pstrings::fetch("inventory_more"));
+                    pcurses::display_center_string(pstrings::fetch("inventory_more"), str_line);
                 } else pcurses::display_center_string("(And more...)");
                 break;
             }
         }
 
-        move(LINES - 3, pcurses::margin);
-        printw("%s", pstrings::fetch("continue_penter").c_str());
-        refresh();
+        display_server::add_string(pstrings::fetch("continue_penter"),
+                {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+        display_server::show_screen();
         userio::waitenter();
     }
 }

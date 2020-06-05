@@ -18,7 +18,6 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
@@ -26,6 +25,7 @@ extern "C" {
 #include <fstream>
 #include "cutscenes.hpp"
 #include "fileio/fileio.h"
+#include "display_server.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -48,33 +48,32 @@ namespace cutscenes
     static void execute_all_actions(std::vector<cs_action> const& p_vec)
     {
         std::string penter_msg = pstrings::fetch("continue_penter");
+        int str_line = pcurses::top_margin;
 
         for(auto const& action_it : p_vec) {
             switch(action_it.type) {
                 case cs_action_type::STRING:
-                    pcurses::display_center_string(action_it.content);
-                    printw("\n");
+                    pcurses::display_center_string(action_it.content, str_line);
+                    str_line = display_server::get_last_line() + 1;
                     break;
                 case cs_action_type::BLANK:
-                    printw("\n");
+                    ++str_line;
                     break;
                 case cs_action_type::PAUSE:
-                    move(LINES - 3, pcurses::margin);
-                    printw("%s", penter_msg.c_str());
+                    display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin},
+                            A_BOLD);
+                    display_server::show_screen();
                     userio::waitenter();
-                    clear();
-                    refresh();
-                    move(pcurses::top_margin, pcurses::margin);
+                    display_server::clear_screen();
+                    str_line = pcurses::top_margin;
                     break;
             }
-
-            refresh();
         }
 
-        move(LINES - 3, pcurses::margin);
-        printw("%s", penter_msg.c_str());
+        display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+        display_server::show_screen();
         userio::waitenter();
-        clear();
+        display_server::clear_screen();
     }
 
     //Initialize the vector by reading the cutscenes file
@@ -123,19 +122,16 @@ namespace cutscenes
     void display(std::string const& p_name)
     {
         auto it = find_vec_it(p_name);
-
-        clear();
-        move(pcurses::top_margin, pcurses::margin);
+        display_server::clear_screen();
 
         if(it != cs_vec.cend()) execute_all_actions(it->actions_vec);
         else {
             std::string penter_msg = pstrings::fetch("continue_penter");
 
-            pcurses::display_center_string("missingCutscene");
-            move(LINES - 3, pcurses::margin);
-            printw(penter_msg.c_str());
+            pcurses::display_center_string("missingCutscene", pcurses::top_margin);
+            display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+            display_server::show_screen();
             userio::waitenter();
-            refresh();
         }
     }
 

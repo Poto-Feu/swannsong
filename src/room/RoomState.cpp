@@ -18,13 +18,14 @@
 */
 
 extern "C" {
-#include <curses.h>
 #include "perror.h"
 }
 
+#include <stdexcept>
 #include "RoomState.hpp"
 #include "find.hpp"
 #include "cutscenes.hpp"
+#include "display_server.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -74,24 +75,16 @@ void RoomState::setBlockType(RoomState::bt const p_bt)
 void RoomState::displayTitle(Room const& p_room)
 {
     std::string value;
-    bool prop_fnd = room_find::room_property(value, "TITLE",
-            p_room.getRoomLine());
+    bool prop_fnd = room_find::room_property(value, "TITLE", p_room.getRoomLine());
 
     if(prop_fnd) {
-        int y = pcurses::title_y;
         std::string disp_value;
 
-        if(stringsm::is_str(value)) {
-            disp_value = stringsm::ext_str_quotes(value);
-        } else if(pstrings::check_exist(value)) {
-            disp_value = pstrings::fetch(value);
-        }
+        if(stringsm::is_str(value)) disp_value = stringsm::ext_str_quotes(value);
+        else if(pstrings::check_exist(value)) disp_value = pstrings::fetch(value);
+        else throw std::runtime_error("unknown string format in displayTitle");
 
-        attron(A_BOLD);
-        move(y, getcurx(stdscr));
-        pcurses::display_center_string(disp_value);
-        printw("\n\n");
-        attroff(A_BOLD);
+        pcurses::display_center_string(disp_value, pcurses::title_y, A_BOLD);
     } else perror_disp("TITLE property not found in room", false);
 }
 
@@ -102,47 +95,51 @@ void RoomState::displayDesc(Room const& p_room)
             p_room.getRoomLine());
 
     if(prop_fnd) {
-        int y = getcury(stdscr);
+        int str_line = 1;
         std::string disp_value;
 
-        if(stringsm::is_str(value)) {
-            disp_value = stringsm::ext_str_quotes(value);
-        } else if(pstrings::check_exist(value)) {
-            disp_value = pstrings::fetch(value);
-        }
+        if(title_displayed) str_line = display_server::get_last_line() + 2;
+        else str_line = pcurses::title_y + 2;
 
-        if(!is_title_displayed()) y = pcurses::title_y + 2;
+        if(stringsm::is_str(value)) disp_value = stringsm::ext_str_quotes(value);
+        else if(pstrings::check_exist(value)) disp_value = pstrings::fetch(value);
+        else throw std::runtime_error("unknown string format in displayDesc");
 
-        move(y, getcurx(stdscr));
-        pcurses::display_center_string(disp_value);
-        printw("\n\n");
+        pcurses::display_center_string(disp_value, str_line);
     } else perror_disp("DESC property not found in room", false);
 }
 
 void RoomState::displayChoices()
 {
+    if(title_displayed || desc_displayed || !string_list.empty()) {
+        pcurses::display_center_string("", display_server::get_last_line() + 1);
+    }
     for(auto& it : choice_list) it.display();
 }
 
 void RoomState::displayStrings()
 {
-    if(string_list.size() > 0) {
-        if(!title_displayed && !desc_displayed) move(0, pcurses::title_y + 2);
+    int str_line;
 
-        for(auto& it : string_list) pcurses::display_center_string(it);
+    if(!title_displayed && !desc_displayed) str_line = pcurses::title_y + 1;
+    else str_line = display_server::get_last_line() + 1;
 
-        printw("\n\n");
+    for(auto& it : string_list)
+    {
+        str_line = display_server::get_last_line() + 1;
+        pcurses::display_center_string(it, str_line);
     }
 }
 
 void RoomState::displayAll(Room const& p_room)
 {
     displayCutscenes();
+    display_server::clear_screen();
 
     if(is_title_displayed()) displayTitle(p_room);
     if(is_desc_displayed()) displayDesc(p_room);
 
-    displayStrings();
+    if(string_list.size() > 0) displayStrings();
     displayChoices();
 }
 
