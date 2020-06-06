@@ -21,7 +21,9 @@ extern "C" {
 #include <curses.h>
 }
 
+#include <algorithm>
 #include <array>
+#include <iterator>
 #include <vector>
 #include "display_server.hpp"
 
@@ -61,7 +63,7 @@ namespace display_server
 
     void load_save()
     {
-        for(auto const& it : saved_screen) current_screen.push_back(it);
+        std::copy(saved_screen.cbegin(), saved_screen.cend(), std::back_inserter(current_screen));
     }
 
     void save_screen()
