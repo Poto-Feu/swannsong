@@ -120,13 +120,15 @@ void RoomState::displayChoices()
 void RoomState::displayStrings()
 {
     int str_line;
+    bool firsttime = true;
 
-    if(!title_displayed && !desc_displayed) str_line = pcurses::title_y + 1;
-    else str_line = display_server::get_last_line() + 1;
+    if(!title_displayed && !desc_displayed) str_line = pcurses::title_y + 2;
+    else str_line = display_server::get_last_line() + 2;
 
     for(auto& it : string_list)
     {
-        str_line = display_server::get_last_line() + 1;
+        if(!firsttime) str_line = display_server::get_last_line() + 1;
+        else firsttime = false;
         pcurses::display_center_string(it, str_line);
     }
 }
