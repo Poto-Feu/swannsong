@@ -22,6 +22,7 @@
 #include "room_io.h"
 #include "fileio/fileio.h"
 #include "vars/pconst.hpp"
+#include "files_path.hpp"
 #include "stringsm.h"
 
 namespace roomio
@@ -36,8 +37,10 @@ namespace roomio
     //Copy room file lines into a vector
     void copy_file_to_vec(std::string const& roomfile)
     {
+        using namespace files_path;
+
         std::string buf;
-        std::ifstream file_stream(roomfile);
+        std::ifstream file_stream(getdatapath() + roomfile);
         
         while(fileio::getfileln(buf, file_stream)) {
             stringsm::rtab(buf);

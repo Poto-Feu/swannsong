@@ -26,6 +26,7 @@ extern "C" {
 #include "cutscenes.hpp"
 #include "fileio/fileio.h"
 #include "display_server.hpp"
+#include "files_path.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -79,9 +80,11 @@ namespace cutscenes
     //Initialize the vector by reading the cutscenes file
     void copy_file_to_vec(std::string const& csfile)
     {
+        using namespace files_path;
+
         bool in_cutscene = false;
         std::string buf;
-        std::ifstream file_stream(csfile);
+        std::ifstream file_stream(getdatapath() + csfile);
 
         while(fileio::getfileln(buf, file_stream)) {
             Cutscene curr_cs;

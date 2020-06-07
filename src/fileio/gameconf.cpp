@@ -23,6 +23,7 @@ extern "C" {
 
 #include <fstream>
 #include "gameconf.hpp"
+#include "files_path.hpp"
 
 namespace gameconf
 {
@@ -65,8 +66,10 @@ namespace gameconf
     value*/
     std::vector<gcvar_struct> readfile()
     {
+        using namespace files_path;
+
         std::vector<gcvar_struct> rtrn_vec;
-        std::ifstream gc_stream("gameconf.txt");
+        std::ifstream gc_stream(getdatapath() + "gameconf.txt");
         std::string curr_line;
 
         while(std::getline(gc_stream, curr_line))

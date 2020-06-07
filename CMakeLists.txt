@@ -9,6 +9,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(src)
 
+set(src_data_folder ${CMAKE_CURRENT_SOURCE_DIR}"/txt")
+
+if(UNIX)
+    set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/share/swannsong_adventure/")
+    set(build_bin_folder ${CMAKE_CURRENT_BINARY_DIR}"/bin")
+    set(executable_name "swannsongadv")
+elseif(WIN32)
+    set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/data/")
+    set(build_bin_folder ${CMAKE_CURRENT_BINARY_DIR}"/")
+    set(executable_name "swannsongadv.exe")
+else()
+    message(FATAL_ERROR "Your OS is not supported by this CMake configuration. You must use a
+    Unix-like or a Win32 environnement.")
+endif()
+
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
@@ -16,8 +31,7 @@ endif()
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-Wall -Wextra -pedantic)
 else()
-    message(WARNING "compiler and linker flags are only set if Clang or GCC is 
-    used")
+    message(WARNING "compiler and linker flags are only set if Clang or GCC is used")
 endif()
 
 add_executable(swannsongadv
@@ -37,12 +51,14 @@ add_executable(swannsongadv
     src/vars/gvars.cpp
     src/tests/tests.cpp
     src/cutscenes.cpp
+    src/files_path.cpp
     src/display_server.cpp
     src/init.cpp
     src/lang.cpp
     src/perror.c
     src/pstrings.cpp
     src/pcurses.cpp
+    src/os_module.cpp
     src/stringsm.cpp
     src/exitgame.cpp
     src/inventory.cpp
@@ -78,16 +94,29 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
         -s)
 endif()
 
-# Copy necessary text files
-add_custom_command(TARGET swannsongadv PRE_BUILD
+# Copy necessary files
+add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_CURRENT_SOURCE_DIR}/gameconf.txt
-        ${CMAKE_CURRENT_BINARY_DIR}/gameconf.txt)
-add_custom_command(TARGET swannsongadv PRE_BUILD
+        ${build_data_folder}/gameconf.txt)
+
+add_custom_command(TARGET swannsongadv POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}
+    ${build_bin_folder}/${executable_name})
+
+if(UNIX)
+    add_custom_command(TARGET swannsongadv POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E rm
+        ${CMAKE_CURRENT_BINARY_DIR}/${executable_name})
+endif()
+
+add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/txt/
-        ${CMAKE_CURRENT_BINARY_DIR}/txt/)
-add_custom_command(TARGET swannsongadv PRE_BUILD
+        ${src_data_folder}
+        ${build_data_folder})
+
+add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/licenses/
         ${CMAKE_CURRENT_BINARY_DIR}/licenses/)
