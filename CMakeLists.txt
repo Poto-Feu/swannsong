@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(src)
 
-set(src_data_folder ${CMAKE_CURRENT_SOURCE_DIR}"/txt")
+set(src_data_folder ${CMAKE_CURRENT_SOURCE_DIR}"/game_data")
 
 if(UNIX)
     set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/share/swannsong_adventure/")
@@ -95,11 +95,6 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
 endif()
 
 # Copy necessary files
-add_custom_command(TARGET swannsongadv POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_CURRENT_SOURCE_DIR}/gameconf.txt
-        ${build_data_folder}/gameconf.txt)
-
 add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}
