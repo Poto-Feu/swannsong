@@ -72,6 +72,12 @@ namespace gameconf
         std::ifstream gc_stream(getdatapath() + "gameconf.txt");
         std::string curr_line;
 
+        if(!gc_stream.good()) {
+            perror_disp(
+                    "gameconf file not found (this may also applies to other game files)",
+                    true);
+        }
+
         while(std::getline(gc_stream, curr_line))
         {
             if(curr_line.empty()) continue;

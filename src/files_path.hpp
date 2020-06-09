@@ -24,6 +24,8 @@
 
 namespace files_path
 {
+    void initpaths();
+    void setlocal();
     std::string getdatapath();
 }
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.12)
 
 project(SwannSong)
 
@@ -10,14 +10,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include_directories(src)
 
 set(src_data_folder ${CMAKE_CURRENT_SOURCE_DIR}"/game_data")
+set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/data")
 
 if(UNIX)
-    set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/share/swannsong_adventure/")
-    set(build_bin_folder ${CMAKE_CURRENT_BINARY_DIR}"/bin")
+    if(IS_PKG)
+        add_compile_definitions(IS_PKG)
+    endif()
+
     set(executable_name "swannsongadv")
 elseif(WIN32)
-    set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/data/")
-    set(build_bin_folder ${CMAKE_CURRENT_BINARY_DIR}"/")
     set(executable_name "swannsongadv.exe")
 else()
     message(FATAL_ERROR "Your OS is not supported by this CMake configuration. You must use a
@@ -55,6 +56,7 @@ add_executable(swannsongadv
     src/display_server.cpp
     src/init.cpp
     src/lang.cpp
+    src/pargs.cpp
     src/perror.c
     src/pstrings.cpp
     src/pcurses.cpp
@@ -94,16 +96,18 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
         -s)
 endif()
 
-# Copy necessary files
+if(UNIX)
 add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}
-    ${build_bin_folder}/${executable_name})
+    ${CMAKE_CURRENT_SOURCE_DIR}/start.sh
+    ${CMAKE_CURRENT_BINARY_DIR}/start.sh)
 
-if(UNIX)
-    add_custom_command(TARGET swannsongadv POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E rm
-        ${CMAKE_CURRENT_BINARY_DIR}/${executable_name})
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}
+        DESTINATION bin
+        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/data/
+        DESTINATION share/swannsong_adventure/
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 endif()
 
 add_custom_command(TARGET swannsongadv POST_BUILD

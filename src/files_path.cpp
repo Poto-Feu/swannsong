@@ -17,18 +17,48 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+extern "C" {
+#include "perror.h"
+}
+
 #include "files_path.hpp"
 #include "exitgame.h"
 #include "os_module.hpp"
 
 namespace files_path
 {
+    //Indicate if the program is run from the build folder or if it is installed on the user machine
+    static bool runned_locally = false;
+    static std::string data_path;
+
+    void initpaths()
+    {
+        static bool already_used = false;
+#ifdef IS_PKG
+        const bool package = true;
+#else
+        const bool package = false;
+#endif
+        if(!already_used) {
+            using namespace os_module;
+
+            if(current_os == os_type::WINDOWSNT || runned_locally) data_path = "data/";
+            else if(package) data_path = "/usr/share/swannsong_adventure/";
+            else data_path = "/usr/local/share/swannsong_adventure/";
+
+            already_used = true;
+        } else perror_disp(
+                "files_path::initpaths used more than once (this might cause problems)",
+                false);
+    }
+
+    void setlocal()
+    {
+        runned_locally = true;
+    }
+
     std::string getdatapath()
     {
-        using namespace os_module;
-
-        if(current_os == os_type::UNIXLIKE) return "../share/swannsong_adventure/";
-        else if(current_os == os_type::WINDOWSNT) return "data/";
-        else exitgame(1);
+        return data_path;
     }
 }
