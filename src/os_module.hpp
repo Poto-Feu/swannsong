@@ -17,17 +17,24 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "init.hpp"
-#include "exitgame.h"
-#include "files_path.hpp"
-#include "pargs.hpp"
+#ifndef OS_MODULE_HPP
+#define OS_MODULE_HPP
 
-int main (int argc, char *argv[])
+namespace os_module
 {
-    pargs::init(argc, argv);
-    files_path::initpaths();
-    init::start_game();
-    exitgame(0);
+    enum class os_type
+    {
+        UNIXLIKE,
+        WINDOWSNT,
+        OTHER
+    };
 
-    return 0;
+#if defined(unix) || defined(__unix__) || defined(__unix)
+    const os_type current_os = os_type::UNIXLIKE;
+#elif _WIN32
+    const os_type current_os = os_type::WINDOWSNT;
+#else
+    const os_type current_os = os_type::OTHER;
+#endif
 }
+#endif

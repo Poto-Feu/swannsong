@@ -27,6 +27,7 @@ extern "C"  {
 #include <vector>
 #include "pstrings.h"
 #include "fileio/fileio.h"
+#include "files_path.hpp"
 #include "lang.hpp"
 #include "stringsm.h"
 
@@ -102,8 +103,10 @@ namespace pstrings
 
     void copy_file_to_vec(std::string const& p_langdir)
     {
+        using namespace files_path;
+
         std::string buf;
-        std::ifstream file_stream = open_strfile(p_langdir);
+        std::ifstream file_stream = open_strfile(getdatapath() + p_langdir);
 
         while(fileio::getfileln(buf, file_stream)) {
             std::string r_id;

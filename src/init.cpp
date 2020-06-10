@@ -28,6 +28,7 @@ extern "C" {
 #include "room/room_io.h"
 #include "room/room.hpp"
 #include "cutscenes.hpp"
+#include "files_path.hpp"
 #include "lang.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"

@@ -23,10 +23,16 @@ OBJ = $(CCSRC:.c=.o) $(CXXSRC:.cpp=.o)
 
 swannsongadv: $(OBJ)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(CFLAGS) $(LDFLAGS)
+	mkdir build
+	mkdir build/data
+	mv swannsongadv build/swannsongadv
+	cp -r game_data/. build/data/
+	cp start.sh build/start.sh
 
 .PHONY: clean
 clean:
-	rm -rf *.o && rm -f swannsongadv
+	rm -rf *.o
+	rm -rf build
 	rm -rf src/*.o
 	rm -rf src/fileio/*.o
 	rm -rf src/room/*.o
