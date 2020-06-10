@@ -95,15 +95,10 @@ namespace init
             };
 
             auto defaultlang_it = get_gcvar_it("defaultlang");
-            auto langdir_it = get_gcvar_it("langdir");
 
             if(defaultlang_it != gc_vec.cend()) {
                 langmod::set_lang(defaultlang_it->value);
             } else missing_gcvar("defaultlang");
-
-            if(langdir_it != gc_vec.cend()) {
-                langmod::set_langdir(langdir_it->value);
-            } else missing_gcvar("langdir");
 
             return gc_vec;
         };

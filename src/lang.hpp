@@ -25,9 +25,7 @@
 namespace langmod
 {
     std::string get_lang();
-    std::string get_langdir();
     void set_lang(std::string const& p_lang);
-    void set_langdir(std::string const& p_lang);
 }
 
 #endif

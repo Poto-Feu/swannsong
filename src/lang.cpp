@@ -33,20 +33,10 @@ namespace langmod
         return game_lang;
     }
 
-    std::string get_langdir()
-    {
-        return langdir;
-    }
-
     void set_lang(std::string const& p_lang)
     {
         if(p_lang.size() != LANG_SIZE) throw std::runtime_error("incorrect lang string size (" +
                 p_lang + ")");
         else game_lang = p_lang;
-    }
-
-    void set_langdir(std::string const& p_lang)
-    {
-        game_lang = p_lang;
     }
 }
