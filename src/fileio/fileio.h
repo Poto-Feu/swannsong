@@ -20,12 +20,14 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
-#include <string>
 #include <fstream>
+#include <string>
+#include <vector>
 
 namespace fileio
 {
     bool getfileln(std::string& r_str, std::ifstream& p_stream);
+    std::vector<std::string> copy_to_vector(std::string const& file_path);
 }
 
 #endif

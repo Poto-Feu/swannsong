@@ -17,13 +17,8 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
-#include <string>
-#include <fstream>
 #include "fileio.h"
+#include "stringsm.h"
 
 namespace fileio
 {
@@ -31,5 +26,21 @@ namespace fileio
     {
         if(std::getline(p_stream, r_str)) return true;
         else return false;
+    }
+
+    std::vector<std::string> copy_to_vector(std::string const& file_path)
+    {
+        std::string buf;
+        std::vector<std::string> file_content;
+        std::ifstream file_stream(file_path);
+
+        while(fileio::getfileln(buf, file_stream)) {
+            stringsm::rtab(buf);
+
+            if(!buf.empty()) file_content.push_back(buf);
+            else continue;
+        }
+
+        return file_content;
     }
 }

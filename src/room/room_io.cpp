@@ -29,25 +29,10 @@ namespace roomio
 {
     static std::vector<std::string> file_vec;
 
-    static void add_ln_to_vec(std::string const& p_ln)
-    {
-        file_vec.push_back(p_ln);
-    }
-
     //Copy room file lines into a vector
     void copy_file_to_vec(std::string const& roomfile)
     {
-        using namespace files_path;
-
-        std::string buf;
-        std::ifstream file_stream(getdatapath() + roomfile);
-        
-        while(fileio::getfileln(buf, file_stream)) {
-            stringsm::rtab(buf);
-
-            if(!buf.empty()) add_ln_to_vec(buf);
-            else continue;
-        }
+        file_vec = fileio::copy_to_vector(files_path::getdatapath() + roomfile);
     }
 
     //Return the line number where the specified line is present
