@@ -51,12 +51,9 @@ namespace room_find
                     i = parser::skip_until_end(i);
                 } else if(fw == prop) {
                     buf.erase(0, fw.size());
-
-                    while(buf[0] == ' ' || buf[0] == '\t') buf.erase(0, 1);
-
+                    stringsm::rtab(buf);
                     value = buf;
                     propfound = true;
-
                 } else if(fw == "END") is_end = true;
             }
         }

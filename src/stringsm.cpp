@@ -51,14 +51,7 @@ namespace stringsm
     //Remove space and tab characters at the beginning of a string
     void rtab(std::string& p_buf)
     {
-        std::string temp_buf(p_buf);
-
-        for(const auto& it : temp_buf) {
-            if(it == '\t' || it == ' ') {
-                if(!p_buf.empty()) p_buf.erase(0, 1);
-                else return;
-            } else break;
-        }
+        while(p_buf[0] == '\t' || p_buf[0] == ' ') p_buf.erase(0, 1);
     }
 
     //Get the first word of a string

@@ -24,6 +24,7 @@ extern "C" {
 #include <fstream>
 #include "gameconf.hpp"
 #include "files_path.hpp"
+#include "stringsm.h"
 
 namespace gameconf
 {
@@ -80,12 +81,8 @@ namespace gameconf
 
         while(std::getline(gc_stream, curr_line))
         {
+            stringsm::rtab(curr_line);
             if(curr_line.empty()) continue;
-
-            while(curr_line.at(0) == '\t' || curr_line.at(0) == ' ')
-            {
-                curr_line.erase(1, 0);
-            }
 
             if(curr_line.at(0) != '#')
             {
