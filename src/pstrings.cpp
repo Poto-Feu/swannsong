@@ -18,7 +18,6 @@
 */
 
 extern "C"  {
-#include <curses.h>
 #include "perror.h"
 }
 
@@ -143,12 +142,5 @@ namespace pstrings
     bool check_exist(std::string const& p_id)
     {
         return find_it_vec(p_id) != pstr_vec.cend();
-    }
-
-    void display(std::string const& id)
-    {
-        std::string rstring = fetch(id);
-
-        printw(rstring.c_str());
     }
 }
