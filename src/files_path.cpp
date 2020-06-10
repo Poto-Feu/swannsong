@@ -34,17 +34,15 @@ namespace files_path
     void initpaths()
     {
         static bool already_used = false;
-#ifdef IS_PKG
-        const bool package = true;
-#else
-        const bool package = false;
-#endif
         if(!already_used) {
             using namespace os_module;
 
+#ifdef IS_PKG
+            data_path = "/usr/share/swannsong_adventure/";
+#else
             if(current_os == os_type::WINDOWSNT || runned_locally) data_path = "data/";
-            else if(package) data_path = "/usr/share/swannsong_adventure/";
             else data_path = "/usr/local/share/swannsong_adventure/";
+#endif
 
             already_used = true;
         } else perror_disp(
