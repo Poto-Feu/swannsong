@@ -55,8 +55,6 @@ class RoomState
         bool is_title_displayed() const;
         bool is_desc_displayed() const;
 
-        void reset();
-
     private:
 
         bool title_displayed = false;

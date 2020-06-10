@@ -32,16 +32,6 @@ extern "C" {
 
 RoomState::RoomState() { }
 
-void RoomState::reset()
-{
-    title_displayed = false;
-    desc_displayed = false;
-
-    choice_list.clear();
-    string_list.clear();
-    cs_list.clear();
-}
-
 void RoomState::addTitle()
 {
     title_displayed = true;
@@ -91,8 +81,7 @@ void RoomState::displayTitle(Room const& p_room)
 void RoomState::displayDesc(Room const& p_room)
 {
     std::string value;
-    auto prop_fnd = room_find::room_property(value, "DESC",
-            p_room.getRoomLine());
+    auto prop_fnd = room_find::room_property(value, "DESC", p_room.getRoomLine());
 
     if(prop_fnd) {
         int str_line = 1;
@@ -103,7 +92,7 @@ void RoomState::displayDesc(Room const& p_room)
 
         if(stringsm::is_str(value)) disp_value = stringsm::ext_str_quotes(value);
         else if(pstrings::check_exist(value)) disp_value = pstrings::fetch(value);
-        else throw std::runtime_error("unknown string format in displayDesc");
+        else throw std::runtime_error("unknown string format in displayDesc (" + value + ")");
 
         pcurses::display_center_string(disp_value, str_line);
     } else perror_disp("DESC property not found in room", false);
