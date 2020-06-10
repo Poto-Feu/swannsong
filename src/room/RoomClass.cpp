@@ -17,7 +17,20 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+extern "C" {
+#include "perror.h"
+}
+
 #include "RoomClass.hpp"
+#include "room/interpreter/parser.hpp"
+#include "room/find.hpp"
+#include "display_server.hpp"
+#include "exitgame.h"
+#include "inventory.hpp"
+#include "pcurses.hpp"
+#include "pstrings.h"
+#include "stringsm.h"
+#include "userio.h"
 
 Room::Room() { }
 Room::Room(std::string const& room_name) : name(room_name) { }
@@ -51,4 +64,98 @@ void Room::setRoomLine(int rln)
 void Room::setChoicesLine(int chln)
 {
     choices_line = chln;
+}
+
+void Room::load(RoomManager& p_rmm)
+{
+    RoomState currentState;
+
+    //Read the first ATLAUNCH block encountered starting from specified line
+    auto atlaunch = [](roommod::room_struct& p_struct, RoomManager& p_rmm) {
+        int foundln = 0;
+        bool atlfound = false;
+
+        atlfound = room_find::atlaunchline(foundln, p_struct.currRoom.getRoomLine());
+
+        if(atlfound) {
+            auto show_prompt = []()
+            {
+                int str_line = display_server::get_last_line() + 2;
+
+                if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
+                pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
+            };
+
+            p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
+            (void)parser::exec_until_end(foundln, p_struct, p_rmm);
+            p_struct.currState.displayAll(p_struct.currRoom);
+            show_prompt();
+            display_server::show_screen();
+        } else {
+            std::string err_str = "missing ATLAUNCH block (" + p_struct.currRoom.getName() + ")";
+            perror_disp(err_str.c_str(), true);
+        }
+    };
+
+    //Show the room prompt and process the input
+    auto process_input = [](roommod::room_struct p_struct, RoomManager& p_rmm) {
+        bool correct_input = false;
+
+        display_server::save_screen();
+
+        while(!correct_input) {
+            std::string user_inp = userio::gettextinput(9);
+
+            /*Reset the room screen with an added message to notify the user that its input is not
+            correct.*/
+            auto incorrect_input = []()
+            {
+                display_server::add_string(pstrings::fetch("incorrect_input"),
+                        {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+                display_server::load_save();
+                display_server::show_screen();
+            };
+
+            display_server::clear_screen();
+
+            if(stringsm::is_number(user_inp)) {
+                unsigned int str_digit = std::stoi(user_inp);
+                unsigned int choices_n = p_struct.currState.getChoicesSize();
+
+                if(str_digit > choices_n || str_digit == 0) incorrect_input();
+                else {
+                    //Process the input if it is a number corresponding to a choice
+                    auto choice_input = [=, &p_struct, &p_rmm]()
+                    {
+                        unsigned int choice_ln = p_struct.currState.getChoiceLine(str_digit);
+
+                        p_struct.currState.setBlockType(RoomState::bt::CHOICE);
+                        parser::exec_until_end(choice_ln, p_struct, p_rmm);
+                        p_struct.currState.displayCutscenes();
+                        if(p_rmm.is_endgame()) exitgame(0);
+                    };
+
+                    correct_input = true;
+                    choice_input();
+                }
+            } else if(stringsm::to_upper(user_inp) == "EXIT") {
+                correct_input = true;
+                p_rmm.endLoop();
+            } else if(stringsm::to_upper(user_inp) == "INV"
+                    || stringsm::to_upper(user_inp) == "INVENTORY") {
+                correct_input = true;
+                inventory::display_screen();
+            } else incorrect_input();
+        }
+    };
+
+    roommod::room_struct p_struct { *this, currentState };
+
+    display_server::clear_screen();
+    p_rmm.setNextRoom(name);
+    atlaunch(p_struct, p_rmm);
+
+    if(p_rmm.is_endgame() || p_rmm.is_unfinished()) return;
+
+    process_input(p_struct, p_rmm);
 }
