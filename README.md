@@ -29,6 +29,10 @@ cmake ..
 make
 ```
 
+A "make install" command is also provided. However, it is still in an experimental state.
+
+There is also a Makefile available for GNU Make (this is the default make on most GNU/Linux distributions - you may need to use gmake on some systems). Please note that it does not support the "make install command" yet.
+
 #### Windows
 TO-DO
 
