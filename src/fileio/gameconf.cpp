@@ -38,8 +38,8 @@ namespace gameconf
 
         for(int i = 0; i < str_size && !equal_fnd; ++i)
         {
-            if(ins.at(i) == '=') equal_fnd = true;
-            else var += ins.at(i);
+            if(ins[i] == '=') equal_fnd = true;
+            else var += ins[i];
 
             index = i+1;
         }
@@ -50,14 +50,11 @@ namespace gameconf
         {
             if(quoteinc == 1)
             {
-                if(ins.at(i) == '"') val_finished = true;
-                else value += ins.at(i);
-            }
-            else if(ins.at(i) == '"') quoteinc = 1;
+                if(ins[i] == '"') val_finished = true;
+                else value += ins[i];
+            } else if(ins[i] == '"') quoteinc = true;
         }
-
         correct_syntax = val_finished;
-
         return correct_syntax;
 
     }
