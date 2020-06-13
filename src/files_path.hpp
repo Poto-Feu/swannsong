@@ -20,13 +20,19 @@
 #ifndef FILES_PATH_HPP
 #define FILES_PATH_HPP
 
+#include <filesystem>
 #include <string>
 
 namespace files_path
 {
-    void initpaths();
+    struct paths_struct {
+        std::filesystem::path data_path;
+        std::filesystem::path local_data_path;
+    };
+
+    bool create_directory(std::filesystem::path const& p_path);
+    paths_struct getpaths();
     void setlocal();
-    std::string getdatapath();
 }
 
 #endif

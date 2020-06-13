@@ -17,10 +17,6 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <algorithm>
 #include <fstream>
 #include "cutscenes.hpp"
@@ -78,13 +74,13 @@ namespace cutscenes
     }
 
     //Initialize the vector by reading the cutscenes file
-    void copy_file_to_vec(std::string const& csfile)
+    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path)
     {
         using namespace files_path;
 
         bool in_cutscene = false;
         std::string buf;
-        std::ifstream file_stream(getdatapath() + csfile);
+        std::ifstream file_stream(data_path.string() + csfile);
 
         while(fileio::getfileln(buf, file_stream)) {
             Cutscene curr_cs;

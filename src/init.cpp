@@ -29,6 +29,7 @@ extern "C" {
 #include "room/room.hpp"
 #include "cutscenes.hpp"
 #include "files_path.hpp"
+#include "game_error.hpp"
 #include "lang.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -36,7 +37,7 @@ extern "C" {
 
 namespace init
 {
-    static void init_game(std::string& room_name)
+    static void init_game(std::string& room_name, files_path::paths_struct p_paths)
     {
         struct lang_item
         {
@@ -85,7 +86,7 @@ namespace init
         //Fetch variables from the gameconf file and return a vector containing them
         auto fetch_gameconf_vars = [&]()
         {
-            auto gc_vec = gameconf::readfile();
+            auto gc_vec = gameconf::readfile(p_paths.data_path);
 
             auto get_gcvar_it = [gc_vec](std::string const& p_name) {
                 return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
@@ -104,7 +105,7 @@ namespace init
         };
 
         //Show a prompt asking the user to choose the language
-        auto ask_lang = [](std::string const& p_langdir)
+        auto ask_lang = [](std::string const& p_langdir, std::filesystem::path const& data_path)
         {
             auto show_lang_prompt = [](std::array<lang_item, 2> p_arr)
             {
@@ -163,7 +164,7 @@ namespace init
 
                         langmod::set_lang(lang);
                         validinp = true;
-                        pstrings::copy_file_to_vec(p_langdir);
+                        pstrings::copy_file_to_vec(p_langdir, data_path);
                     } else show_err_msg("Nope. (not a valid input)");
                 } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
                 else show_err_msg("Nope. (too long)");
@@ -171,6 +172,7 @@ namespace init
         };
 
         set_curses();
+        game_error::set_filepath(p_paths.local_data_path);
 
         auto gc_vec = fetch_gameconf_vars();
 
@@ -186,25 +188,26 @@ namespace init
         auto csfile_it = get_gcvar_it("csfile");
         auto firstroom_it = get_gcvar_it("firstroom");
 
-        if(langdir_it != gc_vec.cend()) ask_lang(langdir_it->value);
+        if(langdir_it != gc_vec.cend()) ask_lang(langdir_it->value, p_paths.data_path);
         else missing_gcvar("langdir");
 
-        if(roomfile_it != gc_vec.cend()) roomio::copy_file_to_vec(roomfile_it->value);
+        if(roomfile_it != gc_vec.cend()) roomio::copy_file_to_vec(roomfile_it->value,
+                p_paths.data_path);
         else missing_gcvar("roomfile");
 
-        if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value);
+        if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value,
+                p_paths.data_path);
         else missing_gcvar("csfile");
 
         if(firstroom_it != gc_vec.cend()) room_name = firstroom_it->value;
         else missing_gcvar("firstroom");
-
     }
 
-    void start_game()
+    void start_game(files_path::paths_struct const& p_paths)
     {
         std::string room_name;
 
-        init_game(room_name);
+        init_game(room_name, p_paths);
         roommod::start_loop(room_name);
     }
 }

@@ -25,8 +25,8 @@
 int main (int argc, char *argv[])
 {
     pargs::init(argc, argv);
-    files_path::initpaths();
-    init::start_game();
+    auto p_paths = files_path::getpaths();
+    init::start_game(p_paths);
     exitgame(0);
 
     return 0;

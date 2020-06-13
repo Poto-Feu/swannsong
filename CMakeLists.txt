@@ -57,7 +57,7 @@ add_executable(swannsongadv
     src/init.cpp
     src/lang.cpp
     src/pargs.cpp
-    src/perror.c
+    src/game_error.cpp
     src/pstrings.cpp
     src/pcurses.cpp
     src/os_module.cpp
@@ -66,19 +66,18 @@ add_executable(swannsongadv
     src/inventory.cpp
     src/userio.cpp)
 
-# Compile pdcurses if the user is on windows
+# Compile pdcurses if the user is on Windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_package(Curses REQUIRED)
     include_directories(${CURSES_INCLUDE_DIRS})
-    target_link_libraries(swannsongadv ${CURSES_LIBRARIES})
+    target_link_libraries(swannsongadv ${CURSES_LIBRARIES} )
 else()
     add_subdirectory(lib/pdcurses)
     include_directories(lib/pdcurses)
     target_link_libraries(swannsongadv pdcurses)
 endif()
 
-# Statically link libraries if compiled on MinGW (GCC C++ libs are rarely
-# installed on Windows)
+# Statically link libraries if compiled on MinGW (GCC C++ libs are rarely installed on Windows)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_libraries(swannsongadv

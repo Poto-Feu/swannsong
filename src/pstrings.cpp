@@ -100,12 +100,12 @@ namespace pstrings
         pstr_vec.push_back(new_el);
     }
 
-    void copy_file_to_vec(std::string const& p_langdir)
+    void copy_file_to_vec(std::string const& p_langdir, std::filesystem::path const& data_path)
     {
         using namespace files_path;
 
         std::string buf;
-        std::ifstream file_stream = open_strfile(getdatapath() + p_langdir);
+        std::ifstream file_stream = open_strfile(data_path.string() + p_langdir);
 
         while(fileio::getfileln(buf, file_stream)) {
             std::string r_id;

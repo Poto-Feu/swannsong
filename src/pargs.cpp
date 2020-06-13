@@ -20,6 +20,7 @@
 #include <cstring>
 #include "pargs.hpp"
 #include "files_path.hpp"
+#include "game_error.hpp"
 
 namespace pargs
 {
@@ -33,5 +34,6 @@ namespace pargs
         };
 
         if(has_arg("-local")) files_path::setlocal();
+        if(has_arg("-debug")) game_error::setdebug();
     }
 }

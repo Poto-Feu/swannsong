@@ -20,9 +20,11 @@
 #ifndef INIT_HPP
 #define INIT_HPP
 
+#include "files_path.hpp"
+
 namespace init
 {
-    void start_game();
+    void start_game(files_path::paths_struct const& p_paths);
 }
 
 #endif
