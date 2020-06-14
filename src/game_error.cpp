@@ -99,7 +99,7 @@ namespace game_error
                 auto curr_time = *std::localtime(&time_var);
                 char time_buffer[buf_size] = "\0";
 
-                strftime(time_buffer, buf_size - 1, "%F_%H-%M-%S", &curr_time);
+                strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S", &curr_time);
 
                 log_file_path = local_data_path;
                 log_file_path += "logs";
@@ -117,7 +117,7 @@ namespace game_error
                 
                 log_write({log_intro,
                         "These first two lines are for testing purposes.",
-                        "They can be ignored",
+                        "They can be ignored.",
                         ""});
                 already_used = true;
             } else {
