@@ -18,6 +18,7 @@
 */
 
 #include <algorithm>
+#include <unordered_map>
 #include "room.hpp"
 #include "find.hpp"
 #include "RoomManager.hpp"
@@ -28,8 +29,7 @@
 namespace roommod
 {
     //Start the game loop which loads rooms until the end signal is enabled
-    void start_loop(std::string const& id)
-    {
+    void start_loop(std::string const& id) {
         std::string curr_room_id = id;
         RoomManager rmm;
 
@@ -40,18 +40,15 @@ namespace roommod
         };
 
         while(!rmm.is_endgame() && !rmm.is_unfinished()) {
-            static std::vector<Room> room_list;
+            static std::unordered_map<std::string, Room> room_map;
             bool room_fnd = false;
             Room currentRoom;
 
-            auto it = std::find_if(room_list.cbegin(), room_list.cend(),
-                    [curr_room_id](Room const& crm) {
-                    return crm.getName() == curr_room_id;
-            });
+            auto room_it = room_map.find(curr_room_id.c_str());
 
-            if(it != room_list.cend()) {
+            if(room_it != room_map.cend()) {
                 room_fnd = true;
-                currentRoom = *it;
+                currentRoom = room_it->second;
             } else {
                 int roomln = room_find::roomline(curr_room_id);
 
@@ -59,11 +56,10 @@ namespace roommod
                 currentRoom.setRoomLine(roomln);
             }
 
-            if(!room_fnd) room_list.push_back(currentRoom);
+            if(!room_fnd) room_map.insert({currentRoom.getName(), currentRoom});
             currentRoom.load(rmm);
             curr_room_id = rmm.getNextRoom();
         }
-        
         display_server::clear_screen();
         if(rmm.is_unfinished()) unfinished_game();
         exitgame(0);
