@@ -29,7 +29,8 @@
 namespace roommod
 {
     //Start the game loop which loads rooms until the end signal is enabled
-    void start_loop(std::string const& id) {
+    void start_loop(std::string const& id)
+    {
         std::string curr_room_id = id;
         RoomManager rmm;
 
