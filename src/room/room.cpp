@@ -41,9 +41,9 @@ namespace roommod
         };
 
         while(!rmm.is_endgame() && !rmm.is_unfinished()) {
-            static std::unordered_map<std::string, Room> room_map;
+            static std::unordered_map<std::string, std::shared_ptr<Room>> room_map;
             bool room_fnd = false;
-            Room currentRoom;
+            std::shared_ptr<Room> currentRoom;
 
             auto room_it = room_map.find(curr_room_id.c_str());
 
@@ -53,12 +53,12 @@ namespace roommod
             } else {
                 int roomln = room_find::roomline(curr_room_id);
 
-                currentRoom = Room(curr_room_id);
-                currentRoom.setRoomLine(roomln);
+                currentRoom = std::make_shared<Room>(curr_room_id);
+                currentRoom->setRoomLine(roomln);
             }
 
-            if(!room_fnd) room_map.insert({currentRoom.getName(), currentRoom});
-            currentRoom.load(rmm);
+            if(!room_fnd) room_map.insert({currentRoom->getName(), currentRoom});
+            currentRoom->load(rmm);
             curr_room_id = rmm.getNextRoom();
         }
         display_server::clear_screen();
