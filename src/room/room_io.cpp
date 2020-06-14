@@ -21,18 +21,15 @@
 #include <fstream>
 #include "room_io.h"
 #include "fileio/fileio.h"
-#include "vars/pconst.hpp"
-#include "files_path.hpp"
-#include "stringsm.h"
 
 namespace roomio
 {
     static std::vector<std::string> file_vec;
 
     //Copy room file lines into a vector
-    void copy_file_to_vec(std::string const& roomfile)
+    void copy_file_to_vec(std::string const& roomfile, std::filesystem::path const& data_path)
     {
-        file_vec = fileio::copy_to_vector(files_path::getdatapath() + roomfile);
+        file_vec = fileio::copy_to_vector(data_path.string() + roomfile);
     }
 
     //Return the line number where the specified line is present
@@ -59,7 +56,6 @@ namespace roomio
         if(ind > static_cast<int>(roomio::file_vec.size())) return false;
         else {
             p_ln = roomio::file_vec[real_ind];
-
             return true;
         }
     }

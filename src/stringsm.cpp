@@ -29,10 +29,14 @@ namespace stringsm
     //Return an uppercased string
     std::string to_upper(std::string p_str)
     {
-        for(auto& it : p_str) {
-            it = toupper(it);
-        }
+        for(auto& it : p_str) it = toupper(it);
+        return p_str;
+    }
 
+    //Return a lowercased string
+    std::string to_lower(std::string p_str)
+    {
+        for(auto& it : p_str) it = tolower(it);
         return p_str;
     }
 

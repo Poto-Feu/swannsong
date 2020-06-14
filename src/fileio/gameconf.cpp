@@ -23,7 +23,6 @@ extern "C" {
 
 #include <fstream>
 #include "gameconf.hpp"
-#include "files_path.hpp"
 #include "stringsm.h"
 
 namespace gameconf
@@ -39,8 +38,8 @@ namespace gameconf
 
         for(int i = 0; i < str_size && !equal_fnd; ++i)
         {
-            if(ins.at(i) == '=') equal_fnd = true;
-            else var += ins.at(i);
+            if(ins[i] == '=') equal_fnd = true;
+            else var += ins[i];
 
             index = i+1;
         }
@@ -51,27 +50,20 @@ namespace gameconf
         {
             if(quoteinc == 1)
             {
-                if(ins.at(i) == '"') val_finished = true;
-                else value += ins.at(i);
-            }
-            else if(ins.at(i) == '"') quoteinc = 1;
+                if(ins[i] == '"') val_finished = true;
+                else value += ins[i];
+            } else if(ins[i] == '"') quoteinc = true;
         }
-
         correct_syntax = val_finished;
-
         return correct_syntax;
 
     }
 
     /*Read data contained in the gameconf file and set the gameconf variable to the appropriate
     value*/
-    std::vector<gcvar_struct> readfile()
+    std::vector<gcvar_struct> readfile(std::filesystem::path const& data_path)
     {
-        using namespace files_path;
-
-        std::vector<gcvar_struct> rtrn_vec;
-        std::ifstream gc_stream(getdatapath() + "gameconf.txt");
-        std::string curr_line;
+        std::ifstream gc_stream(data_path.string() + "gameconf.txt");
 
         if(!gc_stream.good()) {
             perror_disp(
@@ -79,11 +71,12 @@ namespace gameconf
                     true);
         }
 
-        while(std::getline(gc_stream, curr_line))
-        {
+        std::vector<gcvar_struct> rtrn_vec;
+        std::string curr_line;
+
+        while(std::getline(gc_stream, curr_line)) {
             stringsm::rtab(curr_line);
             if(curr_line.empty()) continue;
-
             if(curr_line.at(0) != '#')
             {
                 std::string var;
@@ -94,7 +87,6 @@ namespace gameconf
                     rtrn_vec.push_back(gcvar_struct {var, value});
                 } else perror_disp("incorrect gameconf syntax", false);
             }
-
             curr_line.clear();
         }
         return rtrn_vec;

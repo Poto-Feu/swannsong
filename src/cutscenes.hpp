@@ -20,6 +20,7 @@
 #ifndef CUTSCENES_HPP
 #define CUTSCENES_HPP
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -48,7 +49,7 @@ class Cutscene
 
 namespace cutscenes
 {
-    void copy_file_to_vec(std::string const& csfile);
+    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path);
     void display(std::string const& p_name);
     bool check_exist(std::string const& p_name);
 }

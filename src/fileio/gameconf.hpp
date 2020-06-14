@@ -20,6 +20,7 @@
 #ifndef GAMECONF_H
 #define GAMECONF_H
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@ namespace gameconf
         std::string value;
     };
 
-    std::vector<gcvar_struct> readfile();
+    std::vector<gcvar_struct> readfile(std::filesystem::path const& data_path);
 }
 
 #endif

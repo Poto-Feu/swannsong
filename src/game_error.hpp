@@ -17,16 +17,21 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdbool.h>
-#include <curses.h>
-#include "perror.h"
-#include "exitgame.h"
+#ifndef GAME_ERROR_HPP
+#define GAME_ERROR_HPP
 
-//Display an error message with the specified string
-void perror_disp(const char* id, bool fatal)
+#include <filesystem>
+#include <string>
+#include <vector>
+
+namespace game_error
 {
-    printw("ERROR : %s\n", id);
-    refresh();
-
-    if(fatal) exitgame(1);
+    void setdebug();
+    void log_write(std::string const& p_text);
+    void log_write(std::vector<std::string> p_vector);
+    void emit_warning(std::string const& p_text);
+    void fatal_error(std::string const& p_text);
+    void set_filepath(std::filesystem::path const& local_data_path);
 }
+
+#endif
