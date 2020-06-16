@@ -37,6 +37,7 @@ enum class token_type
     STRING_ID,
     ITEM,
     NEWVAR,
+    TEXT,
     EXISTS,
     UNKNOWN,
     UNDEFINED

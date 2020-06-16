@@ -131,6 +131,12 @@ namespace token
                 else return false;
             };
 
+            auto is_text = [] (std::string p_tkn)
+            {
+                if(p_tkn == "TEXT") return true;
+                else return false;
+            };
+
             auto is_item = [](TokenVec const& p_vec, int p_ind)
             {
                 if(p_vec[0].str == "GET" && (p_ind == 1 || p_ind == 2)) return true;
@@ -161,6 +167,7 @@ namespace token
                     else if(is_variable(it.str)) it.type = token_type::VARIABLE;
                     else if(is_string(it.str)) it.type = token_type::STRING;
                     else if(is_string_id(it.str)) it.type = token_type::STRING_ID;
+                    else if(is_text(it.str)) it.type = token_type::TEXT;
                     else if(is_new_var(p_vec, i)) it.type = token_type::NEWVAR;
                     else if(is_exists(it.str)) it.type = token_type::EXISTS;
                     else if(is_item(p_vec, i)) it.type = token_type::ITEM;
