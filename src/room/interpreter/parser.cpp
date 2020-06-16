@@ -21,12 +21,13 @@ extern "C" {
 #include "perror.h"
 }
 
-#include "parser.hpp"
+#include "room/interpreter/parser.hpp"
 #include "room/interpreter/token.hpp"
 #include "room/room_io.h"
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
 #include "cutscenes.hpp"
+#include "game_error.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -49,20 +50,25 @@ namespace parser
     //Interpret a line which use the SET function
     static void interp_SET_func(TokenVec r_vec)
     {
-        int val = -1;
+        if(r_vec.size() != 4) wrg_tkn_num("SET");
+        else {
+            int val = -1;
 
-        if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
-        if(r_vec[2].type != token_type::EQUAL) perror_disp("missing EQUAL token (SET)", true);
-        if(r_vec[3].type != token_type::NUMBER) {
-            perror_disp("no value assigned to var during its init", true);
+            if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
+            if(r_vec[2].type != token_type::EQUAL) perror_disp("missing EQUAL token (SET)", true);
+            if(r_vec[3].type != token_type::NUMBER) {
+                perror_disp("no value assigned to var during its init", true);
+            }
+            val = std::stoi(r_vec[3].str);
+            gvars::set_var(r_vec[1].str, val);
         }
-        val = std::stoi(r_vec[3].str);
-        gvars::set_var(r_vec[1].str, val);
     }
 
     //Interpret a line which use the DISPLAY function
     static void interp_DISPLAY_func(TokenVec r_vec, roommod::room_struct& p_struct)
     {
+        if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
+
         //Add all room choices into a vector in the RoomManager
         auto add_all_choices = [](int roomln, roommod::room_struct& p_struct)
         {
@@ -105,48 +111,52 @@ namespace parser
     //Interpret a line which use the PRINT function
     static void interp_PRINT_func(TokenVec const& r_vec, RoomState& p_state)
     {
-        if(p_state.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("PRINT");
+        if(r_vec.size() != 2) wrg_tkn_num("PRINT");
+        else {
+            if(p_state.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("PRINT");
 
-        switch(r_vec[1].type) {
-            case token_type::STRING:
-                p_state.addString(r_vec[1].str);
-                break;
-            case token_type::STRING_ID:
-                p_state.addString(pstrings::fetch(r_vec[1].str));
-                break;
-            default:
-                perror_disp("token cannot be displayed (PRINT)", 0);
-                break;
+            switch(r_vec[1].type) {
+                case token_type::STRING:
+                    p_state.addString(r_vec[1].str);
+                    break;
+                case token_type::STRING_ID:
+                    p_state.addString(pstrings::fetch(r_vec[1].str));
+                    break;
+                default:
+                    perror_disp("token cannot be displayed (PRINT)", 0);
+                    break;
+            }
         }
     }
 
     //Interpret a line which use the CUTSCENE function
     static void interp_CUTSCENE_func(TokenVec const& r_vec, RoomState& p_state)
     {
-        if(cutscenes::check_exist(r_vec[1].str)) {
-            p_state.addCutscene(r_vec[1].str);
-        } else {
-            std::string err_str = "unknown CUTSCENE id (" + r_vec[1].str + ")";
-            perror_disp(err_str.c_str(), false);
+        if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
+        else {
+            if(cutscenes::check_exist(r_vec[1].str)) p_state.addCutscene(r_vec[1].str);
+            else game_error::emit_warning("unknown CUTSCENE id (" + r_vec[1].str + ")");
         }
     }
 
     //Intepret a line which use the GO function
     static void interp_GO_func(TokenVec const& r_vec, RoomManager& p_roomman)
     {
-        int roomln = 0;
+        if(r_vec.size() != 2) wrg_tkn_num("GO");
+        else {
+            int roomln = 0;
 
-        if(!room_find::roomline(&roomln, r_vec[1].str)) {
-            std::string err_msg =  "\"" + r_vec[1].str + "\" room was not found";
-
-            perror_disp(err_msg.c_str(), true);
-        } else p_roomman.setNextRoom(r_vec[1].str);
+            if(!room_find::roomline(&roomln, r_vec[1].str)) {
+                game_error::fatal_error("\"" + r_vec[1].str + "\" room was not found");
+            } else p_roomman.setNextRoom(r_vec[1].str);
+        }
     }
 
     /*Interpret a line which use the UNFINISHED function, which tells the player they have reached
     an unfinished part of the program*/
-    static void interp_UNFINISHED_func(RoomManager& p_rmm)
+    static void interp_UNFINISHED_func(TokenVec const& r_vec, RoomManager& p_rmm)
     {
+        if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
         p_rmm.setUnfinished();
     }
 
@@ -160,8 +170,10 @@ namespace parser
             if(p_vec[1].type == token_type::NUMBER) {
                 item_name_pos = 2;
                 item_n = std::stoi(p_vec[1].str);
-            } else perror_disp("second part of a GET instruction must be a NUMBER or an ITEM",
-                    true);
+            } else {
+                game_error::fatal_error(
+                        "second part of a GET instruction must be a NUMBER or an ITEM");
+            }
         } else if(p_vec.size() != 2) wrg_tkn_num("GET");
         inventory::player_getitem(p_vec[item_name_pos].str, item_n);
     }
@@ -267,7 +279,8 @@ namespace parser
                     continue_func = false;
                     break;
             }
-        } gvars::change_val(r_vec[0].str, result_value);
+        }
+        gvars::change_val(r_vec[0].str, result_value);
     }
 
     //Interpret a line depending on its first token
@@ -277,26 +290,37 @@ namespace parser
         auto interp_func_ins = [](TokenVec r_vec, roommod::room_struct& p_struct,
                 RoomManager& p_roomman)
         {
-            if(r_vec[0].str == "DISPLAY") {
-                if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
-                else interp_DISPLAY_func(r_vec, p_struct);
-            } else if(r_vec[0].str == "PRINT") {
-                if(r_vec.size() != 2) wrg_tkn_num("PRINT");
-                else interp_PRINT_func(r_vec, p_struct.currState);
-            } else if(r_vec[0].str == "SET") {
-                if(r_vec.size() != 4) wrg_tkn_num("SET");
-                else interp_SET_func(r_vec);
-            } else if(r_vec[0].str == "CUTSCENE") {
-                if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
-                else interp_CUTSCENE_func(r_vec, p_struct.currState);
-            } else if(r_vec[0].str == "GO") {
-                if(r_vec.size() != 2) wrg_tkn_num("GO");
-                else interp_GO_func(r_vec, p_roomman);
-            } else if(r_vec[0].str == "UNFINISHED") {
-                if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
-                else interp_UNFINISHED_func(p_roomman);
-            } else if(r_vec[0].str == "GET") interp_GET_func(r_vec);
-            else if(r_vec[0].str == "USE") interp_USE_func(r_vec);
+            switch(r_vec[0].spec_type)
+            {
+                case token_spec_type::DISPLAY:
+                    interp_DISPLAY_func(r_vec, p_struct);
+                    break;
+                case token_spec_type::PRINT:
+                    interp_PRINT_func(r_vec, p_struct.currState);
+                    break;
+                case token_spec_type::SET:
+                    interp_SET_func(r_vec);
+                    break;
+                case token_spec_type::CUTSCENE:
+                    interp_CUTSCENE_func(r_vec, p_struct.currState);
+                    break;
+                case token_spec_type::GO:
+                    interp_GO_func(r_vec, p_roomman);
+                    break;
+                case token_spec_type::UNFINISHED:
+                    interp_UNFINISHED_func(r_vec, p_roomman);
+                    break;
+                case token_spec_type::GET:
+                    interp_GET_func(r_vec);
+                    break;
+                case token_spec_type::USE:
+                    interp_USE_func(r_vec);
+                    break;
+                default:
+                    game_error::fatal_error("incorrect spec_token_type in function : "
+                            + r_vec[0].str);
+                    break;
+            }
         };
 
         switch(r_vec[0].type) {
@@ -307,7 +331,8 @@ namespace parser
                 interp_gvar_ins(r_vec);
                 break;
             default:
-                perror_disp("this is not yet implemented by the parser", true);
+                game_error::fatal_error("this is not yet implemented by the parser : "
+                        + r_vec[0].str);
                 break;
         }
     }
@@ -449,12 +474,15 @@ namespace parser
                     if(r_vec[2].type == token_type::EXISTS) {
                         if(r_vec.size() != 3) wrg_tkn_num("EXISTS IF");
                         else if(gvars::exist(r_vec[1].str)) return true;
-                    } else if(r_vec[2].type == token_type::NOT && r_vec[3].type == token_type::EXISTS) {
+                    } else if(r_vec[2].type == token_type::NOT
+                            && r_vec[3].type == token_type::EXISTS) {
                         if(r_vec.size() != 4) perror_disp("wrong arg number in EXISTS IF", true);
                         else if(!gvars::exist(r_vec[1].str)) return true;
-                    } else if(r_vec[1].type == token_type::VARIABLE) return check_COMP_condition(r_vec);
-                    else if(r_vec[1].type == token_type::HAS
-                            || (r_vec[1].type == token_type::NOT && r_vec[2].type == token_type::HAS)) {
+                    } else if(r_vec[1].type == token_type::VARIABLE) {
+                        return check_COMP_condition(r_vec);
+                    } else if(r_vec[1].type == token_type::HAS
+                            || (r_vec[1].type == token_type::NOT
+                            && r_vec[2].type == token_type::HAS)) {
                         return check_HAS_condition(r_vec);
                     } else perror_disp("IF condition type not recognized", true);
                     return false;
@@ -462,7 +490,8 @@ namespace parser
 
                 if(check_condition()) i = exec_until_end(i, p_struct, p_roomman);
                 else i = parser::skip_until_end(i);
-            } else parser_execins(buf, p_struct, p_roomman);
+            } else if(fw == "TEXT") continue;
+            else parser_execins(buf, p_struct, p_roomman);
         } return endln;
     }
 }
