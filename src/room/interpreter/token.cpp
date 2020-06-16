@@ -59,7 +59,6 @@ namespace token
                     "DISPLAY",
                     "SET",
                     "GO",
-                    "TEXT",
                     "IF",
                     "CUTSCENE",
                     "GET",

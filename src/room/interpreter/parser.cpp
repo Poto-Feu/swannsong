@@ -462,7 +462,8 @@ namespace parser
 
                 if(check_condition()) i = exec_until_end(i, p_struct, p_roomman);
                 else i = parser::skip_until_end(i);
-            } else parser_execins(buf, p_struct, p_roomman);
+            } else if(fw == "TEXT") continue;
+            else parser_execins(buf, p_struct, p_roomman);
         } return endln;
     }
 }
