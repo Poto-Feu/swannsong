@@ -23,6 +23,7 @@
 
 #include <stdbool.h>
 
+//THIS IS A DEPRECATED FUNCTION - it is not yet removed to ensure backward compatibility
 void perror_disp(const char* id, bool fatal);
 
 #endif
