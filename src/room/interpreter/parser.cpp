@@ -449,12 +449,15 @@ namespace parser
                     if(r_vec[2].type == token_type::EXISTS) {
                         if(r_vec.size() != 3) wrg_tkn_num("EXISTS IF");
                         else if(gvars::exist(r_vec[1].str)) return true;
-                    } else if(r_vec[2].type == token_type::NOT && r_vec[3].type == token_type::EXISTS) {
+                    } else if(r_vec[2].type == token_type::NOT
+                            && r_vec[3].type == token_type::EXISTS) {
                         if(r_vec.size() != 4) perror_disp("wrong arg number in EXISTS IF", true);
                         else if(!gvars::exist(r_vec[1].str)) return true;
-                    } else if(r_vec[1].type == token_type::VARIABLE) return check_COMP_condition(r_vec);
-                    else if(r_vec[1].type == token_type::HAS
-                            || (r_vec[1].type == token_type::NOT && r_vec[2].type == token_type::HAS)) {
+                    } else if(r_vec[1].type == token_type::VARIABLE) {
+                        return check_COMP_condition(r_vec);
+                    } else if(r_vec[1].type == token_type::HAS
+                            || (r_vec[1].type == token_type::NOT
+                            && r_vec[2].type == token_type::HAS)) {
                         return check_HAS_condition(r_vec);
                     } else perror_disp("IF condition type not recognized", true);
                     return false;
