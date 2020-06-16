@@ -21,14 +21,12 @@
 #include <fstream>
 #include "cutscenes.hpp"
 #include "fileio/fileio.h"
-#include "display_server.hpp"
+#include "CutsceneClass.hpp"
 #include "files_path.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
 #include "userio.h"
-
-Cutscene::Cutscene() { }
 
 namespace cutscenes
 {
@@ -40,37 +38,6 @@ namespace cutscenes
                 [p_name](Cutscene const& ccut) {
                 return p_name == ccut.name;
                 });
-    }
-
-    static void execute_all_actions(std::vector<cs_action> const& p_vec)
-    {
-        std::string penter_msg = pstrings::fetch("continue_penter");
-        int str_line = pcurses::top_margin;
-
-        for(auto const& action_it : p_vec) {
-            switch(action_it.type) {
-                case cs_action_type::STRING:
-                    pcurses::display_center_string(action_it.content, str_line);
-                    str_line = display_server::get_last_line() + 1;
-                    break;
-                case cs_action_type::BLANK:
-                    ++str_line;
-                    break;
-                case cs_action_type::PAUSE:
-                    display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin},
-                            A_BOLD);
-                    display_server::show_screen();
-                    userio::waitenter();
-                    display_server::clear_screen();
-                    str_line = pcurses::top_margin;
-                    break;
-            }
-        }
-
-        display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-        display_server::show_screen();
-        userio::waitenter();
-        display_server::clear_screen();
     }
 
     //Initialize the vector by reading the cutscenes file
@@ -123,7 +90,7 @@ namespace cutscenes
         auto it = find_vec_it(p_name);
         display_server::clear_screen();
 
-        if(it != cs_vec.cend()) execute_all_actions(it->actions_vec);
+        if(it != cs_vec.cend()) it->display();
         else {
             std::string penter_msg = pstrings::fetch("continue_penter");
 

@@ -17,16 +17,39 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CUTSCENES_HPP
-#define CUTSCENES_HPP
+#ifndef CUTSCENE_CLASS_HPP
+#define CUTSCENE_CLASS_HPP
 
-#include <filesystem>
-#include <string>
+#include <vector>
+#include "cutscenes.hpp"
 
-namespace cutscenes
+enum class cs_action_type
 {
-    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path);
-    void display(std::string const& p_name);
-    bool check_exist(std::string const& p_name);
-}
+    STRING,
+    PAUSE,
+    BLANK
+};
+
+struct cs_action
+{
+    cs_action_type type;
+    std::string content;
+};
+
+class Cutscene
+{
+    public:
+
+        Cutscene();
+
+        std::string name;
+        std::vector<cs_action> actions_vec;
+
+        void display() const;
+
+    private:
+
+        void execute_all_actions() const;
+};
+
 #endif
