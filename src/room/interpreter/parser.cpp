@@ -27,6 +27,7 @@ extern "C" {
 #include "room/find.hpp"
 #include "vars/gvars.hpp"
 #include "cutscenes.hpp"
+#include "game_error.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -307,7 +308,8 @@ namespace parser
                 interp_gvar_ins(r_vec);
                 break;
             default:
-                perror_disp("this is not yet implemented by the parser", true);
+                game_error::fatal_error("this is not yet implemented by the parser : "
+                        + r_vec[0].str);
                 break;
         }
     }
