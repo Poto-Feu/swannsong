@@ -51,25 +51,37 @@ namespace token
                 return false;
             };
 
-            auto is_func = [](std::string const& p_tkn)
+            auto is_func = [](Token& p_tkn)
             {
-                static const std::vector<std::string> func_list = 
+                struct func_list_item
                 {
-                    "PRINT",
-                    "DISPLAY",
-                    "SET",
-                    "GO",
-                    "IF",
-                    "CUTSCENE",
-                    "GET",
-                    "USE",
-                    "UNFINISHED"
+                    std::string str;
+                    token_spec_type spec_type;
                 };
 
-                return std::find_if(func_list.cbegin(), func_list.cend(),
-                        [p_tkn](std::string const& cfunc) {
-                        return p_tkn == cfunc;
-                        }) != func_list.cend();
+                //An enum is used for faster condition checking in the parser
+                static const std::vector<func_list_item> func_list = 
+                {
+                    { "PRINT", token_spec_type::PRINT },
+                    { "DISPLAY", token_spec_type::DISPLAY },
+                    { "SET", token_spec_type::SET },
+                    { "GO", token_spec_type::GO },
+                    { "CUTSCENE", token_spec_type::CUTSCENE },
+                    { "GET", token_spec_type::GET },
+                    { "USE", token_spec_type::USE },
+                    { "UNFINISHED", token_spec_type::UNFINISHED }
+                };
+
+                auto found_it = std::find_if(func_list.cbegin(), func_list.cend(),
+                        [&p_tkn](func_list_item const& cfunc) {
+                        return cfunc.str == p_tkn.str;
+                        });
+
+                if(found_it != func_list.cend()) {
+                    p_tkn.type = token_type::FUNCTION;
+                    p_tkn.spec_type = found_it->spec_type;
+                    return true;
+                } else return false;
             };
 
             auto is_variable = [](std::string const& p_tkn)
@@ -162,7 +174,7 @@ namespace token
                     if(is_if(it.str)) it.type = token_type::IF;
                     else if(is_not(it.str)) it.type = token_type::NOT;
                     else if(is_has(it.str)) it.type = token_type::HAS;
-                    else if(is_func(it.str)) it.type = token_type::FUNCTION;
+                    else if(is_func(it)) it.type = token_type::FUNCTION;
                     else if(is_number(it.str)) it.type = token_type::NUMBER;
                     else if(is_variable(it.str)) it.type = token_type::VARIABLE;
                     else if(is_string(it.str)) it.type = token_type::STRING;
