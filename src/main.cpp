@@ -19,14 +19,12 @@
 
 #include "init.hpp"
 #include "exitgame.h"
-#include "files_path.hpp"
 #include "pargs.hpp"
 
 int main (int argc, char *argv[])
 {
     pargs::init(argc, argv);
-    auto p_paths = files_path::getpaths();
-    init::start_game(p_paths);
+    init::start_game();
     exitgame(0);
 
     return 0;
