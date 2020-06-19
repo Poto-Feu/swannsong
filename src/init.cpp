@@ -17,10 +17,6 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <algorithm>
 #include <array>
 #include "init.hpp"
@@ -115,7 +111,7 @@ namespace init
         display_server::show_screen();
     }
 
-    //Show a prompt asking the user to choose the language
+    //Show a prompt asking the user to choose the language and the prompt to do so
     static void ask_lang(std::string const& p_langdir, fs::path const& data_path)
     {
         bool validinp = false;
