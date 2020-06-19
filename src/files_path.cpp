@@ -17,17 +17,15 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <iostream>
 #include "files_path.hpp"
+#include "game_error.hpp"
 #include "exitgame.h"
 #include "os_module.hpp"
 
 namespace files_path
 {
+    using namespace os_module;
     namespace fs = std::filesystem;
 
     //Indicate if the program is run from the build folder or if it is installed on the user machine
@@ -41,57 +39,57 @@ namespace files_path
         } else return false;
     }
 
+    static fs::path init_data_path()
+    {
+#ifdef IS_PKG
+        rtrn_struct.data_path = "/usr/share/swannsong_adventure/";
+#else
+        if(current_os == os_type::WINDOWSNT || runned_locally) {
+            return "data/";
+        } else return "/usr/local/share/swannsong_adventure/";
+#endif
+    }
+            
+    static fs::path init_user_data_path(paths_struct& rtrn_struct)
+    {
+        fs::path path_fs;
+
+        if(current_os == os_type::UNIXLIKE) {
+            path_fs = getenv("HOME");
+            path_fs += "/.local";
+            files_path::create_directory(path_fs);
+            path_fs += "/share";
+            files_path::create_directory(path_fs);
+            path_fs += "/swannsong_adventure";
+            files_path::create_directory(path_fs);
+            rtrn_struct.local_data_path = path_fs;
+            rtrn_struct.local_data_path += "/";
+        } else if(current_os == os_type::WINDOWSNT) {
+            path_fs = getenv("LOCALAPPDATA");
+
+            path_fs += "/swannsong_adventure";
+            files_path::create_directory(path_fs);
+            rtrn_struct.local_data_path = path_fs;
+            rtrn_struct.local_data_path += "/";
+        } else {
+            std::cout << "Please use a POSIX or a WINDOWS NT environnement to run this program"
+                << "\n";
+            exit(1);
+        }
+        return path_fs;
+    }
+
+    //Return a struct containing the system game data path and the user-specific game data path
     paths_struct getpaths()
     {
-        paths_struct rtrn_struct;
         static bool already_used = false;
+        paths_struct rtrn_struct;
 
         if(!already_used) {
-            using namespace os_module;
-            
-            auto init_data_path = [&]() {
-#ifdef IS_PKG
-                rtrn_struct.data_path = "/usr/share/swannsong_adventure/";
-#else
-                if(current_os == os_type::WINDOWSNT || runned_locally) {
-                    rtrn_struct.data_path = "data/";
-                } else rtrn_struct.data_path = "/usr/local/share/swannsong_adventure/";
-#endif
-            };
-            
-            auto init_user_data_path = [&]() {
-                if(current_os == os_type::UNIXLIKE) {
-                    fs::path path_fs = getenv("HOME");
-
-                    path_fs += "/.local";
-                    files_path::create_directory(path_fs);
-                    path_fs += "/share";
-                    files_path::create_directory(path_fs);
-                    path_fs += "/swannsong_adventure";
-                    files_path::create_directory(path_fs);
-                    rtrn_struct.local_data_path = path_fs;
-                    rtrn_struct.local_data_path += "/";
-                } else if(current_os == os_type::WINDOWSNT) {
-                    fs::path path_fs = getenv("LOCALAPPDATA");
-
-                    path_fs += "/swannsong_adventure";
-                    files_path::create_directory(path_fs);
-                    rtrn_struct.local_data_path = path_fs;
-                    rtrn_struct.local_data_path += "/";
-                } else {
-                    std::cout
-                        << "Please use a POSIX or a WINDOWS NT environnement to run this program"
-                        << std::endl;
-                    exit(1);
-                }
-            };
-
-            init_data_path();
-            init_user_data_path();
-
+            rtrn_struct.data_path = init_data_path();
+            rtrn_struct.local_data_path = init_user_data_path(rtrn_struct);
             already_used = true;
-
-        } else perror_disp("files_path::initpaths used more than once", true);
+        } else game_error::fatal_error("files_path::initpaths used more than once");
         return rtrn_struct;
     }
 
