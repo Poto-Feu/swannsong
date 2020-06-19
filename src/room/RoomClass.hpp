@@ -21,7 +21,7 @@
 #define ROOMCLASS_HPP
 
 #include <string>
-#include "RoomManager.hpp"
+#include "room/RoomManager.hpp"
 
 class Room 
 {

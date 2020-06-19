@@ -21,8 +21,7 @@
 
 RoomManager::RoomManager() { }
 
-/*Set the variable which serve as a signal indicating if the room loop should
-end*/
+//Set the variable which serve as a signal indicating if the room loop should end
 void RoomManager::endLoop()
 {
     endgame = true;

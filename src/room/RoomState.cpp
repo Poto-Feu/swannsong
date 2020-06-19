@@ -17,15 +17,12 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <stdexcept>
-#include "RoomState.hpp"
-#include "find.hpp"
+#include "room/RoomState.hpp"
+#include "room/find.hpp"
 #include "cutscenes.hpp"
 #include "display_server.hpp"
+#include "game_error.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -75,7 +72,7 @@ void RoomState::displayTitle(Room const& p_room)
         else throw std::runtime_error("unknown string format in displayTitle");
 
         pcurses::display_center_string(disp_value, pcurses::title_y, A_BOLD);
-    } else perror_disp("TITLE property not found in room", false);
+    } else game_error::emit_warning("TITLE property not found in room");
 }
 
 void RoomState::displayDesc(Room const& p_room)
@@ -95,7 +92,7 @@ void RoomState::displayDesc(Room const& p_room)
         else throw std::runtime_error("unknown string format in displayDesc (" + value + ")");
 
         pcurses::display_center_string(disp_value, str_line);
-    } else perror_disp("DESC property not found in room", false);
+    } else game_error::emit_warning("DESC property not found in room");
 }
 
 void RoomState::displayChoices()
@@ -146,11 +143,9 @@ unsigned int RoomState::getChoicesSize() const
 
 unsigned int RoomState::getChoiceLine(unsigned int ch_n) const
 {
-    if(ch_n <= choice_list.size() && ch_n != 0) {
-        return choice_list[ch_n - 1].getLine();
-    } else {
-        perror_disp("out-of-range parameter in RoomState::getChoiceLine",
-                true);
+    if(ch_n <= choice_list.size() && ch_n != 0) return choice_list[ch_n - 1].getLine();
+    else {
+        game_error::fatal_error("out-of-range parameter in RoomState::getChoiceLine");
         return 0;
     }
 }

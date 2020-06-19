@@ -30,7 +30,7 @@ namespace room_find
     bool blockline(int& foundln, int p_ln, std::string const& ins);
     bool atlaunchline(int& foundln, int ln);
     bool choicesline(int& foundln, int room_ln);
-    int roomline(std::string const& id);
     bool roomline(int* r_ln, std::string const& id);
+    int roomline(std::string const& id);
 }
 #endif

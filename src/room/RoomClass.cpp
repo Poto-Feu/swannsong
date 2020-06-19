@@ -17,15 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
-#include "RoomClass.hpp"
+#include "room/RoomClass.hpp"
 #include "room/interpreter/parser.hpp"
 #include "room/find.hpp"
-#include "display_server.hpp"
 #include "exitgame.h"
+#include "game_error.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -66,36 +62,45 @@ void Room::setChoicesLine(int chln)
     choices_line = chln;
 }
 
+//Read the first ATLAUNCH block encountered starting from specified line
+static void atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
+{
+    int foundln = 0;
+    bool atlfound = false;
+
+    atlfound = room_find::atlaunchline(foundln, p_struct.currRoom.getRoomLine());
+
+    if(atlfound) {
+        auto show_prompt = []()
+        {
+            int str_line = display_server::get_last_line() + 2;
+
+            if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
+            pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
+        };
+
+        p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
+        (void)parser::exec_until_end(foundln, p_struct, p_rmm);
+        p_struct.currState.displayAll(p_struct.currRoom);
+        show_prompt();
+        display_server::show_screen();
+    } else {
+        game_error::fatal_error("missing ATLAUNCH block (" + p_struct.currRoom.getName() + ")");
+    }
+}
+
+//Reset the room screen with an added message to notify the user that its input is not correct
+static void incorrect_input()
+{
+    display_server::add_string(pstrings::fetch("incorrect_input"),
+            {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+    display_server::load_save();
+    display_server::show_screen();
+}
+
 void Room::load(RoomManager& p_rmm)
 {
     RoomState currentState;
-
-    //Read the first ATLAUNCH block encountered starting from specified line
-    auto atlaunch = [](roommod::room_struct& p_struct, RoomManager& p_rmm) {
-        int foundln = 0;
-        bool atlfound = false;
-
-        atlfound = room_find::atlaunchline(foundln, p_struct.currRoom.getRoomLine());
-
-        if(atlfound) {
-            auto show_prompt = []()
-            {
-                int str_line = display_server::get_last_line() + 2;
-
-                if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
-                pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
-            };
-
-            p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
-            (void)parser::exec_until_end(foundln, p_struct, p_rmm);
-            p_struct.currState.displayAll(p_struct.currRoom);
-            show_prompt();
-            display_server::show_screen();
-        } else {
-            std::string err_str = "missing ATLAUNCH block (" + p_struct.currRoom.getName() + ")";
-            perror_disp(err_str.c_str(), true);
-        }
-    };
 
     //Show the room prompt and process the input
     auto process_input = [](roommod::room_struct p_struct, RoomManager& p_rmm) {
@@ -105,16 +110,6 @@ void Room::load(RoomManager& p_rmm)
 
         while(!correct_input) {
             std::string user_inp = userio::gettextinput(9);
-
-            /*Reset the room screen with an added message to notify the user that its input is not
-            correct.*/
-            auto incorrect_input = []()
-            {
-                display_server::add_string(pstrings::fetch("incorrect_input"),
-                        {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-                display_server::load_save();
-                display_server::show_screen();
-            };
 
             display_server::clear_screen();
 
