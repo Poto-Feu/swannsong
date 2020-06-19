@@ -22,8 +22,8 @@
 
 #include <string>
 #include <vector>
-#include "Choice.hpp"
-#include "RoomClass.hpp"
+#include "room/Choice.hpp"
+#include "room/RoomClass.hpp"
 
 class RoomState
 {

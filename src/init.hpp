@@ -24,7 +24,7 @@
 
 namespace init
 {
-    void start_game(files_path::paths_struct const& p_paths);
+    void start_game();
 }
 
 #endif

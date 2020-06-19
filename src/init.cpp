@@ -17,10 +17,6 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <algorithm>
 #include <array>
 #include "init.hpp"
@@ -37,144 +33,133 @@ extern "C" {
 
 namespace init
 {
-    static void init_game(std::string& room_name, files_path::paths_struct p_paths)
+    namespace fs = std::filesystem;
+
+    const int LANG_NUMBER = 2;
+
+    struct lang_item
     {
-        struct lang_item
-        {
-            lang_item(std::string const& p_id, std::string const& p_disp) :
-                id(p_id), disp(p_disp) {}
+        lang_item(std::string const& p_id, std::string const& p_disp)
+            : id(p_id), disp(p_disp) {}
 
-            std::string id;
-            std::string disp;
+        std::string id;
+        std::string disp;
+    };
+
+    static void missing_gcvar (std::string const& p_name)
+    {
+        game_error::fatal_error("missing gameconf var (" + p_name +")");
+    }
+
+    //Fetch variables from the gameconf file and return a vector containing them
+    static auto fetch_gameconf_vars(fs::path const& system_data_path)
+    {
+        auto gc_vec = gameconf::readfile(system_data_path);
+
+        auto get_gcvar_it = [gc_vec](std::string const& p_name) {
+            return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
+                [p_name](gameconf::gcvar_struct const& cgcvar) {
+                return cgcvar.name == p_name;
+                });
         };
 
-        auto set_curses = []()
-        {
-            auto set_margin = []()
-            {
-                if(COLS < 100) pcurses::margin = 4;
-                else if(COLS > 200) pcurses::margin = 15;
-                else pcurses::margin = 10;
-            };
+        auto defaultlang_it = get_gcvar_it("defaultlang");
 
-            auto set_title_y = []()
-            {
-                pcurses::title_y = LINES / 2 - LINES / 6;
-            };
+        if(defaultlang_it != gc_vec.cend()) {
+            langmod::set_lang(defaultlang_it->value);
+        } else missing_gcvar("defaultlang");
 
-            auto set_coord = []()
-            {
-                pcurses::lines = LINES;
-                pcurses::cols = COLS;
-            };
+        return gc_vec;
+    }
 
-            initscr();
-            raw();
-            noecho();
+    static void set_curses()
+    {
+        initscr();
+        raw();
+        noecho();
 
-            set_margin();
-            set_title_y();
-            set_coord();
+        if(COLS < 100) pcurses::margin = 4;
+        else if(COLS > 200) pcurses::margin = 15;
+        else pcurses::margin = 10;
+
+        pcurses::title_y = LINES / 2 - LINES / 6;
+        pcurses::lines = LINES;
+        pcurses::cols = COLS;
+    }
+
+    static void show_lang_prompt(std::array<lang_item, LANG_NUMBER>& p_arr)
+    {
+        int str_line = pcurses::title_y;
+        std::string const hint_str("Hint : make a choice by typing the corresponding number.");
+
+        pcurses::display_center_string(hint_str, str_line);
+        str_line = display_server::get_last_line() + 3;
+        pcurses::display_center_string("Select your language:", str_line);
+        str_line = display_server::get_last_line() + 2;
+
+        for(unsigned int i = 1; i <= LANG_NUMBER; ++i) {
+            std::string disp_str(std::to_string(i));
+
+            disp_str += ". ";
+            disp_str.append(p_arr[i-1].disp);
+            pcurses::display_pos_string(disp_str, pcurses::choice_space, str_line);
+            str_line = display_server::get_last_line() + 1;
+        }
+
+        str_line += 1;
+        pcurses::display_pos_string("Your choice: ", 12, str_line);
+        display_server::show_screen();
+    }
+
+    //Show a prompt asking the user to choose the language and the prompt to do so
+    static void ask_lang(std::string const& p_langdir, fs::path const& data_path)
+    {
+        bool validinp = false;
+
+        std::array<lang_item, LANG_NUMBER> langarr {
+            lang_item("eng", "English"),
+            lang_item("fra", "Français")
         };
 
-        auto missing_gcvar = [](std::string const& p_name)
-        {
-            std::string err_msg = "missing gameconf var (" + p_name +")";
-            perror_disp(err_msg.c_str(), true);
-        };
+        display_server::clear_screen();
+        show_lang_prompt(langarr);
+        display_server::save_screen();
 
-        //Fetch variables from the gameconf file and return a vector containing them
-        auto fetch_gameconf_vars = [&]()
-        {
-            auto gc_vec = gameconf::readfile(p_paths.data_path);
+        while(!validinp) {
+            std::string buf;
 
-            auto get_gcvar_it = [gc_vec](std::string const& p_name) {
-                return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
-                    [p_name](gameconf::gcvar_struct const& cgcvar) {
-                    return cgcvar.name == p_name;
-                    });
-            };
-
-            auto defaultlang_it = get_gcvar_it("defaultlang");
-
-            if(defaultlang_it != gc_vec.cend()) {
-                langmod::set_lang(defaultlang_it->value);
-            } else missing_gcvar("defaultlang");
-
-            return gc_vec;
-        };
-
-        //Show a prompt asking the user to choose the language
-        auto ask_lang = [](std::string const& p_langdir, std::filesystem::path const& data_path)
-        {
-            auto show_lang_prompt = [](std::array<lang_item, 2> p_arr)
+            auto show_err_msg = [](std::string const& p_msg)
             {
-                int str_line = pcurses::title_y;
-                std::string hint_str(
-                    "Hint : make a choice by typing the corresponding number.");
-
-                pcurses::display_center_string(hint_str, str_line);
-                str_line = display_server::get_last_line() + 3;
-                pcurses::display_center_string("Select your language:", str_line);
-                str_line = display_server::get_last_line() + 2;
-
-                for(unsigned int i = 1; i <= p_arr.size(); ++i) {
-                    std::string disp_str(std::to_string(i));
-
-                    disp_str += ". ";
-                    disp_str.append(p_arr[i-1].disp);
-                    pcurses::display_pos_string(disp_str, pcurses::choice_space, str_line);
-                    str_line = display_server::get_last_line() + 1;
-                }
-
-                str_line += 1;
-                pcurses::display_pos_string("Your choice: ", 12, str_line);
+                display_server::clear_screen();
+                display_server::add_string(p_msg, {LINES - 3, pcurses::margin}, A_BOLD);
+                display_server::load_save();
                 display_server::show_screen();
             };
 
-            bool validinp = false;
+            buf = userio::gettextinput(2);
 
-            std::array<lang_item, 2> langarr {
-                lang_item("eng", "English"),
-                lang_item("fra", "Français")
-            };
+            if(buf.size() == 1) {
+                int intval = buf[0] - '0';
+                
+                if(intval > 0 && intval <= LANG_NUMBER) {
+                    std::string lang = langarr[intval - 1].id;
 
-            display_server::clear_screen();
-            show_lang_prompt(langarr);
-            display_server::save_screen();
+                    langmod::set_lang(lang);
+                    validinp = true;
+                    pstrings::copy_file_to_vec(p_langdir, data_path);
+                } else show_err_msg("Nope. (not a valid input)");
+            } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
+            else show_err_msg("Nope. (too long)");
+        }
+    }
 
-            while(!validinp) {
-                std::string buf;
-
-                auto show_err_msg = [](std::string const& p_msg)
-                {
-                    display_server::clear_screen();
-                    display_server::add_string(p_msg, {LINES - 3, pcurses::margin}, A_BOLD);
-                    display_server::load_save();
-                    display_server::show_screen();
-                };
-
-                buf = userio::gettextinput(2);
-
-                if(buf.size() == 1) {
-                    int intval = buf[0] - '0';
-                    
-                    if(intval > 0 && intval <= static_cast<int>(langarr.size())) {
-                        std::string lang = langarr[intval - 1].id;
-
-                        langmod::set_lang(lang);
-                        validinp = true;
-                        pstrings::copy_file_to_vec(p_langdir, data_path);
-                    } else show_err_msg("Nope. (not a valid input)");
-                } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
-                else show_err_msg("Nope. (too long)");
-            }
-        };
-
+    static std::string init_game()
+    {
         set_curses();
+        auto p_paths = files_path::getpaths();
         game_error::set_filepath(p_paths.local_data_path);
 
-        auto gc_vec = fetch_gameconf_vars();
+        auto gc_vec = fetch_gameconf_vars(p_paths.data_path);
 
         auto get_gcvar_it = [gc_vec](std::string const& p_name) {
             return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
@@ -199,15 +184,16 @@ namespace init
                 p_paths.data_path);
         else missing_gcvar("csfile");
 
-        if(firstroom_it != gc_vec.cend()) room_name = firstroom_it->value;
-        else missing_gcvar("firstroom");
-    }
-
-    void start_game(files_path::paths_struct const& p_paths)
-    {
         std::string room_name;
 
-        init_game(room_name, p_paths);
-        roommod::start_loop(room_name);
+        if(firstroom_it != gc_vec.cend()) room_name = firstroom_it->value;
+        else missing_gcvar("firstroom");
+
+        return room_name;
+    }
+
+    void start_game()
+    {
+        roommod::start_loop(init_game());
     }
 }

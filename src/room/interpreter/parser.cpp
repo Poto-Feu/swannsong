@@ -17,10 +17,6 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include "room/interpreter/parser.hpp"
 #include "room/interpreter/token.hpp"
 #include "room/room_io.h"
@@ -35,16 +31,16 @@ extern "C" {
 
 namespace parser
 {
+    using namespace game_error;
+
     static void CHOICE_block_err(std::string const& func_name)
     {
-        std::string err_msg = func_name + " function cannot be used in CHOICE block";
-        perror_disp(err_msg.c_str(), true);
+        game_error::fatal_error(func_name + " function cannot be used in CHOICE block");
     }
 
     static void wrg_tkn_num(std::string const& func_name)
     {
-        std::string err_msg = "wrong number of tokens (" + func_name + ")";
-        perror_disp(err_msg.c_str(), true);
+        game_error::fatal_error("wrong number of tokens (" + func_name + ")");
     }
 
     //Interpret a line which use the SET function
@@ -54,10 +50,10 @@ namespace parser
         else {
             int val = -1;
 
-            if(gvars::exist(r_vec[1].str)) perror_disp("gvar already exist", true);
-            if(r_vec[2].type != token_type::EQUAL) perror_disp("missing EQUAL token (SET)", true);
+            if(gvars::exist(r_vec[1].str)) fatal_error("gvar already exist");
+            if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
             if(r_vec[3].type != token_type::NUMBER) {
-                perror_disp("no value assigned to var during its init", true);
+                fatal_error("no value assigned to var during its init");
             }
             val = std::stoi(r_vec[3].str);
             gvars::set_var(r_vec[1].str, val);
@@ -80,7 +76,7 @@ namespace parser
             } else {
                 bool choicesexist = room_find::choicesline(choicesln, roomln);
 
-                if(!choicesexist) perror_disp("Missing CHOICES block", true);
+                if(!choicesexist) fatal_error("Missing CHOICES block");
                 else p_struct.currRoom.setChoicesLine(choicesln);
             }
 
@@ -90,7 +86,7 @@ namespace parser
                         onechoiceln);
 
                 if(!choiceexist) {
-                    if(i == 1) perror_disp("No CHOICE block found", true);
+                    if(i == 1) fatal_error("No CHOICE block found");
                     choicesremain = false;
                 } else p_struct.currState.addChoice(Choice(i, onechoiceln));
             }
@@ -99,13 +95,12 @@ namespace parser
         if(p_struct.currState.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("DISPLAY");
 
         if(r_vec[1].str == "CHOICES") {
-            int roomln = -1;
+            int roomln = p_struct.currRoom.getRoomLine();
 
-            roomln = p_struct.currRoom.getRoomLine();
             add_all_choices(roomln, p_struct);
         } else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
         else if(r_vec[1].str == "DESC") p_struct.currState.addDesc();
-        else perror_disp("displaying one choice is not yet implemented", false);
+        else emit_warning("displaying one choice is not yet implemented");
     }
 
     //Interpret a line which use the PRINT function
@@ -123,7 +118,7 @@ namespace parser
                     p_state.addString(pstrings::fetch(r_vec[1].str));
                     break;
                 default:
-                    perror_disp("token cannot be displayed (PRINT)", 0);
+                    emit_warning("token cannot be displayed (PRINT)");
                     break;
             }
         }
@@ -187,8 +182,7 @@ namespace parser
             if(p_vec[1].type == token_type::NUMBER) {
                 item_name_pos = 2;
                 item_n = std::stoi(p_vec[1].str);
-            } else perror_disp("second part of an USE instruction must be a NUMBER or an ITEM",
-                    true);
+            } else fatal_error("second part of an USE instruction must be a NUMBER or an ITEM");
         } else if(p_vec.size() != 2) wrg_tkn_num("USE");
         inventory::player_useitem(p_vec[item_name_pos].str, item_n);
     }
@@ -197,7 +191,7 @@ namespace parser
     static void interp_gvar_ins(TokenVec r_vec)
     {
         if(r_vec[1].type != token_type::EQUAL) {
-            perror_disp("second token of a gvars instruction must be an equal sign", true);
+            fatal_error("second token of a gvars instruction must be an equal sign");
         } else if(r_vec.size() == 3 && r_vec[2].type == token_type::NUMBER) {
             gvars::change_val(r_vec[0].str, std::stoi(r_vec[2].str));
         }
@@ -233,15 +227,14 @@ namespace parser
                                 result_value -= std::stoi(r_vec[i].str);
                                 break;
                             case oper_type::NONE:
-                                perror_disp("NONE operator used in gvars instruction", false);
+                                emit_warning("NONE operator used in gvars instruction");
                                 return false;
                                 break;
                         }
                         return true;
                         break;
                     case func_tkn_type::NUMBER:
-                        perror_disp("NUMBER token before same type token in gvars instruction",
-                                false);
+                        emit_warning("NUMBER token before same type token in gvars instruction");
                         return false;
                         break;
                 }
@@ -252,7 +245,7 @@ namespace parser
 
             switch(r_vec[i].type) {
                 case token_type::EQUAL:
-                    perror_disp("too many equal tokens in gvars instruction", true);
+                    fatal_error("too many equal tokens in gvars instruction");
                     break;
                 case token_type::NUMBER:
                     continue_func = number_tkn_lambda();
@@ -265,8 +258,7 @@ namespace parser
                     break;
                 case token_type::OPERATOR:
                     if(last_tkn == func_tkn_type::OPERATOR) {
-                        perror_disp("OPERATOR token before same token type in gvars instruction",
-                                false);
+                        fatal_error("OPERATOR token before same token type in gvars instruction");
                         continue_func = false;
                     }
                     if(r_vec[i].str == "+") last_oper = oper_type::PLUS;
@@ -275,7 +267,7 @@ namespace parser
                     last_tkn = func_tkn_type::OPERATOR;
                     break;
                 default:
-                    perror_disp("wrong token type in gvars instruction", false);
+                    emit_warning("wrong token type in gvars instruction");
                     continue_func = false;
                     break;
             }
@@ -283,46 +275,46 @@ namespace parser
         gvars::change_val(r_vec[0].str, result_value);
     }
 
-    //Interpret a line depending on its first token
-    static void interp_ins(TokenVec r_vec, roommod::room_struct& p_struct, RoomManager& p_roomman)
+    //Interpret a line which uses a function
+    static void interp_func_ins(TokenVec r_vec, roommod::room_struct& p_struct,
+            RoomManager& p_roomman)
     {
-        //Interpret a line which uses a function
-        auto interp_func_ins = [](TokenVec r_vec, roommod::room_struct& p_struct,
-                RoomManager& p_roomman)
+        switch(r_vec[0].spec_type)
         {
-            switch(r_vec[0].spec_type)
-            {
-                case token_spec_type::DISPLAY:
-                    interp_DISPLAY_func(r_vec, p_struct);
-                    break;
-                case token_spec_type::PRINT:
-                    interp_PRINT_func(r_vec, p_struct.currState);
-                    break;
-                case token_spec_type::SET:
-                    interp_SET_func(r_vec);
-                    break;
-                case token_spec_type::CUTSCENE:
-                    interp_CUTSCENE_func(r_vec, p_struct.currState);
-                    break;
-                case token_spec_type::GO:
-                    interp_GO_func(r_vec, p_roomman);
-                    break;
-                case token_spec_type::UNFINISHED:
-                    interp_UNFINISHED_func(r_vec, p_roomman);
-                    break;
-                case token_spec_type::GET:
-                    interp_GET_func(r_vec);
-                    break;
-                case token_spec_type::USE:
-                    interp_USE_func(r_vec);
-                    break;
-                default:
-                    game_error::fatal_error("incorrect spec_token_type in function : "
-                            + r_vec[0].str);
-                    break;
-            }
-        };
+            case token_spec_type::DISPLAY:
+                interp_DISPLAY_func(r_vec, p_struct);
+                break;
+            case token_spec_type::PRINT:
+                interp_PRINT_func(r_vec, p_struct.currState);
+                break;
+            case token_spec_type::SET:
+                interp_SET_func(r_vec);
+                break;
+            case token_spec_type::CUTSCENE:
+                interp_CUTSCENE_func(r_vec, p_struct.currState);
+                break;
+            case token_spec_type::GO:
+                interp_GO_func(r_vec, p_roomman);
+                break;
+            case token_spec_type::UNFINISHED:
+                interp_UNFINISHED_func(r_vec, p_roomman);
+                break;
+            case token_spec_type::GET:
+                interp_GET_func(r_vec);
+                break;
+            case token_spec_type::USE:
+                interp_USE_func(r_vec);
+                break;
+            default:
+                game_error::fatal_error("incorrect spec_token_type in function : " + r_vec[0].str);
+                break;
+        }
+    }
 
+    //Interpret a line depending on its first token
+    static void interp_ins(TokenVec r_vec, roommod::room_struct& p_struct,
+            RoomManager& p_roomman)
+    {
         switch(r_vec[0].type) {
             case token_type::FUNCTION:
                 interp_func_ins(r_vec, p_struct, p_roomman);
@@ -376,26 +368,25 @@ namespace parser
                     if(not_cond) rtrn_val = !rtrn_val;
 
                     return rtrn_val;
-                } else perror_disp("missing ITEM token (are the tokens in the right order ?)",
-                        true);
-            } else perror_disp("missing HAS token (are the tokens in the right order ?)", true);
+                } else fatal_error("missing ITEM token (are the tokens in the right order ?)");
+            } else fatal_error("missing HAS token (are the tokens in the right order ?)");
         } else wrg_tkn_num("HAS IF");
         return false;
     }
 
     static bool check_COMP_condition(TokenVec r_vec)
     {
-        int vec_size = r_vec.size();
+        size_t vec_size = r_vec.size();
 
         if(vec_size < 4 || vec_size > 5) {
-            perror_disp("wrong arg number in COMP IF", true);
+            fatal_error("wrong arg number in COMP IF");
         } else if(r_vec[3].type == token_type::NUMBER) {
             if(r_vec[2].type == token_type::EQUAL) {
                 int varval = gvars::return_value(r_vec[1].str);
                 int compval = std::stoi(r_vec[3].str);
 
                 if(compval == varval) return true;
-            } else perror_disp("missing equal token in COMP IF", true);
+            } else fatal_error("missing equal token in COMP IF");
         } else if(r_vec[2].type == token_type::NOT
                 && r_vec[3].type == token_type::EQUAL
                 && r_vec[4].type == token_type::NUMBER) {
@@ -403,7 +394,7 @@ namespace parser
             int compval = std::stoi(r_vec[3].str);
 
             if(compval != varval) return true;
-        } else perror_disp("wrong token order in COMP IF", true);
+        } else fatal_error("wrong token order in COMP IF");
         return false;
     }
 
@@ -449,6 +440,27 @@ namespace parser
         return endln;
     }
 
+    static bool check_condition(std::string const& buf)
+    {
+        TokenVec r_vec = token::create_arr(buf);
+
+        if(r_vec[2].type == token_type::EXISTS) {
+            if(r_vec.size() != 3) wrg_tkn_num("EXISTS IF");
+            else if(gvars::exist(r_vec[1].str)) return true;
+        } else if(r_vec[2].type == token_type::NOT
+                && r_vec[3].type == token_type::EXISTS) {
+            if(r_vec.size() != 4) fatal_error("wrong arg number in EXISTS IF");
+            else if(!gvars::exist(r_vec[1].str)) return true;
+        } else if(r_vec[1].type == token_type::VARIABLE) {
+            return check_COMP_condition(r_vec);
+        } else if(r_vec[1].type == token_type::HAS
+                || (r_vec[1].type == token_type::NOT
+                && r_vec[2].type == token_type::HAS)) {
+            return check_HAS_condition(r_vec);
+        } else fatal_error("IF condition type not recognized");
+        return false;
+    }
+
     //Execute instructions until the end of the block
     int exec_until_end(int blockln, roommod::room_struct& p_struct, RoomManager& p_roomman)
     {
@@ -457,38 +469,16 @@ namespace parser
         int endln = startln;
 
         for(int i = startln; !is_end && !p_roomman.is_unfinished(); i++) {
-            std::string buf;
-            std::string fw;
 
             if(p_roomman.is_endgame()) break;
             endln = i;
+            std::string buf;
             roomio::fetch_ln(buf, i);
-            fw = stringsm::getfw(buf);
+            std::string fw = stringsm::getfw(buf);
 
             if(fw == "END") is_end = true;
             else if(fw == "IF") {
-                auto check_condition = [=]()
-                {
-                    TokenVec r_vec = token::create_arr(buf);
-
-                    if(r_vec[2].type == token_type::EXISTS) {
-                        if(r_vec.size() != 3) wrg_tkn_num("EXISTS IF");
-                        else if(gvars::exist(r_vec[1].str)) return true;
-                    } else if(r_vec[2].type == token_type::NOT
-                            && r_vec[3].type == token_type::EXISTS) {
-                        if(r_vec.size() != 4) perror_disp("wrong arg number in EXISTS IF", true);
-                        else if(!gvars::exist(r_vec[1].str)) return true;
-                    } else if(r_vec[1].type == token_type::VARIABLE) {
-                        return check_COMP_condition(r_vec);
-                    } else if(r_vec[1].type == token_type::HAS
-                            || (r_vec[1].type == token_type::NOT
-                            && r_vec[2].type == token_type::HAS)) {
-                        return check_HAS_condition(r_vec);
-                    } else perror_disp("IF condition type not recognized", true);
-                    return false;
-                };
-
-                if(check_condition()) i = exec_until_end(i, p_struct, p_roomman);
+                if(check_condition(buf)) i = exec_until_end(i, p_struct, p_roomman);
                 else i = parser::skip_until_end(i);
             } else if(fw == "TEXT") continue;
             else parser_execins(buf, p_struct, p_roomman);

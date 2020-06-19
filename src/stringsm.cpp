@@ -91,10 +91,9 @@ namespace stringsm
             } else if(p_str[i] == quote_ch) {
                 if(i + 1 < str_size) {
                     for(int j = i + 1; j < str_size; ++j) {
-                        if(p_str.at(j) != ' ' && p_str.at(j) != '\t') {
-                            return false;
-                        }
-                    } return true;
+                        if(p_str.at(j) != ' ' && p_str.at(j) != '\t') return false;
+                    }
+                    return true;
                 } else return true;
             }
         }
@@ -116,16 +115,13 @@ namespace stringsm
                 ++i;
             } else if(p_str[i+1] == quote_ch) str_end = true;
         }
-
         return rtr_val;
     }
 }
 
-/*Replace the newline character by a null terminator (deprecated, use
-std::string instead)*/
+//Replace the newline character by a null terminator (deprecated, use std::string instead)
 void stringsm_chomp(char* str)
 {
     while (*str != '\n' && *str != '\0') str++;
-
     *str = '\0';
 }

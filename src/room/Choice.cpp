@@ -17,16 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include <curses.h>
-#include "perror.h"
-}
-
 #include <string>
-#include "Choice.hpp"
-#include "room_io.h"
+#include "room/Choice.hpp"
+#include "room/room_io.h"
 #include "interpreter/parser.hpp"
-#include "cutscenes.hpp"
+#include "game_error.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -40,20 +35,20 @@ void Choice::display() const
 
     for(int i = 0; !textfound; i++) {
         std::string buf;
-        std::string type;
-        std::string arg;
+        std::string f_type;
+        std::string f_arg;
         std::string disp_value;
 
         roomio::fetch_ln(buf, currln);
-        parser::splitline(type, arg, buf);
+        parser::splitline(f_type, f_arg, buf);
 
-        if(type == "TEXT") {
+        if(f_type == "TEXT") {
             int str_line = display_server::get_last_line() + 1;
             textfound = true;
 
-            if(stringsm::is_str(arg)) disp_value = stringsm::ext_str_quotes(arg);
+            if(stringsm::is_str(f_arg)) disp_value = stringsm::ext_str_quotes(f_arg);
             else {
-                disp_value = pstrings::fetch(arg);
+                disp_value = pstrings::fetch(f_arg);
                 disp_value.insert(0, ". ");
                 disp_value.insert(0, std::to_string(choice_n));
             }
@@ -61,7 +56,7 @@ void Choice::display() const
             if(str_line == display_server::LAST_LINE_ERR + 1) str_line = pcurses::title_y + 4;
             pcurses::display_pos_string(disp_value, pcurses::choice_space, str_line);
             currln++;
-        } else if(type == "END") perror_disp("missing choice text", true);
+        } else if(f_type == "END") game_error::fatal_error("missing choice text");
     }
 }
 

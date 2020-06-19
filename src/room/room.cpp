@@ -17,7 +17,6 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
 #include <unordered_map>
 #include "room.hpp"
 #include "find.hpp"
@@ -28,17 +27,17 @@
 
 namespace roommod
 {
+    static void unfinished_game()
+    {
+        display_server::clear_screen();
+        pcurses::display_center_string(pstrings::fetch("unfinished_str"), pcurses::top_margin);
+    }
+
     //Start the game loop which loads rooms until the end signal is enabled
     void start_loop(std::string const& id)
     {
         std::string curr_room_id = id;
         RoomManager rmm;
-
-        auto unfinished_game = []()
-        {
-            display_server::clear_screen();
-            pcurses::display_center_string(pstrings::fetch("unfinished_str"), pcurses::top_margin);
-        };
 
         while(!rmm.is_endgame() && !rmm.is_unfinished()) {
             static std::unordered_map<std::string, std::shared_ptr<Room>> room_map;
@@ -51,10 +50,8 @@ namespace roommod
                 room_fnd = true;
                 currentRoom = room_it->second;
             } else {
-                int roomln = room_find::roomline(curr_room_id);
-
                 currentRoom = std::make_shared<Room>(curr_room_id);
-                currentRoom->setRoomLine(roomln);
+                currentRoom->setRoomLine(room_find::roomline(curr_room_id));
             }
 
             if(!room_fnd) room_map.insert({currentRoom->getName(), currentRoom});

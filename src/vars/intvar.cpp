@@ -17,13 +17,9 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <algorithm>
-#include <vector>
 #include "vars/intvar.hpp"
+#include "game_error.hpp"
 
 namespace intvarm
 {
@@ -55,15 +51,11 @@ namespace intvarm
     }
 
     //Set the value of the specified intvar
-    void set_value(int p_val, std::string const& p_name,
-            std::vector<intvar>& p_vec)
+    void set_value(int p_val, std::string const& p_name, std::vector<intvar>& p_vec)
     {
         auto it = return_it(p_name, p_vec);
 
         if(it != p_vec.end()) it->val = p_val;
-        else {
-            std::string err_msg = "game var does not exists (" + p_name + ")";
-            perror_disp(err_msg.c_str(), true);
-        }
+        else game_error::fatal_error("game var does not exists (" + p_name + ")");
     }
 }

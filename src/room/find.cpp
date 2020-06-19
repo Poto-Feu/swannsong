@@ -17,15 +17,12 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <cstdlib>
 #include <cstring>
-#include "find.hpp"
+#include "room/find.hpp"
 #include "room/room_io.h"
-#include "interpreter/parser.hpp"
+#include "room/interpreter/parser.hpp"
+#include "game_error.hpp"
 #include "stringsm.h"
 
 namespace room_find
@@ -43,7 +40,7 @@ namespace room_find
             std::string fw;
             bool is_eof = !roomio::fetch_ln(buf, i);
 
-            if(is_eof) perror_disp("find_room_property has hit EOF", true);
+            if(is_eof) game_error::fatal_error("find_room_property has hit EOF");
             else {
                 fw = stringsm::getfw(buf);
 
@@ -68,20 +65,20 @@ namespace room_find
         bool is_end = false;
         int currln = startln + 1;
 
-        if(num < 0 || num > 9) perror_disp("choice number not allowed", 1);
+        if(num < 0 || num > 9) game_error::fatal_error("choice number not allowed");
 
         for(int i = currln; !choicefound && !is_end; i++) {
             std::string buf;
             bool is_eof = !roomio::fetch_ln(buf, i);
 
-            if(is_eof) perror_disp("find_onechoiceline has hit EOF", 1);
+            if(is_eof) game_error::fatal_error("find_onechoiceline has hit EOF");
             if(buf[0] == 'c' && buf[1] == num + '0' && buf.size() == 2) {
                 ln = i;
                 choicefound = true;
             } else if(buf[0] == 'c' && buf[1] != num + '0' && buf.size() == 2) {
                 i = parser::skip_until_end(i);
             } else if(buf  == "END") is_end = true;
-            else perror_disp("wrong input in find_onechoiceline", true);
+            else game_error::fatal_error("wrong input in find_onechoiceline");
         }
         return choicefound;
     }
@@ -99,23 +96,19 @@ namespace room_find
             std::string buf;
             bool is_eof = !roomio::fetch_ln(buf, i);
             
-            if(is_eof) perror_disp("find_blockline has hit EOF", true);
+            if(is_eof) game_error::fatal_error("find_blockline has hit EOF");
             if(ins == buf && !in_choices) {
                 is_fnd = true;
                 foundln = i;
             } else if(buf == "ATLAUNCH") {
-                if(in_choices) {
-                    perror_disp("ATLAUNCH instruction inside CHOICES list",
-                            true);
-                } else i = parser::skip_until_end(i);
+                if(in_choices) game_error::fatal_error("ATLAUNCH instruction inside CHOICES list");
+                else i = parser::skip_until_end(i);
             } else if(buf == "CHOICES") {
-                if(in_choices) {
-                    perror_disp("CHOICES instruction inside CHOICES list",
-                            true);
-                } else in_choices = true;
+                if(in_choices) game_error::fatal_error("CHOICES instruction inside CHOICES list");
+                else in_choices = true;
             } else if(buf[0] == 'c' && isdigit(buf[1]) && buf.size() == 2) {
                 if(in_choices) i = parser::skip_until_end(i);
-                else perror_disp("CHOICE block outside CHOICES list", true);
+                else game_error::fatal_error("CHOICE block outside CHOICES list");
             } else if(buf == "END") {
                 if(in_choices) in_choices = false;
                 else is_end = true;
@@ -150,25 +143,17 @@ namespace room_find
         roomline += ' ';
         roomline += id;
 
-        if(!roomio::find_ind(ln, roomline))
-        {
-            std::string err_msg = "room not found in file (" + id + ")";
-
-            perror_disp(err_msg.c_str(), true);
+        if(!roomio::find_ind(ln, roomline)) {
+            game_error::fatal_error("room not found in file (" + id + ")");
         }
         return ln;
     }
 
     bool roomline(int* r_ln, std::string const& id)
     {
-        std::string roomline = "ROOM";
+        std::string roomline = "ROOM " + id;
 
-        roomline += ' ';
-        roomline += id;
-
-        if(!roomio::find_ind(*r_ln, roomline))
-        {
-            return false;
-        } else return true;
+        if(!roomio::find_ind(*r_ln, roomline)) return false;
+        else return true;
     }
 }

@@ -19,7 +19,6 @@
 
 extern "C" {
 #include <curses.h>
-#include "perror.h"
 }
 
 #include <fstream>
@@ -109,9 +108,8 @@ namespace game_error
                 log_file_path += time_buffer;
                 log_file_path += "_log.txt";
 
-                std::string log_intro;
+                std::string log_intro = "[";
 
-                log_intro = "[";
                 log_intro += time_buffer;
                 log_intro += "]";
                 
@@ -125,13 +123,4 @@ namespace game_error
             }
         }
     }
-}
-
-//Display an error message with the specified string
-void perror_disp(const char* id, bool fatal)
-{
-    using namespace game_error;
-
-    if(fatal) fatal_error(id);
-    else emit_warning(id);
 }
