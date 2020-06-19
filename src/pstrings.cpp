@@ -17,16 +17,13 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C"  {
-#include "perror.h"
-}
-
 #include <algorithm>
 #include <string>
 #include <vector>
 #include "pstrings.h"
 #include "fileio/fileio.h"
 #include "files_path.hpp"
+#include "game_error.hpp"
 #include "lang.hpp"
 #include "stringsm.h"
 
@@ -40,20 +37,16 @@ namespace pstrings
 
     static std::vector<PstringsElement> pstr_vec {};
 
-    /*Set the file pointer to the file containing the strings correponding
-    to the selected language*/
-    static std::ifstream open_strfile(std::string const& p_langdir)
+    //Set the file pointer to the file containing the strings correponding to the selected language
+    static std::ifstream open_strfile(std::string p_langdir)
     {
-        std::string langfile = p_langdir;
-       
-        langfile.append(langmod::get_lang());
-        langfile.append(".txt");
+        p_langdir.append(langmod::get_lang());
+        p_langdir.append(".txt");
 
-        return std::ifstream(langfile);
+        return std::ifstream(p_langdir);
     }
 
-    static void split_file_line(std::string& r_id, std::string& r_val,
-            std::string buf)
+    static void split_file_line(std::string& r_id, std::string& r_val, std::string const& buf)
     {
         int sp_ind = 0;
         int quote_ind = 0;
@@ -77,11 +70,7 @@ namespace pstrings
             }
         }
 
-        if(!quote_inc) {
-            std::string err_msg = "wrong pstring format(\"" + buf + "\"";
-
-            perror_disp(err_msg.c_str(), true);
-        }
+        if(!quote_inc) game_error::fatal_error("wrong pstring format(\"" + buf + "\"");
 
         for(int i = quote_ind+1; buf[i] != '\0'; ++i)
         {
@@ -89,15 +78,13 @@ namespace pstrings
             else if(buf[i] == '\\' && buf[i+1] == quote_ch) {
                 r_val += quote_ch;
                 ++i;
-            }
-            else r_val += buf[i];
+            } else r_val += buf[i];
         }
     }
 
-    static void add_to_vec(std::string p_id, std::string p_val)
+    static void add_to_vec(std::string const& p_id, std::string const& p_val)
     {
-        PstringsElement new_el = {p_id, p_val};
-        pstr_vec.push_back(new_el);
+        pstr_vec.push_back({std::move(p_id), std::move(p_val)});
     }
 
     void copy_file_to_vec(std::string const& p_langdir, std::filesystem::path const& data_path)
@@ -133,9 +120,8 @@ namespace pstrings
     {
         auto it = find_it_vec(p_id);
 
-        if(it != pstr_vec.cend()) {
-            return it->val;
-        } else return "MissingStr";
+        if(it != pstr_vec.cend()) return it->val;
+        else return "MissingStr";
     }
 
     //Check if a string is defined in the lang file
