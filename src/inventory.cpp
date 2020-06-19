@@ -17,14 +17,9 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <algorithm>
 #include "inventory.hpp"
-#include "vars/intvar.hpp"
-#include "display_server.hpp"
+#include "game_error.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "userio.h"
@@ -58,14 +53,11 @@ namespace inventory
         auto it = return_it(p_name);
 
         if(it != inventory_vec.end()) it->val += p_val;
-        else {
-            std::string err_msg = "no item corresponding (" + p_name + ")";
-            perror_disp(err_msg.c_str(), true);
-        }
+        else game_error::fatal_error("no item corresponding (" + p_name + ")");
     }
 
-    /*Add the specified number of an item - if it doesn't exist in inventory_vec, the 
-    function adds the item to it*/
+    /*Add the specified number of an item - if it doesn't exist in inventory_vec, the function adds 
+    the item to it*/
     void player_getitem(std::string const& p_name, unsigned int val)
     {
         auto it = return_it(p_name);
@@ -75,21 +67,16 @@ namespace inventory
         } else add_item_to_list(p_name, val);
     }
 
-    /*Reduce the specified number of item - and remove the item from the vector if the
-    result is equal to 0 or less*/
+    /*Reduce the specified number of item - and remove the item from the vector if the result is 
+    equal to 0 or less*/
     void player_useitem(std::string const& p_name, unsigned int p_val)
     {
         auto it = return_it(p_name);
 
         if(it != inventory_vec.end()) {
-            if(p_val < it->val) {
-                it->val -= p_val;
-            } else inventory_vec.erase(it);
-        } else {
-            std::string err_msg = "item not found in inventory (" + p_name +
-                ")";
-            perror_disp(err_msg.c_str(), false);
-        }
+            if(p_val < it->val) it->val -= p_val;
+            else inventory_vec.erase(it);
+        } else game_error::emit_warning("item not found in inventory (" + p_name + ")");
     }
 
     //Return the number of pieces of an item present in the inventory
