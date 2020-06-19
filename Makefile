@@ -6,7 +6,7 @@ INC = -Isrc
 
 WARN_FLAGS = -Wall -Wextra -pedantic
 COMMON_FLAGS = -O2 $(WARN_FLAGS) $(INC)
-CXXFLAGS = -std=gnu++14 $(COMMON_FLAGS)
+CXXFLAGS = -std=gnu++17 $(COMMON_FLAGS)
 CFLAGS = -std=gnu99
 
 LDFLAGS = $(LIBS)
