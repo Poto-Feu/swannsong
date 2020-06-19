@@ -17,13 +17,10 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <algorithm>
-#include "gvars.hpp"
-#include "intvar.hpp"
+#include "vars/gvars.hpp"
+#include "vars/intvar.hpp"
+#include "game_error.hpp"
 
 typedef intvar gvar;
 
@@ -47,10 +44,8 @@ namespace gvars
 
     void set_var(std::string const& p_name, int p_val)
     {
-        if(check_exist(p_name)) {
-            std::string err_msg = "gvar already exists (" + p_name + ")";
-            perror_disp(err_msg.c_str(), true);
-        } else add_to_list(p_name, p_val);
+        if(check_exist(p_name)) game_error::fatal_error("gvar already exists (" + p_name + ")");
+        else add_to_list(p_name, p_val);
     }
 
     int return_value(std::string const& p_name)
@@ -59,7 +54,7 @@ namespace gvars
 
         if(check_exist(p_name)) {
             r_val = intvarm::return_value(p_name, gvar_vec);
-        } else perror_disp("gvar does not exist", true);
+        } else game_error::fatal_error("gvar does not exist");
 
         return r_val;
     }
@@ -67,7 +62,7 @@ namespace gvars
     void change_val(std::string const& p_name, int p_val)
     {
         if(check_exist(p_name)) intvarm::set_value(p_val, p_name, gvar_vec);
-        else perror_disp("gvar does not exist", true);
+        else game_error::fatal_error("gvar does not exist");
     }
 
     bool exist(std::string const& p_name)
