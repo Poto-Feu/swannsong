@@ -22,18 +22,18 @@
 #include "vars/intvar.hpp"
 #include "game_error.hpp"
 
-typedef intvar gvar;
-
-static std::vector<intvar> gvar_vec;
-
-static void add_to_list(std::string const& p_name, int p_val)
-{
-    gvar elem(p_name, p_val);
-    intvarm::add_var_to_arr(gvar_vec, elem);
-}
-
 namespace gvars
 {
+    typedef intvar gvar;
+
+    static std::vector<intvar> gvar_vec;
+
+    static void add_to_list(std::string const& p_name, int16_t p_val)
+    {
+        gvar elem(p_name, p_val);
+        intvarm::add_var_to_arr(gvar_vec, elem);
+    }
+
     static auto check_exist(std::string const& p_name)
     {
         return std::find_if(gvar_vec.cbegin(), gvar_vec.cend(),
