@@ -48,15 +48,12 @@ namespace parser
     {
         if(r_vec.size() != 4) wrg_tkn_num("SET");
         else {
-            int val = -1;
-
             if(gvars::exist(r_vec[1].str)) fatal_error("gvar already exist");
             if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
             if(r_vec[3].type != token_type::NUMBER) {
                 fatal_error("no value assigned to var during its init");
             }
-            val = std::stoi(r_vec[3].str);
-            gvars::set_var(r_vec[1].str, val);
+            gvars::set_var(r_vec[1].str, std::stoi(r_vec[3].str));
         }
     }
 
@@ -209,7 +206,7 @@ namespace parser
         };
 
         bool continue_func = true;
-        int result_value = 0;
+        int16_t result_value = 0;
         func_tkn_type last_tkn = func_tkn_type::EQUAL;
         oper_type last_oper = oper_type::NONE;
 
@@ -383,7 +380,7 @@ namespace parser
             fatal_error("wrong arg number in COMP IF");
         } else if(r_vec[3].type == token_type::NUMBER) {
             if(r_vec[2].type == token_type::EQUAL) {
-                int varval = gvars::return_value(r_vec[1].str);
+                int16_t varval = gvars::return_value(r_vec[1].str);
                 int compval = std::stoi(r_vec[3].str);
 
                 if(compval == varval) return true;
@@ -391,7 +388,7 @@ namespace parser
         } else if(r_vec[2].type == token_type::NOT
                 && r_vec[3].type == token_type::EQUAL
                 && r_vec[4].type == token_type::NUMBER) {
-            int varval = gvars::return_value(r_vec[1].str);
+            int16_t varval = gvars::return_value(r_vec[1].str);
             int compval = std::stoi(r_vec[3].str);
 
             if(compval != varval) return true;
