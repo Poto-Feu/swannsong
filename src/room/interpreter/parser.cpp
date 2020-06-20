@@ -159,7 +159,7 @@ namespace parser
     static void interp_GET_func(TokenVec const& p_vec)
     {
         int item_name_pos = 1;
-        unsigned int item_n = 1;
+        uint16_t item_n = 1;
 
         if (p_vec.size() == 3) {
             if(p_vec[1].type == token_type::NUMBER) {
@@ -176,7 +176,7 @@ namespace parser
     static void interp_USE_func(TokenVec const& p_vec)
     {
         int item_name_pos = 1;
-        unsigned int item_n = 1;
+        uint16_t item_n = 1;
 
         if (p_vec.size() == 3) {
             if(p_vec[1].type == token_type::NUMBER) {
@@ -201,6 +201,7 @@ namespace parser
             OPERATOR,
             NUMBER
         };
+
         enum class oper_type {
             NONE,
             PLUS,
@@ -353,7 +354,7 @@ namespace parser
                 ++item_pos;
             }
             if(r_vec[has_pos].type == token_type::HAS) {
-                unsigned int req_item_n = 1;
+                uint16_t req_item_n = 1;
 
                 if(r_vec[item_pos].type == token_type::NUMBER) {
                     req_item_n = std::stoi(r_vec[item_pos].str);
@@ -412,8 +413,8 @@ namespace parser
             int starti = type_size + 1;
 
             for(unsigned int i = starti; i < ins_size; ++i) {
-                if(ins.at(i) == ' ' || ins.at(i) == '\t') break;
-                else arg += ins.at(i);
+                if(ins[i] == ' ' || ins[i] == '\t') break;
+                else arg += ins[i];
             }
         } else correct_syntax = false;
         return correct_syntax;
@@ -469,7 +470,6 @@ namespace parser
         int endln = startln;
 
         for(int i = startln; !is_end && !p_roomman.is_unfinished(); i++) {
-
             if(p_roomman.is_endgame()) break;
             endln = i;
             std::string buf;

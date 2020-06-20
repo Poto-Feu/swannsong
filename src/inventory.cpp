@@ -28,7 +28,7 @@ namespace inventory
 {
     struct gitem {
         std::string name;
-        unsigned int val;
+        uint16_t val;
     };
 
     static std::vector<gitem> inventory_vec;
@@ -42,13 +42,13 @@ namespace inventory
     }
 
     //Create an entry for the specified item in inventory_list
-    static void add_item_to_list(std::string const& p_name, unsigned int p_val)
+    static void add_item_to_list(std::string const& p_name, uint16_t p_val)
     {
         inventory_vec.push_back(gitem{p_name, p_val});
     }
 
     //Add the specified number of item to an inventory
-    static void add_n_item(std::string const& p_name, unsigned int p_val)
+    static void add_n_item(std::string const& p_name, uint16_t p_val)
     {
         auto it = return_it(p_name);
 
@@ -58,18 +58,17 @@ namespace inventory
 
     /*Add the specified number of an item - if it doesn't exist in inventory_vec, the function adds 
     the item to it*/
-    void player_getitem(std::string const& p_name, unsigned int val)
+    void player_getitem(std::string const& p_name, uint16_t val)
     {
         auto it = return_it(p_name);
 
-        if(it != inventory_vec.cend()) {
-            add_n_item(p_name, val);
-        } else add_item_to_list(p_name, val);
+        if(it != inventory_vec.cend()) add_n_item(p_name, val);
+        else add_item_to_list(p_name, val);
     }
 
     /*Reduce the specified number of item - and remove the item from the vector if the result is 
     equal to 0 or less*/
-    void player_useitem(std::string const& p_name, unsigned int p_val)
+    void player_useitem(std::string const& p_name, uint16_t p_val)
     {
         auto it = return_it(p_name);
 
@@ -80,7 +79,7 @@ namespace inventory
     }
 
     //Return the number of pieces of an item present in the inventory
-    unsigned int return_item_n(std::string const& p_name)
+    uint16_t return_item_n(std::string const& p_name)
     {
         unsigned int rtrn_val = 0;
         auto it = return_it(p_name);
