@@ -93,26 +93,30 @@ namespace inventory
     //Display the inventory screen
     void display_screen()
     {
+        int str_line = pcurses::top_margin;
+
         display_server::clear_screen();
         move(pcurses::top_margin, pcurses::margin);
 
-        for(auto const& it : inventory_vec) {
-            int str_line = pcurses::top_margin;
-            std::string disp_str = it.name;
-            std::string str_name = "item_" + it.name;
+        if(inventory_vec.size() == 0) {
+            pcurses::display_center_string(pstrings::fetch("inventory_empty"), str_line);
+        } else {
+            for(auto const& it : inventory_vec) {
+                std::string disp_str = it.name;
+                std::string str_name = "item_" + it.name;
 
-            if(pstrings::check_exist(str_name)) disp_str = pstrings::fetch(str_name);
+                if(pstrings::check_exist(str_name)) disp_str = pstrings::fetch(str_name);
 
-            disp_str += "   ";
-            disp_str += std::to_string(return_item_n(it.name));
-            pcurses::display_center_string(disp_str, str_line);
-            ++str_line;
+                disp_str += "   " + std::to_string(return_item_n(it.name));
+                pcurses::display_center_string(disp_str, str_line);
+                ++str_line;
 
-            if(str_line >= LINES - 6) {
-                if(pstrings::check_exist("inventory_more")) {
-                    pcurses::display_center_string(pstrings::fetch("inventory_more"), str_line);
-                } else pcurses::display_center_string("(And more...)");
-                break;
+                if(str_line >= LINES - 6) {
+                    if(pstrings::check_exist("inventory_more")) {
+                        pcurses::display_center_string(pstrings::fetch("inventory_more"), str_line);
+                    } else pcurses::display_center_string("(And more...)");
+                    break;
+                }
             }
         }
 
