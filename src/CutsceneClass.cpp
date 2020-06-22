@@ -32,7 +32,6 @@ void Cutscene::display() const
 
 void Cutscene::execute_all_actions() const
 {
-    std::string penter_msg = pstrings::fetch("continue_penter");
     int str_line = pcurses::top_margin;
 
     for(auto const& action_it : actions_vec) {
@@ -45,18 +44,12 @@ void Cutscene::execute_all_actions() const
                 ++str_line;
                 break;
             case cs_action_type::PAUSE:
-                display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin},
-                        A_BOLD);
-                display_server::show_screen();
-                userio::waitenter();
-                display_server::clear_screen();
+                pcurses::display_penter_message();
                 str_line = pcurses::top_margin;
                 break;
         }
     }
 
-    display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-    display_server::show_screen();
-    userio::waitenter();
+    pcurses::display_penter_message();
     display_server::clear_screen();
 }

@@ -32,6 +32,7 @@ namespace pcurses
 {
     const int top_margin = 3;
     const int choice_space = 8;
+    const int prompt_space = 12;
 
     extern int margin;
     extern int title_y;
@@ -43,6 +44,8 @@ namespace pcurses
             int p_attr = display_server::NULL_ATTR);
     void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
+
+    void display_penter_message();
 }
 
 #endif

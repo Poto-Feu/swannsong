@@ -116,9 +116,6 @@ namespace inventory
             }
         }
 
-        display_server::add_string(pstrings::fetch("continue_penter"),
-                {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-        display_server::show_screen();
-        userio::waitenter();
+        pcurses::display_penter_message();
     }
 }

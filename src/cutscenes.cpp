@@ -92,12 +92,8 @@ namespace cutscenes
 
         if(it != cs_vec.cend()) it->display();
         else {
-            std::string penter_msg = pstrings::fetch("continue_penter");
-
             pcurses::display_center_string("missingCutscene", pcurses::top_margin);
-            display_server::add_string(penter_msg, {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-            display_server::show_screen();
-            userio::waitenter();
+            pcurses::display_penter_message();
         }
     }
 
