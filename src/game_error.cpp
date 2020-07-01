@@ -101,7 +101,7 @@ namespace game_error
                 strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S", &curr_time);
 
                 log_file_path = local_data_path;
-                log_file_path += "/logs";
+                log_file_path += "logs";
                 files_path::create_directory(log_file_path);
                 remove_previous_logs();
                 log_file_path += "/";
