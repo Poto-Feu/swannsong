@@ -46,7 +46,7 @@ namespace init
         std::string disp;
     };
 
-    static void missing_gcvar (std::string const& p_name)
+    static void missing_gcvar(std::string const& p_name)
     {
         game_error::fatal_error("missing gameconf var (" + p_name +")");
     }

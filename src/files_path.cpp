@@ -60,17 +60,15 @@ namespace files_path
             files_path::create_directory(path_fs);
             path_fs += "/share";
             files_path::create_directory(path_fs);
-            path_fs += "/swannsong_adventure";
+            path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
             rtrn_struct.local_data_path = path_fs;
-            rtrn_struct.local_data_path += "/";
         } else if(current_os == os_type::WINDOWSNT) {
             path_fs = getenv("LOCALAPPDATA");
 
-            path_fs += "/swannsong_adventure";
+            path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
             rtrn_struct.local_data_path = path_fs;
-            rtrn_struct.local_data_path += "/";
         } else {
             std::cout << "Please use a POSIX or a WINDOWS NT environnement to run this program"
                 << "\n";
