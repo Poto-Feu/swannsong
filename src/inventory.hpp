@@ -24,9 +24,11 @@
 
 namespace inventory
 {
-    void player_getitem(std::string const& p_name, uint16_t val);
-    void player_useitem(std::string const& p_name, uint16_t val);
-    uint16_t return_item_n(std::string const& p_name);
+    typedef uint32_t item_val_type;
+
+    void player_getitem(std::string const& p_name, item_val_type val);
+    void player_useitem(std::string const& p_name, item_val_type val);
+    item_val_type return_item_n(std::string const& p_name);
     void display_screen();
 }
 

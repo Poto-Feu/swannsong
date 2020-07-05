@@ -155,10 +155,11 @@ namespace parser
     //Interpret a line which use the GET function, which add an item to the player's inventory
     static void interp_GET_func(TokenVec const& p_vec)
     {
+        using namespace inventory;
         int item_name_pos = 1;
-        uint16_t item_n = 1;
+        item_val_type item_n = 1;
 
-        if (p_vec.size() == 3) {
+        if(p_vec.size() == 3) {
             if(p_vec[1].type == token_type::NUMBER) {
                 item_name_pos = 2;
                 item_n = std::stoi(p_vec[1].str);
@@ -167,21 +168,25 @@ namespace parser
                         "second part of a GET instruction must be a NUMBER or an ITEM");
             }
         } else if(p_vec.size() != 2) wrg_tkn_num("GET");
-        inventory::player_getitem(p_vec[item_name_pos].str, item_n);
+
+        player_getitem(p_vec[item_name_pos].str, item_n);
     }
 
     static void interp_USE_func(TokenVec const& p_vec)
     {
-        int item_name_pos = 1;
-        uint16_t item_n = 1;
+        using namespace inventory;
 
-        if (p_vec.size() == 3) {
+        int item_name_pos = 1;
+        item_val_type item_n = 1;
+
+        if(p_vec.size() == 3) {
             if(p_vec[1].type == token_type::NUMBER) {
                 item_name_pos = 2;
                 item_n = std::stoi(p_vec[1].str);
             } else fatal_error("second part of an USE instruction must be a NUMBER or an ITEM");
         } else if(p_vec.size() != 2) wrg_tkn_num("USE");
-        inventory::player_useitem(p_vec[item_name_pos].str, item_n);
+
+        player_useitem(p_vec[item_name_pos].str, item_n);
     }
 
     //Interpret a line which changes a gvar value
