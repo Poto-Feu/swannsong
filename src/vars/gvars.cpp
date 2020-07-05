@@ -19,7 +19,6 @@
 
 #include <algorithm>
 #include "vars/gvars.hpp"
-#include "vars/intvar.hpp"
 #include "game_error.hpp"
 
 namespace gvars
@@ -28,7 +27,7 @@ namespace gvars
 
     static std::vector<intvar> gvar_vec;
 
-    static void add_to_list(std::string const& p_name, int16_t p_val)
+    static void add_to_list(std::string const& p_name, gvar_type p_val)
     {
         gvar elem(p_name, p_val);
         intvarm::add_var_to_arr(gvar_vec, elem);
@@ -42,15 +41,15 @@ namespace gvars
                 }) != gvar_vec.cend();
     }
 
-    void set_var(std::string const& p_name, int16_t p_val)
+    void set_var(std::string const& p_name, gvar_type p_val)
     {
         if(check_exist(p_name)) game_error::fatal_error("gvar already exists (" + p_name + ")");
         else add_to_list(p_name, p_val);
     }
 
-    int16_t return_value(std::string const& p_name)
+    gvar_type return_value(std::string const& p_name)
     {
-        int16_t r_val = -1;
+        gvar_type r_val = -1;
 
         if(check_exist(p_name)) r_val = intvarm::return_value(p_name, gvar_vec);
         else game_error::fatal_error("gvar does not exist");
@@ -58,7 +57,7 @@ namespace gvars
         return r_val;
     }
 
-    void change_val(std::string const& p_name, int16_t p_val)
+    void change_val(std::string const& p_name, gvar_type p_val)
     {
         if(check_exist(p_name)) intvarm::set_value(p_val, p_name, gvar_vec);
         else game_error::fatal_error("gvar does not exist");

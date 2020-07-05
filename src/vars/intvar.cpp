@@ -38,7 +38,7 @@ namespace intvarm
     }
 
     //Return the value of the intvar on the specified index
-    int16_t return_value(std::string const& p_name, std::vector<intvar>& p_vec)
+    intvar_type return_value(std::string const& p_name, std::vector<intvar>& p_vec)
     {
         int rtrn_val = -1;
         auto it = return_it(p_name, p_vec);
@@ -51,7 +51,7 @@ namespace intvarm
     }
 
     //Set the value of the specified intvar
-    void set_value(int16_t p_val, std::string const& p_name, std::vector<intvar>& p_vec)
+    void set_value(intvar_type p_val, std::string const& p_name, std::vector<intvar>& p_vec)
     {
         auto it = return_it(p_name, p_vec);
 

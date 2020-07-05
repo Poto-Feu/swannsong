@@ -380,7 +380,7 @@ namespace parser
             fatal_error("wrong arg number in COMP IF");
         } else if(r_vec[3].type == token_type::NUMBER) {
             if(r_vec[2].type == token_type::EQUAL) {
-                int16_t varval = gvars::return_value(r_vec[1].str);
+                auto varval = gvars::return_value(r_vec[1].str);
                 int compval = std::stoi(r_vec[3].str);
 
                 if(compval == varval) return true;
@@ -388,7 +388,7 @@ namespace parser
         } else if(r_vec[2].type == token_type::NOT
                 && r_vec[3].type == token_type::EQUAL
                 && r_vec[4].type == token_type::NUMBER) {
-            int16_t varval = gvars::return_value(r_vec[1].str);
+            auto varval = gvars::return_value(r_vec[1].str);
             int compval = std::stoi(r_vec[3].str);
 
             if(compval != varval) return true;

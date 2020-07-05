@@ -21,12 +21,15 @@
 #define GVARS_H
 
 #include <string>
+#include "vars/intvar.hpp"
 
 namespace gvars
 {
-    void set_var(std::string const& p_name, int16_t p_val);
-    int16_t return_value(std::string const& p_name);
-    void change_val(std::string const& p_name, int16_t p_val);
+    typedef intvar_type gvar_type;
+
+    void set_var(std::string const& p_name, gvar_type p_val);
+    gvar_type return_value(std::string const& p_name);
+    void change_val(std::string const& p_name, gvar_type p_val);
     bool exist(std::string const& p_name);
 }
 #endif

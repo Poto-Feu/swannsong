@@ -23,19 +23,22 @@
 #include <string>
 #include <vector>
 
+typedef int32_t intvar_type;
+
 struct intvar
 {
-    intvar(std::string const& p_name, int16_t p_val) : name(p_name), val(p_val) { }
+    intvar(std::string const& p_name, intvar_type p_val) : name(p_name), val(p_val) { }
 
     std::string name;
-    int16_t val;
+    intvar_type val;
 };
 
 namespace intvarm
 {
+
     void add_var_to_arr(std::vector<intvar>& p_vec, intvar& p_var);
-    int16_t return_value(std::string const& p_name, std::vector<intvar>& p_vec);
-    void set_value(int16_t p_val, std::string const& p_name, std::vector<intvar>& p_vec);
+    intvar_type return_value(std::string const& p_name, std::vector<intvar>& p_vec);
+    void set_value(intvar_type p_val, std::string const& p_name, std::vector<intvar>& p_vec);
 }
 
 #endif
