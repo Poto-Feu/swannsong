@@ -23,9 +23,7 @@
 
 namespace gvars
 {
-    typedef intvar gvar;
-
-    static std::vector<intvar> gvar_vec;
+    static gvarVector gvar_vec;
 
     static void add_to_list(std::string const& p_name, gvar_type p_val)
     {
@@ -67,5 +65,15 @@ namespace gvars
     {
         if(check_exist(p_name)) return true;
         else return false;
+    }
+
+    void replace_vector(gvarVector const& p_vec)
+    {
+        gvar_vec = p_vec;
+    }
+
+    gvarVector get_gvars_vector()
+    {
+        return gvar_vec;
     }
 }

@@ -25,11 +25,17 @@
 
 namespace gvars
 {
+    typedef intvar gvar;
     typedef intvar_type gvar_type;
+    typedef std::vector<gvar> gvarVector;
 
     void set_var(std::string const& p_name, gvar_type p_val);
     gvar_type return_value(std::string const& p_name);
     void change_val(std::string const& p_name, gvar_type p_val);
     bool exist(std::string const& p_name);
+    void replace_vector(gvarVector const& p_vec);
+
+    //Return a vector containing all script defined game variable
+    std::vector<gvar> get_gvars_vector();
 }
 #endif
