@@ -28,6 +28,7 @@ typedef int32_t intvar_type;
 struct intvar
 {
     intvar(std::string const& p_name, intvar_type p_val) : name(p_name), val(p_val) { }
+    intvar() { }
 
     std::string name;
     intvar_type val;
