@@ -37,6 +37,7 @@ endif()
 
 add_executable(swannsongadv
     src/main.cpp
+    src/fileio/save/SaveFileBuffer.cpp
     src/fileio/fileio.cpp
     src/fileio/gameconf.cpp
     src/room/interpreter/parser.cpp
