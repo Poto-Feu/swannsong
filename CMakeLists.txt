@@ -53,6 +53,7 @@ add_executable(swannsongadv
     src/tests/tests.cpp
     src/CutsceneClass.cpp
     src/cutscenes.cpp
+    src/crypt_functions.cpp
     src/display_server.cpp
     src/exitgame.cpp
     src/files_path.cpp
@@ -66,6 +67,8 @@ add_executable(swannsongadv
     src/os_module.cpp
     src/stringsm.cpp
     src/userio.cpp)
+
+target_link_libraries(swannsongadv crypto)
 
 # Compile pdcurses if the user is on Windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
