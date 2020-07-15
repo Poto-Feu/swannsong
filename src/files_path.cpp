@@ -42,7 +42,7 @@ namespace files_path
     static fs::path init_data_path()
     {
 #ifdef IS_PKG
-        rtrn_struct.data_path = "/usr/share/swannsong_adventure/";
+        return "/usr/share/swannsong_adventure/";
 #else
         if(current_os == os_type::WINDOWSNT || runned_locally) {
             return "data/";
