@@ -26,12 +26,7 @@
 
 namespace inventory
 {
-    struct gitem {
-        std::string name;
-        item_val_type val;
-    };
-
-    static std::vector<gitem> inventory_vec;
+    static gitemVector inventory_vec;
 
     static auto return_it(std::string const& p_name)
     {
@@ -121,5 +116,15 @@ namespace inventory
         }
 
         pcurses::display_penter_message();
+    }
+
+    void replace_vector(gitemVector p_vector)
+    {
+        inventory_vec = p_vector;
+    }
+
+    gitemVector get_inventory_vector()
+    {
+        return inventory_vec;
     }
 }
