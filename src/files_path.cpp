@@ -80,14 +80,10 @@ namespace files_path
     //Return a struct containing the system game data path and the user-specific game data path
     paths_struct getpaths()
     {
-        static bool already_used = false;
         paths_struct rtrn_struct;
 
-        if(!already_used) {
-            rtrn_struct.data_path = init_data_path();
-            rtrn_struct.local_data_path = init_user_data_path(rtrn_struct);
-            already_used = true;
-        } else game_error::fatal_error("files_path::initpaths used more than once");
+        rtrn_struct.data_path = init_data_path();
+        rtrn_struct.local_data_path = init_user_data_path(rtrn_struct);
         return rtrn_struct;
     }
 
