@@ -18,6 +18,8 @@ incorrect_input "Eh?"
 #Save/Load
 save_success "Your game was saved!"
 save_failed "The save file integrity could not be verified."
+load_nofile "There is no existing savefile."
+load_corrupted "Savefile is corrupted - this might be due to a read error."
 
 # Rooms
 menu_desc "Menu"

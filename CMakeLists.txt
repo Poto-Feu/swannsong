@@ -40,7 +40,9 @@ add_executable(swannsongadv
     src/fileio/save/SaveFileBuffer.cpp
     src/fileio/save/SaveChunk.cpp
     src/fileio/save/SaveFile.cpp
+    src/fileio/save/LoadedFile.cpp
     src/fileio/save/save_file.cpp
+    src/fileio/save/load_savefile.cpp
     src/fileio/fileio.cpp
     src/fileio/gameconf.cpp
     src/room/interpreter/parser.cpp
