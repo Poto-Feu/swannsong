@@ -153,6 +153,7 @@ unsigned int RoomState::getChoiceLine(unsigned int ch_n) const
 void RoomState::displayCutscenes()
 {
     for(auto const& it : cs_list) cutscenes::display(it);
+    cs_list.clear();
 }
 
 bool RoomState::is_title_displayed() const
