@@ -24,7 +24,8 @@
 extern "C" {
 #endif
 
-void exitgame(int const c);
+void exitgame(int exit_code);
+void direct_exit(int exit_code);
 
 #ifdef __cplusplus
 }

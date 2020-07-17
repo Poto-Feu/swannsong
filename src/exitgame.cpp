@@ -23,16 +23,21 @@
 #include "pcurses.hpp"
 #include "display_server.hpp"
 
-void exitgame(int const c)
+void exitgame(int exit_code)
 {
     display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
 
-    if(c == 0) display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
+    if(exit_code == 0) display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
     else display_server::add_string("Press Enter to exit", exit_struct, A_BOLD);
 
     display_server::show_screen();
     userio::waitenter();
+    direct_exit(exit_code);
+}
+
+void direct_exit(int exit_code)
+{
     delwin(stdscr);
     endwin();
-    exit(c);
+    exit(exit_code);
 }
