@@ -20,6 +20,8 @@
 #include "room/RoomClass.hpp"
 #include "room/interpreter/parser.hpp"
 #include "room/find.hpp"
+#include "fileio/save/load_savefile.hpp"
+#include "fileio/save/save_file.hpp"
 #include "exitgame.h"
 #include "game_error.hpp"
 #include "inventory.hpp"
@@ -103,7 +105,7 @@ void Room::load(RoomManager& p_rmm)
     RoomState currentState;
 
     //Show the room prompt and process the input
-    auto process_input = [](roommod::room_struct p_struct, RoomManager& p_rmm) {
+    auto process_input = [this](roommod::room_struct p_struct, RoomManager& p_rmm) {
         bool correct_input = false;
 
         display_server::save_screen();
@@ -136,6 +138,18 @@ void Room::load(RoomManager& p_rmm)
             } else if(stringsm::to_upper(user_inp) == "EXIT") {
                 correct_input = true;
                 p_rmm.endLoop();
+            } else if(stringsm::to_upper(user_inp) == "LOAD") {
+                correct_input = true;
+                auto save_data = load_savefile::start_loading();
+
+                if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
+                    p_rmm.setNextRoom(save_data.room);
+                    inventory::replace_vector(save_data.gitem_vector);
+                    gvars::replace_vector(save_data.gvar_vector);
+                }
+            } else if(stringsm::to_upper(user_inp) == "SAVE") {
+                correct_input = true;
+                save_file::start_saving({this->name});
             } else if(stringsm::to_upper(user_inp) == "INV"
                     || stringsm::to_upper(user_inp) == "INVENTORY") {
                 correct_input = true;
