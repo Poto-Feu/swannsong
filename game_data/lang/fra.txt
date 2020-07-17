@@ -16,6 +16,10 @@ item_Coin "Pièce"
 room_prompt_text "Ton choix : "
 incorrect_input "Pardon ?"
 
+# Save/Load
+save_success "Ta partie a été sauvegardée !"
+save_failed "L'intégrité de la sauvegarde n'a pas pu être vérifiée."
+
 # Rooms
 menu_desc "Menu"
 menu_c1 "Jouer"

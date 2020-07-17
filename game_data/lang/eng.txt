@@ -15,6 +15,10 @@ inventory_more "(And more...)"
 room_prompt_text "Your choice: "
 incorrect_input "Eh?"
 
+#Save/Load
+save_success "Your game was saved!"
+save_failed "The save file integrity could not be verified."
+
 # Rooms
 menu_desc "Menu"
 menu_c1 "Play"
