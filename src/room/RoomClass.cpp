@@ -137,7 +137,7 @@ void Room::load(RoomManager& p_rmm)
                 }
             } else if(user_inp == "exit") {
                 correct_input = true;
-                p_rmm.endLoop();
+                direct_exit(0);
             } else if(user_inp == "load") {
                 correct_input = true;
                 auto save_data = load_savefile::start_loading();
