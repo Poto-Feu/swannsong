@@ -45,7 +45,6 @@ namespace cutscenes
     {
         using namespace files_path;
 
-        bool in_cutscene = false;
         std::string buf;
         std::ifstream file_stream(data_path.string() + csfile);
 
@@ -56,10 +55,9 @@ namespace cutscenes
 
             if(buf == "" || buf[0] == '#') continue;
 
-            in_cutscene = true;
             curr_cs.name = stringsm::getfw(buf);
 
-            while(fileio::getfileln(buf, file_stream) && in_cutscene) {
+            while(fileio::getfileln(buf, file_stream)) {
                 std::string fw;
                 cs_action curr_action;
 
@@ -75,7 +73,6 @@ namespace cutscenes
                     curr_action.type = cs_action_type::STRING;
                     curr_action.content = pstrings::fetch(fw);
                 } else if(fw == "END") {
-                    in_cutscene = false;
                     break;
                 }
                 curr_cs.actions_vec.push_back(curr_action);
