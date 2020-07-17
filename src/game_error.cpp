@@ -72,6 +72,7 @@ namespace game_error
             std::ofstream log_stream(log_file_path, std::ios::app);
 
             log_stream << "WARNING: ";
+            log_stream.close();
             log_write(p_text);
         }
     }
