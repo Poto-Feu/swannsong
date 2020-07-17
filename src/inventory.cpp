@@ -26,12 +26,7 @@
 
 namespace inventory
 {
-    struct gitem {
-        std::string name;
-        unsigned int val;
-    };
-
-    static std::vector<gitem> inventory_vec;
+    static gitemVector inventory_vec;
 
     static auto return_it(std::string const& p_name)
     {
@@ -42,13 +37,13 @@ namespace inventory
     }
 
     //Create an entry for the specified item in inventory_list
-    static void add_item_to_list(std::string const& p_name, unsigned int p_val)
+    static void add_item_to_list(std::string const& p_name, item_val_type p_val)
     {
         inventory_vec.push_back(gitem{p_name, p_val});
     }
 
     //Add the specified number of item to an inventory
-    static void add_n_item(std::string const& p_name, unsigned int p_val)
+    static void add_n_item(std::string const& p_name, item_val_type p_val)
     {
         auto it = return_it(p_name);
 
@@ -58,18 +53,17 @@ namespace inventory
 
     /*Add the specified number of an item - if it doesn't exist in inventory_vec, the function adds 
     the item to it*/
-    void player_getitem(std::string const& p_name, unsigned int val)
+    void player_getitem(std::string const& p_name, item_val_type val)
     {
         auto it = return_it(p_name);
 
-        if(it != inventory_vec.cend()) {
-            add_n_item(p_name, val);
-        } else add_item_to_list(p_name, val);
+        if(it != inventory_vec.cend()) add_n_item(p_name, val);
+        else add_item_to_list(p_name, val);
     }
 
     /*Reduce the specified number of item - and remove the item from the vector if the result is 
     equal to 0 or less*/
-    void player_useitem(std::string const& p_name, unsigned int p_val)
+    void player_useitem(std::string const& p_name, item_val_type p_val)
     {
         auto it = return_it(p_name);
 
@@ -80,9 +74,9 @@ namespace inventory
     }
 
     //Return the number of pieces of an item present in the inventory
-    unsigned int return_item_n(std::string const& p_name)
+    item_val_type return_item_n(std::string const& p_name)
     {
-        unsigned int rtrn_val = 0;
+        item_val_type rtrn_val = 0;
         auto it = return_it(p_name);
 
         if(it != inventory_vec.cend()) rtrn_val = it->val;
@@ -94,32 +88,43 @@ namespace inventory
     //Display the inventory screen
     void display_screen()
     {
+        int str_line = pcurses::top_margin;
+
         display_server::clear_screen();
         move(pcurses::top_margin, pcurses::margin);
 
-        for(auto const& it : inventory_vec) {
-            int str_line = pcurses::top_margin;
-            std::string disp_str = it.name;
-            std::string str_name = "item_" + it.name;
+        if(inventory_vec.size() == 0) {
+            pcurses::display_center_string(pstrings::fetch("inventory_empty"), str_line);
+        } else {
+            for(auto const& it : inventory_vec) {
+                std::string disp_str = it.name;
+                std::string str_name = "item_" + it.name;
 
-            if(pstrings::check_exist(str_name)) disp_str = pstrings::fetch(str_name);
+                if(pstrings::check_exist(str_name)) disp_str = pstrings::fetch(str_name);
 
-            disp_str += "   ";
-            disp_str += std::to_string(return_item_n(it.name));
-            pcurses::display_center_string(disp_str, str_line);
-            ++str_line;
+                disp_str += "   " + std::to_string(return_item_n(it.name));
+                pcurses::display_center_string(disp_str, str_line);
+                ++str_line;
 
-            if(str_line >= LINES - 6) {
-                if(pstrings::check_exist("inventory_more")) {
-                    pcurses::display_center_string(pstrings::fetch("inventory_more"), str_line);
-                } else pcurses::display_center_string("(And more...)");
-                break;
+                if(str_line >= LINES - 6) {
+                    if(pstrings::check_exist("inventory_more")) {
+                        pcurses::display_center_string(pstrings::fetch("inventory_more"), str_line);
+                    } else pcurses::display_center_string("(And more...)");
+                    break;
+                }
             }
         }
 
-        display_server::add_string(pstrings::fetch("continue_penter"),
-                {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-        display_server::show_screen();
-        userio::waitenter();
+        pcurses::display_penter_message();
+    }
+
+    void replace_vector(gitemVector p_vector)
+    {
+        inventory_vec = p_vector;
+    }
+
+    gitemVector get_inventory_vector()
+    {
+        return inventory_vec;
     }
 }

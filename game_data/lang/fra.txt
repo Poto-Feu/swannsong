@@ -8,12 +8,19 @@ continue_penter "Appuyez sur Entrée pour continuer..."
 unfinished_str "Tu as atteins l'une des parties non terminées de ce programme. Merci d'avoir joué à ce jeu ! Si tu as rencontré un problème, n'hésite pas à le me faire savoir sur Github."
 
 # Inventory
+inventory_empty "(vide)"
 inventory_more "(Et plus...)"
 item_Coin "Pièce"
 
 # Room prompt
 room_prompt_text "Ton choix : "
 incorrect_input "Pardon ?"
+
+# Save/Load
+save_success "Ta partie a été sauvegardée !"
+save_failed "L'intégrité de la sauvegarde n'a pas pu être vérifiée."
+load_nofile "Il n'y a pas de sauvegarde existante."
+load_corrupted "Le fichier de sauvegarde est corrompu - cela peut être dû à une erreur de lecture."
 
 # Rooms
 menu_desc "Menu"

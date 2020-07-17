@@ -17,15 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_HPP
-#define TESTS_HPP
+#ifndef CRYPT_FUNCTIONS_HPP
+#define CRYPT_FUNCTIONS_HPP
 
-namespace tests
+#include <vector>
+
+namespace crypt_functions
 {
-    void stringsm_is_str();
-    void cutscenes_test();
-    void token();
-    void savechunk();
+    typedef std::vector<unsigned char> SHA1Checksum;
+    const unsigned int SHA1_size = 20;
+
+    SHA1Checksum getSHA1Checksum(std::vector<unsigned char> p_char_vec);
 }
 
 #endif

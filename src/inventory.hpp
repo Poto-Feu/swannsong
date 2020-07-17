@@ -21,13 +21,28 @@
 #define INVENTORY_H
 
 #include <string>
+#include <vector>
 
 namespace inventory
 {
-    void player_getitem(std::string const& p_name, unsigned int val);
-    void player_useitem(std::string const& p_name, unsigned int val);
-    unsigned int return_item_n(std::string const& p_name);
+    typedef uint32_t item_val_type;
+
+    struct gitem {
+        gitem(std::string const& p_name, item_val_type p_val) : name(p_name), val(p_val) { }
+        gitem() { }
+
+        std::string name;
+        item_val_type val;
+    };
+
+    typedef std::vector<gitem> gitemVector;
+
+    void player_getitem(std::string const& p_name, item_val_type val);
+    void player_useitem(std::string const& p_name, item_val_type val);
+    item_val_type return_item_n(std::string const& p_name);
     void display_screen();
+    void replace_vector(gitemVector p_vector);
+    gitemVector get_inventory_vector();
 }
 
 #endif

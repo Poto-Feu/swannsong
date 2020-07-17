@@ -17,15 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <fstream>
+#include <string>
+#include <vector>
 #include "tests.hpp"
 #include "room/interpreter/token.hpp"
+#include "fileio/save/save_const.hpp"
+#include "fileio/save/SaveChunk.hpp"
 #include "cutscenes.hpp"
 #include "exitgame.h"
 #include "pcurses.hpp"
 #include "stringsm.h"
-
-#include <string>
-#include <vector>
 
 namespace tests
 {
@@ -56,5 +58,21 @@ namespace tests
         }
 
         exitgame(0);
+    }
+
+    void savechunk()
+    {
+        using namespace save_const;
+
+        uint32_t test_val = 12;
+        SaveChunk val_chk(save_const::chunk_type::GAMNAME, test_val);
+        auto val_chk_vec = val_chk.getChunkAsVector();
+
+        std::ofstream test_stream("test_bin", std::ios::binary);
+        test_stream.exceptions(std::ios::badbit | std::ios::failbit);
+        test_stream.write((const char*)val_chk_vec.data(), val_chk_vec.size());
+        test_stream.flush();
+
+        exit(0);
     }
 }

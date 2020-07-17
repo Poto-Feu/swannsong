@@ -37,35 +37,44 @@ endif()
 
 add_executable(swannsongadv
     src/main.cpp
+    src/fileio/save/SaveFileBuffer.cpp
+    src/fileio/save/SaveChunk.cpp
+    src/fileio/save/SaveFile.cpp
+    src/fileio/save/LoadedFile.cpp
+    src/fileio/save/save_file.cpp
+    src/fileio/save/load_savefile.cpp
+    src/fileio/fileio.cpp
+    src/fileio/gameconf.cpp
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.cpp
     src/room/Choice.cpp
-    src/room/room.cpp
     src/room/RoomClass.cpp
     src/room/RoomManager.cpp
     src/room/RoomState.cpp
     src/room/find.cpp
+    src/room/room.cpp
     src/room/room_io.cpp
-    src/fileio/fileio.cpp
-    src/fileio/gameconf.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp
-    src/cutscenes.cpp
     src/CutsceneClass.cpp
-    src/files_path.cpp
+    src/cutscenes.cpp
+    src/crypt_functions.cpp
     src/display_server.cpp
+    src/exitgame.cpp
+    src/files_path.cpp
+    src/game_error.cpp
     src/init.cpp
+    src/inventory.cpp
     src/lang.cpp
     src/pargs.cpp
-    src/game_error.cpp
-    src/pstrings.cpp
     src/pcurses.cpp
+    src/pstrings.cpp
     src/os_module.cpp
     src/stringsm.cpp
-    src/exitgame.cpp
-    src/inventory.cpp
     src/userio.cpp)
+
+target_link_libraries(swannsongadv crypto)
 
 # Compile pdcurses if the user is on Windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")

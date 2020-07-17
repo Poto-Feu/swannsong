@@ -17,15 +17,20 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_HPP
-#define TESTS_HPP
+#ifndef SAVE_FILE_HPP
+#define SAVE_FILE_HPP
 
-namespace tests
+#include <filesystem>
+
+namespace save_file
 {
-    void stringsm_is_str();
-    void cutscenes_test();
-    void token();
-    void savechunk();
+    struct data_struct
+    {
+        std::string room_name;
+    };
+
+    //Start the saving operations
+    void start_saving(data_struct p_struct);
 }
 
 #endif

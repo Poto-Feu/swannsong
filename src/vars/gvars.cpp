@@ -19,21 +19,18 @@
 
 #include <algorithm>
 #include "vars/gvars.hpp"
-#include "vars/intvar.hpp"
 #include "game_error.hpp"
-
-typedef intvar gvar;
-
-static std::vector<intvar> gvar_vec;
-
-static void add_to_list(std::string const& p_name, int p_val)
-{
-    gvar elem(p_name, p_val);
-    intvarm::add_var_to_arr(gvar_vec, elem);
-}
 
 namespace gvars
 {
+    static gvarVector gvar_vec;
+
+    static void add_to_list(std::string const& p_name, gvar_type p_val)
+    {
+        gvar elem(p_name, p_val);
+        intvarm::add_var_to_arr(gvar_vec, elem);
+    }
+
     static auto check_exist(std::string const& p_name)
     {
         return std::find_if(gvar_vec.cbegin(), gvar_vec.cend(),
@@ -42,24 +39,23 @@ namespace gvars
                 }) != gvar_vec.cend();
     }
 
-    void set_var(std::string const& p_name, int p_val)
+    void set_var(std::string const& p_name, gvar_type p_val)
     {
         if(check_exist(p_name)) game_error::fatal_error("gvar already exists (" + p_name + ")");
         else add_to_list(p_name, p_val);
     }
 
-    int return_value(std::string const& p_name)
+    gvar_type return_value(std::string const& p_name)
     {
-        int r_val = -1;
+        gvar_type r_val = -1;
 
-        if(check_exist(p_name)) {
-            r_val = intvarm::return_value(p_name, gvar_vec);
-        } else game_error::fatal_error("gvar does not exist");
+        if(check_exist(p_name)) r_val = intvarm::return_value(p_name, gvar_vec);
+        else game_error::fatal_error("gvar does not exist");
 
         return r_val;
     }
 
-    void change_val(std::string const& p_name, int p_val)
+    void change_val(std::string const& p_name, gvar_type p_val)
     {
         if(check_exist(p_name)) intvarm::set_value(p_val, p_name, gvar_vec);
         else game_error::fatal_error("gvar does not exist");
@@ -69,5 +65,15 @@ namespace gvars
     {
         if(check_exist(p_name)) return true;
         else return false;
+    }
+
+    void replace_vector(gvarVector const& p_vec)
+    {
+        gvar_vec = p_vec;
+    }
+
+    gvarVector get_gvars_vector()
+    {
+        return gvar_vec;
     }
 }

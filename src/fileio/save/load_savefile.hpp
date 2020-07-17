@@ -17,15 +17,15 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_HPP
-#define TESTS_HPP
+#ifndef LOAD_SAVEFILE_HPP
+#define LOAD_SAVEFILE_HPP
 
-namespace tests
+#include "fileio/save/LoadedFile.hpp"
+
+namespace load_savefile
 {
-    void stringsm_is_str();
-    void cutscenes_test();
-    void token();
-    void savechunk();
+    //Start the loading operations
+    LoadedFile_data start_loading();
 }
 
 #endif
