@@ -111,7 +111,7 @@ void Room::load(RoomManager& p_rmm)
         display_server::save_screen();
 
         while(!correct_input) {
-            std::string user_inp = userio::gettextinput(9);
+            std::string user_inp = stringsm::to_lower(userio::gettextinput(9));
 
             display_server::clear_screen();
 
@@ -135,10 +135,10 @@ void Room::load(RoomManager& p_rmm)
                     correct_input = true;
                     choice_input();
                 }
-            } else if(stringsm::to_upper(user_inp) == "EXIT") {
+            } else if(user_inp == "exit") {
                 correct_input = true;
                 p_rmm.endLoop();
-            } else if(stringsm::to_upper(user_inp) == "LOAD") {
+            } else if(user_inp == "load") {
                 correct_input = true;
                 auto save_data = load_savefile::start_loading();
 
@@ -147,11 +147,10 @@ void Room::load(RoomManager& p_rmm)
                     inventory::replace_vector(save_data.gitem_vector);
                     gvars::replace_vector(save_data.gvar_vector);
                 }
-            } else if(stringsm::to_upper(user_inp) == "SAVE") {
+            } else if(user_inp == "save") {
                 correct_input = true;
                 save_file::start_saving({this->name});
-            } else if(stringsm::to_upper(user_inp) == "INV"
-                    || stringsm::to_upper(user_inp) == "INVENTORY") {
+            } else if(user_inp == "inv" || user_inp == "inventory") {
                 correct_input = true;
                 inventory::display_screen();
             } else incorrect_input();
