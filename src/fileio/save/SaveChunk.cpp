@@ -28,13 +28,9 @@ SaveChunk::SaveChunk(save_const::chunk_type p_id, saveFileBufferVector const& p_
 SaveChunk::SaveChunk(save_const::chunk_type p_id, std::vector<saveFileBufferVector> p_chk_vec) :
     id(p_id)
 {
-    uint32_t p_chk_vec_size = p_chk_vec.size();
-
-    for(uint32_t i = 1; i < p_chk_vec_size; ++i) {
-        p_chk_vec[0].insert(p_chk_vec[0].end(), p_chk_vec[i].begin(), p_chk_vec[i].end());
+    for(auto const& it : p_chk_vec) {
+        copy_saveFileBufferVector_to_array(chunk_content, it);
     }
-
-    copy_bytes_to_array(chunk_content, p_chk_vec[0].data(), p_chk_vec[0].size());
 }
 
 saveFileBufferVector SaveChunk::getChunkAsVector()
@@ -45,7 +41,13 @@ saveFileBufferVector SaveChunk::getChunkAsVector()
     save_const::chunk_type_type id_int = static_cast<save_const::chunk_type_type>(id);
     copy_fundamental_type_to_array(raw_chunk, id_int);
     copy_fundamental_type_to_array(raw_chunk, chunk_content_size);
-    copy_bytes_to_array(raw_chunk, chunk_content.data(), chunk_content_size);
+    copy_saveFileBufferVector_to_array(raw_chunk, chunk_content);
 
     return raw_chunk;
+}
+
+void SaveChunk::copy_saveFileBufferVector_to_array(saveFileBufferVector& p_vec,
+                saveFileBufferVector const& new_vec)
+{
+    p_vec.insert(p_vec.end(), new_vec.begin(), new_vec.end());
 }

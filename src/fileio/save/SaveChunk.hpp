@@ -45,7 +45,7 @@ class SaveChunk
         typename = typename std::enable_if_t<std::is_fundamental_v<T>>>
         SaveChunk(save_const::chunk_type p_id, T p_value) : id(p_id)
         {
-            copy_bytes_to_array(chunk_content, &p_value, 1);
+            copy_fundamental_type_to_array(chunk_content, p_value);
         }
 
         template<typename T,
@@ -96,6 +96,9 @@ class SaveChunk
 
             delete[] raw_bytes;
         }
+
+        void copy_saveFileBufferVector_to_array(saveFileBufferVector& p_vec,
+                saveFileBufferVector const& new_vec);
 };
 
 #endif
