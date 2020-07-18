@@ -12,10 +12,12 @@ I started this project in order to improve my skills in C++. Do not take source 
 #### Unix-like (including GNU/Linux)
 * a C++17-compatible version of GCC or Clang
 * ncurses
+* OpenSSL libs
 * CMake
 
 #### Windows
 * a C++17-compatible version of MinGW
+* OpenSSL libs
 * CMake
 
 Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
@@ -45,7 +47,7 @@ TO-DO
 ## Licensing
 **SwannSong Adventure** is licensed under the GPL v3 License. Libraries licenses can be found in the *licenses* folder.
 
-ncurses is licensed under the MIT X11 License.
+ncurses is licensed under the MIT X11 License. OpenSSL is licensed under the Apache License 2.0.
 
 The following only applies to the MingGW compiled version :
 
