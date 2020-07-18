@@ -42,6 +42,5 @@ clean:
 	rm -rf src/tests/*.o
 	rm -rf src/vars/*.o
 
-distclean:
-	clean
+distclean: clean
 	rm -rf build
