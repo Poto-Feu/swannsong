@@ -15,6 +15,7 @@ item_Coin "Pièce"
 # Room prompt
 room_prompt_text "Ton choix : "
 incorrect_input "Pardon ?"
+room_need_help "Besoin d'aide ? Ecris \"help\"."
 
 # Save/Load
 save_success "Ta partie a été sauvegardée !"
@@ -39,3 +40,9 @@ cs_about_3 "Ce programme a été au départ compilé avec GNU GCC et testé avec
 
 cs_welcome_1 "Hej ! Donc tu veux jouer à Swannsong Adventure ? Saches que c'est un jeu qualitatif. Tu ne le regretteras pas."
 cs_welcome_2 "Tu incarnes Vladimir Swann, un homme lambda qui veut absolument acquérir l'édition deluxe de la B.O de \"Tolstoi et ses frères\". Bref, j'espère que tu apprécieras ce jeu fait par un étudiant qui vient d'apprendre le C++."
+
+cs_help_intro "Voici les commandes possibles qu'il est possible de taper :"
+cs_help_inv_cmd "inventory (ou inv) : affiche l'inventaire"
+cs_help_save_cmd "save : sauvegarde la partie"
+cs_help_load_cmd "load : charge la partie sauvegardée"
+cs_help_help_cmd "help : affiche cet écran"

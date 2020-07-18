@@ -22,6 +22,7 @@
 #include "room/find.hpp"
 #include "fileio/save/load_savefile.hpp"
 #include "fileio/save/save_file.hpp"
+#include "cutscenes.hpp"
 #include "exitgame.h"
 #include "game_error.hpp"
 #include "inventory.hpp"
@@ -92,12 +93,22 @@ static void atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
 }
 
 //Reset the room screen with an added message to notify the user that its input is not correct
-static void incorrect_input()
+static void incorrect_input(unsigned int& incorrect_input_n)
 {
-    display_server::add_string(pstrings::fetch("incorrect_input"),
-            {pcurses::lines - 3, pcurses::margin}, A_BOLD);
-    display_server::load_save();
-    display_server::show_screen();
+    if(incorrect_input_n < 3) {
+        ++incorrect_input_n;
+        display_server::clear_screen();
+        display_server::add_string(pstrings::fetch("incorrect_input"),
+                {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+        display_server::load_save();
+        display_server::show_screen();
+    } else {
+        display_server::clear_screen();
+        display_server::add_string(pstrings::fetch("room_need_help"),
+                {pcurses::lines - 3, pcurses::margin}, A_BOLD);
+        display_server::load_save();
+        display_server::show_screen();
+    }
 }
 
 void Room::load(RoomManager& p_rmm)
@@ -110,6 +121,8 @@ void Room::load(RoomManager& p_rmm)
 
         display_server::save_screen();
 
+        unsigned int incorrect_input_n = 0;
+
         while(!correct_input) {
             std::string user_inp = stringsm::to_lower(userio::gettextinput(9));
 
@@ -119,7 +132,7 @@ void Room::load(RoomManager& p_rmm)
                 unsigned int str_digit = std::stoi(user_inp);
                 unsigned int choices_n = p_struct.currState.getChoicesSize();
 
-                if(str_digit > choices_n || str_digit == 0) incorrect_input();
+                if(str_digit > choices_n || str_digit == 0) incorrect_input(incorrect_input_n);
                 else {
                     //Process the input if it is a number corresponding to a choice
                     auto choice_input = [=, &p_struct, &p_rmm]()
@@ -150,10 +163,13 @@ void Room::load(RoomManager& p_rmm)
             } else if(user_inp == "save") {
                 correct_input = true;
                 save_file::start_saving({this->name});
+            } else if(user_inp == "help") {
+                correct_input = true;
+                cutscenes::display("help");
             } else if(user_inp == "inv" || user_inp == "inventory") {
                 correct_input = true;
                 inventory::display_screen();
-            } else incorrect_input();
+            } else incorrect_input(incorrect_input_n);
         }
     };
 
