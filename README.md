@@ -12,10 +12,12 @@ I started this project in order to improve my skills in C++. Do not take source 
 #### Unix-like (including GNU/Linux)
 * a C++17-compatible version of GCC or Clang
 * ncurses
+* OpenSSL libs
 * CMake
 
 #### Windows
 * a C++17-compatible version of MinGW
+* OpenSSL libs
 * CMake
 
 Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
@@ -29,12 +31,21 @@ cmake ..
 make
 ```
 
-A "make install" command is also provided. However, it is still in an experimental state.
+On Unix-like systems, you will need to use the `-local` arguments when launching the game from the build directory (or simply make the start.sh file executable with `chmod +x` and use it). A `make install` command is also provided. However, it is still in an experimental state.
 
-There is also a Makefile available for GNU Make (this is the default make on most GNU/Linux distributions - you may need to use gmake on some systems). Please note that it does not support the "make install command" yet.
+There is also a Makefile available for GNU Make (this is the default make on most GNU/Linux distributions - you may need to use gmake on some systems). Please note that it does not support the `make install` command yet.
 
 #### Windows
 TO-DO
+
+Please note that the Windows version is tested with Wine.
+
+
+## Usage
+
+### Command-line arguments
+* `-local`: fetch the game data from the current folder
+* `-debug`: enable warning and error logs (mainly for developers)
 
 
 ## Roadmap
@@ -45,7 +56,7 @@ TO-DO
 ## Licensing
 **SwannSong Adventure** is licensed under the GPL v3 License. Libraries licenses can be found in the *licenses* folder.
 
-ncurses is licensed under the MIT X11 License.
+ncurses is licensed under the MIT X11 License. OpenSSL is licensed under the Apache License 2.0.
 
 The following only applies to the MingGW compiled version :
 

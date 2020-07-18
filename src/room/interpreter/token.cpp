@@ -17,6 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <array>
 #include <algorithm>
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
