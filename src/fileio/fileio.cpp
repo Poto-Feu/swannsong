@@ -17,46 +17,30 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
-#include <string>
-#include <fstream>
 #include "fileio.h"
+#include "stringsm.h"
 
 namespace fileio
 {
-    void check_ln_length(char* buf, int size)
-    {
-        int newline_fnd = false;
-
-        for(int i = 0; i < size; i++)
-        {
-            if(buf[i] == '\n') newline_fnd = true;
-        }
-
-        if(!newline_fnd) perror_disp("file string is too long", true);
-    }
-
     bool getfileln(std::string& r_str, std::ifstream& p_stream)
     {
         if(std::getline(p_stream, r_str)) return true;
         else return false;
     }
-}
 
-void fileio_setfileptr(FILE** fp, const char* path)
-{
-    *fp = fopen(path, "r");
-    if(*fp == NULL) perror_disp("file cannot be open", 1);
-}
+    std::vector<std::string> copy_to_vector(std::string const& file_path)
+    {
+        std::string buf;
+        std::vector<std::string> file_content;
+        std::ifstream file_stream(file_path);
 
-char* fileio_getfileln(char* buf, int size, FILE** ptr)
-{
-    char* rtrn_val = fgets(buf, size, *ptr);
+        while(fileio::getfileln(buf, file_stream)) {
+            stringsm::rtab(buf);
 
-    if(rtrn_val != NULL) fileio::check_ln_length(buf, size);
+            if(!buf.empty()) file_content.push_back(buf);
+            else continue;
+        }
 
-    return rtrn_val;
+        return file_content;
+    }
 }

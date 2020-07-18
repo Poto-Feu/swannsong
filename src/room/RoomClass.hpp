@@ -17,18 +17,38 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef INVENTORY_H
-#define INVENTORY_H
+#ifndef ROOMCLASS_HPP
+#define ROOMCLASS_HPP
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
+#include "room/RoomManager.hpp"
 
-void inventory_player_getitem(char* p_name, int val);
-int inventory_return_item_n(char* p_name);
+class Room 
+{
+    public:
 
-#ifdef __cplusplus
-}
-#endif
+        Room();
+        explicit Room(std::string const& room_name);
+
+        void getName(char* r_name) const;
+        std::string getName() const;
+
+        bool isChoicesLineSet() const;
+
+        int getRoomLine() const;
+        int getChoicesLine() const;
+
+        void setRoomLine(int rln);
+        void setChoicesLine(int chln);
+
+        void load(RoomManager& p_rmm);
+
+    private:
+
+        std::string name;
+
+        int room_line = 0;
+        int choices_line = 0;
+};
 
 #endif

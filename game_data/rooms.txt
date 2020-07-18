@@ -5,15 +5,28 @@ ROOM menu
         DISPLAY TITLE
         DISPLAY DESC
         DISPLAY CHOICES
+
+        IF firstlaunch NOT EXISTS
+            SET firstlaunch = true
+            CUTSCENE help
+        END
     END
+
     CHOICES
         c1
             TEXT menu_c1
-            CUTSCENE welcome
+
+            IF firstlaunch = true
+                CUTSCENE welcome
+                firstlaunch = false
+            END
+
             GO house
+            GET 3 Coin
         END
         c2
             TEXT menu_c2
+
             CUTSCENE about
         END
     END

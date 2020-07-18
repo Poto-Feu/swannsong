@@ -17,26 +17,27 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include <curses.h>
-}
-
 #include "exitgame.h"
 #include "pstrings.h"
 #include "userio.h"
 #include "pcurses.hpp"
+#include "display_server.hpp"
 
-void exitgame(int c)
+void exitgame(int exit_code)
 {
-    move(LINES - 3, pcurses::margin);
-    if(c == 0)  pstrings::display("exit_penter");
-    else printw("Press Enter to exit");
+    display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
 
-    refresh();
+    if(exit_code == 0) display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
+    else display_server::add_string("Press Enter to exit", exit_struct, A_BOLD);
+
+    display_server::show_screen();
     userio::waitenter();
+    direct_exit(exit_code);
+}
 
+void direct_exit(int exit_code)
+{
+    delwin(stdscr);
     endwin();
-
-    if(c == 0) exit(c);
-    else exit(1);
+    exit(exit_code);
 }

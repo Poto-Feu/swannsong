@@ -32,14 +32,15 @@ void pstrings_display(const char* id);
 #ifdef __cplusplus
 }
 
+#include <filesystem>
 #include <string>
 
 namespace pstrings
 {
-    void copy_file_to_vec();
-    std::string fetch(std::string const id);
-    void display(std::string id);
-    bool check_exist(std::string const id);
+    void copy_file_to_vec(std::string const& p_langdir, std::filesystem::path const& data_path);
+    std::string fetch(std::string const& id);
+    void display(std::string const& id);
+    bool check_exist(std::string const& id);
 }
 
 #endif

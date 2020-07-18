@@ -1,6 +1,8 @@
 # SwannSong Adventure
 A text-adventure game with some humor. Please note that this game is in a pre-alpha stage and is far from being finished.
 
+I started this project in order to improve my skills in C++. Do not take source files from this program as an example of optimized and well-written code.
+
 **WARNING:** this game contains infrequent strong language.
 
 ## Building the game
@@ -8,12 +10,12 @@ A text-adventure game with some humor. Please note that this game is in a pre-al
 ### Building prerequisites
 
 #### Unix-like (including GNU/Linux)
-* GCC/Clang
+* a C++17-compatible version of GCC or Clang
 * ncurses
 * CMake
 
 #### Windows
-* MinGW
+* a C++17-compatible version of MinGW
 * CMake
 
 Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
@@ -27,15 +29,16 @@ cmake ..
 make
 ```
 
+A "make install" command is also provided. However, it is still in an experimental state.
+
+There is also a Makefile available for GNU Make (this is the default make on most GNU/Linux distributions - you may need to use gmake on some systems). Please note that it does not support the "make install command" yet.
+
 #### Windows
 TO-DO
 
 
 ## Roadmap
 * Refactor some parts of the source code
-* Add essential features to the rooms file interpreter such as conditions
-* Add room choice prompt
-* Add a cutscene system
 * Develop a storyline
 
 

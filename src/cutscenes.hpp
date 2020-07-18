@@ -20,36 +20,13 @@
 #ifndef CUTSCENES_HPP
 #define CUTSCENES_HPP
 
+#include <filesystem>
 #include <string>
-#include <vector>
-
-enum class cs_action_type
-{
-    STRING,
-    PAUSE,
-    BLANK
-};
-
-struct cs_action
-{
-    cs_action_type type;
-    std::string content;
-};
-
-class Cutscene
-{
-    public:
-
-    Cutscene();
-
-    std::string name;
-    std::vector<cs_action> actions_vec;
-};
 
 namespace cutscenes
 {
-    void copy_file_to_vec();
+    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path);
     void display(std::string const& p_name);
-    bool check_exist(std::string const p_name);
+    bool check_exist(std::string const& p_name);
 }
 #endif

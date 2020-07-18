@@ -17,16 +17,15 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdbool.h>
-#include <curses.h>
-#include "perror.h"
-#include "exitgame.h"
+#ifndef LANG_HPP
+#define LANG_HPP
 
-/*Display an error message with the specified string*/
-void perror_disp(const char* id, bool fatal)
+#include <string>
+
+namespace langmod
 {
-    printw("ERROR : %s\n", id);
-    refresh();
-
-    if (fatal) exitgame(1);
+    std::string get_lang();
+    void set_lang(std::string const& p_lang);
 }
+
+#endif

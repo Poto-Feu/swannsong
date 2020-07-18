@@ -17,17 +17,14 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
 #include <fstream>
-#include <string>
-#include "gameconf.hpp"
-#include "vars/pvars.hpp"
+#include "fileio/gameconf.hpp"
+#include "game_error.hpp"
+#include "stringsm.h"
 
 namespace gameconf
 {
+    using namespace game_error;
     bool splitins(std::string& var, std::string& value, std::string ins)
     {
         int index = 0;
@@ -37,60 +34,53 @@ namespace gameconf
         bool val_finished = false;
         bool correct_syntax = false;
 
-        for(int i = 0; i < str_size && !equal_fnd; ++i)
-        {
-            if(ins.at(i) == '=') equal_fnd = true;
-            else var += ins.at(i);
-
+        for(int i = 0; i < str_size && !equal_fnd; ++i) {
+            if(ins[i] == '=') equal_fnd = true;
+            else var += ins[i];
             index = i+1;
         }
 
-        if(!equal_fnd) perror_disp("cannot find var in gameconf line", false);
+        if(!equal_fnd) emit_warning("cannot find var in gameconf line");
 
         for(int i = index; i < str_size && equal_fnd && !val_finished; ++i)
         {
-            if(quoteinc == 1)
-            {
-                if(ins.at(i) == '"') val_finished = true;
-                else value += ins.at(i);
-            }
-            else if(ins.at(i) == '"') quoteinc = 1;
+            if(quoteinc) {
+                if(ins[i] == '"') val_finished = true;
+                else value += ins[i];
+            } else if(ins[i] == '"') quoteinc = true;
         }
-
         correct_syntax = val_finished;
-
         return correct_syntax;
 
     }
 
-    /*Read data contained in the gameconf file and set the gameconf variable to
-    the appropriate value*/
-    void readfile()
+    /*Read data contained in the gameconf file and set the gameconf variable to the appropriate
+    value*/
+    std::vector<gcvar_struct> readfile(std::filesystem::path const& data_path)
     {
-        std::ifstream gc_stream("gameconf.txt");
+        std::ifstream gc_stream(data_path.string() + "gameconf.txt");
+
+        if(!gc_stream.good()) {
+            fatal_error("gameconf file not found (this may also applies to other game files)");
+        }
+
+        std::vector<gcvar_struct> rtrn_vec;
         std::string curr_line;
 
-        while(std::getline(gc_stream, curr_line))
-        {
+        while(std::getline(gc_stream, curr_line)) {
+            stringsm::rtab(curr_line);
             if(curr_line.empty()) continue;
-
-            while(curr_line.at(0) == '\t' || curr_line.at(0) == ' ')
-            {
-                curr_line.erase(1, 0);
-            }
-
             if(curr_line.at(0) != '#')
             {
                 std::string var;
                 std::string value;
 
-                if(!gameconf::splitins(var, value, curr_line))
-                {
-                    perror_disp("incorrect gameconf syntax", false);
-                } else pvars::setgcvars(var, value);
+                if(gameconf::splitins(var, value, curr_line)) {
+                    rtrn_vec.push_back(gcvar_struct {var, value});
+                } else emit_warning("incorrect gameconf syntax");
             }
-
             curr_line.clear();
         }
+        return rtrn_vec;
     }
 }

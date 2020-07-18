@@ -31,25 +31,42 @@ enum class token_type
     OPERATOR,
     EQUAL,
     NOT,
+    HAS,
     STRING,
     NUMBER,
     STRING_ID,
+    ITEM,
     NEWVAR,
+    TEXT,
     EXISTS,
     UNKNOWN,
     UNDEFINED
+};
+
+enum class token_spec_type
+{
+    NONE,
+    PRINT,
+    DISPLAY,
+    SET,
+    GO,
+    CUTSCENE,
+    GET,
+    USE,
+    UNFINISHED
 };
 
 struct Token
 {
     std::string str = "";
     token_type type = token_type::UNDEFINED;
+    token_spec_type spec_type = token_spec_type::NONE;
 };
 
 typedef std::vector<Token> TokenVec;
 
 namespace token
 {
-    TokenVec create_arr(std::string p_str);
+    TokenVec create_arr(std::string const& p_str);
 }
 #endif

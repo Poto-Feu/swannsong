@@ -22,11 +22,12 @@
 #define PARSER_H
 
 #include "room/room.hpp"
+#include "room/RoomManager.hpp"
 
 namespace parser
 {
     int skip_until_end(int blockln);
-    int exec_until_end(int blockln, Room& currentRoom, RoomManager& p_roomman);
+    int exec_until_end(int blockln, roommod::room_struct& p_struct, RoomManager& p_roomman);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }
 

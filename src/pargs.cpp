@@ -17,10 +17,23 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PCONST_HPP
-#define PCONST_HPP
+#include <cstring>
+#include "pargs.hpp"
+#include "files_path.hpp"
+#include "game_error.hpp"
 
-const int P_MAX_BUF_SIZE = 500;
-const int P_MAX_USERINPUT_SIZE = 100;
+namespace pargs
+{
+    void init(int const argc, char* argv[])
+    {
+        auto has_arg = [=](const char* p_arg)
+        {
+            for(int i = 1; i < argc; ++i) {
+                if(!strcmp(p_arg, argv[i])) return true;
+            } return false;
+        };
 
-#endif
+        if(has_arg("-local")) files_path::setlocal();
+        if(has_arg("-debug")) game_error::setdebug();
+    }
+}

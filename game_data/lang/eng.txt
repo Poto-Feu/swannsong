@@ -7,8 +7,20 @@ continue_penter "Press Enter to continue..."
 
 unfinished_str "You have reached one of the unfinished parts of this program. Thank you for playing this work-in-progress game! If you have encountered any issue, feel free to let me know on Github."
 
+# Inventory
+inventory_empty "(empty)"
+inventory_more "(And more...)"
+
+# Room prompt
 room_prompt_text "Your choice: "
 incorrect_input "Eh?"
+room_need_help "Need help ? Simply type \"help"."
+
+#Save/Load
+save_success "Your game was saved!"
+save_failed "The save file integrity could not be verified."
+load_nofile "There is no existing savefile."
+load_corrupted "Savefile is corrupted - this might be due to a read error."
 
 # Rooms
 menu_desc "Menu"
@@ -21,10 +33,15 @@ house_c1 "Take the car"
 house_c2 "Mows the lawn"
 
 # Cutscenes
-
 cs_about_1 "2020 Adrien Saad"
 cs_about_2 "Swannsong Adventure is licensed under GPL v3. See the COPYING file for more information."
-cs_about_3 "This program has been compiled with GNU GCC. The Unix-like version of this program uses ncurses, which is licensed under the MIT X11 license. The Windows version of this program uses PDCurses, which is in the public domain."
+cs_about_3 "This program has been originally compiled with GNU GCC and tested on the latest stable Fedora version available at the time."
 
 cs_welcome_1 "Hej ! So you wanna play Swannsong Adventure, huh ? Well, I'll let you know that this is a qualität game. You won't regret playing it."
 cs_welcome_2 "You play as Vladimir Swann, a regular man who absolutely wants to get the deluxe edition of the soundtrack album of \"Tolstoy and his brothers\". Anyway, I hope that you will appreciate this game made by a student who just started to learn C++ (and who isn't a native english speaker)."
+
+cs_help_intro "Here's a list of the commands that can be entered:"
+cs_help_inv_cmd "inventory (or inv): show inventory"
+cs_help_save_cmd "save: save your progress"
+cs_help_load_cmd "load: load your saved progress"
+cs_help_help_cmd "help: show this screen"

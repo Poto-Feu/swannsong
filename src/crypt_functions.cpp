@@ -17,17 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PVARS_HPP
-#define PVARS_HPP
+#include <openssl/sha.h>
+#include "crypt_functions.hpp"
 
-#include <string>
-
-namespace pvars
+namespace crypt_functions
 {
-    void setstdvars(std::string const p_name, std::string const p_value);
-    void setgcvars(std::string const p_name, std::string const p_value);
-    std::string getstdvars(std::string const p_name);
-    std::string getgcvars(std::string const p_name);
-}
+    SHA1Checksum getSHA1Checksum(std::vector<unsigned char> p_char_vec)
+    {
+        unsigned char hash_array[SHA_DIGEST_LENGTH];
+        SHA1(p_char_vec.data(), p_char_vec.size(), hash_array);
+        SHA1Checksum rtrn_value(hash_array, hash_array + SHA_DIGEST_LENGTH);
 
-#endif
+        return rtrn_value;
+    }
+}

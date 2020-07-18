@@ -32,7 +32,27 @@ Major changes will be documented here. For minor changes such as typos or more d
 * Add a Room choice prompt
 * Create a textual cutscenes system
 
-### Change
+### Changed
 
 * Polish the textual UI
 * Refactor most modules into C++
+
+## v0.2 - 2020-07-18
+
+### Added
+
+* Create a savefile system
+* Display a help screen which explains what commands are available
+* Add conditions, inventory and gvars functions in interpreter
+* Add an inventory screen
+* Add debug logs
+* Experimental : Add install command in CMake for Unix-like systems
+
+### Changed
+
+* Divide Room class into several classes
+* Use a display server instead of direct curses calls
+
+### Removed
+
+* Remove pvars

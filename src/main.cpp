@@ -17,12 +17,14 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "init.h"
+#include "init.hpp"
 #include "exitgame.h"
+#include "pargs.hpp"
 
-int main (void)
+int main (int argc, char *argv[])
 {
-    init_game();
+    pargs::init(argc, argv);
+    init::start_game();
     exitgame(0);
 
     return 0;

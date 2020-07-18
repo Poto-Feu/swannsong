@@ -11,3 +11,12 @@ welcome
     PAUSE
     cs_welcome_2
 END
+
+help
+    cs_help_intro
+    BLANK
+    cs_help_inv_cmd
+    cs_help_save_cmd
+    cs_help_load_cmd
+    cs_help_help_cmd
+END

@@ -17,59 +17,45 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include "perror.h"
-}
-
-#include <cstdint>
-#include <vector>
+#include <algorithm>
 #include "vars/intvar.hpp"
+#include "game_error.hpp"
 
 namespace intvarm
 {
-    /*Add an intvar into an std::vector<intvar>*/
-    void add_var_to_arr(std::vector<intvar>& p_arr, intvar p_var)
+    //Return a constant iterator
+    auto return_it(std::string const& p_name, std::vector<intvar>& p_vec)
     {
-        p_arr.push_back(p_var);
+        return std::find_if(p_vec.begin(), p_vec.end(), [p_name](intvar const& cvar) {
+                return cvar.name == p_name;
+                });
     }
 
-    /*Fetch the index of the specified intvar - returns false if not found*/
-    bool search_ind(int& p_ind, std::string p_name,
-            std::vector<intvar>& p_arr)
+    //Add an intvar into an std::vector<intvar>
+    void add_var_to_arr(std::vector<intvar>& p_vec, intvar& p_var)
     {
-        int i = 0;
-        bool isfnd = false;
-        std::string str_name(p_name);
+        p_vec.push_back(p_var);
+    }
 
-        p_ind = -1;
+    //Return the value of the intvar on the specified index
+    intvar_type return_value(std::string const& p_name, std::vector<intvar>& p_vec)
+    {
+        int rtrn_val = -1;
+        auto it = return_it(p_name, p_vec);
 
-        for(auto& x : p_arr)
-        {
-            if(x.name == str_name)
-            {
-                p_ind = i;
-                isfnd = true;
-                break;
-            }
+        if(it != p_vec.end()) {
+            rtrn_val = it->val;
         }
 
-        return isfnd;
+        return rtrn_val;
     }
 
-    /*Return the value of the intvar on the specified index*/
-    int return_value(int p_ind, std::vector<intvar>& p_vec)
+    //Set the value of the specified intvar
+    void set_value(intvar_type p_val, std::string const& p_name, std::vector<intvar>& p_vec)
     {
-        if(p_ind >= static_cast<int>(p_vec.size()))
-        {
-            perror_disp("OOR_ARR_INDEX", true);
-            return -1;
-        } else return p_vec[p_ind].val;
-       
-    }
+        auto it = return_it(p_name, p_vec);
 
-    /*Set the value of the specified intvar*/
-    void set_value(int p_val, int p_ind, std::vector<intvar>& p_arr)
-    {
-        p_arr[p_ind].val = p_val;
+        if(it != p_vec.end()) it->val = p_val;
+        else game_error::fatal_error("game var does not exists (" + p_name + ")");
     }
 }

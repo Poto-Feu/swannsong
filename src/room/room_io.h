@@ -20,14 +20,15 @@
 #ifndef ROOM_IO_H
 #define ROOM_IO_H
 
+#include <filesystem>
 #include <string>
 
 bool roomio_find_ind(int& f_ln, std::string p_ln);
 
 namespace roomio
 {
-    void copy_file_to_vec();
-    bool find_ind(int& f_ln, std::string const p_ln);
+    void copy_file_to_vec(std::string const& roomfile, std::filesystem::path const& data_path);
+    bool find_ind(int& f_ln, std::string const& p_ln);
     bool fetch_ln(std::string& p_ln, int ind);
 }
 

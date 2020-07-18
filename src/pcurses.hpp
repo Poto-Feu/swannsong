@@ -20,39 +20,32 @@
 #ifndef PCURSES_H
 #define PCURSES_H
 
+extern "C" {
+#include <curses.h>
+}
+
 #include <string>
 #include <vector>
-
-struct pcur_str
-{
-    pcur_str(std::string p_str) : str(p_str) { }
-
-    int x;
-    std::string str;
-};
-
-struct pcur_struct
-{
-    pcur_struct(std::string p_str, int p_y) : starty(p_y), full_str(p_str) { }
-
-    int starty;
-    std::string full_str;
-    std::vector<pcur_str> vec;
-};
+#include "display_server.hpp"
 
 namespace pcurses
 {
     const int top_margin = 3;
     const int choice_space = 8;
+    const int prompt_space = 12;
 
     extern int margin;
     extern int title_y;
-    extern unsigned int lines;
-    extern unsigned int cols;
+    extern int lines;
+    extern int cols;
 
     int find_centered_x(std::string& p_str);
-    void display_pos_string(std::string p_str, unsigned int x_space);
-    void display_center_string(std::string const& p_str);
+    void display_pos_string(std::string p_str, int x_space, int startline = getcury(stdscr),
+            int p_attr = display_server::NULL_ATTR);
+    void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
+            int p_attr = display_server::NULL_ATTR);
+
+    void display_penter_message();
 }
 
 #endif

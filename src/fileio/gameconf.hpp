@@ -20,9 +20,18 @@
 #ifndef GAMECONF_H
 #define GAMECONF_H
 
+#include <filesystem>
+#include <string>
+#include <vector>
+
 namespace gameconf
 {
-    void readfile();
+    struct gcvar_struct {
+        std::string name;
+        std::string value;
+    };
+
+    std::vector<gcvar_struct> readfile(std::filesystem::path const& data_path);
 }
 
 #endif

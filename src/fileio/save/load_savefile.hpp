@@ -17,12 +17,15 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef LOAD_SAVEFILE_HPP
+#define LOAD_SAVEFILE_HPP
 
-#ifndef PERROR_H
-#define PERROR_H
+#include "fileio/save/LoadedFile.hpp"
 
-#include <stdbool.h>
-
-void perror_disp(const char* id, bool fatal);
+namespace load_savefile
+{
+    //Start the loading operations
+    LoadedFile_data start_loading();
+}
 
 #endif
