@@ -38,6 +38,15 @@ There is also a Makefile available for GNU Make (this is the default make on mos
 #### Windows
 TO-DO
 
+Please note that the Windows version is tested with Wine.
+
+
+## Usage
+
+### Command-line arguments
+* `-local`: fetch the game data from the current folder
+* `-debug`: enable warning and error logs (mainly for developers)
+
 
 ## Roadmap
 * Refactor some parts of the source code
