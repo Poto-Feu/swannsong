@@ -79,7 +79,8 @@ static void add_inventory_chunks(std::vector<SaveChunk>& chunks_vector)
         auto itemval_chk_vec = itemval_chk.getChunkAsVector();
 
         chunks_vector.push_back(
-                SaveChunk(chunk_type::INVITEM, { itemnam_chk_vec, itemval_chk_vec })
+                SaveChunk(chunk_type::INVITEM,
+                    std::vector<saveFileBufferVector>{ itemnam_chk_vec, itemval_chk_vec })
                 );
     }
 
@@ -96,7 +97,8 @@ static void add_gvars_chunks(std::vector<SaveChunk>& chunks_vector)
         auto pvarval_chk_vec = pvarval_chk.getChunkAsVector();
 
         chunks_vector.push_back(
-                SaveChunk(chunk_type::PVARIAB, { pvarnam_chk_vec, pvarval_chk_vec })
+                SaveChunk(chunk_type::PVARIAB,
+                    std::vector<saveFileBufferVector>{ pvarnam_chk_vec, pvarval_chk_vec })
                 );
     }
 }
