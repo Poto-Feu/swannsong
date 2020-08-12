@@ -17,14 +17,24 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef INIT_HPP
-#define INIT_HPP
+#pragma once
 
-#include "files_path.hpp"
+#include <filesystem>
+#include <string>
 
-namespace init
+class Game
 {
-    void start_game();
-}
+    public:
 
-#endif
+        ~Game();
+        void init();
+        void run();
+
+    private:
+
+        std::string m_start_room;
+        bool m_is_ready = true;
+
+        void missing_gcvar(std::string const& p_name);
+        auto fetch_gameconf_vars(std::filesystem::path const& system_data_path);
+};

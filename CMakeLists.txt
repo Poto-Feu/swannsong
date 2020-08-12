@@ -63,8 +63,8 @@ add_executable(swannsongadv
     src/display_server.cpp
     src/exitgame.cpp
     src/files_path.cpp
+    src/Game.cpp
     src/game_error.cpp
-    src/init.cpp
     src/inventory.cpp
     src/lang.cpp
     src/pargs.cpp
