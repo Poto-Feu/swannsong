@@ -20,6 +20,7 @@
 #include "room/RoomClass.hpp"
 #include "room/interpreter/parser.hpp"
 #include "room/find.hpp"
+#include "room/room_struct.hpp"
 #include "fileio/save/load_savefile.hpp"
 #include "fileio/save/save_file.hpp"
 #include "cutscenes.hpp"
@@ -73,7 +74,7 @@ static void show_prompt()
 }
 
 //Read the first ATLAUNCH block encountered starting from specified line
-static bool atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
+static bool atlaunch(room_struct& p_struct)
 {
     int foundln = 0;
     bool atlfound = false;
@@ -82,7 +83,7 @@ static bool atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
 
     if(atlfound) {
         p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
-        (void)parser::exec_until_end(foundln, p_struct, p_rmm);
+        (void)parser::exec_until_end(foundln, p_struct);
         p_struct.currState.displayAll(p_struct.currRoom);
         show_prompt();
         display_server::show_screen();
@@ -113,12 +114,11 @@ static void incorrect_input(unsigned int& incorrect_input_n)
 }
 
 //Show the room prompt and process the input
-bool process_input(roommod::room_struct p_struct, RoomManager& p_rmm) {
+static bool process_input(room_struct p_struct) {
     bool correct_input = false;
+    unsigned int incorrect_input_n = 0;
 
     display_server::save_screen();
-
-    unsigned int incorrect_input_n = 0;
 
     while(!correct_input) {
         std::string user_inp = stringsm::to_lower(userio::gettextinput(9));
@@ -135,20 +135,20 @@ bool process_input(roommod::room_struct p_struct, RoomManager& p_rmm) {
                 unsigned int choice_ln = p_struct.currState.getChoiceLine(str_digit);
 
                 p_struct.currState.setBlockType(RoomState::bt::CHOICE);
-                parser::exec_until_end(choice_ln, p_struct, p_rmm);
+                parser::exec_until_end(choice_ln, p_struct);
                 p_struct.currState.displayCutscenes();
-                if(p_rmm.is_endgame()) return true;
+                if(p_struct.currLoopState.is_endgame()) return true;
                 else correct_input = true;
             }
         } else if(user_inp == "exit") {
             correct_input = true;
-            p_rmm.endLoop();
+            p_struct.currLoopState.endLoop();
         } else if(user_inp == "load") {
             correct_input = true;
             auto save_data = load_savefile::start_loading();
 
             if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
-                p_rmm.setNextRoom(save_data.room);
+                p_struct.currLoopState.setNextRoom(save_data.room);
                 inventory::replace_vector(save_data.gitem_vector);
                 gvars::replace_vector(save_data.gvar_vector);
             }
@@ -166,16 +166,16 @@ bool process_input(roommod::room_struct p_struct, RoomManager& p_rmm) {
     return true;
 }
 
-bool Room::load(RoomManager& p_rmm)
+bool Room::load(RoomLoopState& p_rls)
 {
     RoomState currentState;
-    roommod::room_struct p_struct { *this, currentState };
+    room_struct p_struct { *this, currentState, p_rls };
 
     display_server::clear_screen();
-    p_rmm.setNextRoom(name);
-    if(!atlaunch(p_struct, p_rmm)) return false;
-    else if(!p_rmm.is_endgame() && !p_rmm.is_unfinished()) {
-        process_input(p_struct, p_rmm);
+    p_rls.setNextRoom(name);
+    if(!atlaunch(p_struct)) return false;
+    else if(!p_rls.is_endgame() && !p_rls.is_unfinished()) {
+        process_input(p_struct);
     }
 
     return true;

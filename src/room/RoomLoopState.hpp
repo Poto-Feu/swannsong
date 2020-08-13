@@ -17,22 +17,30 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOM_HPP
-#define ROOM_HPP
+#pragma once
 
 #include <string>
-#include "room/RoomClass.hpp"
-#include "RoomState.hpp"
 
-namespace roommod
+class RoomLoopState
 {
-    struct room_struct
-    {
-        Room currRoom;
-        RoomState currState;
-    };
+    public:
 
-    void start_loop(std::string const& id);
-}
+        //Stop the game room loop
+        void endLoop();
+        //Set the state of the game as unfinished
+        void setUnfinished();
+        //Set the room in which the player will spawn at the next loop iteration
+        void setNextRoom(std::string const& p_id);
 
-#endif
+        std::string getNextRoom() const;
+
+        bool is_endgame() const;
+        bool is_unfinished() const;
+
+    private:
+
+        bool m_endgame = false;
+        bool m_unfinished = false;
+
+        std::string m_next_room;
+};

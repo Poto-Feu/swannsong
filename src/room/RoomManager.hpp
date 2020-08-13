@@ -20,32 +20,24 @@
 #ifndef ROOM_MANAGER_HPP
 #define ROOM_MANAGER_HPP
 
+#include <unordered_map>
 #include <string>
+
+#include "room/RoomClass.hpp"
+#include "room/RoomLoopState.hpp"
+#include "room/RoomState.hpp"
 
 class RoomManager
 {
     public:
 
-        RoomManager();
-
-        //Stop the game room loop
-        void endLoop();
-        //Set the state of the game as unfinished
-        void setUnfinished();
-        //Set the room in which the player will spawn at the next loop iteration
-        void setNextRoom(std::string const& p_id);
-
-        std::string getNextRoom() const;
-
-        bool is_endgame() const;
-        bool is_unfinished() const;
+        //Start the game loop which loads rooms until the end signal is enabled
+        void startLoop(std::string const& start_room);
 
     private:
 
-        bool endgame = false;
-        bool unfinished = false;
-
-        std::string next_room;
+        std::unordered_map<std::string, Room> m_room_map;
+        RoomLoopState m_rls;
 };
 
 #endif

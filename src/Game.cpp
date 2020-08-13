@@ -21,8 +21,8 @@
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
-#include "room/room.hpp"
 #include "room/room_io.h"
+#include "room/RoomManager.hpp"
 #include "cutscenes.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
@@ -201,6 +201,7 @@ void Game::init()
 
 void Game::run()
 {
-    if(m_is_ready) roommod::start_loop(std::move(m_start_room));
+    RoomManager rmm;
+    if(m_is_ready) rmm.startLoop(m_start_room);
     else game_error::fatal_error("Game was not initialized");
 }

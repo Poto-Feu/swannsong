@@ -58,12 +58,12 @@ namespace parser
     }
 
     //Interpret a line which use the DISPLAY function
-    static void interp_DISPLAY_func(TokenVec r_vec, roommod::room_struct& p_struct)
+    static void interp_DISPLAY_func(TokenVec r_vec, room_struct& p_struct)
     {
         if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
 
         //Add all room choices into a vector in the RoomManager
-        auto add_all_choices = [](int roomln, roommod::room_struct& p_struct)
+        auto add_all_choices = [](int roomln, room_struct& p_struct)
         {
             int choicesln = 0;
             bool choicesremain = true;
@@ -132,7 +132,7 @@ namespace parser
     }
 
     //Intepret a line which use the GO function
-    static void interp_GO_func(TokenVec const& r_vec, RoomManager& p_roomman)
+    static void interp_GO_func(TokenVec const& r_vec, RoomLoopState& p_rls)
     {
         if(r_vec.size() != 2) wrg_tkn_num("GO");
         else {
@@ -140,16 +140,16 @@ namespace parser
 
             if(!room_find::roomline(&roomln, r_vec[1].str)) {
                 game_error::fatal_error("\"" + r_vec[1].str + "\" room was not found");
-            } else p_roomman.setNextRoom(r_vec[1].str);
+            } else p_rls.setNextRoom(r_vec[1].str);
         }
     }
 
     /*Interpret a line which use the UNFINISHED function, which tells the player they have reached
     an unfinished part of the program*/
-    static void interp_UNFINISHED_func(TokenVec const& r_vec, RoomManager& p_rmm)
+    static void interp_UNFINISHED_func(TokenVec const& r_vec, RoomLoopState& p_rls)
     {
         if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
-        p_rmm.setUnfinished();
+        p_rls.setUnfinished();
     }
 
     //Interpret a line which use the GET function, which add an item to the player's inventory
@@ -279,8 +279,7 @@ namespace parser
     }
 
     //Interpret a line which uses a function
-    static void interp_func_ins(TokenVec r_vec, roommod::room_struct& p_struct,
-            RoomManager& p_roomman)
+    static void interp_func_ins(TokenVec r_vec, room_struct& p_struct)
     {
         switch(r_vec[0].spec_type)
         {
@@ -297,10 +296,10 @@ namespace parser
                 interp_CUTSCENE_func(r_vec, p_struct.currState);
                 break;
             case token_spec_type::GO:
-                interp_GO_func(r_vec, p_roomman);
+                interp_GO_func(r_vec, p_struct.currLoopState);
                 break;
             case token_spec_type::UNFINISHED:
-                interp_UNFINISHED_func(r_vec, p_roomman);
+                interp_UNFINISHED_func(r_vec, p_struct.currLoopState);
                 break;
             case token_spec_type::GET:
                 interp_GET_func(r_vec);
@@ -315,12 +314,11 @@ namespace parser
     }
 
     //Interpret a line depending on its first token
-    static void interp_ins(TokenVec r_vec, roommod::room_struct& p_struct,
-            RoomManager& p_roomman)
+    static void interp_ins(TokenVec r_vec, room_struct& p_struct)
     {
         switch(r_vec[0].type) {
             case token_type::FUNCTION:
-                interp_func_ins(r_vec, p_struct, p_roomman);
+                interp_func_ins(r_vec, p_struct);
                 break;
             case token_type::VARIABLE:
                 interp_gvar_ins(r_vec);
@@ -332,11 +330,10 @@ namespace parser
         }
     }
 
-    static void parser_execins(std::string p_line, roommod::room_struct& p_struct,
-            RoomManager& p_roomman)
+    static void parser_execins(std::string p_line, room_struct& p_struct)
     {
         TokenVec r_vec = token::create_arr(p_line);
-        interp_ins(r_vec, p_struct, p_roomman);
+        interp_ins(r_vec, p_struct);
     }
 
     /*Check if the condition comparing the number of items with the specifed parameter equals to
@@ -465,14 +462,14 @@ namespace parser
     }
 
     //Execute instructions until the end of the block
-    int exec_until_end(int blockln, roommod::room_struct& p_struct, RoomManager& p_roomman)
+    int exec_until_end(int blockln, room_struct& p_struct)
     {
         bool is_end = false;
         int startln = blockln + 1;
         int endln = startln;
 
-        for(int i = startln; !is_end && !p_roomman.is_unfinished(); i++) {
-            if(p_roomman.is_endgame()) break;
+        for(int i = startln; !is_end && !p_struct.currLoopState.is_unfinished(); i++) {
+            if(p_struct.currLoopState.is_endgame()) break;
             endln = i;
             std::string buf;
             roomio::fetch_ln(buf, i);
@@ -480,10 +477,10 @@ namespace parser
 
             if(fw == "END") is_end = true;
             else if(fw == "IF") {
-                if(check_condition(buf)) i = exec_until_end(i, p_struct, p_roomman);
+                if(check_condition(buf)) i = exec_until_end(i, p_struct);
                 else i = parser::skip_until_end(i);
             } else if(fw == "TEXT") continue;
-            else parser_execins(buf, p_struct, p_roomman);
+            else parser_execins(buf, p_struct);
         } return endln;
     }
 }

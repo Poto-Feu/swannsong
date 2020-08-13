@@ -22,6 +22,7 @@
 
 #include <string>
 #include <vector>
+
 #include "room/Choice.hpp"
 #include "room/RoomClass.hpp"
 

@@ -49,10 +49,10 @@ add_executable(swannsongadv
     src/room/interpreter/token.cpp
     src/room/Choice.cpp
     src/room/RoomClass.cpp
+    src/room/RoomLoopState.cpp
     src/room/RoomManager.cpp
     src/room/RoomState.cpp
     src/room/find.cpp
-    src/room/room.cpp
     src/room/room_io.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp

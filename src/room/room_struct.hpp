@@ -17,17 +17,15 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#pragma once
 
-#ifndef PARSER_H
-#define PARSER_H
+#include "room/RoomClass.hpp"
+#include "room/RoomState.hpp"
 
-#include "room/room_struct.hpp"
-
-namespace parser
+struct room_struct
 {
-    int skip_until_end(int blockln);
-    int exec_until_end(int blockln, room_struct& p_struct);
-    bool splitline(std::string& type, std::string& arg, std::string ins);
-}
+    Room currRoom;
+    RoomState currState;
+    RoomLoopState& currLoopState;
+};
 
-#endif

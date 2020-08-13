@@ -21,7 +21,8 @@
 #define ROOMCLASS_HPP
 
 #include <string>
-#include "room/RoomManager.hpp"
+
+#include "room/RoomLoopState.hpp"
 
 class Room 
 {
@@ -41,7 +42,7 @@ class Room
         void setRoomLine(int rln);
         void setChoicesLine(int chln);
 
-        bool load(RoomManager& p_rmm);
+        bool load(RoomLoopState& p_rls);
 
     private:
 

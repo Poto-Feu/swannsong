@@ -17,37 +17,41 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "RoomManager.hpp"
+#include "room/RoomManager.hpp"
+#include "room/find.hpp"
+#include "display_server.hpp"
+#include "pcurses.hpp"
+#include "pstrings.h"
 
-RoomManager::RoomManager() { }
-
-//Set the variable which serve as a signal indicating if the room loop should end
-void RoomManager::endLoop()
+static void unfinished_game()
 {
-    endgame = true;
+    display_server::clear_screen();
+    pcurses::display_center_string(pstrings::fetch("unfinished_str"), pcurses::top_margin);
 }
 
-void RoomManager::setNextRoom(std::string const& p_id)
+void RoomManager::startLoop(std::string const& start_room)
 {
-    next_room = p_id;
-}
+    std::string curr_room_id = start_room;
 
-void RoomManager::setUnfinished()
-{
-    unfinished = true;
-}
+    while(!m_rls.is_endgame() && !m_rls.is_unfinished()) {
+        bool room_fnd = false;
+        Room currentRoom;
 
-std::string RoomManager::getNextRoom() const
-{
-    return next_room;
-}
+        auto room_it = m_room_map.find(curr_room_id.c_str());
 
-bool RoomManager::is_endgame() const
-{
-    return endgame;
-}
+        if(room_it != m_room_map.cend()) {
+            room_fnd = true;
+            currentRoom = room_it->second;
+        } else {
+            currentRoom = Room(curr_room_id);
+            currentRoom.setRoomLine(room_find::roomline(curr_room_id));
+        }
 
-bool RoomManager::is_unfinished() const
-{
-    return unfinished;
+        if(!currentRoom.load(m_rls)) break;
+        else if(!room_fnd) m_room_map.insert({currentRoom.getName(), std::move(currentRoom)});
+
+        if(!m_rls.is_endgame() && !m_rls.is_unfinished()) curr_room_id = m_rls.getNextRoom();
+    }
+    display_server::clear_screen();
+    if(m_rls.is_unfinished()) unfinished_game();
 }

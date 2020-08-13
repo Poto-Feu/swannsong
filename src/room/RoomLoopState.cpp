@@ -17,17 +17,34 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "room/RoomLoopState.hpp"
 
-#ifndef PARSER_H
-#define PARSER_H
-
-#include "room/room_struct.hpp"
-
-namespace parser
+void RoomLoopState::endLoop()
 {
-    int skip_until_end(int blockln);
-    int exec_until_end(int blockln, room_struct& p_struct);
-    bool splitline(std::string& type, std::string& arg, std::string ins);
+    m_endgame = true;
 }
 
-#endif
+void RoomLoopState::setNextRoom(std::string const& p_id)
+{
+    m_next_room = p_id;
+}
+
+void RoomLoopState::setUnfinished()
+{
+    m_unfinished = true;
+}
+
+std::string RoomLoopState::getNextRoom() const
+{
+    return m_next_room;
+}
+
+bool RoomLoopState::is_endgame() const
+{
+    return m_endgame;
+}
+
+bool RoomLoopState::is_unfinished() const
+{
+    return m_unfinished;
+}
