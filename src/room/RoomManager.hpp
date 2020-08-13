@@ -28,9 +28,11 @@ class RoomManager
 
         RoomManager();
 
+        //Stop the game room loop
         void endLoop();
-
+        //Set the state of the game as unfinished
         void setUnfinished();
+        //Set the room in which the player will spawn at the next loop iteration
         void setNextRoom(std::string const& p_id);
 
         std::string getNextRoom() const;
