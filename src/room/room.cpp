@@ -21,7 +21,6 @@
 #include "room.hpp"
 #include "find.hpp"
 #include "RoomManager.hpp"
-#include "exitgame.h"
 #include "pcurses.hpp"
 #include "pstrings.h"
 
@@ -40,9 +39,9 @@ namespace roommod
         RoomManager rmm;
 
         while(!rmm.is_endgame() && !rmm.is_unfinished()) {
-            static std::unordered_map<std::string, std::shared_ptr<Room>> room_map;
+            static std::unordered_map<std::string, Room> room_map;
             bool room_fnd = false;
-            std::shared_ptr<Room> currentRoom;
+            Room currentRoom;
 
             auto room_it = room_map.find(curr_room_id.c_str());
 
@@ -50,16 +49,16 @@ namespace roommod
                 room_fnd = true;
                 currentRoom = room_it->second;
             } else {
-                currentRoom = std::make_shared<Room>(curr_room_id);
-                currentRoom->setRoomLine(room_find::roomline(curr_room_id));
+                currentRoom = Room(curr_room_id);
+                currentRoom.setRoomLine(room_find::roomline(curr_room_id));
             }
 
-            if(!room_fnd) room_map.insert({currentRoom->getName(), currentRoom});
-            currentRoom->load(rmm);
-            curr_room_id = rmm.getNextRoom();
+            if(!currentRoom.load(rmm)) break;
+            else if(!room_fnd) room_map.insert({currentRoom.getName(), std::move(currentRoom)});
+
+            if(!rmm.is_endgame() && !rmm.is_unfinished()) curr_room_id = rmm.getNextRoom();
         }
         display_server::clear_screen();
         if(rmm.is_unfinished()) unfinished_game();
-        exitgame(0);
     }
 }

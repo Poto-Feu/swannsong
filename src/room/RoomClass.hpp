@@ -41,7 +41,7 @@ class Room
         void setRoomLine(int rln);
         void setChoicesLine(int chln);
 
-        void load(RoomManager& p_rmm);
+        bool load(RoomManager& p_rmm);
 
     private:
 

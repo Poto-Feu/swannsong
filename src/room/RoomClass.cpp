@@ -23,7 +23,6 @@
 #include "fileio/save/load_savefile.hpp"
 #include "fileio/save/save_file.hpp"
 #include "cutscenes.hpp"
-#include "exitgame.h"
 #include "game_error.hpp"
 #include "inventory.hpp"
 #include "pcurses.hpp"
@@ -65,8 +64,16 @@ void Room::setChoicesLine(int chln)
     choices_line = chln;
 }
 
+static void show_prompt()
+{
+    int str_line = display_server::get_last_line() + 2;
+
+    if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
+    pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
+}
+
 //Read the first ATLAUNCH block encountered starting from specified line
-static void atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
+static bool atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
 {
     int foundln = 0;
     bool atlfound = false;
@@ -74,21 +81,15 @@ static void atlaunch(roommod::room_struct& p_struct, RoomManager& p_rmm)
     atlfound = room_find::atlaunchline(foundln, p_struct.currRoom.getRoomLine());
 
     if(atlfound) {
-        auto show_prompt = []()
-        {
-            int str_line = display_server::get_last_line() + 2;
-
-            if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
-            pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
-        };
-
         p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
         (void)parser::exec_until_end(foundln, p_struct, p_rmm);
         p_struct.currState.displayAll(p_struct.currRoom);
         show_prompt();
         display_server::show_screen();
+        return true;
     } else {
         game_error::fatal_error("missing ATLAUNCH block (" + p_struct.currRoom.getName() + ")");
+        return false;
     }
 }
 
@@ -111,75 +112,71 @@ static void incorrect_input(unsigned int& incorrect_input_n)
     }
 }
 
-void Room::load(RoomManager& p_rmm)
+//Show the room prompt and process the input
+bool process_input(roommod::room_struct p_struct, RoomManager& p_rmm) {
+    bool correct_input = false;
+
+    display_server::save_screen();
+
+    unsigned int incorrect_input_n = 0;
+
+    while(!correct_input) {
+        std::string user_inp = stringsm::to_lower(userio::gettextinput(9));
+
+        display_server::clear_screen();
+
+        if(stringsm::is_number(user_inp)) {
+            unsigned int str_digit = std::stoi(user_inp);
+            unsigned int choices_n = p_struct.currState.getChoicesSize();
+
+            if(str_digit > choices_n || str_digit == 0) incorrect_input(incorrect_input_n);
+            else {
+                //Process the input if it is a number corresponding to a choice
+                unsigned int choice_ln = p_struct.currState.getChoiceLine(str_digit);
+
+                p_struct.currState.setBlockType(RoomState::bt::CHOICE);
+                parser::exec_until_end(choice_ln, p_struct, p_rmm);
+                p_struct.currState.displayCutscenes();
+                if(p_rmm.is_endgame()) return true;
+                else correct_input = true;
+            }
+        } else if(user_inp == "exit") {
+            correct_input = true;
+            p_rmm.endLoop();
+        } else if(user_inp == "load") {
+            correct_input = true;
+            auto save_data = load_savefile::start_loading();
+
+            if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
+                p_rmm.setNextRoom(save_data.room);
+                inventory::replace_vector(save_data.gitem_vector);
+                gvars::replace_vector(save_data.gvar_vector);
+            }
+        } else if(user_inp == "save") {
+            correct_input = true;
+            save_file::start_saving({p_struct.currRoom.getName()});
+        } else if(user_inp == "help") {
+            correct_input = true;
+            cutscenes::display("help");
+        } else if(user_inp == "inv" || user_inp == "inventory") {
+            correct_input = true;
+            inventory::display_screen();
+        } else incorrect_input(incorrect_input_n);
+    }
+    return true;
+}
+
+bool Room::load(RoomManager& p_rmm)
 {
     RoomState currentState;
-
-    //Show the room prompt and process the input
-    auto process_input = [this](roommod::room_struct p_struct, RoomManager& p_rmm) {
-        bool correct_input = false;
-
-        display_server::save_screen();
-
-        unsigned int incorrect_input_n = 0;
-
-        while(!correct_input) {
-            std::string user_inp = stringsm::to_lower(userio::gettextinput(9));
-
-            display_server::clear_screen();
-
-            if(stringsm::is_number(user_inp)) {
-                unsigned int str_digit = std::stoi(user_inp);
-                unsigned int choices_n = p_struct.currState.getChoicesSize();
-
-                if(str_digit > choices_n || str_digit == 0) incorrect_input(incorrect_input_n);
-                else {
-                    //Process the input if it is a number corresponding to a choice
-                    auto choice_input = [=, &p_struct, &p_rmm]()
-                    {
-                        unsigned int choice_ln = p_struct.currState.getChoiceLine(str_digit);
-
-                        p_struct.currState.setBlockType(RoomState::bt::CHOICE);
-                        parser::exec_until_end(choice_ln, p_struct, p_rmm);
-                        p_struct.currState.displayCutscenes();
-                        if(p_rmm.is_endgame()) exitgame(0);
-                    };
-
-                    correct_input = true;
-                    choice_input();
-                }
-            } else if(user_inp == "exit") {
-                correct_input = true;
-                direct_exit(0);
-            } else if(user_inp == "load") {
-                correct_input = true;
-                auto save_data = load_savefile::start_loading();
-
-                if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
-                    p_rmm.setNextRoom(save_data.room);
-                    inventory::replace_vector(save_data.gitem_vector);
-                    gvars::replace_vector(save_data.gvar_vector);
-                }
-            } else if(user_inp == "save") {
-                correct_input = true;
-                save_file::start_saving({this->name});
-            } else if(user_inp == "help") {
-                correct_input = true;
-                cutscenes::display("help");
-            } else if(user_inp == "inv" || user_inp == "inventory") {
-                correct_input = true;
-                inventory::display_screen();
-            } else incorrect_input(incorrect_input_n);
-        }
-    };
-
     roommod::room_struct p_struct { *this, currentState };
 
     display_server::clear_screen();
     p_rmm.setNextRoom(name);
-    atlaunch(p_struct, p_rmm);
+    if(!atlaunch(p_struct, p_rmm)) return false;
+    else if(!p_rmm.is_endgame() && !p_rmm.is_unfinished()) {
+        process_input(p_struct, p_rmm);
+    }
 
-    if(p_rmm.is_endgame() || p_rmm.is_unfinished()) return;
-
-    process_input(p_struct, p_rmm);
+    return true;
 }

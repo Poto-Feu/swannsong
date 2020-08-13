@@ -21,7 +21,7 @@
 #define ROOM_HPP
 
 #include <string>
-#include "RoomClass.hpp"
+#include "room/RoomClass.hpp"
 #include "RoomState.hpp"
 
 namespace roommod
