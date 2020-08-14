@@ -18,6 +18,7 @@
 */
 
 #include <algorithm>
+#include <array>
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
