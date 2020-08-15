@@ -129,6 +129,4 @@ add_custom_command(TARGET swannsongadv POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/licenses/
         ${CMAKE_CURRENT_BINARY_DIR}/licenses/)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-endif()
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
