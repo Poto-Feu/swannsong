@@ -17,19 +17,21 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SAVEFILE_HPP
-#define SAVEFILE_HPP
+#pragma once
 
 #include <cstdint>
 #include <fstream>
 #include <filesystem>
+
 #include "fileio/save/SaveChunk.hpp"
 #include "fileio/save/SaveFileBuffer.hpp"
+#include "player/Player.hpp"
 
 struct SaveFile_data
 {
     std::string save_name;
     std::string room_name;
+    Player player_data;
 };
 
 class SaveFile
@@ -67,5 +69,3 @@ class SaveFile
 
         void write_chunk(SaveChunk p_chunk);
 };
-
-#endif

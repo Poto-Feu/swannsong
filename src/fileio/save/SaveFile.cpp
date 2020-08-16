@@ -23,7 +23,7 @@
 #include "display_server.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "inventory.hpp"
+#include "player/inventory.hpp"
 
 using namespace save_const;
 
@@ -68,11 +68,10 @@ void SaveFile::add_header()
     file_buffer.appendNumber(save_const::MINOR_VERSION);
 }
 
-static void add_inventory_chunks(std::vector<SaveChunk>& chunks_vector)
+static void add_inventory_chunks(inventory::Inventory const& p_inv,
+        std::vector<SaveChunk>& chunks_vector)
 {
-    auto inventory_vec = inventory::get_inventory_vector();
-
-    for(auto const& it : inventory_vec) {
+    for(auto const& it : p_inv) {
         SaveChunk itemnam_chk(chunk_type::ITEMNAM, it.name);
         SaveChunk itemval_chk(chunk_type::ITEMVAL, it.val);
         auto itemnam_chk_vec = itemnam_chk.getChunkAsVector();
@@ -83,7 +82,6 @@ static void add_inventory_chunks(std::vector<SaveChunk>& chunks_vector)
                     std::vector<saveFileBufferVector>{ itemnam_chk_vec, itemval_chk_vec })
                 );
     }
-
 }
 
 static void add_gvars_chunks(std::vector<SaveChunk>& chunks_vector)
@@ -110,7 +108,7 @@ void SaveFile::add_chunks(SaveFile_data const& p_data)
         SaveChunk(chunk_type::CURROOM, p_data.room_name)
     };
 
-    add_inventory_chunks(chunks_vector);
+    add_inventory_chunks(p_data.player_data.inv, chunks_vector);
     add_gvars_chunks(chunks_vector);
 
     for(auto& it : chunks_vector) write_chunk(it);

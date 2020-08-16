@@ -17,12 +17,12 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOM_MANAGER_HPP
-#define ROOM_MANAGER_HPP
+#pragma once
 
 #include <unordered_map>
 #include <string>
 
+#include "player/Player.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
 #include "room/RoomState.hpp"
@@ -38,6 +38,5 @@ class RoomManager
 
         std::unordered_map<std::string, Room> m_room_map;
         RoomLoopState m_rls;
+        Player m_player;
 };
-
-#endif

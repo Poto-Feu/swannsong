@@ -17,8 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef LOADEDFILE_HPP
-#define LOADEDFILE_HPP
+#pragma once
 
 #include <filesystem>
 #include <string>
@@ -26,7 +25,7 @@
 #include "fileio/save/SaveFileBuffer.hpp"
 #include "fileio/save/save_const.hpp"
 #include "vars/gvars.hpp"
-#include "inventory.hpp"
+#include "player/inventory.hpp"
 
 struct LoadedFile_data
 {
@@ -38,8 +37,7 @@ struct LoadedFile_data
     bool is_corrupted = false;
     std::string room;
     gvars::gvarVector gvar_vector;
-    inventory::gitemVector gitem_vector;
-
+    inventory::Inventory inv;
 };
 
 class LoadedFile
@@ -88,5 +86,3 @@ class LoadedFile
         //Interpret the content of an INVITEM chunk
         bool INVITEM_chunk();
 };
-
-#endif

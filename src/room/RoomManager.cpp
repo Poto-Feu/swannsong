@@ -47,7 +47,7 @@ void RoomManager::startLoop(std::string const& start_room)
             currentRoom.setRoomLine(room_find::roomline(curr_room_id));
         }
 
-        if(!currentRoom.load(m_rls)) break;
+        if(!currentRoom.load(m_rls, m_player)) break;
         else if(!room_fnd) m_room_map.insert({currentRoom.getName(), std::move(currentRoom)});
 
         if(!m_rls.is_endgame() && !m_rls.is_unfinished()) curr_room_id = m_rls.getNextRoom();

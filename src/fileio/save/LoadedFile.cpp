@@ -223,7 +223,7 @@ bool LoadedFile::INVITEM_chunk()
     }
 
     if(ITEMNAM_done && ITEMVAL_done) {
-        obj_data.gitem_vector.push_back(new_gitem);
+        obj_data.inv.push_back(new_gitem);
         return true;
     } else return false;
 }

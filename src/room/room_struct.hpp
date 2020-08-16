@@ -27,5 +27,6 @@ struct room_struct
     Room currRoom;
     RoomState currState;
     RoomLoopState& currLoopState;
+    Player& currPlayer;
 };
 

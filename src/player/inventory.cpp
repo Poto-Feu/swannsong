@@ -18,7 +18,8 @@
 */
 
 #include <algorithm>
-#include "inventory.hpp"
+
+#include "player/inventory.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
@@ -26,83 +27,83 @@
 
 namespace inventory
 {
-    static gitemVector inventory_vec;
-
-    static auto return_it(std::string const& p_name)
+    static auto return_it(Inventory& p_inv, std::string const& p_name)
     {
-        return std::find_if(inventory_vec.begin(), inventory_vec.end(),
+        return std::find_if(p_inv.begin(), p_inv.end(),
+                [&p_name](gitem const& citem) {
+                return citem.name == p_name;
+                });
+    }
+
+    static auto return_const_it(Inventory const& p_inv, std::string const& p_name)
+    {
+        return std::find_if(p_inv.cbegin(), p_inv.cend(),
                 [&p_name](gitem const& citem) {
                 return citem.name == p_name;
                 });
     }
 
     //Create an entry for the specified item in inventory_list
-    static void add_item_to_list(std::string const& p_name, item_val_type p_val)
+    static void add_item_to_list(Inventory& p_inv, std::string const& p_name, item_val_type p_val)
     {
-        inventory_vec.push_back(gitem{p_name, p_val});
+        p_inv.push_back(gitem{p_name, p_val});
     }
 
     //Add the specified number of item to an inventory
-    static void add_n_item(std::string const& p_name, item_val_type p_val)
+    static void add_n_item(Inventory& p_inv, std::string const& p_name, item_val_type p_val)
     {
-        auto it = return_it(p_name);
+        auto it = return_it(p_inv, p_name);
 
-        if(it != inventory_vec.end()) it->val += p_val;
+        if(it != p_inv.end()) it->val += p_val;
         else game_error::fatal_error("no item corresponding (" + p_name + ")");
     }
 
-    /*Add the specified number of an item - if it doesn't exist in inventory_vec, the function adds 
-    the item to it*/
-    void player_getitem(std::string const& p_name, item_val_type val)
+    void getitem(Inventory& p_inv, std::string const& p_name, item_val_type val)
     {
-        auto it = return_it(p_name);
+        auto it = return_it(p_inv, p_name);
 
-        if(it != inventory_vec.cend()) add_n_item(p_name, val);
-        else add_item_to_list(p_name, val);
+        if(it != p_inv.cend()) add_n_item(p_inv, p_name, val);
+        else add_item_to_list(p_inv, p_name, val);
     }
 
-    /*Reduce the specified number of item - and remove the item from the vector if the result is 
-    equal to 0 or less*/
-    void player_useitem(std::string const& p_name, item_val_type p_val)
+    void useitem(Inventory& p_inv, std::string const& p_name, item_val_type p_val)
     {
-        auto it = return_it(p_name);
+        auto it = return_it(p_inv, p_name);
 
-        if(it != inventory_vec.end()) {
+        if(it != p_inv.end()) {
             if(p_val < it->val) it->val -= p_val;
-            else inventory_vec.erase(it);
+            else p_inv.erase(it);
         } else game_error::emit_warning("item not found in inventory (" + p_name + ")");
     }
 
-    //Return the number of pieces of an item present in the inventory
-    item_val_type return_item_n(std::string const& p_name)
+    item_val_type return_item_n(Inventory const& p_inv, std::string const& p_name)
     {
         item_val_type rtrn_val = 0;
-        auto it = return_it(p_name);
+        auto it = return_const_it(p_inv, p_name);
 
-        if(it != inventory_vec.cend()) rtrn_val = it->val;
+        if(it != p_inv.cend()) rtrn_val = it->val;
         else rtrn_val = 0;
 
         return rtrn_val;
     }
 
-    //Display the inventory screen
-    void display_screen()
+    void display_screen(Inventory const& p_inv)
     {
         int str_line = pcurses::top_margin;
 
         display_server::clear_screen();
         move(pcurses::top_margin, pcurses::margin);
 
-        if(inventory_vec.size() == 0) {
+        if(p_inv.size() == 0) {
             pcurses::display_center_string(pstrings::fetch("inventory_empty"), str_line);
         } else {
-            for(auto const& it : inventory_vec) {
+            for(auto const& it : p_inv) {
                 std::string disp_str = it.name;
                 std::string str_name = "item_" + it.name;
 
                 if(pstrings::check_exist(str_name)) disp_str = pstrings::fetch(str_name);
 
-                disp_str += "   " + std::to_string(return_item_n(it.name));
+                disp_str += "   " + std::to_string(return_item_n(p_inv, it.name));
                 pcurses::display_center_string(disp_str, str_line);
                 ++str_line;
 
@@ -114,17 +115,6 @@ namespace inventory
                 }
             }
         }
-
         pcurses::display_penter_message();
-    }
-
-    void replace_vector(gitemVector p_vector)
-    {
-        inventory_vec = p_vector;
-    }
-
-    gitemVector get_inventory_vector()
-    {
-        return inventory_vec;
     }
 }

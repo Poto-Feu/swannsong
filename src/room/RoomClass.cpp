@@ -25,7 +25,6 @@
 #include "fileio/save/save_file.hpp"
 #include "cutscenes.hpp"
 #include "game_error.hpp"
-#include "inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -149,34 +148,33 @@ static bool process_input(room_struct p_struct) {
 
             if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
                 p_struct.currLoopState.setNextRoom(save_data.room);
-                inventory::replace_vector(save_data.gitem_vector);
+                p_struct.currPlayer.inv = std::move(save_data.inv);
                 gvars::replace_vector(save_data.gvar_vector);
             }
         } else if(user_inp == "save") {
             correct_input = true;
-            save_file::start_saving({p_struct.currRoom.getName()});
+            save_file::start_saving({p_struct.currRoom.getName(), p_struct.currPlayer});
         } else if(user_inp == "help") {
             correct_input = true;
             cutscenes::display("help");
         } else if(user_inp == "inv" || user_inp == "inventory") {
             correct_input = true;
-            inventory::display_screen();
+            inventory::display_screen(p_struct.currPlayer.inv);
         } else incorrect_input(incorrect_input_n);
     }
     return true;
 }
 
-bool Room::load(RoomLoopState& p_rls)
+bool Room::load(RoomLoopState& p_rls, Player& p_player)
 {
     RoomState currentState;
-    room_struct p_struct { *this, currentState, p_rls };
+    room_struct p_struct { *this, currentState, p_rls, p_player};
 
     display_server::clear_screen();
     p_rls.setNextRoom(name);
+
     if(!atlaunch(p_struct)) return false;
-    else if(!p_rls.is_endgame() && !p_rls.is_unfinished()) {
-        process_input(p_struct);
-    }
+    else if(!p_rls.is_endgame() && !p_rls.is_unfinished()) process_input(p_struct);
 
     return true;
 }

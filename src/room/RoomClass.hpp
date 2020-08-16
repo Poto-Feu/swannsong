@@ -23,6 +23,7 @@
 #include <string>
 
 #include "room/RoomLoopState.hpp"
+#include "player/Player.hpp"
 
 class Room 
 {
@@ -42,7 +43,7 @@ class Room
         void setRoomLine(int rln);
         void setChoicesLine(int chln);
 
-        bool load(RoomLoopState& p_rls);
+        bool load(RoomLoopState& p_rls, Player& p_player);
 
     private:
 

@@ -24,7 +24,7 @@
 #include "vars/gvars.hpp"
 #include "cutscenes.hpp"
 #include "game_error.hpp"
-#include "inventory.hpp"
+#include "player/inventory.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
@@ -153,7 +153,7 @@ namespace parser
     }
 
     //Interpret a line which use the GET function, which add an item to the player's inventory
-    static void interp_GET_func(TokenVec const& p_vec)
+    static void interp_GET_func(TokenVec const& p_vec, inventory::Inventory& p_inv)
     {
         using namespace inventory;
         int item_name_pos = 1;
@@ -169,10 +169,10 @@ namespace parser
             }
         } else if(p_vec.size() != 2) wrg_tkn_num("GET");
 
-        player_getitem(p_vec[item_name_pos].str, item_n);
+        inventory::getitem(p_inv, p_vec[item_name_pos].str, item_n);
     }
 
-    static void interp_USE_func(TokenVec const& p_vec)
+    static void interp_USE_func(TokenVec const& p_vec, inventory::Inventory& p_inv)
     {
         using namespace inventory;
 
@@ -186,7 +186,7 @@ namespace parser
             } else fatal_error("second part of an USE instruction must be a NUMBER or an ITEM");
         } else if(p_vec.size() != 2) wrg_tkn_num("USE");
 
-        player_useitem(p_vec[item_name_pos].str, item_n);
+        inventory::useitem(p_inv, p_vec[item_name_pos].str, item_n);
     }
 
     //Interpret a line which changes a gvar value
@@ -302,10 +302,10 @@ namespace parser
                 interp_UNFINISHED_func(r_vec, p_struct.currLoopState);
                 break;
             case token_spec_type::GET:
-                interp_GET_func(r_vec);
+                interp_GET_func(r_vec, p_struct.currPlayer.inv);
                 break;
             case token_spec_type::USE:
-                interp_USE_func(r_vec);
+                interp_USE_func(r_vec, p_struct.currPlayer.inv);
                 break;
             default:
                 game_error::fatal_error("incorrect spec_token_type in function : " + r_vec[0].str);
@@ -338,7 +338,7 @@ namespace parser
 
     /*Check if the condition comparing the number of items with the specifed parameter equals to
     true - if there is no number specified in the condition, 1 is used as a value*/
-    static bool check_HAS_condition(TokenVec r_vec)
+    static bool check_HAS_condition(TokenVec r_vec, inventory::Inventory& p_inv)
     {
         int vec_size = r_vec.size();
 
@@ -362,7 +362,7 @@ namespace parser
                         && r_vec[item_pos].type != token_type::IF
                         && r_vec[item_pos].type != token_type::HAS) {
                     bool rtrn_val = false;
-                    auto item_n = inventory::return_item_n(r_vec[item_pos].str);
+                    auto item_n = inventory::return_item_n(p_inv, r_vec[item_pos].str);
 
                     if(item_n >= req_item_n) rtrn_val = true;
                     if(not_cond) rtrn_val = !rtrn_val;
@@ -440,7 +440,7 @@ namespace parser
         return endln;
     }
 
-    static bool check_condition(std::string const& buf)
+    static bool check_condition(std::string const& buf, inventory::Inventory& p_inv)
     {
         TokenVec r_vec = token::create_arr(buf);
 
@@ -456,7 +456,7 @@ namespace parser
         } else if(r_vec[1].type == token_type::HAS
                 || (r_vec[1].type == token_type::NOT
                 && r_vec[2].type == token_type::HAS)) {
-            return check_HAS_condition(r_vec);
+            return check_HAS_condition(r_vec, p_inv);
         } else fatal_error("IF condition type not recognized");
         return false;
     }
@@ -477,7 +477,7 @@ namespace parser
 
             if(fw == "END") is_end = true;
             else if(fw == "IF") {
-                if(check_condition(buf)) i = exec_until_end(i, p_struct);
+                if(check_condition(buf, p_struct.currPlayer.inv)) i = exec_until_end(i, p_struct);
                 else i = parser::skip_until_end(i);
             } else if(fw == "TEXT") continue;
             else parser_execins(buf, p_struct);

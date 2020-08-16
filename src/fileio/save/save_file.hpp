@@ -17,20 +17,20 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SAVE_FILE_HPP
-#define SAVE_FILE_HPP
+#pragma once
 
 #include <filesystem>
+
+#include "player/Player.hpp"
 
 namespace save_file
 {
     struct data_struct
     {
-        std::string room_name;
+        std::string const& room_name;
+        Player const& player_data;
     };
 
     //Start the saving operations
     void start_saving(data_struct p_struct);
 }
-
-#endif

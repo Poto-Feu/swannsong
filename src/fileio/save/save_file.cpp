@@ -30,7 +30,8 @@ namespace save_file
         auto paths = files_path::getpaths();
         paths.local_data_path += "save/";
 
-        SaveFile mainsave(paths.local_data_path, { "mainsave", p_struct.room_name });
+        SaveFile mainsave(paths.local_data_path, { "mainsave", p_struct.room_name,
+                p_struct.player_data });
         if(mainsave.writeToFile()) {
             display_server::clear_screen();
             pcurses::display_center_string(pstrings::fetch("save_success"), pcurses::lines / 2);

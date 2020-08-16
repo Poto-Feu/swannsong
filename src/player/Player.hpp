@@ -17,32 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef INVENTORY_H
-#define INVENTORY_H
+#pragma once
 
-#include <string>
-#include <vector>
+#include "player/inventory.hpp"
 
-namespace inventory
+struct Player
 {
-    typedef uint32_t item_val_type;
-
-    struct gitem {
-        gitem(std::string const& p_name, item_val_type p_val) : name(p_name), val(p_val) { }
-        gitem() { }
-
-        std::string name;
-        item_val_type val;
-    };
-
-    typedef std::vector<gitem> gitemVector;
-
-    void player_getitem(std::string const& p_name, item_val_type val);
-    void player_useitem(std::string const& p_name, item_val_type val);
-    item_val_type return_item_n(std::string const& p_name);
-    void display_screen();
-    void replace_vector(gitemVector p_vector);
-    gitemVector get_inventory_vector();
-}
-
-#endif
+    inventory::Inventory inv;
+};
