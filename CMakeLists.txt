@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(SwannSong)
+project(SwannSong VERSION 0.3)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
@@ -114,9 +114,9 @@ add_custom_command(TARGET swannsongadv POST_BUILD
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}
         DESTINATION bin
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/data/
-        DESTINATION share/swannsong_adventure/
-        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data/
+        DESTINATION share/swannsong_adventure
+        FILE_PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 endif()
 
 add_custom_command(TARGET swannsongadv POST_BUILD
