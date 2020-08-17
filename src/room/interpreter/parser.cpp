@@ -46,21 +46,25 @@ namespace parser
     //Interpret a line which use the SET function
     static void interp_SET_func(TokenVec r_vec)
     {
-        if(r_vec.size() != 4) wrg_tkn_num("SET");
-        else {
+        if(r_vec.size() != 4) {
+            wrg_tkn_num("SET");
+            return;
+        } else {
             if(gvars::exist(r_vec[1].str)) fatal_error("gvar already exist");
-            if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
-            if(r_vec[3].type != token_type::NUMBER) {
+            else if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
+            else if(r_vec[3].type != token_type::NUMBER) {
                 fatal_error("no value assigned to var during its init");
-            }
-            gvars::set_var(r_vec[1].str, std::stoi(r_vec[3].str));
+            } else gvars::set_var(r_vec[1].str, std::stoi(r_vec[3].str));
         }
     }
 
     //Interpret a line which use the DISPLAY function
     static void interp_DISPLAY_func(TokenVec r_vec, room_struct& p_struct)
     {
-        if(r_vec.size() != 2) wrg_tkn_num("DISPLAY");
+        if(r_vec.size() != 2) {
+            wrg_tkn_num("DISPLAY");
+            return;
+        }
 
         //Add all room choices into a vector in the RoomManager
         auto add_all_choices = [](int roomln, room_struct& p_struct)
@@ -148,8 +152,10 @@ namespace parser
     an unfinished part of the program*/
     static void interp_UNFINISHED_func(TokenVec const& r_vec, RoomLoopState& p_rls)
     {
-        if(r_vec.size() != 1) wrg_tkn_num("UNFINISHED");
-        p_rls.setUnfinished();
+        if(r_vec.size() != 1) {
+            wrg_tkn_num("UNFINISHED");
+        } else p_rls.setUnfinished();
+       
     }
 
     //Interpret a line which use the GET function, which add an item to the player's inventory
@@ -166,8 +172,12 @@ namespace parser
             } else {
                 game_error::fatal_error(
                         "second part of a GET instruction must be a NUMBER or an ITEM");
+                return;
             }
-        } else if(p_vec.size() != 2) wrg_tkn_num("GET");
+        } else if(p_vec.size() != 2) {
+            wrg_tkn_num("GET");
+            return;
+        }
 
         inventory::getitem(p_inv, p_vec[item_name_pos].str, item_n);
     }
@@ -183,8 +193,14 @@ namespace parser
             if(p_vec[1].type == token_type::NUMBER) {
                 item_name_pos = 2;
                 item_n = std::stoi(p_vec[1].str);
-            } else fatal_error("second part of an USE instruction must be a NUMBER or an ITEM");
-        } else if(p_vec.size() != 2) wrg_tkn_num("USE");
+            } else {
+                fatal_error("second part of an USE instruction must be a NUMBER or an ITEM");
+                return;
+            }
+        } else if(p_vec.size() != 2) {
+            wrg_tkn_num("USE");
+            return;
+        }
 
         inventory::useitem(p_inv, p_vec[item_name_pos].str, item_n);
     }
@@ -194,6 +210,7 @@ namespace parser
     {
         if(r_vec[1].type != token_type::EQUAL) {
             fatal_error("second token of a gvars instruction must be an equal sign");
+            return;
         } else if(r_vec.size() == 3 && r_vec[2].type == token_type::NUMBER) {
             gvars::change_val(r_vec[0].str, std::stoi(r_vec[2].str));
         }
@@ -333,7 +350,7 @@ namespace parser
     static void parser_execins(std::string p_line, room_struct& p_struct)
     {
         TokenVec r_vec = token::create_arr(p_line);
-        interp_ins(r_vec, p_struct);
+        if(!has_encountered_fatal()) interp_ins(r_vec, p_struct);
     }
 
     /*Check if the condition comparing the number of items with the specifed parameter equals to
@@ -478,9 +495,15 @@ namespace parser
             if(fw == "END") is_end = true;
             else if(fw == "IF") {
                 if(check_condition(buf, p_struct.currPlayer.inv)) i = exec_until_end(i, p_struct);
-                else i = parser::skip_until_end(i);
+                else {
+                    if(has_encountered_fatal()) break;
+                    else i = parser::skip_until_end(i);
+                }
             } else if(fw == "TEXT") continue;
-            else parser_execins(buf, p_struct);
+            else {
+                parser_execins(buf, p_struct);
+                if(has_encountered_fatal()) break;
+            }
         } return endln;
     }
 }

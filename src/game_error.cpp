@@ -35,17 +35,28 @@ namespace game_error
     static std::filesystem::path log_file_path;
     static bool is_debug = false;
 
+    static bool has_error = false;
+    static std::string fatal_error_msg;
+
     void setdebug()
     {
         is_debug = true;
     }
 
+    std::string const& get_fatal_error_msg()
+    {
+        return fatal_error_msg;
+    }
+
+    bool has_encountered_fatal()
+    {
+        return has_error;
+    }
+
     void fatal_error(std::string const& p_text)
     {
-        delwin(stdscr);
-        endwin();
-        std::cout << "ERROR : " << p_text << std::endl;
-        exit(1);
+        has_error = true;
+        fatal_error_msg = p_text;
     }
 
     void log_write(std::string const& p_text)

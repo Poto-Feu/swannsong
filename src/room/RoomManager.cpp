@@ -22,11 +22,17 @@
 #include "display_server.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
+#include "userio.h"
 
 static void unfinished_game()
 {
+    const display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
+
     display_server::clear_screen();
     pcurses::display_center_string(pstrings::fetch("unfinished_str"), pcurses::top_margin);
+    display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
+    display_server::show_screen();
+    userio::waitenter();
 }
 
 void RoomManager::startLoop(std::string const& start_room)

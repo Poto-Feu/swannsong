@@ -70,15 +70,15 @@ namespace pstrings
             }
         }
 
-        if(!quote_inc) game_error::fatal_error("wrong pstring format(\"" + buf + "\"");
-
-        for(int i = quote_ind+1; buf[i] != '\0'; ++i)
-        {
-            if(buf[i] == quote_ch) break;
-            else if(buf[i] == '\\' && buf[i+1] == quote_ch) {
-                r_val += quote_ch;
-                ++i;
-            } else r_val += buf[i];
+        if(!quote_inc) game_error::fatal_error("wrong pstring format (" + buf + ")");
+        else {
+            for(int i = quote_ind+1; buf[i] != '\0'; ++i) {
+                if(buf[i] == quote_ch) break;
+                else if(buf[i] == '\\' && buf[i+1] == quote_ch) {
+                    r_val += quote_ch;
+                    ++i;
+                } else r_val += buf[i];
+            }
         }
     }
 
@@ -102,7 +102,8 @@ namespace pstrings
 
             if(!buf.empty() && buf[0] != '#') {
                 split_file_line(r_id, r_val, buf);
-                add_to_vec(r_id, r_val);
+                if(game_error::has_encountered_fatal()) return;
+                else add_to_vec(r_id, r_val);
             } else continue;
         }
     }

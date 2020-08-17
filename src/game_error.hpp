@@ -17,8 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GAME_ERROR_HPP
-#define GAME_ERROR_HPP
+#pragma once
 
 #include <filesystem>
 #include <string>
@@ -27,11 +26,11 @@
 namespace game_error
 {
     void setdebug();
+    std::string const& get_fatal_error_msg();
+    bool has_encountered_fatal();
     void log_write(std::string const& p_text);
     void log_write(std::vector<std::string> p_vector);
     void emit_warning(std::string const& p_text);
     void fatal_error(std::string const& p_text);
     void set_filepath(std::filesystem::path const& local_data_path);
 }
-
-#endif

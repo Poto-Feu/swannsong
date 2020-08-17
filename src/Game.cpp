@@ -46,7 +46,6 @@ struct lang_item
 void Game::missing_gcvar(std::string const& p_name)
 {
     game_error::fatal_error("missing gameconf var (" + p_name +")");
-    m_is_ready = false;
 }
 
 static void set_curses()
@@ -111,7 +110,7 @@ static void show_lang_prompt(std::array<lang_item, LANG_NUMBER>& p_arr)
 
 
 //Show a prompt asking the user to choose the language and the prompt to do so
-static void ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path)
+void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path)
 {
     bool validinp = false;
 
@@ -146,6 +145,7 @@ static void ask_lang(std::string const& p_langdir, std::filesystem::path const& 
                 langmod::set_lang(lang);
                 validinp = true;
                 pstrings::copy_file_to_vec(p_langdir, data_path);
+                if(!game_error::has_encountered_fatal()) m_strings_init = true;
             } else show_err_msg("Nope. (not a valid input)");
         } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
         else show_err_msg("Nope. (too long)");
@@ -154,12 +154,18 @@ static void ask_lang(std::string const& p_langdir, std::filesystem::path const& 
 
 Game::~Game()
 {
-    display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
+    if(game_error::has_encountered_fatal()) {
+        const display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
 
-    display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
-
-    display_server::show_screen();
-    userio::waitenter();
+        display_server::clear_screen();
+        pcurses::display_center_string("FATAL ERROR: " + game_error::get_fatal_error_msg(),
+                pcurses::top_margin);
+        if(m_strings_init) {
+            display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
+        } else display_server::add_string("Press Enter to exit", exit_struct, A_BOLD);
+        display_server::show_screen();
+        userio::waitenter();
+    }
 
     delwin(stdscr);
     endwin();
@@ -187,14 +193,17 @@ void Game::init()
 
     if(langdir_it != gc_vec.cend()) ask_lang(langdir_it->value, p_paths.data_path);
     else missing_gcvar("langdir");
+    if(game_error::has_encountered_fatal()) return;
 
     if(roomfile_it != gc_vec.cend()) roomio::copy_file_to_vec(roomfile_it->value,
             p_paths.data_path);
     else missing_gcvar("roomfile");
+    if(game_error::has_encountered_fatal()) return;
 
     if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value,
             p_paths.data_path);
     else missing_gcvar("csfile");
+    if(game_error::has_encountered_fatal()) return;
 
     if(firstroom_it != gc_vec.cend()) m_start_room = firstroom_it->value;
     else missing_gcvar("firstroom");
@@ -202,7 +211,8 @@ void Game::init()
 
 void Game::run()
 {
-    RoomManager rmm;
-    if(m_is_ready) rmm.startLoop(m_start_room);
-    else game_error::fatal_error("Game was not initialized");
+    if(!game_error::has_encountered_fatal()) {
+        RoomManager rmm;
+        rmm.startLoop(m_start_room);
+    }
 }

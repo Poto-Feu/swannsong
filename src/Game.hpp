@@ -33,8 +33,10 @@ class Game
     private:
 
         std::string m_start_room;
-        bool m_is_ready = true;
 
+        bool m_strings_init = false;
+
+        void ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path);
         void missing_gcvar(std::string const& p_name);
         auto fetch_gameconf_vars(std::filesystem::path const& system_data_path);
 };

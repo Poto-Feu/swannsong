@@ -135,9 +135,12 @@ static bool process_input(room_struct p_struct) {
 
                 p_struct.currState.setBlockType(RoomState::bt::CHOICE);
                 parser::exec_until_end(choice_ln, p_struct);
-                p_struct.currState.displayCutscenes();
-                if(p_struct.currLoopState.is_endgame()) return true;
-                else correct_input = true;
+                if(game_error::has_encountered_fatal()) return false;
+                else {
+                    p_struct.currState.displayCutscenes();
+                    if(p_struct.currLoopState.is_endgame()) return true;
+                    else correct_input = true;
+                }
             }
         } else if(user_inp == "exit") {
             correct_input = true;
@@ -176,5 +179,6 @@ bool Room::load(RoomLoopState& p_rls, Player& p_player)
     if(!atlaunch(p_struct)) return false;
     else if(!p_rls.is_endgame() && !p_rls.is_unfinished()) process_input(p_struct);
 
-    return true;
+    if(game_error::has_encountered_fatal()) return false;
+    else return true;
 }
