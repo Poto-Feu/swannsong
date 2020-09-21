@@ -26,21 +26,18 @@ extern "C" {
 
 namespace stringsm
 {
-    //Return an uppercased string
     std::string to_upper(std::string p_str)
     {
         for(auto& it : p_str) it = toupper(it);
         return p_str;
     }
 
-    //Return a lowercased string
     std::string to_lower(std::string p_str)
     {
         for(auto& it : p_str) it = tolower(it);
         return p_str;
     }
 
-    //Check if the content of a string is an unsigned number
     bool is_number(std::string const& p_str)
     {
         if(p_str.size() == 0) return false;
@@ -52,13 +49,11 @@ namespace stringsm
         return true;
     }
 
-    //Remove space and tab characters at the beginning of a string
     void rtab(std::string& p_buf)
     {
         while(p_buf[0] == '\t' || p_buf[0] == ' ') p_buf.erase(0, 1);
     }
 
-    //Get the first word of a string
     std::string getfw(std::string const& p_str)
     {
         unsigned int i = 0;
@@ -76,7 +71,6 @@ namespace stringsm
         return fw;
     }
 
-    //Check if the passed char array is a string enclosed with quotes
     bool is_str(std::string const& p_str)
     {
         int str_size = p_str.size();
@@ -100,7 +94,6 @@ namespace stringsm
         return false;
     }
 
-    //Extract string from quotations marks
     std::string ext_str_quotes(std::string const& p_str)
     {
         bool str_end = false;
@@ -120,7 +113,6 @@ namespace stringsm
     }
 }
 
-//Replace the newline character by a null terminator (deprecated, use std::string instead)
 void stringsm_chomp(char* str)
 {
     while (*str != '\n' && *str != '\0') str++;

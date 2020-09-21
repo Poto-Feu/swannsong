@@ -24,6 +24,7 @@
 extern "C" {
 #endif
 
+//Replace the newline character by a null terminator (deprecated, use std::string instead)
 void stringsm_chomp(char* str);
 
 #ifdef __cplusplus
@@ -35,12 +36,19 @@ void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
 
 namespace stringsm
 {
+    //Return an uppercased string
     std::string to_upper(std::string p_str);
+    //Return a lowercased string
     std::string to_lower(std::string p_str);
+    //Check if the content of a string is an unsigned number
     bool is_number(std::string const& p_str);
+    //Remove space and tab characters at the beginning of a string
     void rtab(std::string& p_buf);
+    //Get the first word of a string
     std::string getfw(std::string const& p_str);
+    //Check if the passed char array is a string enclosed with quotes
     bool is_str(std::string const& p_str);
+    //Extract string from quotations marks
     std::string ext_str_quotes(std::string const& p_str);
 }
 #endif
