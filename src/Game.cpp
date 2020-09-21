@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdio>
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
@@ -154,21 +155,13 @@ void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& d
 
 Game::~Game()
 {
-    if(game_error::has_encountered_fatal()) {
-        const display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
-
-        display_server::clear_screen();
-        pcurses::display_center_string("FATAL ERROR: " + game_error::get_fatal_error_msg(),
-                pcurses::top_margin);
-        if(m_strings_init) {
-            display_server::add_string(pstrings::fetch("exit_penter"), exit_struct, A_BOLD);
-        } else display_server::add_string("Press Enter to exit", exit_struct, A_BOLD);
-        display_server::show_screen();
-        userio::waitenter();
-    }
-
     delwin(stdscr);
     endwin();
+
+    //Print the message attached to a fatal error if one occurred
+    if(game_error::has_encountered_fatal()) {
+        printf("FATAL ERROR: %s\n", game_error::get_fatal_error_msg().c_str());
+    }
 }
 
 void Game::init()
