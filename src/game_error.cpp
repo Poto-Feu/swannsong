@@ -93,46 +93,42 @@ namespace game_error
         if(is_debug) {
             static bool already_used = false;
 
-            if(!already_used) {
-                auto remove_previous_logs = [&]() {
-                    fs::directory_iterator it_end;
-
-                    for(fs::directory_iterator it(log_file_path); it != it_end; ++it) {
-                        if(fs::is_regular_file(it->status())
-                                && stringsm::to_lower(it->path().extension().string()) == ".txt") {
-                            fs::remove(it->path());
-                        }
-                    }
-                };
-
-                const unsigned int buf_size = 30;
-                auto time_var = std::time(nullptr);
-                auto curr_time = *std::localtime(&time_var);
-                char time_buffer[buf_size] = "\0";
-
-                strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S", &curr_time);
-
-                log_file_path = local_data_path;
-                log_file_path += "logs";
-                files_path::create_directory(log_file_path);
-                remove_previous_logs();
-                log_file_path += "/";
-                log_file_path += time_buffer;
-                log_file_path += "_log.txt";
-
-                std::string log_intro = "[";
-
-                log_intro += time_buffer;
-                log_intro += "]";
-                
-                log_write({log_intro,
-                        "These first two lines are for testing purposes.",
-                        "They can be ignored.",
-                        ""});
-                already_used = true;
-            } else {
+            if(already_used) {
                 emit_warning("game_error::files_path used twice - this might cause problems later");
             }
+
+            const unsigned int buf_size = 30;
+            auto time_var = std::time(nullptr);
+            auto curr_time = *std::localtime(&time_var);
+            char time_buffer[buf_size] = "\0";
+
+            strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S", &curr_time);
+
+            log_file_path = local_data_path;
+            log_file_path += "logs";
+            files_path::create_directory(log_file_path);
+
+            for(auto& it : fs::directory_iterator(log_file_path)) {
+                if(fs::is_regular_file(it.status())
+                        && stringsm::to_lower(it.path().extension().string()) == ".txt") {
+                    fs::remove(it.path());
+                }
+            }
+
+            log_file_path += "/";
+            log_file_path += time_buffer;
+            log_file_path += "_log.txt";
+
+            std::string log_intro = "[";
+
+            log_intro += time_buffer;
+            log_intro += "]";
+            
+            log_write({log_intro,
+                    "These first two lines are for testing purposes.",
+                    "They can be ignored.",
+                    ""});
+            already_used = true;
         }
     }
 }
