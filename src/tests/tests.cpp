@@ -20,6 +20,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
 #include "tests.hpp"
 #include "room/interpreter/token.hpp"
 #include "fileio/save/save_const.hpp"
@@ -37,14 +38,14 @@ namespace tests
         if(stringsm::is_str(test_str)) printf("true\n");
         else printf("false\n");
 
-        exitgame(0);
+        exit(0);
     }
 
     void cutscenes_test()
     {
         cutscenes::display("about");
 
-        exitgame(0);
+        exit(0);
     }
 
     void token()
@@ -57,7 +58,7 @@ namespace tests
                     it.str.c_str());
         }
 
-        exitgame(0);
+        exit(0);
     }
 
     void savechunk()
