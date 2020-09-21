@@ -107,7 +107,7 @@ namespace stringsm
         char quote_ch = p_str[0];
         std::string rtr_val;
 
-        for(int i = 1; !str_end && p_str[1] != quote_ch; ++i) {
+        for(size_t i = 1; !str_end && p_str[1] != quote_ch && i < p_str.length(); ++i) {
             rtr_val += p_str[i];
 
             if(p_str[i] == '\\' && p_str[i+1] == quote_ch) {
@@ -115,7 +115,8 @@ namespace stringsm
                 ++i;
             } else if(p_str[i+1] == quote_ch) str_end = true;
         }
-        return rtr_val;
+        if(str_end) return rtr_val;
+        else return "";
     }
 }
 
