@@ -17,50 +17,50 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <string>
+#include <algorithm>
+
 #include "room/Choice.hpp"
-#include "room/room_io.h"
-#include "interpreter/parser.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
 #include "pstrings.h"
 #include "stringsm.h"
 
-Choice::Choice(int ch_n, int ch_ln) : choice_n(ch_n), choice_line(ch_ln) { }
-
-void Choice::display() const
+Choice::Choice() { }
+Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions) : m_id(choice_n),
+    m_instructions(instructions)
 {
-    bool textfound = false;
-    int currln = choice_line + 1;
+    auto TEXT_prop = std::find_if(m_instructions.cbegin(), m_instructions.cend(),
+            [&] (TokenVec const& tkns) {
+            return tkns[0].type == token_type::TEXT && tkns.size() == 2;
+            });
 
-    for(int i = 0; !textfound; i++) {
-        std::string buf;
-        std::string f_type;
-        std::string f_arg;
-        std::string disp_value;
-
-        roomio::fetch_ln(buf, currln);
-        parser::splitline(f_type, f_arg, buf);
-
-        if(f_type == "TEXT") {
-            int str_line = display_server::get_last_line() + 1;
-            textfound = true;
-
-            if(stringsm::is_str(f_arg)) disp_value = stringsm::ext_str_quotes(f_arg);
-            else {
-                disp_value = pstrings::fetch(f_arg);
-                disp_value.insert(0, ". ");
-                disp_value.insert(0, std::to_string(choice_n));
-            }
-
-            if(str_line == display_server::LAST_LINE_ERR + 1) str_line = pcurses::title_y + 4;
-            pcurses::display_pos_string(disp_value, pcurses::choice_space, str_line);
-            currln++;
-        } else if(f_type == "END") game_error::fatal_error("missing choice text");
+    if(TEXT_prop != m_instructions.cend()) {
+        if((*TEXT_prop)[1].type == token_type::STRING) {
+            m_text = stringsm::ext_str_quotes((*TEXT_prop)[1].str);
+        } else if((*TEXT_prop)[1].type == token_type::STRING_ID) {
+            m_text = pstrings::fetch((*TEXT_prop)[1].str);
+        } else game_error::fatal_error("TEXT token not followed by STRING or STRING_ID token");
     }
 }
 
-unsigned int Choice::getLine() const
+unsigned int Choice::getId() const
 {
-    return choice_line;
+    return m_id;
+}
+
+void Choice::display() const
+{
+    int str_line = display_server::get_last_line() + 1;
+    std::string disp_value = m_text;
+
+    disp_value.insert(0, ". ");
+    disp_value.insert(0, std::to_string(m_id));
+
+    if(str_line == display_server::LAST_LINE_ERR + 1) str_line = pcurses::title_y + 4;
+    pcurses::display_pos_string(disp_value, pcurses::choice_space, str_line);
+}
+
+std::vector<TokenVec> const& Choice::getInstructions() const
+{
+    return m_instructions;
 }

@@ -17,12 +17,13 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOMCLASS_HPP
-#define ROOMCLASS_HPP
+#pragma once
 
-#include <string>
+#include <unordered_map>
 
+#include "room/interpreter/token.hpp"
 #include "room/RoomLoopState.hpp"
+#include "room/Choice.hpp"
 #include "player/Player.hpp"
 
 class Room 
@@ -31,26 +32,37 @@ class Room
 
         Room();
         explicit Room(std::string const& room_name);
+        explicit Room(std::string const& room_name, std::string const& room_title);
+        explicit Room(std::string const& room_name, std::string const& room_title,
+                std::string const& room_desc);
 
-        void getName(char* r_name) const;
-        std::string getName() const;
+        std::string const& getName() const;
+        std::string const& getTitle() const;
+        std::string const& getDesc() const;
 
-        bool isChoicesLineSet() const;
+        std::vector<TokenVec> const& getATLAUNCHIns() const;
+        std::vector<Choice> const& getChoicesVec() const;
 
-        int getRoomLine() const;
-        int getChoicesLine() const;
+        Choice getChoice(bool& status, unsigned int choice_n);
 
-        void setRoomLine(int rln);
-        void setChoicesLine(int chln);
+        void setDesc(std::string const& room_desc);
+        void setATLAUNCH_ins(std::vector<TokenVec>&& atlaunch_ins);
+        void setChoices(std::vector<Choice>&& choices_vec);
 
-        bool load(RoomLoopState& p_rls, Player& p_player);
+        void displayAllChoices() const;
+
+        bool load(RoomLoopState& p_rls, Player& p_player,
+                std::unordered_map<std::string, Room> const& room_map);
 
     private:
 
-        std::string name;
+        std::string m_name;
+        std::string m_title;
+        std::string m_desc;
 
-        int room_line = 0;
-        int choices_line = 0;
+        std::vector<TokenVec> m_ATLAUNCH_ins;
+        std::vector<Choice> m_Choices_vec;
+
+        void displayTitle(Room const& p_room);
+        void displayDesc(Room const& p_room);
 };
-
-#endif

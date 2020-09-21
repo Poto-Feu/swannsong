@@ -18,16 +18,14 @@
 */
 
 
-#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
 #include "room/room_struct.hpp"
 
 namespace parser
 {
-    int skip_until_end(int blockln);
-    int exec_until_end(int blockln, room_struct& p_struct);
+    void skip_until_end(std::vector<TokenVec> const& block_vector, unsigned int& blockln);
+    void exec_until_end(std::vector<TokenVec> const& block_vector, room_struct& p_struct,
+            unsigned int& i);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }
-
-#endif

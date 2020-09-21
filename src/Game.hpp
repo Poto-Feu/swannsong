@@ -22,13 +22,19 @@
 #include <filesystem>
 #include <string>
 
+struct GameInitData
+{
+    std::filesystem::path room_file_path;
+    bool no_error;
+};
+
 class Game
 {
     public:
 
         ~Game();
-        void init();
-        void run();
+        GameInitData init();
+        void run(GameInitData const& game_init_data);
 
     private:
 

@@ -50,6 +50,8 @@ namespace stringsm
     bool is_str(std::string const& p_str);
     //Extract string from quotations marks
     std::string ext_str_quotes(std::string const& p_str);
+    bool is_single_word(std::string const& p_str);
+    bool has_quotes(std::string const& p_str);
 }
 #endif
 

@@ -17,22 +17,25 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CHOICE_HPP
-#define CHOICE_HPP
+#pragma once
+
+#include "room/interpreter/token.hpp"
 
 class Choice
 {
     public:
 
-        Choice(int ch_n, int ch_ln);
+        Choice();
+        Choice(unsigned int choice_id, std::vector<TokenVec>&& instructions);
+
+        unsigned int getId() const;
 
         void display() const;
-        unsigned int getLine() const;
+        std::vector<TokenVec> const& getInstructions() const;
 
     private:
 
-        int choice_n;
-        int choice_line;
+        unsigned int m_id;
+        std::string m_text;
+        std::vector<TokenVec> m_instructions;
 };
-
-#endif

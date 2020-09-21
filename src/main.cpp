@@ -26,8 +26,8 @@ int main (int argc, char *argv[])
 
     Game game;
 
-    game.init();
-    game.run();
+    GameInitData game_init_data = game.init();
+    if(game_init_data.no_error) game.run(game_init_data);
 
     return 0;
 }

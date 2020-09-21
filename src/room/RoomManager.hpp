@@ -19,8 +19,8 @@
 
 #pragma once
 
+#include <filesystem>
 #include <unordered_map>
-#include <string>
 
 #include "player/Player.hpp"
 #include "room/RoomClass.hpp"
@@ -31,6 +31,7 @@ class RoomManager
 {
     public:
 
+        explicit RoomManager(std::filesystem::path const& room_file_path);
         //Start the game loop which loads rooms until the end signal is enabled
         void startLoop(std::string const& start_room);
 

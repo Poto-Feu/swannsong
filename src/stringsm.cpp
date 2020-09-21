@@ -111,6 +111,30 @@ namespace stringsm
         if(str_end) return rtr_val;
         else return "";
     }
+
+    bool is_single_word(std::string const& p_str)
+    {
+        using std::string;
+
+        if(p_str.find(' ') == string::npos && p_str.find('\t') == string::npos) return true;
+        else return false;
+    }
+
+    bool has_quotes(std::string const& p_str)
+    {
+        char quote_type;
+
+        if(p_str[0] != '"' && p_str[0] != '\'') return false;
+
+        quote_type = p_str[0];
+
+        for(unsigned int i = 1; i < p_str.length(); ++i) {
+            if(p_str[i] == quote_type) return true;
+            else if(p_str[i] == '\\' && p_str[i+1] == quote_type) ++i;
+        }
+
+        return false;
+    }
 }
 
 void stringsm_chomp(char* str)

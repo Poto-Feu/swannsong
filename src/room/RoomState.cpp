@@ -18,8 +18,8 @@
 */
 
 #include <stdexcept>
+
 #include "room/RoomState.hpp"
-#include "room/find.hpp"
 #include "cutscenes.hpp"
 #include "display_server.hpp"
 #include "game_error.hpp"
@@ -39,9 +39,9 @@ void RoomState::addDesc()
     desc_displayed = true;
 }
 
-void RoomState::addChoice(Choice const& p_choice)
+void RoomState::addAllChoices()
 {
-    choice_list.push_back(p_choice);
+    m_all_choices_displayed = true;
 }
 
 void RoomState::addString(std::string const& p_str)
@@ -59,48 +59,63 @@ void RoomState::setBlockType(RoomState::bt const p_bt)
     block_type = p_bt;
 }
 
-void RoomState::displayTitle(Room const& p_room)
+RoomState::bt RoomState::getBlockType() const
 {
-    std::string value;
-    bool prop_fnd = room_find::room_property(value, "TITLE", p_room.getRoomLine());
-
-    if(prop_fnd) {
-        std::string disp_value;
-
-        if(stringsm::is_str(value)) disp_value = stringsm::ext_str_quotes(value);
-        else if(pstrings::check_exist(value)) disp_value = pstrings::fetch(value);
-        else throw std::runtime_error("unknown string format in displayTitle");
-
-        pcurses::display_center_string(disp_value, pcurses::title_y, A_BOLD);
-    } else game_error::emit_warning("TITLE property not found in room");
+    return block_type;
 }
 
-void RoomState::displayDesc(Room const& p_room)
+void RoomState::displayCutscenes()
 {
-    std::string value;
-    auto prop_fnd = room_find::room_property(value, "DESC", p_room.getRoomLine());
-
-    if(prop_fnd) {
-        int str_line = 1;
-        std::string disp_value;
-
-        if(title_displayed) str_line = display_server::get_last_line() + 2;
-        else str_line = pcurses::title_y + 2;
-
-        if(stringsm::is_str(value)) disp_value = stringsm::ext_str_quotes(value);
-        else if(pstrings::check_exist(value)) disp_value = pstrings::fetch(value);
-        else throw std::runtime_error("unknown string format in displayDesc (" + value + ")");
-
-        pcurses::display_center_string(disp_value, str_line);
-    } else game_error::emit_warning("DESC property not found in room");
+    for(auto const& it : cs_list) cutscenes::display(it);
+    cs_list.clear();
 }
 
-void RoomState::displayChoices()
+void RoomState::displayTitle(Room const& p_room) const
+{
+    pcurses::display_center_string(p_room.getTitle(), pcurses::title_y, A_BOLD);
+}
+
+void RoomState::displayDesc(Room const& p_room) const
+{
+    int str_line;
+
+    if(is_title_displayed()) str_line = display_server::get_last_line() + 2;
+    else str_line = pcurses::title_y + 2;
+    pcurses::display_center_string(p_room.getDesc(), str_line);
+}
+
+void RoomState::displayAll(Room const& p_room)
+{
+    displayCutscenes();
+    display_server::clear_screen();
+
+    if(is_title_displayed()) displayTitle(p_room);
+    if(is_desc_displayed()) displayDesc(p_room);
+
+    if(string_list.size() > 0) displayStrings();
+    displayChoices(p_room);
+}
+
+bool RoomState::is_title_displayed() const
+{
+    return title_displayed;
+}
+
+bool RoomState::is_desc_displayed() const
+{
+    return desc_displayed;
+}
+
+void RoomState::displayChoices(Room const& p_room)
 {
     if(title_displayed || desc_displayed || !string_list.empty()) {
         pcurses::display_center_string("", display_server::get_last_line() + 1);
     }
-    for(auto& it : choice_list) it.display();
+
+    if(m_all_choices_displayed) {
+        auto choices_vec = p_room.getChoicesVec();
+        for(auto& it : choices_vec) it.display();
+    }
 }
 
 void RoomState::displayStrings()
@@ -117,51 +132,4 @@ void RoomState::displayStrings()
         else firsttime = false;
         pcurses::display_center_string(it, str_line);
     }
-}
-
-void RoomState::displayAll(Room const& p_room)
-{
-    displayCutscenes();
-    display_server::clear_screen();
-
-    if(is_title_displayed()) displayTitle(p_room);
-    if(is_desc_displayed()) displayDesc(p_room);
-
-    if(string_list.size() > 0) displayStrings();
-    displayChoices();
-}
-
-RoomState::bt RoomState::getBlockType() const
-{
-    return block_type;
-}
-
-unsigned int RoomState::getChoicesSize() const
-{
-    return choice_list.size();
-}
-
-unsigned int RoomState::getChoiceLine(unsigned int ch_n) const
-{
-    if(ch_n <= choice_list.size() && ch_n != 0) return choice_list[ch_n - 1].getLine();
-    else {
-        game_error::fatal_error("out-of-range parameter in RoomState::getChoiceLine");
-        return 0;
-    }
-}
-
-void RoomState::displayCutscenes()
-{
-    for(auto const& it : cs_list) cutscenes::display(it);
-    cs_list.clear();
-}
-
-bool RoomState::is_title_displayed() const
-{
-    return title_displayed;
-}
-
-bool RoomState::is_desc_displayed() const
-{
-    return desc_displayed;
 }

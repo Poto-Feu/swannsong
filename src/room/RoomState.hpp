@@ -17,11 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ROOM_STATE_HPP
-#define ROOM_STATE_HPP
-
-#include <string>
-#include <vector>
+#pragma once
 
 #include "room/Choice.hpp"
 #include "room/RoomClass.hpp"
@@ -39,16 +35,17 @@ class RoomState
         };
 
         unsigned int getChoicesSize() const;
-        unsigned int getChoiceLine(unsigned int ch_n) const;
         bt getBlockType() const;
 
         void addTitle();
         void addDesc();
-        void addChoice(Choice const& p_choice);
+        void addAllChoices();
         void addString(std::string const& p_str);
         void addCutscene(std::string const& p_cs);
 
         void displayCutscenes();
+        void displayTitle(Room const& p_room) const;
+        void displayDesc(Room const& p_room) const;
         void displayAll(Room const& p_room);
 
         void setBlockType(bt const p_bt);
@@ -60,17 +57,13 @@ class RoomState
 
         bool title_displayed = false;
         bool desc_displayed = false;
+        bool m_all_choices_displayed = false;
 
-        std::vector<Choice> choice_list;
         std::vector<std::string> string_list;
         std::vector<std::string> cs_list;
 
         bt block_type = bt::ATLAUNCH;
 
-        void displayTitle(Room const& p_room);
-        void displayDesc(Room const& p_room);
-        void displayChoices();
+        void displayChoices(Room const& p_room);
         void displayStrings();
 };
-
-#endif

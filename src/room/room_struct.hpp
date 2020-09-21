@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "room/RoomClass.hpp"
 #include "room/RoomState.hpp"
 
@@ -28,5 +30,5 @@ struct room_struct
     RoomState currState;
     RoomLoopState& currLoopState;
     Player& currPlayer;
+    std::unordered_map<std::string, Room> const& roomMap;
 };
-

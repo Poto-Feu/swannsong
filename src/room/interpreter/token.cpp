@@ -17,8 +17,8 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <array>
 #include <algorithm>
+
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
 #include "pstrings.h"
@@ -188,6 +188,7 @@ namespace token
                 if(it.str == "IF") it.type = token_type::IF;
                 else if(it.str == "!" || it.str == "NOT") it.type = token_type::NOT;
                 else if(it.str == "HAS") it.type = token_type::HAS;
+                else if(it.str == "END") it.type = token_type::END;
                 else if(is_func(it)) it.type = token_type::FUNCTION;
                 else if(is_number(it.str)) it.type = token_type::NUMBER;
                 else if(gvars::exist(it.str)) it.type = token_type::VARIABLE;
@@ -203,8 +204,8 @@ namespace token
         }
     }
 
-    //Find Tokens in a string and add them to a TokenVec
-    static auto add_tokens_to_arr(std::string const& p_str)
+    //Create TokenVec with the specified string
+    TokenVec create_arr(std::string const& p_str)
     {
         TokenVec r_vec = create_token_vector(p_str);
 
@@ -212,9 +213,12 @@ namespace token
         return r_vec;
     }
 
-    //Create TokenVec with the specified string
-    TokenVec create_arr(std::string const& p_str)
+    void set_runtime_tokens(TokenVec& p_vec)
     {
-        return add_tokens_to_arr(p_str);
+        for(auto& it : p_vec) {
+            if(it.type == token_type::UNDEFINED || it.type == token_type::UNKNOWN) {
+                if(gvars::exist(it.str)) it.type = token_type::VARIABLE;
+            }
+        }
     }
 }

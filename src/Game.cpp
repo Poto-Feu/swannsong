@@ -23,7 +23,6 @@
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
-#include "room/room_io.h"
 #include "room/RoomManager.hpp"
 #include "cutscenes.hpp"
 #include "files_path.hpp"
@@ -164,7 +163,7 @@ Game::~Game()
     }
 }
 
-void Game::init()
+GameInitData Game::init()
 {
     set_curses();
     auto p_paths = files_path::getpaths();
@@ -179,33 +178,65 @@ void Game::init()
             });
     };
 
+    GameInitData game_init_data;
+
     auto langdir_it = get_gcvar_it("langdir");
     auto roomfile_it = get_gcvar_it("roomfile");
     auto csfile_it = get_gcvar_it("csfile");
     auto firstroom_it = get_gcvar_it("firstroom");
 
     if(langdir_it != gc_vec.cend()) ask_lang(langdir_it->value, p_paths.data_path);
-    else missing_gcvar("langdir");
-    if(game_error::has_encountered_fatal()) return;
+    else {
+        game_init_data.no_error = false;
+        missing_gcvar("langdir");
+        return game_init_data;
+    }
+    if(game_error::has_encountered_fatal()) {
+        game_init_data.no_error = false;
+        return game_init_data;
+    }
 
-    if(roomfile_it != gc_vec.cend()) roomio::copy_file_to_vec(roomfile_it->value,
-            p_paths.data_path);
-    else missing_gcvar("roomfile");
-    if(game_error::has_encountered_fatal()) return;
+    if(roomfile_it != gc_vec.cend()) {
+        game_init_data.room_file_path = p_paths.data_path;
+        game_init_data.room_file_path += roomfile_it->value;
+    } else {
+        game_init_data.no_error = false;
+        missing_gcvar("roomfile");
+        return game_init_data;
+    }
+    if(game_error::has_encountered_fatal()) {
+        game_init_data.no_error = false;
+        return game_init_data;
+    }
 
     if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value,
             p_paths.data_path);
-    else missing_gcvar("csfile");
-    if(game_error::has_encountered_fatal()) return;
+    else {
+        game_init_data.no_error = false;
+        missing_gcvar("csfile");
+        return game_init_data;
+    }
+    if(game_error::has_encountered_fatal()) {
+        game_init_data.no_error = false;
+        return game_init_data;
+    }
 
-    if(firstroom_it != gc_vec.cend()) m_start_room = firstroom_it->value;
-    else missing_gcvar("firstroom");
+    if(firstroom_it != gc_vec.cend()) {
+        game_init_data.no_error = true;
+        m_start_room = firstroom_it->value;
+        return game_init_data;
+    } else {
+        game_init_data.no_error = false;
+        missing_gcvar("firstroom");
+        return game_init_data;
+    }
 }
 
-void Game::run()
+void Game::run(GameInitData const& game_init_data)
 {
     if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm;
-        rmm.startLoop(m_start_room);
+        RoomManager rmm(game_init_data.room_file_path);
+
+        if(!game_error::has_encountered_fatal()) rmm.startLoop(m_start_room);
     }
 }

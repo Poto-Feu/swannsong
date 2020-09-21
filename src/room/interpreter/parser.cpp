@@ -19,8 +19,6 @@
 
 #include "room/interpreter/parser.hpp"
 #include "room/interpreter/token.hpp"
-#include "room/room_io.h"
-#include "room/find.hpp"
 #include "vars/gvars.hpp"
 #include "cutscenes.hpp"
 #include "game_error.hpp"
@@ -35,12 +33,12 @@ namespace parser
 
     static void CHOICE_block_err(std::string const& func_name)
     {
-        game_error::fatal_error(func_name + " function cannot be used in CHOICE block");
+        fatal_error(func_name + " function cannot be used in CHOICE block");
     }
 
     static void wrg_tkn_num(std::string const& func_name)
     {
-        game_error::fatal_error("wrong number of tokens (" + func_name + ")");
+        fatal_error("wrong number of tokens (" + func_name + ")");
     }
 
     //Interpret a line which use the SET function
@@ -66,40 +64,10 @@ namespace parser
             return;
         }
 
-        //Add all room choices into a vector in the RoomManager
-        auto add_all_choices = [](int roomln, room_struct& p_struct)
-        {
-            int choicesln = 0;
-            bool choicesremain = true;
-            
-            if(p_struct.currRoom.isChoicesLineSet()) {
-                choicesln = p_struct.currRoom.getChoicesLine();
-            } else {
-                bool choicesexist = room_find::choicesline(choicesln, roomln);
-
-                if(!choicesexist) fatal_error("Missing CHOICES block");
-                else p_struct.currRoom.setChoicesLine(choicesln);
-            }
-
-            for(int i = 1; choicesremain; i++) {
-                int onechoiceln = 0;
-                bool choiceexist = room_find::onechoiceline(i, choicesln,
-                        onechoiceln);
-
-                if(!choiceexist) {
-                    if(i == 1) fatal_error("No CHOICE block found");
-                    choicesremain = false;
-                } else p_struct.currState.addChoice(Choice(i, onechoiceln));
-            }
-        };
-
         if(p_struct.currState.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("DISPLAY");
 
-        if(r_vec[1].str == "CHOICES") {
-            int roomln = p_struct.currRoom.getRoomLine();
-
-            add_all_choices(roomln, p_struct);
-        } else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
+        if(r_vec[1].str == "CHOICES") p_struct.currState.addAllChoices();
+        else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
         else if(r_vec[1].str == "DESC") p_struct.currState.addDesc();
         else emit_warning("displaying one choice is not yet implemented");
     }
@@ -131,20 +99,19 @@ namespace parser
         if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
         else {
             if(cutscenes::check_exist(r_vec[1].str)) p_state.addCutscene(r_vec[1].str);
-            else game_error::emit_warning("unknown CUTSCENE id (" + r_vec[1].str + ")");
+            else emit_warning("unknown CUTSCENE id (" + r_vec[1].str + ")");
         }
     }
 
     //Intepret a line which use the GO function
-    static void interp_GO_func(TokenVec const& r_vec, RoomLoopState& p_rls)
+    static void interp_GO_func(TokenVec const& r_vec, room_struct& p_struct)
     {
         if(r_vec.size() != 2) wrg_tkn_num("GO");
         else {
-            int roomln = 0;
-
-            if(!room_find::roomline(&roomln, r_vec[1].str)) {
-                game_error::fatal_error("\"" + r_vec[1].str + "\" room was not found");
-            } else p_rls.setNextRoom(r_vec[1].str);
+            if(p_struct.roomMap.find(r_vec[1].str) != p_struct.roomMap.cend()) {
+                p_struct.currLoopState.setNextRoom(r_vec[1].str);
+            } else fatal_error(r_vec[1].str + " ROOM does not exist (GO function in "
+                    + p_struct.currRoom.getName() + " ROOM)");
         }
     }
 
@@ -170,8 +137,7 @@ namespace parser
                 item_name_pos = 2;
                 item_n = std::stoi(p_vec[1].str);
             } else {
-                game_error::fatal_error(
-                        "second part of a GET instruction must be a NUMBER or an ITEM");
+                fatal_error("second part of a GET instruction must be a NUMBER or an ITEM");
                 return;
             }
         } else if(p_vec.size() != 2) {
@@ -313,7 +279,7 @@ namespace parser
                 interp_CUTSCENE_func(r_vec, p_struct.currState);
                 break;
             case token_spec_type::GO:
-                interp_GO_func(r_vec, p_struct.currLoopState);
+                interp_GO_func(r_vec, p_struct);
                 break;
             case token_spec_type::UNFINISHED:
                 interp_UNFINISHED_func(r_vec, p_struct.currLoopState);
@@ -325,13 +291,13 @@ namespace parser
                 interp_USE_func(r_vec, p_struct.currPlayer.inv);
                 break;
             default:
-                game_error::fatal_error("incorrect spec_token_type in function : " + r_vec[0].str);
+                fatal_error("incorrect spec_token_type in function : " + r_vec[0].str);
                 break;
         }
     }
 
     //Interpret a line depending on its first token
-    static void interp_ins(TokenVec r_vec, room_struct& p_struct)
+    static void interp_ins(TokenVec const& r_vec, room_struct& p_struct)
     {
         switch(r_vec[0].type) {
             case token_type::FUNCTION:
@@ -341,16 +307,10 @@ namespace parser
                 interp_gvar_ins(r_vec);
                 break;
             default:
-                game_error::fatal_error("this is not yet implemented by the parser : "
+                fatal_error("this is not yet implemented by the parser : "
                         + r_vec[0].str);
                 break;
         }
-    }
-
-    static void parser_execins(std::string p_line, room_struct& p_struct)
-    {
-        TokenVec r_vec = token::create_arr(p_line);
-        if(!has_encountered_fatal()) interp_ins(r_vec, p_struct);
     }
 
     /*Check if the condition comparing the number of items with the specifed parameter equals to
@@ -429,81 +389,65 @@ namespace parser
             int starti = type_size + 1;
 
             for(unsigned int i = starti; i < ins_size; ++i) {
-                if(ins[i] == ' ' || ins[i] == '\t') break;
-                else arg += ins[i];
+                arg += ins[i];
             }
         } else correct_syntax = false;
         return correct_syntax;
     }
 
     //Skip all lines until the end of the block
-    int skip_until_end(int blockln)
+    void skip_until_end(std::vector<TokenVec> const& block_vector, unsigned int& i)
     {
         bool is_end = false;
-        int startln = blockln + 1;
-        int endln = startln;
 
-        for(int i = startln; !is_end; i++) {
-            std::string fw;
-            std::string buf;
-
-            endln = i;
-            roomio::fetch_ln(buf, i);
-            fw = stringsm::getfw(buf);
-
-            if(fw == "END") is_end = true;
-            else if(fw == "IF") i = skip_until_end(i);
+        for(++i; !is_end; ++i) {
+            if(block_vector[i][0].type == token_type::END) is_end = true;
+            else if(block_vector[i][0].type == token_type::IF) skip_until_end(block_vector, i);
         }
-        return endln;
     }
 
-    static bool check_condition(std::string const& buf, inventory::Inventory& p_inv)
+    static bool check_condition(TokenVec const& current_line, inventory::Inventory& p_inv)
     {
-        TokenVec r_vec = token::create_arr(buf);
-
-        if(r_vec[2].type == token_type::EXISTS) {
-            if(r_vec.size() != 3) wrg_tkn_num("EXISTS IF");
-            else if(gvars::exist(r_vec[1].str)) return true;
-        } else if(r_vec[2].type == token_type::NOT
-                && r_vec[3].type == token_type::EXISTS) {
-            if(r_vec.size() != 4) fatal_error("wrong arg number in EXISTS IF");
-            else if(!gvars::exist(r_vec[1].str)) return true;
-        } else if(r_vec[1].type == token_type::VARIABLE) {
-            return check_COMP_condition(r_vec);
-        } else if(r_vec[1].type == token_type::HAS
-                || (r_vec[1].type == token_type::NOT
-                && r_vec[2].type == token_type::HAS)) {
-            return check_HAS_condition(r_vec, p_inv);
+        if(current_line[2].type == token_type::EXISTS) {
+            if(current_line.size() != 3) wrg_tkn_num("EXISTS IF");
+            else if(gvars::exist(current_line[1].str)) return true;
+        } else if(current_line[2].type == token_type::NOT
+                && current_line[3].type == token_type::EXISTS) {
+            if(current_line.size() != 4) fatal_error("wrong arg number in EXISTS IF");
+            else if(!gvars::exist(current_line[1].str)) return true;
+        } else if(current_line[1].type == token_type::VARIABLE) {
+            return check_COMP_condition(current_line);
+        } else if(current_line[1].type == token_type::HAS
+                || (current_line[1].type == token_type::NOT
+                && current_line[2].type == token_type::HAS)) {
+            return check_HAS_condition(current_line, p_inv);
         } else fatal_error("IF condition type not recognized");
         return false;
     }
 
     //Execute instructions until the end of the block
-    int exec_until_end(int blockln, room_struct& p_struct)
+    void exec_until_end(std::vector<TokenVec> const& block_vector, room_struct& p_struct,
+            unsigned int& i)
     {
-        bool is_end = false;
-        int startln = blockln + 1;
-        int endln = startln;
+        for(; !p_struct.currLoopState.is_unfinished() && i < block_vector.size(); ++i) {
+            TokenVec current_line = block_vector[i];
 
-        for(int i = startln; !is_end && !p_struct.currLoopState.is_unfinished(); i++) {
+            token::set_runtime_tokens(current_line);
+
             if(p_struct.currLoopState.is_endgame()) break;
-            endln = i;
-            std::string buf;
-            roomio::fetch_ln(buf, i);
-            std::string fw = stringsm::getfw(buf);
-
-            if(fw == "END") is_end = true;
-            else if(fw == "IF") {
-                if(check_condition(buf, p_struct.currPlayer.inv)) i = exec_until_end(i, p_struct);
-                else {
+            else if(current_line[0].type == token_type::END) break;
+            else if(current_line[0].type == token_type::IF) {
+                if(check_condition(current_line, p_struct.currPlayer.inv)) {
+                    ++i;
+                    exec_until_end(block_vector, p_struct, i);
+                } else {
                     if(has_encountered_fatal()) break;
-                    else i = parser::skip_until_end(i);
+                    else parser::skip_until_end(block_vector, i);
                 }
-            } else if(fw == "TEXT") continue;
-            else {
-                parser_execins(buf, p_struct);
+            } else if(current_line[0].type != token_type::TEXT) {
+                interp_ins(current_line, p_struct);
                 if(has_encountered_fatal()) break;
             }
-        } return endln;
+        }
     }
 }

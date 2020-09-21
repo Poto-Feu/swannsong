@@ -27,6 +27,7 @@ enum class token_type
 {
     FUNCTION,
     IF,
+    END,
     VARIABLE,
     OPERATOR,
     EQUAL,
@@ -68,5 +69,6 @@ typedef std::vector<Token> TokenVec;
 namespace token
 {
     TokenVec create_arr(std::string const& p_str);
+    void set_runtime_tokens(TokenVec& p_vec);
 }
 #endif
