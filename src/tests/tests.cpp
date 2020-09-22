@@ -26,7 +26,6 @@
 #include "fileio/save/save_const.hpp"
 #include "fileio/save/SaveChunk.hpp"
 #include "cutscenes.hpp"
-#include "exitgame.h"
 #include "pcurses.hpp"
 #include "stringsm.h"
 

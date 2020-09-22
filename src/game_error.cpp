@@ -24,7 +24,6 @@ extern "C" {
 #include <fstream>
 #include <iostream>
 #include "game_error.hpp"
-#include "exitgame.h"
 #include "files_path.hpp"
 #include "stringsm.h"
 

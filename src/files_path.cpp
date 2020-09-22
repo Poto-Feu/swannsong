@@ -20,7 +20,6 @@
 #include <iostream>
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "exitgame.h"
 #include "os_module.hpp"
 
 namespace files_path
