@@ -116,7 +116,7 @@ namespace token
         };
 
         //An enum is used for faster condition checking in the parser
-        static const std::array<func_list_item, 8> func_list = 
+        static const std::array<func_list_item, 9> func_list = 
         {{
             { "PRINT", token_spec_type::PRINT },
             { "DISPLAY", token_spec_type::DISPLAY },
@@ -125,6 +125,7 @@ namespace token
             { "CUTSCENE", token_spec_type::CUTSCENE },
             { "GET", token_spec_type::GET },
             { "USE", token_spec_type::USE },
+            { "EXIT", token_spec_type::EXIT },
             { "UNFINISHED", token_spec_type::UNFINISHED }
         }};
 

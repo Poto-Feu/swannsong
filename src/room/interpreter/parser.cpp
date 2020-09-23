@@ -171,6 +171,11 @@ namespace parser
         inventory::useitem(p_inv, p_vec[item_name_pos].str, item_n);
     }
 
+    static void interp_EXIT_func(RoomLoopState& p_rls)
+    {
+        p_rls.endLoop();
+    }
+
     //Interpret a line which changes a gvar value
     static void interp_gvar_ins(TokenVec r_vec)
     {
@@ -289,6 +294,9 @@ namespace parser
                 break;
             case token_spec_type::USE:
                 interp_USE_func(r_vec, p_struct.currPlayer.inv);
+                break;
+            case token_spec_type::EXIT:
+                interp_EXIT_func(p_struct.currLoopState);
                 break;
             default:
                 fatal_error("incorrect spec_token_type in function : " + r_vec[0].str);

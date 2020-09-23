@@ -54,6 +54,7 @@ enum class token_spec_type
     CUTSCENE,
     GET,
     USE,
+    EXIT,
     UNFINISHED
 };
 
