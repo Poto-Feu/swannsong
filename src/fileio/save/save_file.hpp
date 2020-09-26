@@ -22,6 +22,7 @@
 #include <filesystem>
 
 #include "player/Player.hpp"
+#include "pstrings.hpp"
 
 namespace save_file
 {
@@ -32,5 +33,5 @@ namespace save_file
     };
 
     //Start the saving operations
-    void start_saving(data_struct p_struct);
+    void start_saving(data_struct p_struct, PStrings const& program_strings);
 }

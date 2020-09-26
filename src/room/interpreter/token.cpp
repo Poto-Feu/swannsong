@@ -22,7 +22,6 @@
 
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
-#include "pstrings.h"
 #include "stringsm.h"
 
 //Set the appropriate type to each Token in a TokenVec
@@ -181,7 +180,7 @@ namespace token
         else return false;
     }
 
-    static void set_tokens_type(TokenVec& p_vec)
+    static void set_tokens_type(TokenVec& p_vec, PStrings const& program_strings)
     {
         int i = 0;
 
@@ -195,7 +194,7 @@ namespace token
                 else if(is_number(it.str)) it.type = token_type::NUMBER;
                 else if(gvars::exist(it.str)) it.type = token_type::VARIABLE;
                 else if(is_string(it.str)) it.type = token_type::STRING;
-                else if(pstrings::check_exist(it.str)) it.type = token_type::STRING_ID;
+                else if(program_strings.check_exist(it.str)) it.type = token_type::STRING_ID;
                 else if(it.str == "TEXT") it.type = token_type::TEXT;
                 else if(p_vec[0].str == "SET" && i == 1) it.type = token_type::NEWVAR;
                 else if(it.str == "EXISTS" || it.str == "EXIST") it.type = token_type::EXISTS;
@@ -207,11 +206,11 @@ namespace token
     }
 
     //Create TokenVec with the specified string
-    TokenVec create_arr(std::string const& p_str)
+    TokenVec create_arr(std::string const& p_str, PStrings const& program_strings)
     {
         TokenVec r_vec = create_token_vector(p_str);
 
-        set_tokens_type(r_vec);
+        set_tokens_type(r_vec, program_strings);
         return r_vec;
     }
 

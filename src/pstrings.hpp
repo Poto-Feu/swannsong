@@ -17,32 +17,29 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PSTRINGS_H
-#define PSTRINGS_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <stdbool.h>
-
-bool pstrings_check_exist(const char* id);
-void pstrings_display(const char* id);
-
-#ifdef __cplusplus
-}
+#pragma once
 
 #include <filesystem>
 #include <string>
+#include <unordered_map>
 
-namespace pstrings
+typedef std::string PStringsElement;
+
+//Stores program strings
+class PStrings
 {
-    void copy_file_to_vec(std::string const& p_langdir, std::filesystem::path const& data_path);
-    std::string fetch(std::string const& id);
-    void display(std::string const& id);
-    bool check_exist(std::string const& id);
-}
+    public:
 
-#endif
+        PStrings();
+        PStrings(std::string const& p_langdir, std::filesystem::path const& data_path);
 
-#endif
+        std::string const& fetch(std::string const& id) const;
+        bool check_exist(std::string const& id) const;
+
+    private:
+
+        std::unordered_map<std::string, PStringsElement> m_map;
+
+        //Return an iterator corresponding to p_id key
+        auto find_it_vec(std::string const& id) const;
+};

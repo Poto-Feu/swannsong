@@ -17,15 +17,13 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef LOAD_SAVEFILE_HPP
-#define LOAD_SAVEFILE_HPP
+#pragma once
 
 #include "fileio/save/LoadedFile.hpp"
+#include "pstrings.hpp"
 
 namespace load_savefile
 {
     //Start the loading operations
-    LoadedFile_data start_loading();
+    LoadedFile_data start_loading(PStrings const& program_strings);
 }
-
-#endif

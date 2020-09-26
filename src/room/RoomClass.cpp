@@ -27,7 +27,7 @@
 #include "cutscenes.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
+#include "pstrings.hpp"
 #include "stringsm.h"
 #include "userio.h"
 
@@ -95,12 +95,12 @@ void Room::setChoices(std::vector<Choice>&& choices_vec)
     m_Choices_vec = std::move(choices_vec);
 }
 
-static void show_prompt()
+static void show_prompt(PStrings const& program_strings)
 {
     int str_line = display_server::get_last_line() + 2;
 
     if(str_line == display_server::LAST_LINE_ERR + 2) str_line = pcurses::title_y + 6;
-    pcurses::display_pos_string(pstrings::fetch("room_prompt_text"), 12, str_line);
+    pcurses::display_pos_string(program_strings.fetch("room_prompt_text"), 12, str_line);
 }
 
 //Read the first ATLAUNCH block encountered starting from specified line
@@ -110,24 +110,24 @@ static void atlaunch(room_struct& p_struct)
 
     p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
     parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct, foundln);
-    p_struct.currState.displayAll(p_struct.currRoom);
-    show_prompt();
+    p_struct.currState.displayAll(p_struct.currRoom, p_struct.program_strings);
+    show_prompt(p_struct.program_strings);
     display_server::show_screen();
 }
 
 //Reset the room screen with an added message to notify the user that its input is not correct
-static void incorrect_input(unsigned int& incorrect_input_n)
+static void incorrect_input(unsigned int& incorrect_input_n, PStrings const& program_strings)
 {
     if(incorrect_input_n < 3) {
         ++incorrect_input_n;
         display_server::clear_screen();
-        display_server::add_string(pstrings::fetch("incorrect_input"),
+        display_server::add_string(program_strings.fetch("incorrect_input"),
                 {pcurses::lines - 3, pcurses::margin}, A_BOLD);
         display_server::load_save();
         display_server::show_screen();
     } else {
         display_server::clear_screen();
-        display_server::add_string(pstrings::fetch("room_need_help"),
+        display_server::add_string(program_strings.fetch("room_need_help"),
                 {pcurses::lines - 3, pcurses::margin}, A_BOLD);
         display_server::load_save();
         display_server::show_screen();
@@ -151,7 +151,8 @@ static bool process_input(room_struct& p_struct) {
             unsigned int str_digit = std::stoi(user_inp);
             Choice const& current_choice = p_struct.currRoom.getChoice(choice_status, str_digit);
 
-            if(!choice_status || str_digit == 0) incorrect_input(incorrect_input_n);
+            if(!choice_status || str_digit == 0) incorrect_input(incorrect_input_n,
+                    p_struct.program_strings);
             else {
                 //Process the input if it is a number corresponding to a choice
                 unsigned int start_ln = 0;
@@ -160,7 +161,7 @@ static bool process_input(room_struct& p_struct) {
                 parser::exec_until_end(current_choice.getInstructions(), p_struct, start_ln);
                 if(game_error::has_encountered_fatal()) return false;
                 else {
-                    p_struct.currState.displayCutscenes();
+                    p_struct.currState.displayCutscenes(p_struct.program_strings);
                     if(p_struct.currLoopState.is_endgame()) return true;
                     else correct_input = true;
                 }
@@ -170,7 +171,7 @@ static bool process_input(room_struct& p_struct) {
             p_struct.currLoopState.endLoop();
         } else if(user_inp == "load") {
             correct_input = true;
-            auto save_data = load_savefile::start_loading();
+            auto save_data = load_savefile::start_loading(p_struct.program_strings);
 
             if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
                 p_struct.currLoopState.setNextRoom(save_data.room);
@@ -179,23 +180,24 @@ static bool process_input(room_struct& p_struct) {
             }
         } else if(user_inp == "save") {
             correct_input = true;
-            save_file::start_saving({p_struct.currRoom.getName(), p_struct.currPlayer});
+            save_file::start_saving({p_struct.currRoom.getName(), p_struct.currPlayer},
+                    p_struct.program_strings);
         } else if(user_inp == "help") {
             correct_input = true;
-            cutscenes::display("help");
+            cutscenes::display("help", p_struct.program_strings);
         } else if(user_inp == "inv" || user_inp == "inventory") {
             correct_input = true;
-            inventory::display_screen(p_struct.currPlayer.inv);
-        } else incorrect_input(incorrect_input_n);
+            inventory::display_screen(p_struct.currPlayer.inv, p_struct.program_strings);
+        } else incorrect_input(incorrect_input_n, p_struct.program_strings);
     }
     return true;
 }
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
-        std::unordered_map<std::string, Room> const& room_map)
+        std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings)
 {
     RoomState currentState;
-    room_struct p_struct { *this, currentState, p_rls, p_player, room_map };
+    room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings };
 
     display_server::clear_screen();
     p_rls.setNextRoom(m_name);

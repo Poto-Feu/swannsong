@@ -21,6 +21,7 @@
 
 #include "room/Choice.hpp"
 #include "room/RoomClass.hpp"
+#include "pstrings.hpp"
 
 class RoomState
 {
@@ -43,10 +44,10 @@ class RoomState
         void addString(std::string const& p_str);
         void addCutscene(std::string const& p_cs);
 
-        void displayCutscenes();
+        void displayCutscenes(PStrings const& program_strings);
         void displayTitle(Room const& p_room) const;
         void displayDesc(Room const& p_room) const;
-        void displayAll(Room const& p_room);
+        void displayAll(Room const& p_room, PStrings const& program_strings);
 
         void setBlockType(bt const p_bt);
 

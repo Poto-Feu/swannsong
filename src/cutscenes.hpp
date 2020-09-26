@@ -17,16 +17,17 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CUTSCENES_HPP
-#define CUTSCENES_HPP
+#pragma once
 
 #include <filesystem>
 #include <string>
 
+#include "pstrings.hpp"
+
 namespace cutscenes
 {
-    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path);
-    void display(std::string const& p_name);
+    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path,
+            PStrings const& program_strings);
+    void display(std::string const& p_name, PStrings const& program_strings);
     bool check_exist(std::string const& p_name);
 }
-#endif

@@ -21,11 +21,10 @@
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 
 namespace load_savefile
 {
-    LoadedFile_data start_loading()
+    LoadedFile_data start_loading(PStrings const& program_strings)
     {
         auto paths = files_path::getpaths();
         paths.local_data_path += "save/";
@@ -35,12 +34,14 @@ namespace load_savefile
 
         if(!savefile_data.file_exists || !savefile_data.is_savefile) {
             display_server::clear_screen();
-            pcurses::display_center_string(pstrings::fetch("load_nofile"), pcurses::lines / 2);
-            pcurses::display_penter_message();
+            pcurses::display_center_string(program_strings.fetch("load_nofile"),
+                    pcurses::lines / 2);
+            pcurses::display_penter_message(program_strings);
         } else if(savefile_data.is_corrupted) {
             display_server::clear_screen();
-            pcurses::display_center_string(pstrings::fetch("load_corrupted"), pcurses::lines / 2);
-            pcurses::display_penter_message();
+            pcurses::display_center_string(program_strings.fetch("load_corrupted"),
+                    pcurses::lines / 2);
+            pcurses::display_penter_message(program_strings);
         }
 
         return savefile_data;

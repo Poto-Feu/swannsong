@@ -22,6 +22,8 @@
 #include <filesystem>
 #include <string>
 
+#include "pstrings.hpp"
+
 struct GameInitData
 {
     std::filesystem::path room_file_path;
@@ -41,6 +43,7 @@ class Game
         std::string m_start_room;
 
         bool m_strings_init = false;
+        PStrings m_program_strings;
 
         void ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path);
         void missing_gcvar(std::string const& p_name);

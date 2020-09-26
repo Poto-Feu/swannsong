@@ -24,7 +24,6 @@
 #include "display_server.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 #include "stringsm.h"
 
 RoomState::RoomState() { }
@@ -64,9 +63,9 @@ RoomState::bt RoomState::getBlockType() const
     return block_type;
 }
 
-void RoomState::displayCutscenes()
+void RoomState::displayCutscenes(PStrings const& program_strings)
 {
-    for(auto const& it : cs_list) cutscenes::display(it);
+    for(auto const& it : cs_list) cutscenes::display(it, program_strings);
     cs_list.clear();
 }
 
@@ -84,9 +83,9 @@ void RoomState::displayDesc(Room const& p_room) const
     pcurses::display_center_string(p_room.getDesc(), str_line);
 }
 
-void RoomState::displayAll(Room const& p_room)
+void RoomState::displayAll(Room const& p_room, PStrings const& program_strings)
 {
-    displayCutscenes();
+    displayCutscenes(program_strings);
     display_server::clear_screen();
 
     if(is_title_displayed()) displayTitle(p_room);

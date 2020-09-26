@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "pstrings.hpp"
+
 namespace inventory
 {
     typedef uint32_t item_val_type;
@@ -46,5 +48,5 @@ namespace inventory
     does not exist*/
     item_val_type return_item_n(Inventory const& p_inv, std::string const& p_name);
     //Display the inventory screen
-    void display_screen(Inventory const& p_inv);
+    void display_screen(Inventory const& p_inv, PStrings const& program_strings);
 }

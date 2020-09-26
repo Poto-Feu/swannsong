@@ -25,6 +25,7 @@
 #include "room/RoomLoopState.hpp"
 #include "room/Choice.hpp"
 #include "player/Player.hpp"
+#include "pstrings.hpp"
 
 class Room 
 {
@@ -52,7 +53,8 @@ class Room
         void displayAllChoices() const;
 
         bool load(RoomLoopState& p_rls, Player& p_player,
-                std::unordered_map<std::string, Room> const& room_map);
+                std::unordered_map<std::string, Room> const& room_map,
+                PStrings const& program_strings);
 
     private:
 

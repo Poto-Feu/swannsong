@@ -17,10 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CUTSCENE_CLASS_HPP
-#define CUTSCENE_CLASS_HPP
+#pragma once
 
 #include <vector>
+
+#include "pstrings.hpp"
 #include "cutscenes.hpp"
 
 enum class cs_action_type
@@ -45,11 +46,9 @@ class Cutscene
         std::string name;
         std::vector<cs_action> actions_vec;
 
-        void display() const;
+        void display(PStrings const& program_strings) const;
 
     private:
 
-        void execute_all_actions() const;
+        void execute_all_actions(PStrings const& program_strings) const;
 };
-
-#endif

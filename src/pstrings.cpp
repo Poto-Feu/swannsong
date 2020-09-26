@@ -20,114 +20,101 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "pstrings.h"
+
+#include "pstrings.hpp"
 #include "fileio/fileio.h"
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "lang.hpp"
 #include "stringsm.h"
 
-namespace pstrings
+//Set the file pointer to the file containing the strings correponding to the selected language
+static std::ifstream open_strfile(std::string p_langdir)
 {
-    struct PstringsElement
-    {
-        std::string id;
-        std::string val;
-    };
+    p_langdir.append(langmod::get_lang());
+    p_langdir.append(".txt");
 
-    static std::vector<PstringsElement> pstr_vec {};
+    return std::ifstream(p_langdir);
+}
 
-    //Set the file pointer to the file containing the strings correponding to the selected language
-    static std::ifstream open_strfile(std::string p_langdir)
-    {
-        p_langdir.append(langmod::get_lang());
-        p_langdir.append(".txt");
+static void split_file_line(std::string& r_id, std::string& r_val, std::string const& buf)
+{
+    int sp_ind = 0;
+    int quote_ind = 0;
+    bool quote_inc = false;
+    char quote_ch = '\0';
 
-        return std::ifstream(p_langdir);
-    }
-
-    static void split_file_line(std::string& r_id, std::string& r_val, std::string const& buf)
-    {
-        int sp_ind = 0;
-        int quote_ind = 0;
-        bool quote_inc = false;
-        char quote_ch = '\0';
-
-        for(const auto& it : buf) {
-            if(it == ' ' || it == '\t') break;
-            else {
-                ++sp_ind;
-                r_id += it;
-            }
-        }
-
-        for(int i = sp_ind; buf[i] != '\0'; ++i) {
-            if(buf[i] == '"' || buf[i] == '\'') {
-                quote_inc = true;
-                quote_ch = buf[i];
-                quote_ind = i;
-                break;
-            }
-        }
-
-        if(!quote_inc) game_error::fatal_error("wrong pstring format (" + buf + ")");
+    for(const auto& it : buf) {
+        if(it == ' ' || it == '\t') break;
         else {
-            for(int i = quote_ind+1; buf[i] != '\0'; ++i) {
-                if(buf[i] == quote_ch) break;
-                else if(buf[i] == '\\' && buf[i+1] == quote_ch) {
-                    r_val += quote_ch;
-                    ++i;
-                } else r_val += buf[i];
-            }
+            ++sp_ind;
+            r_id += it;
         }
     }
 
-    static void add_to_vec(std::string const& p_id, std::string const& p_val)
-    {
-        pstr_vec.push_back({std::move(p_id), std::move(p_val)});
-    }
-
-    void copy_file_to_vec(std::string const& p_langdir, std::filesystem::path const& data_path)
-    {
-        using namespace files_path;
-
-        std::string buf;
-        std::ifstream file_stream = open_strfile(data_path.string() + p_langdir);
-
-        while(fileio::getfileln(buf, file_stream)) {
-            std::string r_id;
-            std::string r_val;
-
-            stringsm::rtab(buf);
-
-            if(!buf.empty() && buf[0] != '#') {
-                split_file_line(r_id, r_val, buf);
-                if(game_error::has_encountered_fatal()) return;
-                else add_to_vec(r_id, r_val);
-            } else continue;
+    for(int i = sp_ind; buf[i] != '\0'; ++i) {
+        if(buf[i] == '"' || buf[i] == '\'') {
+            quote_inc = true;
+            quote_ch = buf[i];
+            quote_ind = i;
+            break;
         }
     }
 
-    static auto find_it_vec(std::string const& p_id)
-    {
-        return std::find_if(pstr_vec.cbegin(), pstr_vec.cend(),
-                [p_id](PstringsElement const& cid) {
-                return p_id == cid.id;
-                });
+    if(!quote_inc) game_error::fatal_error("wrong pstring format (" + buf + ")");
+    else {
+        for(int i = quote_ind+1; buf[i] != '\0'; ++i) {
+            if(buf[i] == quote_ch) break;
+            else if(buf[i] == '\\' && buf[i+1] == quote_ch) {
+                r_val += quote_ch;
+                ++i;
+            } else r_val += buf[i];
+        }
     }
+}
 
-    //Copy the corresponding string into the pointer of a char pointer
-    std::string fetch(std::string const& p_id)
-    {
-        auto it = find_it_vec(p_id);
+auto PStrings::find_it_vec(std::string const& id) const
+{
+    return m_map.find(id);
+}
 
-        if(it != pstr_vec.cend()) return it->val;
-        else return "MissingStr";
+//Check if a string is defined in the lang file
+bool PStrings::check_exist(std::string const& id) const
+{
+    return find_it_vec(id) != m_map.cend();
+}
+
+PStrings::PStrings() { }
+PStrings::PStrings(std::string const& p_langdir, std::filesystem::path const& data_path)
+{
+    using namespace files_path;
+
+    std::string buf;
+    std::ifstream file_stream = open_strfile(data_path.string() + p_langdir);
+
+    /*THIS MUST NOT BE REMOVED ! It will serve as a placeholder if the program string was not
+    defined*/
+    m_map["missing_str"] = "MissingString";
+
+    while(fileio::getfileln(buf, file_stream)) {
+        std::string r_id;
+        std::string r_val;
+
+        stringsm::rtab(buf);
+
+        if(!buf.empty() && buf[0] != '#') {
+            split_file_line(r_id, r_val, buf);
+            if(game_error::has_encountered_fatal()) return;
+            else m_map[r_id] = std::move(r_val);
+    
+        } else continue;
     }
+}
 
-    //Check if a string is defined in the lang file
-    bool check_exist(std::string const& p_id)
-    {
-        return find_it_vec(p_id) != pstr_vec.cend();
-    }
+std::string const& PStrings::fetch(std::string const& id) const
+{
+    auto string_it = find_it_vec(id);
+
+    if(string_it != m_map.cend()) return string_it->second;
+    else return m_map.find("missing_str")->second;
 }

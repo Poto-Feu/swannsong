@@ -40,17 +40,17 @@ namespace tests
         exit(0);
     }
 
-    void cutscenes_test()
+    void cutscenes_test(PStrings const& program_strings)
     {
-        cutscenes::display("about");
+        cutscenes::display("about", program_strings);
 
         exit(0);
     }
 
-    void token()
+    void token(PStrings const& program_strings)
     {
         std::string test_str("TITLE SwannSong Adventure");
-        TokenVec test_vec = token::create_arr(test_str);
+        TokenVec test_vec = token::create_arr(test_str, program_strings);
 
         for(auto& it : test_vec) {
             printf("type: %d\nvalue: %s\n\n", static_cast<int>(it.type),

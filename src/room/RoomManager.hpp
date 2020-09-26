@@ -26,18 +26,53 @@
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
 #include "room/RoomState.hpp"
+#include "pstrings.hpp"
+
+struct room_property_rtrn
+{
+    std::string& str;
+    bool& use_flag;
+};
+
+struct RoomBlockData {
+    std::vector<TokenVec>& block_ins;
+    std::string const& block_name;
+    bool& use_flag;
+};
+
+struct RoomVectorData {
+    std::vector<std::string>& room_file_lines;
+    unsigned int& i;
+};
+
+struct RoomCHOICESData {
+    std::vector<Choice>& choices_vec;
+    bool& use_flag;
+};
 
 class RoomManager
 {
     public:
 
-        explicit RoomManager(std::filesystem::path const& room_file_path);
+        explicit RoomManager(std::filesystem::path const& room_file_path,
+                PStrings&& program_strings);
         //Start the game loop which loads rooms until the end signal is enabled
         void startLoop(std::string const& start_room);
 
     private:
 
         std::unordered_map<std::string, Room> m_room_map;
+        PStrings&& m_program_strings;
         RoomLoopState m_rls;
         Player m_player;
+
+        Room create_new_room(std::vector<std::string> room_file_lines, unsigned int& i,
+                bool& no_error, std::string const& room_name);
+        void unfinished_game();
+        bool set_room_property(std::string const& room_name, std::string const& prop_name,
+                std::string const& prop_arg, room_property_rtrn& return_variables);
+        bool set_block(std::string const& room_name, RoomVectorData& vec_data,
+                RoomBlockData& block_data);
+        bool set_CHOICES(std::string const& room_name, RoomVectorData& vec_data,
+                RoomCHOICESData& p_data);
 };

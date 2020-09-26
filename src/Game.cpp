@@ -29,7 +29,6 @@
 #include "game_error.hpp"
 #include "lang.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 #include "userio.h"
 
 const int LANG_NUMBER = 2;
@@ -144,7 +143,7 @@ void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& d
 
                 langmod::set_lang(lang);
                 validinp = true;
-                pstrings::copy_file_to_vec(p_langdir, data_path);
+                m_program_strings = PStrings(p_langdir, data_path);
                 if(!game_error::has_encountered_fatal()) m_strings_init = true;
             } else show_err_msg("Nope. (not a valid input)");
         } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
@@ -209,8 +208,8 @@ GameInitData Game::init()
         return game_init_data;
     }
 
-    if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value,
-            p_paths.data_path);
+    if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value, p_paths.data_path,
+            m_program_strings);
     else {
         game_init_data.no_error = false;
         missing_gcvar("csfile");
@@ -235,7 +234,7 @@ GameInitData Game::init()
 void Game::run(GameInitData const& game_init_data)
 {
     if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm(game_init_data.room_file_path);
+        RoomManager rmm(game_init_data.room_file_path, std::move(m_program_strings));
 
         if(!game_error::has_encountered_fatal()) rmm.startLoop(m_start_room);
     }

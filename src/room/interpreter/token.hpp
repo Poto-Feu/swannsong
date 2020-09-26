@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "pstrings.hpp"
+
 enum class token_type
 {
     FUNCTION,
@@ -69,7 +71,7 @@ typedef std::vector<Token> TokenVec;
 
 namespace token
 {
-    TokenVec create_arr(std::string const& p_str);
+    TokenVec create_arr(std::string const& p_str, PStrings const& program_strings);
     void set_runtime_tokens(TokenVec& p_vec);
 }
 #endif

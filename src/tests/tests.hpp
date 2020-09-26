@@ -17,15 +17,14 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef TESTS_HPP
-#define TESTS_HPP
+#pragma once
+
+#include "pstrings.hpp"
 
 namespace tests
 {
     void stringsm_is_str();
-    void cutscenes_test();
+    void cutscenes_test(PStrings const& program_strings);
     void token();
     void savechunk();
 }
-
-#endif

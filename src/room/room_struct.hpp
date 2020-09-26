@@ -31,4 +31,5 @@ struct room_struct
     RoomLoopState& currLoopState;
     Player& currPlayer;
     std::unordered_map<std::string, Room> const& roomMap;
+    PStrings const& program_strings;
 };

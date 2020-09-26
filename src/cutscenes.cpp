@@ -19,12 +19,12 @@
 
 #include <algorithm>
 #include <fstream>
+
 #include "cutscenes.hpp"
 #include "fileio/fileio.h"
 #include "CutsceneClass.hpp"
 #include "files_path.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 #include "stringsm.h"
 #include "userio.h"
 
@@ -41,7 +41,8 @@ namespace cutscenes
     }
 
     //Initialize the vector by reading the cutscenes file
-    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path)
+    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path,
+            PStrings const& program_strings)
     {
         using namespace files_path;
 
@@ -69,9 +70,9 @@ namespace cutscenes
                 else if(stringsm::is_str(buf)) {
                     curr_action.type = cs_action_type::STRING;
                     curr_action.content = stringsm::ext_str_quotes(buf);
-                } else if(pstrings::check_exist(fw)) {
+                } else if(program_strings.check_exist(fw)) {
                     curr_action.type = cs_action_type::STRING;
-                    curr_action.content = pstrings::fetch(fw);
+                    curr_action.content = program_strings.fetch(fw);
                 } else if(fw == "END") {
                     break;
                 }
@@ -82,15 +83,15 @@ namespace cutscenes
     }
 
     //Display a cutscene
-    void display(std::string const& p_name)
+    void display(std::string const& p_name, PStrings const& program_strings)
     {
         auto it = find_vec_it(p_name);
         display_server::clear_screen();
 
-        if(it != cs_vec.cend()) it->display();
+        if(it != cs_vec.cend()) it->display(program_strings);
         else {
             pcurses::display_center_string("missingCutscene", pcurses::top_margin);
-            pcurses::display_penter_message();
+            pcurses::display_penter_message(program_strings);
         }
     }
 

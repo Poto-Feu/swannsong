@@ -24,7 +24,6 @@
 #include "game_error.hpp"
 #include "player/inventory.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 #include "stringsm.h"
 
 namespace parser
@@ -73,7 +72,8 @@ namespace parser
     }
 
     //Interpret a line which use the PRINT function
-    static void interp_PRINT_func(TokenVec const& r_vec, RoomState& p_state)
+    static void interp_PRINT_func(TokenVec const& r_vec, RoomState& p_state,
+            PStrings const& program_strings)
     {
         if(r_vec.size() != 2) wrg_tkn_num("PRINT");
         else {
@@ -84,7 +84,7 @@ namespace parser
                     p_state.addString(r_vec[1].str);
                     break;
                 case token_type::STRING_ID:
-                    p_state.addString(pstrings::fetch(r_vec[1].str));
+                    p_state.addString(program_strings.fetch(r_vec[1].str));
                     break;
                 default:
                     emit_warning("token cannot be displayed (PRINT)");
@@ -275,7 +275,7 @@ namespace parser
                 interp_DISPLAY_func(r_vec, p_struct);
                 break;
             case token_spec_type::PRINT:
-                interp_PRINT_func(r_vec, p_struct.currState);
+                interp_PRINT_func(r_vec, p_struct.currState, p_struct.program_strings);
                 break;
             case token_spec_type::SET:
                 interp_SET_func(r_vec);

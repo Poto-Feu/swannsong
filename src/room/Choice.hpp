@@ -20,13 +20,15 @@
 #pragma once
 
 #include "room/interpreter/token.hpp"
+#include "pstrings.hpp"
 
 class Choice
 {
     public:
 
         Choice();
-        Choice(unsigned int choice_id, std::vector<TokenVec>&& instructions);
+        Choice(unsigned int choice_id, std::vector<TokenVec>&& instructions,
+                PStrings const& program_strings);
 
         unsigned int getId() const;
 

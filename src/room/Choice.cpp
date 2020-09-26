@@ -22,12 +22,11 @@
 #include "room/Choice.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 #include "stringsm.h"
 
 Choice::Choice() { }
-Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions) : m_id(choice_n),
-    m_instructions(instructions)
+Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,
+        PStrings const& program_strings) : m_id(choice_n), m_instructions(instructions)
 {
     auto TEXT_prop = std::find_if(m_instructions.cbegin(), m_instructions.cend(),
             [&] (TokenVec const& tkns) {
@@ -38,8 +37,9 @@ Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions) : m_
         if((*TEXT_prop)[1].type == token_type::STRING) {
             m_text = stringsm::ext_str_quotes((*TEXT_prop)[1].str);
         } else if((*TEXT_prop)[1].type == token_type::STRING_ID) {
-            m_text = pstrings::fetch((*TEXT_prop)[1].str);
-        } else game_error::fatal_error("TEXT token not followed by STRING or STRING_ID token");
+            m_text = program_strings.fetch((*TEXT_prop)[1].str);
+        } else game_error::fatal_error("TEXT token not followed by STRING or STRING_ID token ("
+                + (*TEXT_prop)[1].str + ")");
     }
 }
 

@@ -21,11 +21,10 @@
 #include "fileio/save/SaveFile.hpp"
 #include "files_path.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 
 namespace save_file
 {
-    void start_saving(data_struct p_struct)
+    void start_saving(data_struct p_struct, PStrings const& program_strings)
     {
         auto paths = files_path::getpaths();
         paths.local_data_path += "save/";
@@ -34,12 +33,14 @@ namespace save_file
                 p_struct.player_data });
         if(mainsave.writeToFile()) {
             display_server::clear_screen();
-            pcurses::display_center_string(pstrings::fetch("save_success"), pcurses::lines / 2);
-            pcurses::display_penter_message();
+            pcurses::display_center_string(program_strings.fetch("save_success"),
+                    pcurses::lines / 2);
+            pcurses::display_penter_message(program_strings);
         } else {
             display_server::clear_screen();
-            pcurses::display_center_string(pstrings::fetch("save_failed"), pcurses::lines / 2);
-            pcurses::display_penter_message();
+            pcurses::display_center_string(program_strings.fetch("save_failed"),
+                    pcurses::lines / 2);
+            pcurses::display_penter_message(program_strings);
         }
     }
 }

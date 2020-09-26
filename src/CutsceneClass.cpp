@@ -20,17 +20,16 @@
 #include "CutsceneClass.hpp"
 #include "display_server.hpp"
 #include "pcurses.hpp"
-#include "pstrings.h"
 #include "userio.h"
 
 Cutscene::Cutscene() { }
 
-void Cutscene::display() const
+void Cutscene::display(PStrings const& program_strings) const
 {
-    execute_all_actions();
+    execute_all_actions(program_strings);
 }
 
-void Cutscene::execute_all_actions() const
+void Cutscene::execute_all_actions(PStrings const& program_strings) const
 {
     int str_line = pcurses::top_margin;
 
@@ -44,12 +43,12 @@ void Cutscene::execute_all_actions() const
                 ++str_line;
                 break;
             case cs_action_type::PAUSE:
-                pcurses::display_penter_message();
+                pcurses::display_penter_message(program_strings);
                 str_line = pcurses::top_margin;
                 break;
         }
     }
 
-    pcurses::display_penter_message();
+    pcurses::display_penter_message(program_strings);
     display_server::clear_screen();
 }

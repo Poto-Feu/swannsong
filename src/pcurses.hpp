@@ -17,8 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PCURSES_H
-#define PCURSES_H
+#pragma once
 
 extern "C" {
 #include <curses.h>
@@ -26,7 +25,9 @@ extern "C" {
 
 #include <string>
 #include <vector>
+
 #include "display_server.hpp"
+#include "pstrings.hpp"
 
 namespace pcurses
 {
@@ -45,7 +46,5 @@ namespace pcurses
     void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
 
-    void display_penter_message();
+    void display_penter_message(PStrings const& program_strings);
 }
-
-#endif
