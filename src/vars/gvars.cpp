@@ -23,57 +23,52 @@
 
 namespace gvars
 {
-    static gvarVector gvar_vec;
-
-    static void add_to_list(std::string const& p_name, gvar_type p_val)
+    static void add_to_list(gvarVector& p_vec, std::string const& p_name, gvar_type p_val)
     {
         gvar elem(p_name, p_val);
-        intvarm::add_var_to_arr(gvar_vec, elem);
+        intvarm::add_var_to_arr(p_vec, elem);
     }
 
-    static auto check_exist(std::string const& p_name)
+    bool set_var(gvarVector& p_vec, std::string const& p_name, gvar_type p_val)
     {
-        return std::find_if(gvar_vec.cbegin(), gvar_vec.cend(),
+        if(exist(p_vec, p_name)) {
+            game_error::fatal_error("gvar already exists (" + p_name + ")");
+            return false;
+        } else {
+            add_to_list(p_vec, p_name, p_val);
+            return true;
+        }
+    }
+
+    gvar_type return_value(gvarVector const& p_vec, std::string const& p_name)
+    {
+        if(!exist(p_vec, p_name)) {
+            game_error::fatal_error("gvar does not exist");
+            return -1;
+        } else return intvarm::return_value(p_name, p_vec);
+    }
+
+    bool change_val(gvarVector& p_vec, std::string const& p_name, gvar_type p_val)
+    {
+        if(!exist(p_vec, p_name)) {
+            game_error::fatal_error("gvar does not exist");
+            return false;
+        } else {
+            intvarm::set_value(p_val, p_name, p_vec);
+            return true;
+        }
+    }
+
+    bool exist(gvarVector const& p_vec, std::string const& p_name)
+    {
+        return std::find_if(p_vec.cbegin(), p_vec.cend(),
                 [&p_name](gvar const& cvar) {
                 return cvar.name == p_name;
-                }) != gvar_vec.cend();
+                }) != p_vec.cend();
     }
 
-    void set_var(std::string const& p_name, gvar_type p_val)
+    void replace_vector(gvarVector& target, gvarVector const& source)
     {
-        if(check_exist(p_name)) game_error::fatal_error("gvar already exists (" + p_name + ")");
-        else add_to_list(p_name, p_val);
-    }
-
-    gvar_type return_value(std::string const& p_name)
-    {
-        gvar_type r_val = -1;
-
-        if(check_exist(p_name)) r_val = intvarm::return_value(p_name, gvar_vec);
-        else game_error::fatal_error("gvar does not exist");
-
-        return r_val;
-    }
-
-    void change_val(std::string const& p_name, gvar_type p_val)
-    {
-        if(check_exist(p_name)) intvarm::set_value(p_val, p_name, gvar_vec);
-        else game_error::fatal_error("gvar does not exist");
-    }
-
-    bool exist(std::string const& p_name)
-    {
-        if(check_exist(p_name)) return true;
-        else return false;
-    }
-
-    void replace_vector(gvarVector const& p_vec)
-    {
-        gvar_vec = p_vec;
-    }
-
-    gvarVector get_gvars_vector()
-    {
-        return gvar_vec;
+        target = source;
     }
 }

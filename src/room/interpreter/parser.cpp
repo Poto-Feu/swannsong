@@ -41,17 +41,17 @@ namespace parser
     }
 
     //Interpret a line which use the SET function
-    static void interp_SET_func(TokenVec r_vec)
+    static void interp_SET_func(TokenVec r_vec, gvarVector& p_gvars)
     {
         if(r_vec.size() != 4) {
             wrg_tkn_num("SET");
             return;
         } else {
-            if(gvars::exist(r_vec[1].str)) fatal_error("gvar already exist");
+            if(gvars::exist(p_gvars, r_vec[1].str)) fatal_error("gvar already exist");
             else if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
             else if(r_vec[3].type != token_type::NUMBER) {
                 fatal_error("no value assigned to var during its init");
-            } else gvars::set_var(r_vec[1].str, std::stoi(r_vec[3].str));
+            } else gvars::set_var(p_gvars, r_vec[1].str, std::stoi(r_vec[3].str));
         }
     }
 
@@ -177,13 +177,13 @@ namespace parser
     }
 
     //Interpret a line which changes a gvar value
-    static void interp_gvar_ins(TokenVec r_vec)
+    static void interp_gvar_ins(TokenVec r_vec, gvarVector& p_gvars)
     {
         if(r_vec[1].type != token_type::EQUAL) {
             fatal_error("second token of a gvars instruction must be an equal sign");
             return;
         } else if(r_vec.size() == 3 && r_vec[2].type == token_type::NUMBER) {
-            gvars::change_val(r_vec[0].str, std::stoi(r_vec[2].str));
+            gvars::change_val(p_gvars, r_vec[0].str, std::stoi(r_vec[2].str));
         }
         
         enum class func_tkn_type {
@@ -243,7 +243,7 @@ namespace parser
                     last_tkn = func_tkn_type::NUMBER;
                     break;
                 case token_type::VARIABLE:
-                    r_vec[i].str = std::to_string(gvars::return_value(r_vec[i].str));
+                    r_vec[i].str = std::to_string(gvars::return_value(p_gvars, r_vec[i].str));
                     r_vec[i].type = token_type::NUMBER;
                     continue_func = number_tkn_lambda();
                     break;
@@ -263,11 +263,11 @@ namespace parser
                     break;
             }
         }
-        gvars::change_val(r_vec[0].str, result_value);
+        gvars::change_val(p_gvars, r_vec[0].str, result_value);
     }
 
     //Interpret a line which uses a function
-    static void interp_func_ins(TokenVec r_vec, room_struct& p_struct)
+    static void interp_func_ins(TokenVec const& r_vec, room_struct& p_struct)
     {
         switch(r_vec[0].spec_type)
         {
@@ -278,7 +278,7 @@ namespace parser
                 interp_PRINT_func(r_vec, p_struct.currState, p_struct.program_strings);
                 break;
             case token_spec_type::SET:
-                interp_SET_func(r_vec);
+                interp_SET_func(r_vec, p_struct.currPlayer.gvars);
                 break;
             case token_spec_type::CUTSCENE:
                 interp_CUTSCENE_func(r_vec, p_struct.currState);
@@ -305,14 +305,14 @@ namespace parser
     }
 
     //Interpret a line depending on its first token
-    static void interp_ins(TokenVec const& r_vec, room_struct& p_struct)
+    static void interp_ins(TokenVec& r_vec, room_struct& p_struct)
     {
         switch(r_vec[0].type) {
             case token_type::FUNCTION:
                 interp_func_ins(r_vec, p_struct);
                 break;
             case token_type::VARIABLE:
-                interp_gvar_ins(r_vec);
+                interp_gvar_ins(r_vec, p_struct.currPlayer.gvars);
                 break;
             default:
                 fatal_error("this is not yet implemented by the parser : "
@@ -323,7 +323,7 @@ namespace parser
 
     /*Check if the condition comparing the number of items with the specifed parameter equals to
     true - if there is no number specified in the condition, 1 is used as a value*/
-    static bool check_HAS_condition(TokenVec r_vec, inventory::Inventory& p_inv)
+    static bool check_HAS_condition(TokenVec r_vec, inventory::Inventory const& p_inv)
     {
         int vec_size = r_vec.size();
 
@@ -359,7 +359,7 @@ namespace parser
         return false;
     }
 
-    static bool check_COMP_condition(TokenVec r_vec)
+    static bool check_COMP_condition(TokenVec const& r_vec, gvarVector const& p_gvars)
     {
         size_t vec_size = r_vec.size();
 
@@ -367,7 +367,7 @@ namespace parser
             fatal_error("wrong arg number in COMP IF");
         } else if(r_vec[3].type == token_type::NUMBER) {
             if(r_vec[2].type == token_type::EQUAL) {
-                auto varval = gvars::return_value(r_vec[1].str);
+                auto varval = gvars::return_value(p_gvars, r_vec[1].str);
                 int compval = std::stoi(r_vec[3].str);
 
                 if(compval == varval) return true;
@@ -375,7 +375,7 @@ namespace parser
         } else if(r_vec[2].type == token_type::NOT
                 && r_vec[3].type == token_type::EQUAL
                 && r_vec[4].type == token_type::NUMBER) {
-            auto varval = gvars::return_value(r_vec[1].str);
+            auto varval = gvars::return_value(p_gvars, r_vec[1].str);
             int compval = std::stoi(r_vec[3].str);
 
             if(compval != varval) return true;
@@ -414,21 +414,21 @@ namespace parser
         }
     }
 
-    static bool check_condition(TokenVec const& current_line, inventory::Inventory& p_inv)
+    static bool check_condition(TokenVec const& current_line, Player const& p_player)
     {
         if(current_line[2].type == token_type::EXISTS) {
             if(current_line.size() != 3) wrg_tkn_num("EXISTS IF");
-            else if(gvars::exist(current_line[1].str)) return true;
+            else if(gvars::exist(p_player.gvars, current_line[1].str)) return true;
         } else if(current_line[2].type == token_type::NOT
                 && current_line[3].type == token_type::EXISTS) {
             if(current_line.size() != 4) fatal_error("wrong arg number in EXISTS IF");
-            else if(!gvars::exist(current_line[1].str)) return true;
+            else if(!gvars::exist(p_player.gvars, current_line[1].str)) return true;
         } else if(current_line[1].type == token_type::VARIABLE) {
-            return check_COMP_condition(current_line);
+            return check_COMP_condition(current_line, p_player.gvars);
         } else if(current_line[1].type == token_type::HAS
                 || (current_line[1].type == token_type::NOT
                 && current_line[2].type == token_type::HAS)) {
-            return check_HAS_condition(current_line, p_inv);
+            return check_HAS_condition(current_line, p_player.inv);
         } else fatal_error("IF condition type not recognized");
         return false;
     }
@@ -440,12 +440,12 @@ namespace parser
         for(; !p_struct.currLoopState.is_unfinished() && i < block_vector.size(); ++i) {
             TokenVec current_line = block_vector[i];
 
-            token::set_runtime_tokens(current_line);
+            token::set_runtime_tokens(current_line, p_struct.currPlayer.gvars);
 
             if(p_struct.currLoopState.is_endgame()) break;
             else if(current_line[0].type == token_type::END) break;
             else if(current_line[0].type == token_type::IF) {
-                if(check_condition(current_line, p_struct.currPlayer.inv)) {
+                if(check_condition(current_line, p_struct.currPlayer)) {
                     ++i;
                     exec_until_end(block_vector, p_struct, i);
                 } else {

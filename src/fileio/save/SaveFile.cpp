@@ -84,11 +84,9 @@ static void add_inventory_chunks(inventory::Inventory const& p_inv,
     }
 }
 
-static void add_gvars_chunks(std::vector<SaveChunk>& chunks_vector)
+static void add_gvars_chunks(std::vector<SaveChunk>& chunks_vector, gvarVector const& currGvars)
 {
-    auto gvars_vec = gvars::get_gvars_vector();
-
-    for(auto const& it : gvars_vec) {
+    for(auto const& it : currGvars) {
         SaveChunk pvarnam_chk(chunk_type::PVARNAM, it.name);
         SaveChunk pvarval_chk(chunk_type::PVARVAL, it.val);
         auto pvarnam_chk_vec = pvarnam_chk.getChunkAsVector();
@@ -109,7 +107,7 @@ void SaveFile::add_chunks(SaveFile_data const& p_data)
     };
 
     add_inventory_chunks(p_data.player_data.inv, chunks_vector);
-    add_gvars_chunks(chunks_vector);
+    add_gvars_chunks(chunks_vector, p_data.player_data.gvars);
 
     for(auto& it : chunks_vector) write_chunk(it);
 }

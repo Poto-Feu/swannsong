@@ -24,6 +24,13 @@
 namespace intvarm
 {
     //Return a constant iterator
+    auto return_const_it(std::string const& p_name, std::vector<intvar> const& p_vec)
+    {
+        return std::find_if(p_vec.begin(), p_vec.end(), [p_name](intvar const& cvar) {
+                return cvar.name == p_name;
+                });
+    }
+
     auto return_it(std::string const& p_name, std::vector<intvar>& p_vec)
     {
         return std::find_if(p_vec.begin(), p_vec.end(), [p_name](intvar const& cvar) {
@@ -38,10 +45,10 @@ namespace intvarm
     }
 
     //Return the value of the intvar on the specified index
-    intvar_type return_value(std::string const& p_name, std::vector<intvar>& p_vec)
+    intvar_type return_value(std::string const& p_name, std::vector<intvar> const& p_vec)
     {
         int rtrn_val = -1;
-        auto it = return_it(p_name, p_vec);
+        auto it = return_const_it(p_name, p_vec);
 
         if(it != p_vec.end()) {
             rtrn_val = it->val;

@@ -176,7 +176,7 @@ static bool process_input(room_struct& p_struct) {
             if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
                 p_struct.currLoopState.setNextRoom(save_data.room);
                 p_struct.currPlayer.inv = std::move(save_data.inv);
-                gvars::replace_vector(save_data.gvar_vector);
+                gvars::replace_vector(p_struct.currPlayer.gvars, save_data.gvar_vector);
             }
         } else if(user_inp == "save") {
             correct_input = true;

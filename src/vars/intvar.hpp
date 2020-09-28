@@ -38,7 +38,7 @@ namespace intvarm
 {
 
     void add_var_to_arr(std::vector<intvar>& p_vec, intvar& p_var);
-    intvar_type return_value(std::string const& p_name, std::vector<intvar>& p_vec);
+    intvar_type return_value(std::string const& p_name, std::vector<intvar> const& p_vec);
     void set_value(intvar_type p_val, std::string const& p_name, std::vector<intvar>& p_vec);
 }
 

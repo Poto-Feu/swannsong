@@ -22,6 +22,7 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+
 #include "fileio/save/SaveFileBuffer.hpp"
 #include "fileio/save/save_const.hpp"
 #include "vars/gvars.hpp"
@@ -36,7 +37,7 @@ struct LoadedFile_data
     bool is_savefile = true;
     bool is_corrupted = false;
     std::string room;
-    gvars::gvarVector gvar_vector;
+    gvarVector gvar_vector;
     inventory::Inventory inv;
 };
 

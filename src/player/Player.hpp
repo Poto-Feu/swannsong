@@ -20,8 +20,10 @@
 #pragma once
 
 #include "player/inventory.hpp"
+#include "vars/gvars.hpp"
 
 struct Player
 {
     inventory::Inventory inv;
+    gvarVector gvars;
 };

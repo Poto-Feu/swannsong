@@ -17,25 +17,22 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GVARS_H
-#define GVARS_H
+#pragma once
 
 #include <string>
+
 #include "vars/intvar.hpp"
+
+typedef intvar gvar;
+typedef intvar_type gvar_type;
+typedef std::vector<gvar> gvarVector;
 
 namespace gvars
 {
-    typedef intvar gvar;
-    typedef intvar_type gvar_type;
-    typedef std::vector<gvar> gvarVector;
 
-    void set_var(std::string const& p_name, gvar_type p_val);
-    gvar_type return_value(std::string const& p_name);
-    void change_val(std::string const& p_name, gvar_type p_val);
-    bool exist(std::string const& p_name);
-    void replace_vector(gvarVector const& p_vec);
-
-    //Return a vector containing all script defined game variable
-    std::vector<gvar> get_gvars_vector();
+    bool set_var(gvarVector& p_vec, std::string const& p_name, gvar_type p_val);
+    gvar_type return_value(gvarVector const& p_vec, std::string const& p_name);
+    bool change_val(gvarVector& p_vec, std::string const& p_name, gvar_type p_val);
+    bool exist(gvarVector const& p_vec, std::string const& p_name);
+    void replace_vector(gvarVector& target, gvarVector const& source);
 }
-#endif

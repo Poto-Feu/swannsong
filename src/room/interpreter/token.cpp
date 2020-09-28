@@ -192,7 +192,6 @@ namespace token
                 else if(it.str == "END") it.type = token_type::END;
                 else if(is_func(it)) it.type = token_type::FUNCTION;
                 else if(is_number(it.str)) it.type = token_type::NUMBER;
-                else if(gvars::exist(it.str)) it.type = token_type::VARIABLE;
                 else if(is_string(it.str)) it.type = token_type::STRING;
                 else if(program_strings.check_exist(it.str)) it.type = token_type::STRING_ID;
                 else if(it.str == "TEXT") it.type = token_type::TEXT;
@@ -214,11 +213,11 @@ namespace token
         return r_vec;
     }
 
-    void set_runtime_tokens(TokenVec& p_vec)
+    void set_runtime_tokens(TokenVec& p_vec, gvarVector const& p_gvars)
     {
         for(auto& it : p_vec) {
             if(it.type == token_type::UNDEFINED || it.type == token_type::UNKNOWN) {
-                if(gvars::exist(it.str)) it.type = token_type::VARIABLE;
+                if(gvars::exist(p_gvars, it.str)) it.type = token_type::VARIABLE;
             }
         }
     }

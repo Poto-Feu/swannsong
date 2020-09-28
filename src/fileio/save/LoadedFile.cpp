@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iterator>
 #include <memory>
+
 #include "fileio/save/LoadedFile.hpp"
 #include "crypt_functions.hpp"
 #include "game_error.hpp"
@@ -203,7 +204,7 @@ bool LoadedFile::INVITEM_chunk()
                 
             case chunk_type::ITEMVAL:
                 if(!ITEMVAL_done) {
-                    if(chk_meta.length == sizeof(gvars::gvar_type)) {
+                    if(chk_meta.length == sizeof(gvar_type)) {
                         ITEMVAL_done = true;
                         std::memcpy(&new_gitem.val, buffer_ptr + read_pos, chk_meta.length);
 
@@ -236,7 +237,7 @@ bool LoadedFile::PVARIAB_chunk()
 
     bool PVARNAM_done = false;
     bool PVARVAL_done = false;
-    gvars::gvar new_gvar;
+    gvar new_gvar;
 
     for(unsigned int i = 0; i < 2; ++i) {
         auto chk_meta = get_chunk_meta();
@@ -261,7 +262,7 @@ bool LoadedFile::PVARIAB_chunk()
                 
             case chunk_type::PVARVAL:
                 if(!PVARVAL_done) {
-                    if(chk_meta.length == sizeof(gvars::gvar_type)) {
+                    if(chk_meta.length == sizeof(gvar_type)) {
                         PVARVAL_done = true;
                         std::memcpy(&new_gvar.val, buffer_ptr + read_pos, chk_meta.length);
 
