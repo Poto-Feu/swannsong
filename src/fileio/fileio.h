@@ -17,17 +17,15 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef FILEIO_H
-#define FILEIO_H
+#pragma once
 
 #include <fstream>
+#include <filesystem>
 #include <string>
 #include <vector>
 
 namespace fileio
 {
     bool getfileln(std::string& r_str, std::ifstream& p_stream);
-    std::vector<std::string> copy_to_vector(std::string const& file_path);
+    std::vector<std::string> copy_to_vector(std::filesystem::path const& file_path);
 }
-
-#endif

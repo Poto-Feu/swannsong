@@ -28,7 +28,7 @@ namespace fileio
         else return false;
     }
 
-    std::vector<std::string> copy_to_vector(std::string const& file_path)
+    std::vector<std::string> copy_to_vector(std::filesystem::path const& file_path)
     {
         std::string buf;
         std::vector<std::string> file_content;
