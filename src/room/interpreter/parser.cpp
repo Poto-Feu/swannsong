@@ -305,7 +305,7 @@ namespace parser
     }
 
     //Interpret a line depending on its first token
-    static void interp_ins(TokenVec& r_vec, room_struct& p_struct)
+    static void interp_ins(TokenVec const& r_vec, room_struct& p_struct)
     {
         switch(r_vec[0].type) {
             case token_type::FUNCTION:
