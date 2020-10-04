@@ -17,6 +17,8 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <sys/stat.h>
+
 #include "fileio.h"
 #include "stringsm.h"
 
@@ -42,5 +44,11 @@ namespace fileio
         }
 
         return file_content;
+    }
+
+    bool file_exists(std::filesystem::path const& file_path)
+    {
+        struct stat buffer;
+        return (stat(file_path.string().c_str(), &buffer) == 0);
     }
 }

@@ -22,11 +22,11 @@
 
 int main (int argc, char *argv[])
 {
-    pargs::init(argc, argv);
+    pargsMap pargs_map = pargs::init(argc, argv);
 
     Game game;
 
-    GameInitData game_init_data = game.init();
+    GameInitData game_init_data = game.init(pargs_map);
     if(game_init_data.no_error) game.run(game_init_data);
 
     return 0;

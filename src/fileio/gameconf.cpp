@@ -18,46 +18,20 @@
 */
 
 #include <fstream>
+
 #include "fileio/gameconf.hpp"
+#include "fileio/conf_files.hpp"
 #include "game_error.hpp"
 #include "stringsm.h"
 
 namespace gameconf
 {
-    using namespace game_error;
-    bool splitins(std::string& var, std::string& value, std::string ins)
-    {
-        int index = 0;
-        int str_size = static_cast<int>(ins.size());
-        bool equal_fnd = false;
-        bool quoteinc = false;
-        bool val_finished = false;
-        bool correct_syntax = false;
-
-        for(int i = 0; i < str_size && !equal_fnd; ++i) {
-            if(ins[i] == '=') equal_fnd = true;
-            else var += ins[i];
-            index = i+1;
-        }
-
-        if(!equal_fnd) emit_warning("cannot find var in gameconf line");
-
-        for(int i = index; i < str_size && equal_fnd && !val_finished; ++i)
-        {
-            if(quoteinc) {
-                if(ins[i] == '"') val_finished = true;
-                else value += ins[i];
-            } else if(ins[i] == '"') quoteinc = true;
-        }
-        correct_syntax = val_finished;
-        return correct_syntax;
-
-    }
-
     /*Read data contained in the gameconf file and set the gameconf variable to the appropriate
     value*/
     std::vector<gcvar_struct> readfile(std::filesystem::path const& data_path)
     {
+        using namespace game_error;
+
         std::ifstream gc_stream(data_path.string() + "gameconf.txt");
 
         if(!gc_stream.good()) {
@@ -75,7 +49,7 @@ namespace gameconf
                 std::string var;
                 std::string value;
 
-                if(gameconf::splitins(var, value, curr_line)) {
+                if(conf_files::split_var(var, value, curr_line)) {
                     rtrn_vec.push_back(gcvar_struct {var, value});
                 } else emit_warning("incorrect gameconf syntax");
             }

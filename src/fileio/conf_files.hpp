@@ -17,15 +17,11 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef LANG_HPP
-#define LANG_HPP
+#pragma once
 
 #include <string>
 
-namespace langmod
+namespace conf_files
 {
-    std::string get_lang();
-    void set_lang(std::string const& p_lang);
+    bool split_var(std::string& var, std::string& value, std::string const& ins);
 }
-
-#endif

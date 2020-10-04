@@ -27,9 +27,6 @@ namespace files_path
     using namespace os_module;
     namespace fs = std::filesystem;
 
-    //Indicate if the program is run from the build folder or if it is installed on the user machine
-    static bool runned_locally = false;
-
     bool create_directory(fs::path const& p_path)
     {
         if(!fs::exists(p_path)) {
@@ -38,18 +35,18 @@ namespace files_path
         } else return false;
     }
 
-    static fs::path init_data_path()
+    static fs::path init_data_path(bool is_local)
     {
 #ifdef IS_PKG
         return "/usr/share/swannsong_adventure/";
 #else
-        if(current_os == os_type::WINDOWSNT || runned_locally) {
+        if(current_os == os_type::WINDOWSNT || is_local) {
             return "data/";
         } else return "/usr/local/share/swannsong_adventure/";
 #endif
     }
             
-    static fs::path init_user_data_path(paths_struct& rtrn_struct)
+    static fs::path init_local_data_path()
     {
         fs::path path_fs;
 
@@ -61,13 +58,36 @@ namespace files_path
             files_path::create_directory(path_fs);
             path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
-            rtrn_struct.local_data_path = path_fs;
         } else if(current_os == os_type::WINDOWSNT) {
             path_fs = getenv("LOCALAPPDATA");
 
             path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
-            rtrn_struct.local_data_path = path_fs;
+        } else {
+            std::cout << "Please use a POSIX or a WINDOWS NT environnement to run this program"
+                << "\n";
+            exit(1);
+        }
+        return path_fs;
+    }
+
+    static fs::path init_local_conf_path()
+    {
+        fs::path path_fs;
+
+        if(current_os == os_type::UNIXLIKE) {
+            path_fs = getenv("HOME");
+            path_fs += "/.config";
+            files_path::create_directory(path_fs);
+            path_fs += "/swannsong_adventure/";
+            files_path::create_directory(path_fs);
+        } else if(current_os == os_type::WINDOWSNT) {
+            path_fs = getenv("LOCALAPPDATA");
+
+            path_fs += "/swannsong_adventure/";
+            files_path::create_directory(path_fs);
+            path_fs += "/config/";
+            files_path::create_directory(path_fs);
         } else {
             std::cout << "Please use a POSIX or a WINDOWS NT environnement to run this program"
                 << "\n";
@@ -77,17 +97,18 @@ namespace files_path
     }
 
     //Return a struct containing the system game data path and the user-specific game data path
-    paths_struct getpaths()
+    paths_struct getpaths(bool is_local)
     {
         paths_struct rtrn_struct;
 
-        rtrn_struct.data_path = init_data_path();
-        rtrn_struct.local_data_path = init_user_data_path(rtrn_struct);
+        rtrn_struct.data_path = init_data_path(is_local);
+        rtrn_struct.local_data_path = init_local_data_path();
+        rtrn_struct.local_conf_path = init_local_conf_path();
         return rtrn_struct;
     }
 
-    void setlocal()
+    std::filesystem::path get_local_data_path()
     {
-        runned_locally = true;
+        return init_local_data_path();
     }
 }

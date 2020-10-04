@@ -18,22 +18,31 @@
 */
 
 #include <cstring>
+
 #include "pargs.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
 
 namespace pargs
 {
-    void init(int const argc, char* argv[])
+    std::unordered_map<std::string, bool> init(int const argc, char* argv[])
     {
-        auto has_arg = [=](const char* p_arg)
+        auto has_arg = [&](const char* p_arg)
         {
             for(int i = 1; i < argc; ++i) {
                 if(!strcmp(p_arg, argv[i])) return true;
             } return false;
         };
 
-        if(has_arg("-local")) files_path::setlocal();
-        if(has_arg("-debug")) game_error::setdebug();
+        std::unordered_map<std::string, bool> args_map;
+
+        if(has_arg("-local")) args_map["local"] = true;
+        if(has_arg("-debug")) {
+            game_error::setdebug();
+            args_map["debug"] = true;
+        }
+        if(has_arg("-reset")) args_map["reset"] = true;
+
+        return args_map;
     }
 }

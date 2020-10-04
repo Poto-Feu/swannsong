@@ -25,13 +25,12 @@
 #include "fileio/fileio.h"
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "lang.hpp"
 #include "stringsm.h"
 
 //Set the file pointer to the file containing the strings correponding to the selected language
-static std::ifstream open_strfile(std::string p_langdir)
+static std::ifstream open_strfile(std::string const& lang_code, std::string p_langdir)
 {
-    p_langdir.append(langmod::get_lang());
+    p_langdir.append(lang_code);
     p_langdir.append(".txt");
 
     return std::ifstream(p_langdir);
@@ -85,12 +84,13 @@ bool PStrings::check_exist(std::string const& id) const
 }
 
 PStrings::PStrings() { }
-PStrings::PStrings(std::string const& p_langdir, std::filesystem::path const& data_path)
+PStrings::PStrings(std::string const& lang_code, std::string const& langdir,
+        std::filesystem::path const& data_path)
 {
     using namespace files_path;
 
     std::string buf;
-    std::ifstream file_stream = open_strfile(data_path.string() + p_langdir);
+    std::ifstream file_stream = open_strfile(lang_code, data_path.string() + langdir);
 
     /*THIS MUST NOT BE REMOVED ! It will serve as a placeholder if the program string was not
     defined*/

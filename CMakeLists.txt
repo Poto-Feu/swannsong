@@ -43,6 +43,7 @@ add_executable(swannsongadv
     src/fileio/save/LoadedFile.cpp
     src/fileio/save/save_file.cpp
     src/fileio/save/load_savefile.cpp
+    src/fileio/conf_files.cpp
     src/fileio/fileio.cpp
     src/fileio/gameconf.cpp
     src/player/inventory.cpp
@@ -53,6 +54,7 @@ add_executable(swannsongadv
     src/room/RoomLoopState.cpp
     src/room/RoomManager.cpp
     src/room/RoomState.cpp
+    src/vars/LocalConfVariable.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp
@@ -63,7 +65,6 @@ add_executable(swannsongadv
     src/files_path.cpp
     src/Game.cpp
     src/game_error.cpp
-    src/lang.cpp
     src/pargs.cpp
     src/pcurses.cpp
     src/pstrings.cpp

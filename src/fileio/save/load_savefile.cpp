@@ -26,10 +26,10 @@ namespace load_savefile
 {
     LoadedFile_data start_loading(PStrings const& program_strings)
     {
-        auto paths = files_path::getpaths();
-        paths.local_data_path += "save/";
+        std::filesystem::path local_data_path = files_path::get_local_data_path();
+        local_data_path += "save/";
 
-        LoadedFile loaded_savefile(paths.local_data_path, "mainsave");
+        LoadedFile loaded_savefile(local_data_path, "mainsave");
         auto savefile_data = loaded_savefile.getLoadedFile_data();
 
         if(!savefile_data.file_exists || !savefile_data.is_savefile) {

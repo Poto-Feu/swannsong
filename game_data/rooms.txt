@@ -6,9 +6,8 @@ ROOM menu
         DISPLAY DESC
         DISPLAY CHOICES
 
-        IF firstlaunch NOT EXISTS
-            SET firstlaunch = true
-            CUTSCENE help
+        IF g_firstlaunch NOT EXISTS
+            SET g_firstlaunch = true
         END
     END
 
@@ -16,9 +15,9 @@ ROOM menu
         c1
             TEXT menu_c1
 
-            IF firstlaunch = true
+            IF g_firstlaunch = true
                 CUTSCENE welcome
-                firstlaunch = false
+                g_firstlaunch = false
             END
 
             GO house

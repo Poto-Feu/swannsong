@@ -36,6 +36,7 @@ void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
 
 namespace stringsm
 {
+    const std::string empty_string = "";
     //Return an uppercased string
     std::string to_upper(std::string p_str);
     //Return a lowercased string

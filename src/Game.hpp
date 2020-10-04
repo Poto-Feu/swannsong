@@ -22,6 +22,8 @@
 #include <filesystem>
 #include <string>
 
+#include "vars/LocalConfVariable.hpp"
+#include "pargs.hpp"
 #include "pstrings.hpp"
 
 struct GameInitData
@@ -35,13 +37,14 @@ class Game
     public:
 
         ~Game();
-        GameInitData init();
+        GameInitData init(pargsMap pargs_map);
         void run(GameInitData const& game_init_data);
 
     private:
 
         std::string m_start_room;
 
+        LocalConfVariableContainer m_lcvc;
         bool m_strings_init = false;
         PStrings m_program_strings;
 

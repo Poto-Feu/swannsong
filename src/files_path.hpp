@@ -17,8 +17,7 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef FILES_PATH_HPP
-#define FILES_PATH_HPP
+#pragma once
 
 #include <filesystem>
 #include <string>
@@ -28,11 +27,12 @@ namespace files_path
     struct paths_struct {
         std::filesystem::path data_path;
         std::filesystem::path local_data_path;
+        std::filesystem::path local_conf_path;
     };
 
     bool create_directory(std::filesystem::path const& p_path);
-    paths_struct getpaths();
-    void setlocal();
+    /*is_local indicate if the program is run from the build folder or if it is installed on the
+    user machine*/
+    paths_struct getpaths(bool is_local);
+    std::filesystem::path get_local_data_path();
 }
-
-#endif

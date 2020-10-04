@@ -23,24 +23,29 @@
 #include <string>
 #include <unordered_map>
 
-typedef std::string PStringsElement;
+/*The corresponding value is the default value of the variable if it was not defined in the conf
+file*/
+const std::unordered_map<std::string, std::string> local_conf_vars({
+        {"firstlaunch", "1"},
+        {"lang", "eng"}
+});
 
-//Stores program strings
-class PStrings
+//Class containing the variables defined in the local configuration file
+class LocalConfVariableContainer
 {
     public:
 
-        PStrings();
-        PStrings(std::string const& lang_code, std::string const& langdir,
-                std::filesystem::path const& data_path);
+        LocalConfVariableContainer();
+        explicit LocalConfVariableContainer(std::string const& local_data_path);
 
-        std::string const& fetch(std::string const& id) const;
-        bool check_exist(std::string const& id) const;
+        std::string const& getValue(std::string const& variable_name);
+        bool changeValue(std::string const& variable_name, std::string const& value);
+        bool writeToFile() const;
+        void deleteFile() const;
+        void reset();
 
     private:
 
-        std::unordered_map<std::string, PStringsElement> m_map;
-
-        //Return an iterator corresponding to p_id key
-        auto find_it_vec(std::string const& id) const;
+        std::unordered_map<std::string, std::string> m_map;
+        std::filesystem::path m_file_path;
 };

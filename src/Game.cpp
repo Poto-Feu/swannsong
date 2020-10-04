@@ -27,7 +27,6 @@
 #include "cutscenes.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "lang.hpp"
 #include "pcurses.hpp"
 #include "userio.h"
 
@@ -77,7 +76,7 @@ auto Game::fetch_gameconf_vars(std::filesystem::path const& system_data_path)
     auto defaultlang_it = get_gcvar_it("defaultlang");
 
     if(defaultlang_it != gc_vec.cend()) {
-        langmod::set_lang(defaultlang_it->value);
+        m_lcvc.changeValue("lang", defaultlang_it->value);
     } else missing_gcvar("defaultlang");
 
     return gc_vec;
@@ -141,9 +140,9 @@ void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& d
             if(intval > 0 && intval <= LANG_NUMBER) {
                 std::string lang = langarr[intval - 1].id;
 
-                langmod::set_lang(lang);
                 validinp = true;
-                m_program_strings = PStrings(p_langdir, data_path);
+                m_lcvc.changeValue("lang", langarr[intval - 1].id);
+                m_program_strings = PStrings(langarr[intval - 1].id, p_langdir, data_path);
                 if(!game_error::has_encountered_fatal()) m_strings_init = true;
             } else show_err_msg("Nope. (not a valid input)");
         } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
@@ -162,11 +161,18 @@ Game::~Game()
     }
 }
 
-GameInitData Game::init()
+GameInitData Game::init(pargsMap pargs_map)
 {
-    set_curses();
-    auto p_paths = files_path::getpaths();
+    files_path::paths_struct p_paths = files_path::getpaths(pargs_map["local"]);
+    m_lcvc = LocalConfVariableContainer(p_paths.local_conf_path.string());
+
+    if(pargs_map["reset"]) {
+        m_lcvc.deleteFile();
+        m_lcvc.reset();
+    }
     game_error::set_filepath(p_paths.local_data_path);
+
+    set_curses();
 
     auto gc_vec = fetch_gameconf_vars(p_paths.data_path);
 
@@ -184,12 +190,18 @@ GameInitData Game::init()
     auto csfile_it = get_gcvar_it("csfile");
     auto firstroom_it = get_gcvar_it("firstroom");
 
-    if(langdir_it != gc_vec.cend()) ask_lang(langdir_it->value, p_paths.data_path);
-    else {
+    if(langdir_it != gc_vec.cend()) {
+        if(m_lcvc.getValue("firstlaunch") == "1") ask_lang(langdir_it->value, p_paths.data_path);
+        else {
+            m_program_strings = PStrings(m_lcvc.getValue("lang"), langdir_it->value,
+                    p_paths.data_path);
+        }
+    } else {
         game_init_data.no_error = false;
         missing_gcvar("langdir");
         return game_init_data;
     }
+
     if(game_error::has_encountered_fatal()) {
         game_init_data.no_error = false;
         return game_init_data;
@@ -218,6 +230,12 @@ GameInitData Game::init()
     if(game_error::has_encountered_fatal()) {
         game_init_data.no_error = false;
         return game_init_data;
+    }
+
+    if(m_lcvc.getValue("firstlaunch") == "1") {
+        cutscenes::display("help", m_program_strings);
+        m_lcvc.changeValue("firstlaunch", "0");
+        m_lcvc.writeToFile();
     }
 
     if(firstroom_it != gc_vec.cend()) {

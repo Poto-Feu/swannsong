@@ -17,12 +17,14 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PARGS_HPP
-#define PARGS_HPP
+#pragma once
+
+#include <string>
+#include <unordered_map>
+
+typedef std::unordered_map<std::string, bool> pargsMap;
 
 namespace pargs
 {
-    void init(int const argc, char* argv[]);
+    pargsMap init(int const argc, char* argv[]);
 }
-
-#endif

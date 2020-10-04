@@ -26,10 +26,10 @@ namespace save_file
 {
     void start_saving(data_struct p_struct, PStrings const& program_strings)
     {
-        auto paths = files_path::getpaths();
-        paths.local_data_path += "save/";
+        std::filesystem::path local_data_path = files_path::get_local_data_path();
+        local_data_path += "save/";
 
-        SaveFile mainsave(paths.local_data_path, { "mainsave", p_struct.room_name,
+        SaveFile mainsave(local_data_path, { "mainsave", p_struct.room_name,
                 p_struct.player_data });
         if(mainsave.writeToFile()) {
             display_server::clear_screen();
