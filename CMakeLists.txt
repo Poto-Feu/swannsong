@@ -72,6 +72,8 @@ add_executable(swannsongadv
     src/stringsm.cpp
     src/userio.cpp)
 
+add_subdirectory(docs)
+
 target_link_libraries(swannsongadv crypto)
 
 # Compile pdcurses if the user is on Windows
@@ -104,10 +106,10 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
 endif()
 
 if(UNIX)
-add_custom_command(TARGET swannsongadv POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/start.sh
-    ${CMAKE_CURRENT_BINARY_DIR}/start.sh)
+    add_custom_command(TARGET swannsongadv POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/start.sh
+        ${CMAKE_CURRENT_BINARY_DIR}/start.sh)
 
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}
         DESTINATION bin
