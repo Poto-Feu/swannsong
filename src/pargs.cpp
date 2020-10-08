@@ -36,7 +36,9 @@ namespace pargs
 
         std::unordered_map<std::string, bool> args_map;
 
+#ifndef IS_PKG
         if(has_arg("-local")) args_map["local"] = true;
+#endif
         if(has_arg("-debug")) {
             game_error::setdebug();
             args_map["debug"] = true;
