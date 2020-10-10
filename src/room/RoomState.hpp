@@ -45,9 +45,9 @@ class RoomState
         void addCutscene(std::string const& p_cs);
 
         void displayCutscenes(PStrings const& program_strings);
-        void displayTitle(Room const& p_room) const;
-        void displayDesc(Room const& p_room) const;
-        void displayAll(Room const& p_room, PStrings const& program_strings);
+        std::string displayRoomScreen(Room const& p_room, PStrings const& program_strings,
+                const std::string *error_msg = nullptr) const;
+        std::string displayAll(Room const& p_room, PStrings const& program_strings);
 
         void setBlockType(bt const p_bt);
 
@@ -56,15 +56,12 @@ class RoomState
 
     private:
 
-        bool title_displayed = false;
-        bool desc_displayed = false;
+        bool m_title_displayed = false;
+        bool m_desc_displayed = false;
         bool m_all_choices_displayed = false;
 
-        std::vector<std::string> string_list;
-        std::vector<std::string> cs_list;
+        std::vector<std::string> m_string_list;
+        std::vector<std::string> m_cutscenes_list;
 
         bt block_type = bt::ATLAUNCH;
-
-        void displayChoices(Room const& p_room);
-        void displayStrings();
 };

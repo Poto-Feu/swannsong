@@ -31,8 +31,8 @@ class Choice
                 PStrings const& program_strings);
 
         unsigned int getId() const;
+        std::string getText() const;
 
-        void display() const;
         std::vector<TokenVec> const& getInstructions() const;
 
     private:

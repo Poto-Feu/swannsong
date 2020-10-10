@@ -48,16 +48,9 @@ unsigned int Choice::getId() const
     return m_id;
 }
 
-void Choice::display() const
+std::string Choice::getText() const
 {
-    int str_line = display_server::get_last_line() + 1;
-    std::string disp_value = m_text;
-
-    disp_value.insert(0, ". ");
-    disp_value.insert(0, std::to_string(m_id));
-
-    if(str_line == display_server::LAST_LINE_ERR + 1) str_line = pcurses::title_y + 4;
-    pcurses::display_pos_string(disp_value, pcurses::choice_space, str_line);
+    return m_text;
 }
 
 std::vector<TokenVec> const& Choice::getInstructions() const

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <optional>
 #include <unordered_map>
 
 #include "room/interpreter/token.hpp"
@@ -42,9 +43,10 @@ class Room
         std::string const& getDesc() const;
 
         std::vector<TokenVec> const& getATLAUNCHIns() const;
+        //Use a const reference to prevent excessive copying
         std::vector<Choice> const& getChoicesVec() const;
 
-        Choice getChoice(bool& status, unsigned int choice_n);
+        std::optional<Choice> getChoice(unsigned int choice_n);
 
         void setDesc(std::string const& room_desc);
         void setATLAUNCH_ins(std::vector<TokenVec>&& atlaunch_ins);

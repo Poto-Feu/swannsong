@@ -27,10 +27,9 @@
 #include "cutscenes.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
+#include "game_menu.hpp"
 #include "pcurses.hpp"
 #include "userio.h"
-
-const int LANG_NUMBER = 2;
 
 struct lang_item
 {
@@ -82,71 +81,45 @@ auto Game::fetch_gameconf_vars(std::filesystem::path const& system_data_path)
     return gc_vec;
 }
 
-static void show_lang_prompt(std::array<lang_item, LANG_NUMBER>& p_arr)
-{
-    int str_line = pcurses::title_y;
-    std::string const hint_str("Hint : make a choice by typing the corresponding number.");
-
-    pcurses::display_center_string(hint_str, str_line);
-    str_line = display_server::get_last_line() + 3;
-    pcurses::display_center_string("Select your language:", str_line);
-    str_line = display_server::get_last_line() + 2;
-
-    for(unsigned int i = 1; i <= LANG_NUMBER; ++i) {
-        std::string disp_str(std::to_string(i));
-
-        disp_str += ". ";
-        disp_str.append(p_arr[i-1].disp);
-        pcurses::display_pos_string(disp_str, pcurses::choice_space, str_line);
-        str_line = display_server::get_last_line() + 1;
-    }
-
-    str_line += 1;
-    pcurses::display_pos_string("Your choice: ", 12, str_line);
-    display_server::show_screen();
-}
-
-
 //Show a prompt asking the user to choose the language and the prompt to do so
 void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path)
 {
     bool validinp = false;
 
-    std::array<lang_item, LANG_NUMBER> langarr {
+    std::vector<lang_item> langarr {
         lang_item("eng", "English"),
         lang_item("fra", "Français")
     };
 
-    display_server::clear_screen();
-    show_lang_prompt(langarr);
-    display_server::save_screen();
+    const std::string *error_msg_ptr = nullptr;
 
     while(!validinp) {
-        std::string buf;
+        const std::string hint_str = "Hint : make a choice by typing the corresponding number.";
+        const std::string select_lang_str = "Select your language";
+        const std::string not_valid_error_str = "Nope. (not a valid input)";
+        const std::string nothing_error_str = "Nope. (nothing !)";
+        const std::string too_long_error_str = "Nope. (too long)";
 
-        auto show_err_msg = [](std::string const& p_msg)
-        {
-            display_server::clear_screen();
-            display_server::add_string(p_msg, {LINES - 3, pcurses::margin}, A_BOLD);
-            display_server::load_save();
-            display_server::show_screen();
-        };
+        game_menu::flags menu_flags;
+        menu_flags.title_bold = false;
+        menu_flags.input_length = 2;
 
-        buf = userio::gettextinput(2);
+        std::string buf = game_menu::display(&hint_str, &select_lang_str, nullptr,
+                { langarr[0].disp, langarr[1].disp }, error_msg_ptr, &menu_flags, nullptr);
 
         if(buf.size() == 1) {
-            int intval = buf[0] - '0';
+            size_t intval = buf[0] - '0';
             
-            if(intval > 0 && intval <= LANG_NUMBER) {
+            if(intval > 0 && intval <= langarr.size()) {
                 std::string lang = langarr[intval - 1].id;
 
                 validinp = true;
                 m_lcvc.changeValue("lang", langarr[intval - 1].id);
                 m_program_strings = PStrings(langarr[intval - 1].id, p_langdir, data_path);
                 if(!game_error::has_encountered_fatal()) m_strings_init = true;
-            } else show_err_msg("Nope. (not a valid input)");
-        } else if(buf.size() == 0) show_err_msg("Nope. (nothing !)");
-        else show_err_msg("Nope. (too long)");
+            } else error_msg_ptr = &not_valid_error_str;
+        } else if(buf.size() == 0) error_msg_ptr = &nothing_error_str;
+        else error_msg_ptr = &too_long_error_str;
     }
 }
 

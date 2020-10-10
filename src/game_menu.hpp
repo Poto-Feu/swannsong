@@ -19,31 +19,20 @@
 
 #pragma once
 
-extern "C" {
-#include <curses.h>
-}
-
-#include <string>
 #include <vector>
-
-#include "display_server.hpp"
 #include "pstrings.hpp"
 
-namespace pcurses
+namespace game_menu
 {
-    const int top_margin = 3;
-    const int bottom_margin = top_margin;
+    const int default_input_length = 9;
 
-    extern int margin;
-    extern int title_y;
-    extern int lines;
-    extern int cols;
+    struct flags
+    {
+        bool title_bold = true;
+        int input_length = default_input_length;
+    };
 
-    int find_centered_x(std::string& p_str);
-    void display_pos_string(std::string p_str, int x_space, int startline = getcury(stdscr),
-            int p_attr = display_server::NULL_ATTR);
-    void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
-            int p_attr = display_server::NULL_ATTR);
-
-    void display_penter_message(PStrings const& program_strings);
+    std::string display(const std::string *title, const std::string *desc,
+            const std::vector<std::string> *other_str, std::vector<std::string> choices,
+            const std::string *error_msg, flags *p_flags, const PStrings *program_strings);
 }
