@@ -164,13 +164,15 @@ static void atlaunch(room_struct& p_struct)
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
         std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings)
 {
-    RoomState currentState;
-    room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings };
+    do {
+        RoomState currentState;
+        room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings };
 
-    //display_server::clear_screen();
-    p_rls.setNextRoom(m_name);
+        p_rls.setNextRoom(m_name);
 
-    atlaunch(p_struct);
-    if(game_error::has_encountered_fatal()) return false;
-    else return true;
+        atlaunch(p_struct);
+        if(game_error::has_encountered_fatal()) return false;
+    } while(p_rls.getNextRoom() == m_name && !p_rls.is_endgame() && !p_rls.is_unfinished());
+
+    return true;
 }
