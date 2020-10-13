@@ -1,9 +1,10 @@
 about
+    GAME_NAME
+    GAME_VERSION
+    BLANK
     cs_about_1
     BLANK
     cs_about_2
-    BLANK
-    cs_about_3
 END
 
 welcome

@@ -12,6 +12,9 @@ include_directories(src)
 set(src_data_folder ${CMAKE_CURRENT_SOURCE_DIR}"/game_data")
 set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/data")
 
+add_compile_definitions(GAME_VERSION="${PROJECT_VERSION}")
+add_compile_definitions(GAME_NAME="SwannSong Adventure")
+
 if(UNIX)
     if(IS_PKG)
         add_compile_definitions(IS_PKG)

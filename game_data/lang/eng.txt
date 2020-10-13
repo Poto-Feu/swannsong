@@ -33,9 +33,8 @@ house_c1 "Take the car"
 house_c2 "Mows the lawn"
 
 # Cutscenes
-cs_about_1 "2020 Adrien Saad"
-cs_about_2 "Swannsong Adventure is licensed under GPL v3. See the COPYING file for more information."
-cs_about_3 "This program has been originally compiled with GNU GCC and tested on the latest stable Fedora version available at the time."
+cs_about_1 "Swannsong Adventure is licensed under GPL v3. See the COPYING file for more information."
+cs_about_2 "This program has been originally compiled with GNU GCC and tested on the latest stable Fedora version available at the time."
 
 cs_welcome_1 "Hej ! So you wanna play Swannsong Adventure, huh ? Well, I'll let you know that this is a qualität game. You won't regret playing it."
 cs_welcome_2 "You play as Vladimir Swann, a regular man who absolutely wants to get the deluxe edition of the soundtrack album of \"Tolstoy and his brothers\". Anyway, I hope that you will appreciate this game made by a student who just started to learn C++ (and who isn't a native english speaker)."

@@ -95,6 +95,17 @@ PStrings::PStrings(std::string const& lang_code, std::string const& langdir,
     /*THIS MUST NOT BE REMOVED ! It will serve as a placeholder if the program string was not
     defined*/
     m_map["missing_str"] = "MissingString";
+#ifdef GAME_VERSION
+    m_map["GAME_VERSION"] = "v" + std::string(GAME_VERSION);
+#else
+    m_map["GAME_VERSION"] = "UndefinedGAME_VERSION";
+#endif
+
+#ifdef GAME_NAME
+    m_map["GAME_NAME"] = GAME_NAME;
+#else
+    m_map["GAME_NAME"] = "UndefinedGAME_NAME";
+#endif
 
     while(fileio::getfileln(buf, file_stream)) {
         std::string r_id;
