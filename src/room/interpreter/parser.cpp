@@ -68,6 +68,11 @@ namespace parser
         if(r_vec[1].str == "CHOICES") p_struct.currState.addAllChoices();
         else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
         else if(r_vec[1].str == "DESC") p_struct.currState.addDesc();
+        else if(r_vec[1].str == "ALL") {
+            p_struct.currState.addTitle();
+            p_struct.currState.addDesc();
+            p_struct.currState.addAllChoices();
+        }
         else emit_warning("displaying one choice is not yet implemented");
     }
 

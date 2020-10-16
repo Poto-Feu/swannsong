@@ -2,9 +2,7 @@ ROOM menu
     TITLE "SwannSong Adventure"
     DESC menu_desc
     ATLAUNCH
-        DISPLAY TITLE
-        DISPLAY DESC
-        DISPLAY CHOICES
+        DISPLAY ALL
 
         IF g_firstlaunch NOT EXISTS
             SET g_firstlaunch = true
@@ -35,9 +33,7 @@ ROOM house
     TITLE house_title
     DESC house_desc
     ATLAUNCH
-        DISPLAY TITLE
-        DISPLAY DESC
-        DISPLAY CHOICES
+        DISPLAY ALL
     END
     CHOICES
         c1
