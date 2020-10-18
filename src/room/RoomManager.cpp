@@ -139,6 +139,23 @@ bool RoomManager::set_block(std::string const& room_name, RoomVectorData& vec_da
             if(!set_block(room_name, vec_data, if_block_data)) return false;
             TokenVec end_tokenvec { { "END", token_type::END, token_spec_type::NONE } };
             block_data.block_ins.push_back(end_tokenvec);
+        } else if(stringsm::getfw(current_line) == "ELSE") {
+            if(!stringsm::is_single_word(current_line)) {
+                game_error::fatal_error("ELSE followed by other tokens (" + current_line + ")");
+                return false;
+            }
+
+            TokenVec new_tknvec = token::create_arr(vec_data.room_file_lines[vec_data.i],
+                    m_program_strings);
+            block_data.block_ins.push_back(std::move(new_tknvec));
+
+            bool block_flag = false;
+            RoomBlockData else_block_data { block_data.block_ins, block_data.block_name,
+                block_flag };
+
+            if(!set_block(room_name, vec_data, else_block_data)) return false;
+            TokenVec end_tokenvec { { "END", token_type::END, token_spec_type::NONE } };
+            block_data.block_ins.push_back(end_tokenvec);
         } else if(stringsm::getfw(current_line) == "END") {
             end_of_block = true;
         } else if(!is_a_comment(vec_data.room_file_lines[vec_data.i])) {

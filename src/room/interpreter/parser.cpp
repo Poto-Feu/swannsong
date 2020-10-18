@@ -413,7 +413,8 @@ namespace parser
     {
         bool is_end = false;
 
-        for(++i; !is_end; ++i) {
+        for(++i; !is_end;) {
+            ++i;
             if(block_vector[i][0].type == token_type::END) is_end = true;
             else if(block_vector[i][0].type == token_type::IF) skip_until_end(block_vector, i);
         }
@@ -442,6 +443,9 @@ namespace parser
     void exec_until_end(std::vector<TokenVec> const& block_vector, room_struct& p_struct,
             unsigned int& i)
     {
+        bool previous_line_condition = false;
+        bool prev_condition_exec = false;
+
         for(; !p_struct.currLoopState.is_unfinished() && i < block_vector.size(); ++i) {
             TokenVec current_line = block_vector[i];
 
@@ -450,14 +454,31 @@ namespace parser
             if(p_struct.currLoopState.is_endgame()) break;
             else if(current_line[0].type == token_type::END) break;
             else if(current_line[0].type == token_type::IF) {
+                previous_line_condition = true;
                 if(check_condition(current_line, p_struct.currPlayer)) {
                     ++i;
                     exec_until_end(block_vector, p_struct, i);
+                    prev_condition_exec = true;
                 } else {
                     if(has_encountered_fatal()) break;
-                    else parser::skip_until_end(block_vector, i);
+
+                    parser::skip_until_end(block_vector, i);
+                    prev_condition_exec = false;
                 }
+            } else if(current_line[0].type == token_type::ELSE) {
+                if(!previous_line_condition) {
+                    game_error::fatal_error("ELSE not following an IF block");
+                    return;
+                }
+
+                if(prev_condition_exec) parser::skip_until_end(block_vector, i);
+                else {
+                    ++i;
+                    exec_until_end(block_vector, p_struct, i);
+                }
+                previous_line_condition = false;
             } else if(current_line[0].type != token_type::TEXT) {
+                previous_line_condition = false;
                 interp_ins(current_line, p_struct);
                 if(has_encountered_fatal()) break;
             }

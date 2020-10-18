@@ -187,6 +187,7 @@ namespace token
         for(auto& it : p_vec) {
             if(it.type == token_type::UNDEFINED) {
                 if(it.str == "IF") it.type = token_type::IF;
+                else if(it.str == "ELSE") it.type = token_type::ELSE;
                 else if(it.str == "!" || it.str == "NOT") it.type = token_type::NOT;
                 else if(it.str == "HAS") it.type = token_type::HAS;
                 else if(it.str == "END") it.type = token_type::END;

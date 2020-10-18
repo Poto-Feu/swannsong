@@ -30,6 +30,7 @@ enum class token_type
 {
     FUNCTION,
     IF,
+    ELSE,
     END,
     VARIABLE,
     OPERATOR,
