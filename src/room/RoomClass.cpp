@@ -88,7 +88,7 @@ void Room::setChoices(std::vector<Choice>&& choices_vec)
     m_Choices_vec = std::move(choices_vec);
 }
 
-static void display(room_struct& p_struct)
+static void display(room_struct& p_struct, bool same_room)
 {
     const std::string *error_msg_ptr = nullptr;
     const std::string incorrect_input_str = p_struct.program_strings.fetch("incorrect_input");
@@ -97,7 +97,7 @@ static void display(room_struct& p_struct)
     unsigned int incorrect_input = 0;
 
     std::string menu_input = p_struct.currState.displayAll(p_struct.currRoom,
-            p_struct.program_strings);
+            p_struct.program_strings, same_room);
 
     while(true) {
         if(stringsm::is_number(menu_input)) {
@@ -152,26 +152,28 @@ static void display(room_struct& p_struct)
 }
 
 //Read the first ATLAUNCH block encountered starting from specified line
-static void atlaunch(room_struct& p_struct)
+static void atlaunch(room_struct& p_struct, bool same_room)
 {
     unsigned int foundln = 0;
 
     p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
     parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct, foundln);
-    display(p_struct);
+    display(p_struct, same_room);
 }
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
         std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings)
 {
+    bool same_room = false;
     do {
         RoomState currentState;
         room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings };
 
         p_rls.setNextRoom(m_name);
 
-        atlaunch(p_struct);
+        atlaunch(p_struct, same_room);
         if(game_error::has_encountered_fatal()) return false;
+        same_room = true;
     } while(p_rls.getNextRoom() == m_name && !p_rls.is_endgame() && !p_rls.is_unfinished());
 
     return true;

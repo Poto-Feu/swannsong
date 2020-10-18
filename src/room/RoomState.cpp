@@ -98,9 +98,11 @@ std::string RoomState::displayRoomScreen(Room const& p_room, PStrings const& pro
             error_msg, &menu_flags, &program_strings);
 }
 
-std::string RoomState::displayAll(Room const& p_room, PStrings const& program_strings)
+std::string RoomState::displayAll(Room const& p_room, PStrings const& program_strings,
+        bool same_room)
 {
-    displayCutscenes(program_strings);
+    if(!same_room) displayCutscenes(program_strings);
+    else m_cutscenes_list.clear();
     return displayRoomScreen(p_room, program_strings);
 }
 

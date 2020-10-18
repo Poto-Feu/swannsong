@@ -47,7 +47,8 @@ class RoomState
         void displayCutscenes(PStrings const& program_strings);
         std::string displayRoomScreen(Room const& p_room, PStrings const& program_strings,
                 const std::string *error_msg = nullptr) const;
-        std::string displayAll(Room const& p_room, PStrings const& program_strings);
+        std::string displayAll(Room const& p_room, PStrings const& program_strings,
+                bool same_room);
 
         void setBlockType(bt const p_bt);
 
