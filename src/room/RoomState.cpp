@@ -75,11 +75,11 @@ std::string RoomState::displayRoomScreen(Room const& p_room, PStrings const& pro
         const std::string *error_msg) const
 {
 
-    std::string *room_title_ptr = nullptr;
-    std::string *room_desc_ptr = nullptr;
+    const std::string *room_title_ptr = nullptr;
+    const std::string *room_desc_ptr = nullptr;
     const std::vector<std::string> *room_other_str_ptr = nullptr;
-    std::string room_title = p_room.getTitle();
-    std::string room_desc = p_room.getDesc();
+    std::string const& room_title = p_room.getTitle();
+    std::string const& room_desc = p_room.getDesc();
     std::vector<std::string> room_choices_str;
 
     game_menu::flags menu_flags;

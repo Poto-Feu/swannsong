@@ -62,15 +62,15 @@ std::vector<Choice> const& Room::getChoicesVec() const
     return m_Choices_vec;
 }
 
-std::optional<Choice> Room::getChoice(unsigned int choice_n)
+const Choice *Room::getChoice(unsigned int choice_n)
 {
-    auto Choice_it = std::find_if(m_Choices_vec.cbegin(), m_Choices_vec.cend(),
+    auto const& Choice_it = std::find_if(m_Choices_vec.cbegin(), m_Choices_vec.cend(),
             [&](Choice const& p_choice) {
             return choice_n == p_choice.getId();
             });
 
-    if(Choice_it == m_Choices_vec.cend()) return {};
-    else return *Choice_it;
+    if(Choice_it == m_Choices_vec.cend()) return nullptr;
+    else return &(*Choice_it);
 }
 
 void Room::setDesc(std::string const& room_desc)
@@ -102,15 +102,14 @@ static void display(room_struct& p_struct, bool same_room)
     while(true) {
         if(stringsm::is_number(menu_input)) {
             uint32_t choice_digit = std::stoi(menu_input);
-            auto current_choice = p_struct.currRoom.getChoice(choice_digit);
+            const Choice *current_choice = p_struct.currRoom.getChoice(choice_digit);
 
             if(current_choice && choice_digit != 0) {
                 //Process the input if it is a number corresponding to a choice
                 unsigned int start_ln = 0;
 
                 p_struct.currState.setBlockType(RoomState::bt::CHOICE);
-                parser::exec_until_end(current_choice.value().getInstructions(), p_struct,
-                        start_ln);
+                parser::exec_until_end(current_choice->getInstructions(), p_struct, start_ln);
 
                 if(game_error::has_encountered_fatal()) return;
                 else p_struct.currState.displayCutscenes(p_struct.program_strings);
