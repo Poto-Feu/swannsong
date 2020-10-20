@@ -57,3 +57,5 @@ dkms.conf
 build/
 debug/
 release/
+compile_commands.json
+.clangd
