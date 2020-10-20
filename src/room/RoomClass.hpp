@@ -46,11 +46,16 @@ class Room
         //Use a const reference to prevent excessive copying
         std::vector<Choice> const& getChoicesVec() const;
 
-        const Choice *getChoice(unsigned int choice_n);
+        //Get the number of choices defined in the room
+        unsigned int getChoicesSize() const;
+        const Choice *getChoice(unsigned int choice_n) const;
 
         void setDesc(std::string const& room_desc);
         void setATLAUNCH_ins(std::vector<TokenVec>&& atlaunch_ins);
         void setChoices(std::vector<Choice>&& choices_vec);
+
+        //Check if the choice with the specified number is defined
+        bool isChoicePresent(unsigned int choice_n) const;
 
         void displayAllChoices() const;
 

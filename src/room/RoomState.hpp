@@ -41,6 +41,8 @@ class RoomState
         void addTitle();
         void addDesc();
         void addAllChoices();
+        //Add a choice to be displayed on the menu screen
+        void addChoice(unsigned int choice_n);
         void addString(std::string const& p_str);
         void addCutscene(std::string const& p_cs);
 
@@ -50,10 +52,14 @@ class RoomState
         std::string displayAll(Room const& p_room, PStrings const& program_strings,
                 bool same_room);
 
+        //Return the Choice id corresponding to the specified index of the displayed choices vector
+        unsigned int getCorrespondantChoiceId(unsigned int choice_n) const;
+
         void setBlockType(bt const p_bt);
 
         bool is_title_displayed() const;
         bool is_desc_displayed() const;
+        bool is_all_choices_displayed() const;
 
     private:
 
@@ -61,6 +67,7 @@ class RoomState
         bool m_desc_displayed = false;
         bool m_all_choices_displayed = false;
 
+        std::vector<unsigned int> m_choices_list;
         std::vector<std::string> m_string_list;
         std::vector<std::string> m_cutscenes_list;
 

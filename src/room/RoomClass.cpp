@@ -62,7 +62,7 @@ std::vector<Choice> const& Room::getChoicesVec() const
     return m_Choices_vec;
 }
 
-const Choice *Room::getChoice(unsigned int choice_n)
+const Choice *Room::getChoice(unsigned int choice_n) const
 {
     auto const& Choice_it = std::find_if(m_Choices_vec.cbegin(), m_Choices_vec.cend(),
             [&](Choice const& p_choice) {
@@ -88,6 +88,13 @@ void Room::setChoices(std::vector<Choice>&& choices_vec)
     m_Choices_vec = std::move(choices_vec);
 }
 
+bool Room::isChoicePresent(unsigned int choice_n) const
+{
+    return std::find_if(m_Choices_vec.cbegin(), m_Choices_vec.cend(), [=](Choice const& p_Choice) {
+            return p_Choice.getId() == choice_n;
+            }) != m_Choices_vec.cend();
+}
+
 static void display(room_struct& p_struct, bool same_room)
 {
     const std::string *error_msg_ptr = nullptr;
@@ -102,9 +109,26 @@ static void display(room_struct& p_struct, bool same_room)
     while(true) {
         if(stringsm::is_number(menu_input)) {
             uint32_t choice_digit = std::stoi(menu_input);
-            const Choice *current_choice = p_struct.currRoom.getChoice(choice_digit);
 
-            if(current_choice && choice_digit != 0) {
+            if(choice_digit != 0) {
+                auto const& choices_vec = p_struct.currRoom.getChoicesVec();
+                unsigned int corres_Choice_id;
+
+                if(p_struct.currState.is_all_choices_displayed()) {
+                    if(choice_digit > choices_vec.size()) goto bad_input;
+                    corres_Choice_id = choice_digit;
+                } else {
+                    corres_Choice_id = p_struct.currState.getCorrespondantChoiceId(
+                            choice_digit);
+                    if(corres_Choice_id == 0) goto bad_input;
+                }
+                auto current_choice = std::find_if(choices_vec.cbegin(), choices_vec.cend(),
+                        [=](Choice const& p_choice) {
+                        return p_choice.getId() == corres_Choice_id;
+                        });
+
+                if(current_choice == choices_vec.cend()) goto bad_input;
+
                 //Process the input if it is a number corresponding to a choice
                 unsigned int start_ln = 0;
 
@@ -140,6 +164,8 @@ static void display(room_struct& p_struct, bool same_room)
             return;
         }
 
+bad_input:
+
         if(incorrect_input < 3) {
             error_msg_ptr = &incorrect_input_str;
             ++incorrect_input;
@@ -157,7 +183,7 @@ static void atlaunch(room_struct& p_struct, bool same_room)
 
     p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
     parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct, foundln);
-    display(p_struct, same_room);
+    if(!game_error::has_encountered_fatal()) display(p_struct, same_room);
 }
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,

@@ -58,22 +58,35 @@ namespace parser
     //Interpret a line which use the DISPLAY function
     static void interp_DISPLAY_func(TokenVec r_vec, room_struct& p_struct)
     {
-        if(r_vec.size() != 2) {
+        if(r_vec.size() != 2 && r_vec.size() != 3) {
             wrg_tkn_num("DISPLAY");
             return;
         }
 
-        if(p_struct.currState.getBlockType() == RoomState::bt::CHOICE) CHOICE_block_err("DISPLAY");
+        if(r_vec.size() == 3) {
+            if(r_vec[1].str != "CHOICE") {
+                game_error::fatal_error("incorrect DISPLAY syntax (" + p_struct.currRoom.getName()
+                        + ")");
+            } else if(r_vec[2].str.length() < 3 && stringsm::is_number(r_vec[2].str)) {
+                unsigned int choice_n = stoi(r_vec[2].str);
 
-        if(r_vec[1].str == "CHOICES") p_struct.currState.addAllChoices();
-        else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
-        else if(r_vec[1].str == "DESC") p_struct.currState.addDesc();
-        else if(r_vec[1].str == "ALL") {
-            p_struct.currState.addTitle();
-            p_struct.currState.addDesc();
-            p_struct.currState.addAllChoices();
+                if(!p_struct.currRoom.isChoicePresent(choice_n)) {
+                    game_error::fatal_error("choice " + r_vec[2].str + " doesn't exist in " +
+                            p_struct.currRoom.getName() + " ROOM");
+                } else p_struct.currState.addChoice(stoi(r_vec[2].str));
+            }
+        } else if(r_vec.size() == 2) {
+            if(p_struct.currState.getBlockType() == RoomState::bt::CHOICE) {
+                CHOICE_block_err("DISPLAY");
+            } else if(r_vec[1].str == "CHOICES") p_struct.currState.addAllChoices();
+            else if(r_vec[1].str == "TITLE") p_struct.currState.addTitle();
+            else if(r_vec[1].str == "DESC") p_struct.currState.addDesc();
+            else if(r_vec[1].str == "ALL") {
+                p_struct.currState.addTitle();
+                p_struct.currState.addDesc();
+                p_struct.currState.addAllChoices();
+            }
         }
-        else emit_warning("displaying one choice is not yet implemented");
     }
 
     //Interpret a line which use the PRINT function

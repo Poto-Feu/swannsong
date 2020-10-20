@@ -45,6 +45,11 @@ void RoomState::addAllChoices()
     m_all_choices_displayed = true;
 }
 
+void RoomState::addChoice(unsigned int choice_n)
+{
+    m_choices_list.push_back(choice_n);
+}
+
 void RoomState::addString(std::string const& p_str)
 {
     m_string_list.push_back(p_str);
@@ -87,11 +92,25 @@ std::string RoomState::displayRoomScreen(Room const& p_room, PStrings const& pro
     if(is_title_displayed()) room_title_ptr = &room_title;
     if(is_desc_displayed()) room_desc_ptr = &room_desc;
 
-    auto const& room_choices_vec = p_room.getChoicesVec();
-    std::transform(room_choices_vec.begin(), room_choices_vec.end(),
-            std::back_inserter(room_choices_str), [](Choice const& p_choice) {
-            return p_choice.getText();
-            });
+    if(m_all_choices_displayed) {
+        auto const& room_choices_vec = p_room.getChoicesVec();
+        std::transform(room_choices_vec.begin(), room_choices_vec.end(),
+                std::back_inserter(room_choices_str), [](Choice const& p_choice) {
+                return p_choice.getText();
+                });
+    } else if(m_choices_list.size() != 0) {
+        for(auto const& it : m_choices_list) {
+            const Choice *current_choice = p_room.getChoice(it);
+
+            if(!current_choice) {
+                game_error::emit_warning(std::to_string(it) + " Choice doesn't exist in "
+                        + p_room.getName() + " ROOM");
+                continue;
+            }
+
+            room_choices_str.push_back(current_choice->getText());
+        }
+    }
 
     if(m_string_list.size() > 0) room_other_str_ptr = &m_string_list;
     return game_menu::display(room_title_ptr, room_desc_ptr, room_other_str_ptr, room_choices_str,
@@ -106,6 +125,13 @@ std::string RoomState::displayAll(Room const& p_room, PStrings const& program_st
     return displayRoomScreen(p_room, program_strings);
 }
 
+unsigned int RoomState::getCorrespondantChoiceId(unsigned int choice_n) const
+{
+    if(choice_n > m_choices_list.size() || choice_n == 0) return 0;
+
+    return m_choices_list[choice_n - 1];
+}
+
 bool RoomState::is_title_displayed() const
 {
     return m_title_displayed;
@@ -114,4 +140,9 @@ bool RoomState::is_title_displayed() const
 bool RoomState::is_desc_displayed() const
 {
     return m_desc_displayed;
+}
+
+bool RoomState::is_all_choices_displayed() const
+{
+    return m_all_choices_displayed;
 }
