@@ -36,10 +36,11 @@ Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,
     if(TEXT_prop != m_instructions.cend()) {
         if((*TEXT_prop)[1].type == token_type::STRING) {
             m_text = stringsm::ext_str_quotes((*TEXT_prop)[1].str);
-        } else if((*TEXT_prop)[1].type == token_type::STRING_ID) {
-            m_text = program_strings.fetch((*TEXT_prop)[1].str);
-        } else game_error::fatal_error("TEXT token not followed by STRING or STRING_ID token ("
+        } else m_text = program_strings.fetch((*TEXT_prop)[1].str);
+        if((*TEXT_prop)[1].type != token_type::STRING_ID) {
+            game_error::emit_warning("TEXT token not followed by STRING or STRING_ID token ("
                 + (*TEXT_prop)[1].str + ")");
+        }
     }
 }
 
