@@ -31,12 +31,12 @@ namespace gvars
 
     bool set_var(gvarVector& p_vec, std::string const& p_name, gvar_type p_val)
     {
-        if(exist(p_vec, p_name)) {
-            game_error::fatal_error("gvar already exists (" + p_name + ")");
-            return false;
-        } else {
+        if(!exist(p_vec, p_name)) {
             add_to_list(p_vec, p_name, p_val);
             return true;
+        } else {
+            change_val(p_vec, p_name, p_val);
+            return false;
         }
     }
 

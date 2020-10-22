@@ -47,8 +47,7 @@ namespace parser
             wrg_tkn_num("SET");
             return;
         } else {
-            if(gvars::exist(p_gvars, r_vec[1].str)) fatal_error("gvar already exist");
-            else if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
+            if(r_vec[2].type != token_type::EQUAL) fatal_error("missing EQUAL token (SET)");
             else if(r_vec[3].type != token_type::NUMBER) {
                 fatal_error("no value assigned to var during its init");
             } else gvars::set_var(p_gvars, r_vec[1].str, std::stoi(r_vec[3].str));
