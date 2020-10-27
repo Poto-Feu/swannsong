@@ -5,11 +5,12 @@ filenotf "ERR : Missing data file."
 exit_penter "Press Enter to exit..."
 continue_penter "Press Enter to continue..."
 
+dialogbox_more "(Use arrow keys to scroll)"
+
 unfinished_str "You have reached one of the unfinished parts of this program. Thank you for playing this work-in-progress game! If you have encountered any issue, feel free to let me know on Github."
 
 # Inventory
 inventory_empty "(empty)"
-inventory_more "(And more...)"
 
 # Room prompt
 room_prompt_text "Your choice: "

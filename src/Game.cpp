@@ -50,6 +50,7 @@ static void set_curses()
     initscr();
     raw();
     noecho();
+    keypad(stdscr, TRUE);
 
     if(COLS < 100) pcurses::margin = 4;
     else if(COLS > 200) pcurses::margin = 15;

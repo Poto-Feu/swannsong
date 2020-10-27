@@ -18,37 +18,39 @@
 */
 
 #include "CutsceneClass.hpp"
+#include "dialogbox.hpp"
 #include "display_server.hpp"
 #include "pcurses.hpp"
 #include "userio.h"
 
 Cutscene::Cutscene() { }
 
-void Cutscene::display(PStrings const& program_strings) const
+static void add_string(std::string const& p_str, std::vector<std::string>& strings_vec)
 {
-    execute_all_actions(program_strings);
+    std::vector<std::string> string_lines = pcurses::divide_string_into_lines(p_str);
+
+    strings_vec.insert(strings_vec.end(), string_lines.begin(), string_lines.end());
 }
 
-void Cutscene::execute_all_actions(PStrings const& program_strings) const
+void Cutscene::display(PStrings const& program_strings) const
 {
-    int str_line = pcurses::top_margin;
+    std::vector<std::string> strings_vec;
 
     for(auto const& action_it : actions_vec) {
         switch(action_it.type) {
             case cs_action_type::STRING:
-                pcurses::display_center_string(action_it.content, str_line);
-                str_line = display_server::get_last_line() + 1;
+                add_string(action_it.content, strings_vec);
                 break;
             case cs_action_type::BLANK:
-                ++str_line;
+                strings_vec.push_back("");
                 break;
             case cs_action_type::PAUSE:
-                pcurses::display_penter_message(program_strings);
-                str_line = pcurses::top_margin;
+                dialogbox::display(NULL, &strings_vec, program_strings);
+                strings_vec.clear();
                 break;
         }
     }
 
-    pcurses::display_penter_message(program_strings);
+    dialogbox::display(NULL, &strings_vec, program_strings);
     display_server::clear_screen();
 }

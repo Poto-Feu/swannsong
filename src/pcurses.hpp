@@ -40,10 +40,13 @@ namespace pcurses
     extern int cols;
 
     int find_centered_x(std::string& p_str);
+    /*Return a vector in which the string has been cut into multiple string to fit the terminal
+    width*/
+    std::vector<std::string> divide_string_into_lines(std::string p_string);
     void display_pos_string(std::string p_str, int x_space, int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
-    void display_center_string(std::string const& p_str, int startline = getcury(stdscr),
+    unsigned int display_center_string(std::string const& p_str, int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
 
-    void display_penter_message(PStrings const& program_strings);
+    void display_penter_message(PStrings const& program_strings, bool wait_enter = true);
 }

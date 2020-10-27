@@ -16,29 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
-
-#ifndef USERIO_H
-#define USERIO_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#define WIN_ENTER_KEY 13
-
-void userio_gettextinput(char** buf, int max_n);
-
-#ifdef __cplusplus
-}
-
+ 
 #include <string>
+#include <vector>
 
-namespace userio
+#include "pstrings.hpp"
+
+namespace dialogbox
 {
-    void waitenter();
-    std::string gettextinput(int max_n);
+    void display(const std::string *title, const std::vector<std::string> *p_strings,
+            PStrings const& program_strings);
 }
-
-#endif
-
-#endif

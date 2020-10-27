@@ -64,6 +64,7 @@ add_executable(swannsongadv
     src/CutsceneClass.cpp
     src/cutscenes.cpp
     src/crypt_functions.cpp
+    src/dialogbox.cpp
     src/display_server.cpp
     src/files_path.cpp
     src/Game.cpp

@@ -5,11 +5,12 @@ filenotf "ERR : Fichier de données manquant."
 exit_penter "Appuyez sur Entrée pour quitter..."
 continue_penter "Appuyez sur Entrée pour continuer..."
 
+dialogbox_more "(Utilise les flèches du clavier pour faire défiler)"
+
 unfinished_str "Tu as atteins l'une des parties non terminées de ce programme. Merci d'avoir joué à ce jeu ! Si tu as rencontré un problème, n'hésite pas à le me faire savoir sur Github."
 
 # Inventory
 inventory_empty "(vide)"
-inventory_more "(Et plus...)"
 item_Coin "Pièce"
 
 # Room prompt

@@ -88,14 +88,10 @@ namespace inventory
 
     void display_screen(Inventory const& p_inv, PStrings const& program_strings)
     {
-        int str_line = pcurses::top_margin;
+        std::vector<std::string> strings_list;
 
-        display_server::clear_screen();
-        move(pcurses::top_margin, pcurses::margin);
-
-        if(p_inv.size() == 0) {
-            pcurses::display_center_string(program_strings.fetch("inventory_empty"), str_line);
-        } else {
+        if(p_inv.size() == 0) strings_list.push_back(program_strings.fetch("inventory_empty"));
+        else {
             for(auto const& it : p_inv) {
                 std::string disp_str = it.name;
                 std::string str_name = "item_" + it.name;
@@ -105,18 +101,10 @@ namespace inventory
                 }
 
                 disp_str += "   " + std::to_string(return_item_n(p_inv, it.name));
-                pcurses::display_center_string(disp_str, str_line);
-                ++str_line;
-
-                if(str_line >= LINES - 6) {
-                    if(program_strings.check_exist("inventory_more")) {
-                        pcurses::display_center_string(
-                                program_strings.fetch("inventory_more"), str_line);
-                    } else pcurses::display_center_string("(And more...)");
-                    break;
-                }
+                strings_list.push_back(std::move(disp_str));
             }
         }
-        pcurses::display_penter_message(program_strings);
+        dialogbox::display(nullptr, &strings_list, program_strings);
+    }
     }
 }

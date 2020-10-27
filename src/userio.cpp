@@ -25,8 +25,6 @@ extern "C" {
 #include "userio.h"
 #include "stringsm.h"
 
-#define WIN_ENTER_KEY 13
-
 /*Get user text input and return it in a pointer*/
 void userio_gettextinput(char** buf, int max_n)
 {

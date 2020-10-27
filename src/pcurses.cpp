@@ -33,9 +33,10 @@ namespace pcurses
         return COLS - margin * 2;
     }
 
-    static void multiline_center_string(std::string const& p_str, int startline, int p_attr)
+    static unsigned int multiline_center_string(std::string const& p_str, int startline, int p_attr)
     {
         bool end_of_str = false;
+        unsigned int line_count = 0;
         std::string remain_str = p_str;
         std::vector<std::string> str_vec;
 
@@ -52,9 +53,11 @@ namespace pcurses
         for(auto const& vec_it : str_vec) {
             display_server::add_string(vec_it, {startline, pcurses::margin}, p_attr);
             ++startline;
+            ++line_count;
         }
 
         display_server::add_string(remain_str, {startline, pcurses::margin});
+        return ++line_count;
     }
 
     int find_centered_x(std::string const& p_str)
@@ -91,7 +94,29 @@ namespace pcurses
         }
     }
 
-    void display_center_string(std::string const& p_str, int startline, int p_attr)
+    std::vector<std::string> divide_string_into_lines(std::string p_string)
+    {
+        if(p_string.size() < max_size_str()) {
+            return std::vector<std::string> { std::move(p_string) };
+        } else {
+            bool end_of_str = false;
+            std::vector<std::string> str_vec;
+
+            while(!end_of_str) {
+                std::string vec_item;
+
+                if(p_string.size() > max_size_str()) {
+                    vec_item = p_string.substr(0, max_size_str());
+                    p_string.erase(0, max_size_str());
+                    str_vec.push_back(std::move(vec_item));
+                } else end_of_str = true;
+            }
+            str_vec.push_back(std::move(p_string));
+            return str_vec;
+        }
+    }
+
+    unsigned int display_center_string(std::string const& p_str, int startline, int p_attr)
     {
         unsigned int max_size_func = max_size_str();
 
@@ -99,14 +124,15 @@ namespace pcurses
             int p_x = find_centered_x(p_str);
 
             display_server::add_string(p_str, {startline, p_x}, p_attr);
-        } else multiline_center_string(p_str, startline, p_attr);
+            return 1;
+        } else return multiline_center_string(p_str, startline, p_attr);
     }
 
-    void display_penter_message(PStrings const& program_strings)
+    void display_penter_message(PStrings const& program_strings, bool wait_enter)
     {
             display_server::add_string(program_strings.fetch("continue_penter"),
                     {pcurses::lines - pcurses::bottom_margin, pcurses::margin}, A_BOLD);
             display_server::show_screen();
-            userio::waitenter();
+            if(wait_enter) userio::waitenter();
     }
 }
