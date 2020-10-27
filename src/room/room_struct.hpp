@@ -26,7 +26,7 @@
 
 struct room_struct
 {
-    Room currRoom;
+    Room const& currRoom;
     RoomState currState;
     RoomLoopState& currLoopState;
     Player& currPlayer;
