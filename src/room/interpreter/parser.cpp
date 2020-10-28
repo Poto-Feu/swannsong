@@ -21,6 +21,7 @@
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
 #include "cutscenes.hpp"
+#include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "player/inventory.hpp"
 #include "pcurses.hpp"
@@ -188,6 +189,11 @@ namespace parser
         inventory::useitem(p_inv, p_vec[item_name_pos].str, item_n);
     }
 
+    static void interp_GAMEOVER_func(RoomLoopState& p_rls)
+    {
+        p_rls.setGameOver();
+    }
+
     static void interp_EXIT_func(RoomLoopState& p_rls)
     {
         p_rls.endLoop();
@@ -311,6 +317,9 @@ namespace parser
                 break;
             case token_spec_type::USE:
                 interp_USE_func(r_vec, p_struct.currPlayer.inv);
+                break;
+            case token_spec_type::GAMEOVER:
+                interp_GAMEOVER_func(p_struct.currLoopState);
                 break;
             case token_spec_type::EXIT:
                 interp_EXIT_func(p_struct.currLoopState);
@@ -494,6 +503,20 @@ namespace parser
                 interp_ins(current_line, p_struct);
                 if(has_encountered_fatal()) break;
             }
+        }
+
+        if(p_struct.currLoopState.is_game_over()) {
+            const std::string gameover_title = "GAME OVER";
+
+            const std::vector<std::string> gameover_strings {
+                p_struct.program_strings.fetch("gameover_msg")
+            };
+            inventory::clear(p_struct.currPlayer.inv);
+            gvars::clear(p_struct.currPlayer.gvars);
+            /*Kinda bad implementation since it breaks the separation between code and data, but
+            that'll do for now - the whole structure of the code is janky anyway*/
+            p_struct.currLoopState.setNextRoom("menu");
+            dialogbox::display(&gameover_title, &gameover_strings, p_struct.program_strings);
         }
     }
 }

@@ -47,6 +47,8 @@ namespace inventory
     /*Return the number of pieces of an item present in the inventory - returns 0 if the item
     does not exist*/
     item_val_type return_item_n(Inventory const& p_inv, std::string const& p_name);
+    //Remove all items from the inventory
+    void clear(Inventory& p_inv);
     //Display the inventory screen
     void display_screen(Inventory const& p_inv, PStrings const& program_strings);
 }

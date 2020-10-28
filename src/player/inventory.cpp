@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "player/inventory.hpp"
+#include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
 #include "userio.h"
@@ -106,5 +107,9 @@ namespace inventory
         }
         dialogbox::display(nullptr, &strings_list, program_strings);
     }
+
+    void clear(Inventory& p_inv)
+    {
+        p_inv.clear();
     }
 }

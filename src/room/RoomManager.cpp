@@ -320,6 +320,8 @@ void RoomManager::startLoop(std::string const& start_room)
             return;
         }
 
+        m_rls.resetGameOver();
+
         if(!currentRoom.load(m_rls, m_player, m_room_map, m_program_strings)) break;
 
         if(!m_rls.is_endgame() && !m_rls.is_unfinished()) curr_room_id = m_rls.getNextRoom();

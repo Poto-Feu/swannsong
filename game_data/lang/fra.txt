@@ -9,6 +9,8 @@ dialogbox_more "(Utilise les flèches du clavier pour faire défiler)"
 
 unfinished_str "Tu as atteins l'une des parties non terminées de ce programme. Merci d'avoir joué à ce jeu ! Si tu as rencontré un problème, n'hésite pas à le me faire savoir sur Github."
 
+gameover_msg "Pas de chance ! Tu es nul."
+
 # Inventory
 inventory_empty "(vide)"
 item_Coin "Pièce"

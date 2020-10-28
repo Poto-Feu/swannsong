@@ -29,10 +29,11 @@ typedef std::vector<gvar> gvarVector;
 
 namespace gvars
 {
-
     bool set_var(gvarVector& p_vec, std::string const& p_name, gvar_type p_val);
     gvar_type return_value(gvarVector const& p_vec, std::string const& p_name);
     bool change_val(gvarVector& p_vec, std::string const& p_name, gvar_type p_val);
     bool exist(gvarVector const& p_vec, std::string const& p_name);
+    //Remove all defined gvars
+    void clear(gvarVector& p_vec);
     void replace_vector(gvarVector& target, gvarVector const& source);
 }

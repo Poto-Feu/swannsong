@@ -29,6 +29,9 @@ class RoomLoopState
         void endLoop();
         //Set the state of the game as unfinished
         void setUnfinished();
+        //Trigger a game over
+        void setGameOver();
+        void resetGameOver();
         //Set the room in which the player will spawn at the next loop iteration
         void setNextRoom(std::string const& p_id);
 
@@ -36,11 +39,13 @@ class RoomLoopState
 
         bool is_endgame() const;
         bool is_unfinished() const;
+        bool is_game_over() const;
 
     private:
 
         bool m_endgame = false;
         bool m_unfinished = false;
+        bool m_gameover = false;
 
         std::string m_next_room;
 };

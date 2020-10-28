@@ -9,6 +9,8 @@ dialogbox_more "(Use arrow keys to scroll)"
 
 unfinished_str "You have reached one of the unfinished parts of this program. Thank you for playing this work-in-progress game! If you have encountered any issue, feel free to let me know on Github."
 
+gameover_msg "No dice! You suck."
+
 # Inventory
 inventory_empty "(empty)"
 

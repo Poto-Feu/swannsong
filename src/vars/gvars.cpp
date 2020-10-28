@@ -67,6 +67,11 @@ namespace gvars
                 }) != p_vec.cend();
     }
 
+    void clear(gvarVector& p_vec)
+    {
+        p_vec.clear();
+    }
+
     void replace_vector(gvarVector& target, gvarVector const& source)
     {
         target = source;

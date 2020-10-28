@@ -58,6 +58,7 @@ enum class token_spec_type
     CUTSCENE,
     GET,
     USE,
+    GAMEOVER,
     EXIT,
     UNFINISHED
 };
@@ -76,4 +77,5 @@ namespace token
     TokenVec create_arr(std::string const& p_str, PStrings const& program_strings);
     void set_runtime_tokens(TokenVec& p_vec, gvarVector const& p_player);
 }
+
 #endif

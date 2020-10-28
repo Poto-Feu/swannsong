@@ -34,6 +34,16 @@ void RoomLoopState::setUnfinished()
     m_unfinished = true;
 }
 
+void RoomLoopState::setGameOver()
+{
+    m_gameover = true;
+}
+
+void RoomLoopState::resetGameOver()
+{
+    m_gameover = false;
+}
+
 std::string RoomLoopState::getNextRoom() const
 {
     return m_next_room;
@@ -47,4 +57,9 @@ bool RoomLoopState::is_endgame() const
 bool RoomLoopState::is_unfinished() const
 {
     return m_unfinished;
+}
+
+bool RoomLoopState::is_game_over() const
+{
+    return m_gameover;
 }

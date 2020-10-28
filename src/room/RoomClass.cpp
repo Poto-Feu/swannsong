@@ -183,7 +183,9 @@ static void atlaunch(room_struct& p_struct, bool same_room)
 
     p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
     parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct, foundln);
-    if(!game_error::has_encountered_fatal()) display(p_struct, same_room);
+    if(!game_error::has_encountered_fatal() && !p_struct.currLoopState.is_game_over()) {
+        display(p_struct, same_room);
+    }
 }
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
