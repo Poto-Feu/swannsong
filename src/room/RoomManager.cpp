@@ -41,14 +41,13 @@ bool RoomManager::set_room_property(std::string const& room_name, std::string co
     if(return_variables.use_flag) {
         game_error::fatal_error("Multiple " + prop_name + " properties in " + room_name + " ROOM");
         return false;
-    } else if(m_program_strings.check_exist(prop_arg)) {
-        return_variables.use_flag = true;
-        return_variables.str = m_program_strings.fetch(prop_arg);
     } else if(stringsm::has_quotes(prop_arg)) {
         return_variables.use_flag = true;
         return_variables.str = stringsm::ext_str_quotes(prop_arg);
+    } else {
+        return_variables.use_flag = true;
+        return_variables.str = m_program_strings.fetch(prop_arg);
     }
-
     return true;
 }
 
