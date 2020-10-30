@@ -23,7 +23,9 @@
 #include "cutscenes.hpp"
 #include "fileio/fileio.h"
 #include "CutsceneClass.hpp"
+#include "dialogbox.hpp"
 #include "files_path.hpp"
+#include "game_error.hpp"
 #include "pcurses.hpp"
 #include "stringsm.h"
 #include "userio.h"
@@ -90,8 +92,10 @@ namespace cutscenes
 
         if(it != cs_vec.cend()) it->display(program_strings);
         else {
-            pcurses::display_center_string("missingCutscene", pcurses::top_margin);
-            pcurses::display_penter_message(program_strings);
+            const std::string missingCutscene_text = "missingCutscene";
+
+            game_error::emit_warning("\"" + p_name + "\" cutscene does not exists");
+            dialogbox::display(&missingCutscene_text, NULL, program_strings);
         }
     }
 

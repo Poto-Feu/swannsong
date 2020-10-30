@@ -115,10 +115,7 @@ namespace parser
     static void interp_CUTSCENE_func(TokenVec const& r_vec, RoomState& p_state)
     {
         if(r_vec.size() != 2) wrg_tkn_num("CUTSCENE");
-        else {
-            if(cutscenes::check_exist(r_vec[1].str)) p_state.addCutscene(r_vec[1].str);
-            else emit_warning("unknown CUTSCENE id (" + r_vec[1].str + ")");
-        }
+        else p_state.addCutscene(r_vec[1].str);
     }
 
     //Intepret a line which use the GO function
