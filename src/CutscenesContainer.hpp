@@ -20,14 +20,25 @@
 #pragma once
 
 #include <filesystem>
-#include <string>
+#include <unordered_map>
 
+#include "CutsceneClass.hpp"
 #include "pstrings.hpp"
 
-namespace cutscenes
+class CutscenesContainer
 {
-    void copy_file_to_vec(std::string const& csfile, std::filesystem::path const& data_path,
-            PStrings const& program_strings);
-    void display(std::string const& p_name, PStrings const& program_strings);
-    bool check_exist(std::string const& p_name);
-}
+    public:
+
+        CutscenesContainer();
+        CutscenesContainer(std::string const& csfile, std::filesystem::path const& data_path,
+                PStrings const& program_strings);
+        void display(std::string const& p_name, PStrings const& program_strings) const;
+
+    private:
+
+        std::unordered_map<std::string, Cutscene>::const_iterator return_cs_it(
+                std::string const& cutscene_name) const;
+        bool check_exist(std::string const& cutscene_name) const;
+
+        std::unordered_map<std::string, Cutscene> m_map;
+};

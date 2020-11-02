@@ -25,7 +25,6 @@
 #include "room/interpreter/token.hpp"
 #include "fileio/save/save_const.hpp"
 #include "fileio/save/SaveChunk.hpp"
-#include "cutscenes.hpp"
 #include "pcurses.hpp"
 #include "stringsm.h"
 
@@ -36,13 +35,6 @@ namespace tests
         std::string test_str("\"SwannSong Adventure\"");
         if(stringsm::is_str(test_str)) printf("true\n");
         else printf("false\n");
-
-        exit(0);
-    }
-
-    void cutscenes_test(PStrings const& program_strings)
-    {
-        cutscenes::display("about", program_strings);
 
         exit(0);
     }

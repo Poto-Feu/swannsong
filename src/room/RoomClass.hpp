@@ -26,6 +26,7 @@
 #include "room/RoomLoopState.hpp"
 #include "room/Choice.hpp"
 #include "player/Player.hpp"
+#include "CutscenesContainer.hpp"
 #include "pstrings.hpp"
 
 class Room 
@@ -61,7 +62,7 @@ class Room
 
         bool load(RoomLoopState& p_rls, Player& p_player,
                 std::unordered_map<std::string, Room> const& room_map,
-                PStrings const& program_strings);
+                PStrings const& program_strings, CutscenesContainer const&);
 
     private:
 

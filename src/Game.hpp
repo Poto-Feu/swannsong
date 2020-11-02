@@ -23,6 +23,7 @@
 #include <string>
 
 #include "vars/LocalConfVariable.hpp"
+#include "CutscenesContainer.hpp"
 #include "pargs.hpp"
 #include "pstrings.hpp"
 
@@ -47,6 +48,7 @@ class Game
         LocalConfVariableContainer m_lcvc;
         bool m_strings_init = false;
         PStrings m_program_strings;
+        CutscenesContainer m_cutscenes_container;
 
         void ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path);
         void missing_gcvar(std::string const& p_name);

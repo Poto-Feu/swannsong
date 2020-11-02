@@ -26,6 +26,7 @@
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
 #include "room/RoomState.hpp"
+#include "CutscenesContainer.hpp"
 #include "pstrings.hpp"
 
 struct room_property_rtrn
@@ -55,7 +56,7 @@ class RoomManager
     public:
 
         explicit RoomManager(std::filesystem::path const& room_file_path,
-                PStrings&& program_strings);
+                PStrings&& program_strings, CutscenesContainer&& cutscenes_container);
         //Start the game loop which loads rooms until the end signal is enabled
         void startLoop(std::string const& start_room);
 
@@ -63,6 +64,7 @@ class RoomManager
 
         std::unordered_map<std::string, Room> m_room_map;
         PStrings&& m_program_strings;
+        CutscenesContainer&& m_cutscenes_container;
         RoomLoopState m_rls;
         Player m_player;
 

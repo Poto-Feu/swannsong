@@ -24,7 +24,6 @@
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
 #include "room/RoomManager.hpp"
-#include "cutscenes.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
@@ -194,8 +193,8 @@ GameInitData Game::init(pargsMap pargs_map)
         return game_init_data;
     }
 
-    if(csfile_it != gc_vec.cend()) cutscenes::copy_file_to_vec(csfile_it->value, p_paths.data_path,
-            m_program_strings);
+    if(csfile_it != gc_vec.cend()) m_cutscenes_container = CutscenesContainer(csfile_it->value,
+            p_paths.data_path, m_program_strings);
     else {
         game_init_data.no_error = false;
         missing_gcvar("csfile");
@@ -207,7 +206,7 @@ GameInitData Game::init(pargsMap pargs_map)
     }
 
     if(m_lcvc.getValue("firstlaunch") == "1") {
-        cutscenes::display("help", m_program_strings);
+        m_cutscenes_container.display("help", m_program_strings);
         m_lcvc.changeValue("firstlaunch", "0");
         m_lcvc.writeToFile();
     }
@@ -226,7 +225,8 @@ GameInitData Game::init(pargsMap pargs_map)
 void Game::run(GameInitData const& game_init_data)
 {
     if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm(game_init_data.room_file_path, std::move(m_program_strings));
+        RoomManager rmm(game_init_data.room_file_path, std::move(m_program_strings),
+                std::move(m_cutscenes_container));
 
         if(!game_error::has_encountered_fatal()) rmm.startLoop(m_start_room);
     }

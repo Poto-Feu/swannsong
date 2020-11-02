@@ -255,8 +255,10 @@ Room RoomManager::create_new_room(std::vector<std::string> room_file_lines, unsi
     }
 }
 
-RoomManager::RoomManager(std::filesystem::path const& room_file_path, PStrings&& program_strings) :
-    m_program_strings(std::move(program_strings))
+RoomManager::RoomManager(std::filesystem::path const& room_file_path, PStrings&& program_strings,
+        CutscenesContainer&& cutscenes_container) :
+    m_program_strings(std::move(program_strings)),
+    m_cutscenes_container(std::move(cutscenes_container))
 {
     std::vector<std::string> room_file_lines = fileio::copy_to_vector(room_file_path);
 
@@ -321,8 +323,10 @@ void RoomManager::startLoop(std::string const& start_room)
 
         m_rls.resetGameOver();
 
-        if(!currentRoom.load(m_rls, m_player, m_room_map, m_program_strings)) break;
-
+        if(!currentRoom.load(m_rls, m_player, m_room_map, m_program_strings,
+                    m_cutscenes_container)) {
+            break;
+        }
         if(!m_rls.is_endgame() && !m_rls.is_unfinished()) curr_room_id = m_rls.getNextRoom();
     }
     display_server::clear_screen();

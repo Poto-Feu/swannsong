@@ -21,7 +21,6 @@
 #include <stdexcept>
 
 #include "room/RoomState.hpp"
-#include "cutscenes.hpp"
 #include "display_server.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
@@ -70,9 +69,10 @@ RoomState::bt RoomState::getBlockType() const
     return block_type;
 }
 
-void RoomState::displayCutscenes(PStrings const& program_strings)
+void RoomState::displayCutscenes(PStrings const& program_strings,
+        CutscenesContainer const& cutscenes_container)
 {
-    for(auto const& it : m_cutscenes_list) cutscenes::display(it, program_strings);
+    for(auto const& it : m_cutscenes_list) cutscenes_container.display(it, program_strings);
     m_cutscenes_list.clear();
 }
 
@@ -118,9 +118,9 @@ std::string RoomState::displayRoomScreen(Room const& p_room, PStrings const& pro
 }
 
 std::string RoomState::displayAll(Room const& p_room, PStrings const& program_strings,
-        bool same_room)
+        CutscenesContainer const& cutscenes_container, bool same_room)
 {
-    if(!same_room) displayCutscenes(program_strings);
+    if(!same_room) displayCutscenes(program_strings, cutscenes_container);
     else m_cutscenes_list.clear();
     return displayRoomScreen(p_room, program_strings);
 }

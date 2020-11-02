@@ -62,7 +62,7 @@ add_executable(swannsongadv
     src/vars/gvars.cpp
     src/tests/tests.cpp
     src/CutsceneClass.cpp
-    src/cutscenes.cpp
+    src/CutscenesContainer.cpp
     src/crypt_functions.cpp
     src/dialogbox.cpp
     src/display_server.cpp

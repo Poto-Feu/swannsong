@@ -24,7 +24,7 @@
 #include "room/room_struct.hpp"
 #include "fileio/save/load_savefile.hpp"
 #include "fileio/save/save_file.hpp"
-#include "cutscenes.hpp"
+#include "CutscenesContainer.hpp"
 #include "game_error.hpp"
 #include "pstrings.hpp"
 #include "stringsm.h"
@@ -104,7 +104,7 @@ static void display(room_struct& p_struct, bool same_room)
     unsigned int incorrect_input = 0;
 
     std::string menu_input = p_struct.currState.displayAll(p_struct.currRoom,
-            p_struct.program_strings, same_room);
+            p_struct.program_strings, p_struct.cutscenes_container, same_room);
 
     while(true) {
         if(stringsm::is_number(menu_input)) {
@@ -136,7 +136,8 @@ static void display(room_struct& p_struct, bool same_room)
                 parser::exec_until_end(current_choice->getInstructions(), p_struct, start_ln);
 
                 if(game_error::has_encountered_fatal()) return;
-                else p_struct.currState.displayCutscenes(p_struct.program_strings);
+                else p_struct.currState.displayCutscenes(p_struct.program_strings,
+                        p_struct.cutscenes_container);
 
                 return;
             }
@@ -157,7 +158,7 @@ static void display(room_struct& p_struct, bool same_room)
                     p_struct.program_strings);
             return;
         } else if(menu_input == "help") {
-            cutscenes::display("help", p_struct.program_strings);
+            p_struct.cutscenes_container.display("help", p_struct.program_strings);
             return;
         } else if(menu_input == "inv" || menu_input == "inventory") {
             inventory::display_screen(p_struct.currPlayer.inv, p_struct.program_strings);
@@ -189,12 +190,14 @@ static void atlaunch(room_struct& p_struct, bool same_room)
 }
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
-        std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings)
+        std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings,
+        CutscenesContainer const& cutscenes_container)
 {
     bool same_room = false;
     do {
         RoomState currentState;
-        room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings };
+        room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings,
+        cutscenes_container };
 
         p_rls.setNextRoom(m_name);
 

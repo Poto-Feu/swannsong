@@ -22,7 +22,6 @@
 #include <vector>
 
 #include "pstrings.hpp"
-#include "cutscenes.hpp"
 
 enum class cs_action_type
 {
@@ -43,7 +42,6 @@ class Cutscene
 
         Cutscene();
 
-        std::string name;
         std::vector<cs_action> actions_vec;
 
         void display(PStrings const& program_strings) const;

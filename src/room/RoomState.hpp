@@ -46,11 +46,12 @@ class RoomState
         void addString(std::string const& p_str);
         void addCutscene(std::string const& p_cs);
 
-        void displayCutscenes(PStrings const& program_strings);
+        void displayCutscenes(PStrings const& program_strings,
+                CutscenesContainer const& cutscenes_container);
         std::string displayRoomScreen(Room const& p_room, PStrings const& program_strings,
                 const std::string *error_msg = nullptr) const;
         std::string displayAll(Room const& p_room, PStrings const& program_strings,
-                bool same_room);
+                CutscenesContainer const& cutscenes_container, bool same_room);
 
         //Return the Choice id corresponding to the specified index of the displayed choices vector
         unsigned int getCorrespondantChoiceId(unsigned int choice_n) const;

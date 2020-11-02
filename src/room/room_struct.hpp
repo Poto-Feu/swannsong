@@ -21,6 +21,7 @@
 
 #include <unordered_map>
 
+#include "CutscenesContainer.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomState.hpp"
 
@@ -32,4 +33,5 @@ struct room_struct
     Player& currPlayer;
     std::unordered_map<std::string, Room> const& roomMap;
     PStrings const& program_strings;
+    CutscenesContainer const& cutscenes_container;
 };

@@ -20,7 +20,6 @@
 #include "room/interpreter/parser.hpp"
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
-#include "cutscenes.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "player/inventory.hpp"
