@@ -311,16 +311,14 @@ void RoomManager::startLoop(std::string const& start_room)
     std::string curr_room_id = start_room;
 
     while(!m_rls.is_endgame() && !m_rls.is_unfinished()) {
-        Room currentRoom;
 
-        auto room_it = m_room_map.find(curr_room_id.c_str());
-
-        if(room_it != m_room_map.cend()) currentRoom = room_it->second;
-        else {
+        auto const& room_it = m_room_map.find(curr_room_id.c_str());
+        if(room_it == m_room_map.cend()) {
             game_error::fatal_error(curr_room_id + " ROOM not present in rooms file");
             return;
         }
 
+        Room const& currentRoom = room_it->second;
         m_rls.resetGameOver();
 
         if(!currentRoom.load(m_rls, m_player, m_room_map, m_program_strings,

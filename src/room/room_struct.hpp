@@ -28,7 +28,7 @@
 struct room_struct
 {
     Room const& currRoom;
-    RoomState currState;
+    RoomState& currState;
     RoomLoopState& currLoopState;
     Player& currPlayer;
     std::unordered_map<std::string, Room> const& roomMap;

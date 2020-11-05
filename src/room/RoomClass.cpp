@@ -191,7 +191,7 @@ static void atlaunch(room_struct& p_struct, bool same_room)
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
         std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings,
-        CutscenesContainer const& cutscenes_container)
+        CutscenesContainer const& cutscenes_container) const
 {
     bool same_room = false;
     do {
