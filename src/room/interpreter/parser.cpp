@@ -500,19 +500,5 @@ namespace parser
                 if(has_encountered_fatal()) break;
             }
         }
-
-        if(p_struct.currLoopState.is_game_over()) {
-            const std::string gameover_title = "GAME OVER";
-
-            const std::vector<std::string> gameover_strings {
-                p_struct.program_strings.fetch("gameover_msg")
-            };
-            inventory::clear(p_struct.currPlayer.inv);
-            gvars::clear(p_struct.currPlayer.gvars);
-            /*Kinda bad implementation since it breaks the separation between code and data, but
-            that'll do for now - the whole structure of the code is janky anyway*/
-            p_struct.currLoopState.setNextRoom("menu");
-            dialogbox::display(&gameover_title, &gameover_strings, p_struct.program_strings);
-        }
     }
 }

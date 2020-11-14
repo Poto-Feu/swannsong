@@ -73,6 +73,6 @@ class Room
         std::vector<TokenVec> m_ATLAUNCH_ins;
         std::vector<Choice> m_Choices_vec;
 
-        void displayTitle(Room const& p_room);
-        void displayDesc(Room const& p_room);
+        void gameOver(Player& player, RoomLoopState& loop_state, PStrings const& program_strings)
+            const;
 };

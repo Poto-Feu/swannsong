@@ -25,6 +25,7 @@
 #include "fileio/save/load_savefile.hpp"
 #include "fileio/save/save_file.hpp"
 #include "CutscenesContainer.hpp"
+#include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "pstrings.hpp"
 #include "stringsm.h"
@@ -184,8 +185,11 @@ static void atlaunch(room_struct& p_struct, bool same_room)
 
     p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
     parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct, foundln);
-    if(!game_error::has_encountered_fatal() && !p_struct.currLoopState.is_game_over()) {
-        display(p_struct, same_room);
+
+    if(game_error::has_encountered_fatal()) return;
+    else if(!p_struct.currLoopState.is_game_over()) display(p_struct, same_room);
+    else {
+        p_struct.currState.displayCutscenes(p_struct.program_strings, p_struct.cutscenes_container);
     }
 }
 
@@ -203,8 +207,26 @@ bool Room::load(RoomLoopState& p_rls, Player& p_player,
 
         atlaunch(p_struct, same_room);
         if(game_error::has_encountered_fatal()) return false;
-        same_room = true;
+        else if(p_struct.currLoopState.is_game_over()) gameOver(p_player, p_struct.currLoopState,
+                program_strings);
+        else same_room = true;
     } while(p_rls.getNextRoom() == m_name && !p_rls.is_endgame() && !p_rls.is_unfinished());
 
     return true;
+}
+
+void Room::gameOver(Player& player, RoomLoopState& loop_state, PStrings const& program_strings)
+    const
+{
+    const std::string gameover_title = "GAME OVER";
+
+    const std::vector<std::string> gameover_strings {
+        program_strings.fetch("gameover_msg")
+    };
+    inventory::clear(player.inv);
+    gvars::clear(player.gvars);
+    /*Kinda bad implementation since it breaks the separation between code and data, but
+    that'll do for now - the whole structure of the code is janky anyway*/
+    loop_state.setNextRoom("menu");
+    dialogbox::display(&gameover_title, &gameover_strings, program_strings);
 }
