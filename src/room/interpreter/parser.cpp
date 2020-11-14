@@ -430,10 +430,13 @@ namespace parser
     {
         bool is_end = false;
 
-        for(++i; !is_end;) {
+        while(!is_end) {
             ++i;
             if(block_vector[i][0].type == token_type::END) is_end = true;
-            else if(block_vector[i][0].type == token_type::IF) skip_until_end(block_vector, i);
+            else if(block_vector[i][0].type == token_type::IF
+                    || block_vector[i][0].type == token_type::ELSE) {
+                skip_until_end(block_vector, i);
+            }
         }
     }
 
