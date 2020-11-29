@@ -72,11 +72,14 @@ auto Game::fetch_gameconf_vars(std::filesystem::path const& system_data_path)
             });
     };
 
-    auto defaultlang_it = get_gcvar_it("defaultlang");
+    //Avoid overwriting user-selected language
+    if(m_lcvc.getValue("firstlaunch") == "1") {
+        auto defaultlang_it = get_gcvar_it("defaultlang");
 
-    if(defaultlang_it != gc_vec.cend()) {
-        m_lcvc.changeValue("lang", defaultlang_it->value);
-    } else missing_gcvar("defaultlang");
+        if(defaultlang_it != gc_vec.cend()) {
+            m_lcvc.changeValue("lang", defaultlang_it->value);
+        } else missing_gcvar("defaultlang");
+    }
 
     return gc_vec;
 }
