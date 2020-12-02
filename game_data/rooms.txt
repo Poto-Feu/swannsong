@@ -33,16 +33,196 @@ ROOM house
     TITLE house_title
     DESC house_desc
     ATLAUNCH
-        DISPLAY ALL
+        DISPLAY TITLE
+        DISPLAY DESC
+
+        DISPLAY CHOICE 1
+        IF is_nugget_found NOT EXISTS
+            DISPLAY CHOICE 2
+        END
+        DISPLAY CHOICE 3
     END
+
     CHOICES
         c1
-            TEXT house_c1
-            UNFINISHED
+            TEXT house_go_inside
+
+            IF HAS 1 GoldenNugget
+                CUTSCENE cs_house_metal_detector_on
+                GAMEOVER
+            END
+            ELSE
+                GO inside_house
+            END
         END
         c2
-            TEXT house_c2
-            UNFINISHED
+            TEXT house_mow_lawn
+
+            CUTSCENE cs_gold_nugget_found
+            GO nugget_choice
+        END
+        c3
+            TEXT take_car_text_choice
+
+            GO take_car_choice
+        END
+    END
+END ROOM
+
+ROOM take_car_choice
+    DESC take_car_choice_desc
+    ATLAUNCH
+        DISPLAY DESC
+        DISPLAY CHOICES
+    END
+
+    CHOICES
+        c1
+            TEXT take_car_choice_house
+
+            GO house
+        END
+        c2
+            TEXT take_car_choice_hospital
+
+            GO hospital
+        END
+    END
+END ROOM
+
+ROOM nugget_choice
+    DESC nugget_choice_desc
+
+    ATLAUNCH
+        DISPLAY DESC
+        DISPLAY CHOICES
+        SET is_nugget_found = true
+    END
+
+    CHOICES
+        c1
+            TEXT nugget_choice_keep
+
+            GET GoldenNugget
+            CUTSCENE cs_gold_nugget_kept
+            GO house
+        END
+        c2
+            TEXT nugget_choice_eat
+
+            SET is_nugget_eaten = true
+            SET is_nugget_cure = false
+            CUTSCENE cs_gold_nugget_eaten
+            USE GoldenNugget
+            GO house
+        END
+    END
+END ROOM
+
+ROOM inside_house
+    TITLE inside_house_title
+    DESC inside_house_desc
+
+    ATLAUNCH
+        DISPLAY TITLE
+        DISPLAY DESC
+
+        IF is_nugget_eaten EXISTS
+            IF is_nugget_cure = false
+                CUTSCENE cs_gold_nugget_die
+                GAMEOVER
+            END
+            ELSE
+                IF n_play_HOP EXISTS
+                    DISPLAY CHOICE 2
+                END
+                ELSE
+                    DISPLAY CHOICE 1
+                END
+                IF is_parrot_dead NOT EXISTS
+                    DISPLAY CHOICE 3
+                END
+            END
+        END
+        ELSE
+            IF n_play_HOP EXISTS
+                DISPLAY CHOICE 2
+            END
+            ELSE
+                DISPLAY CHOICE 1
+            END
+            IF is_parrot_dead NOT EXISTS
+                DISPLAY CHOICE 3
+            END
+        END
+        DISPLAY CHOICE 4
+    END
+
+    CHOICES
+        c1
+            TEXT inside_house_play_HOP
+
+            SET n_play_HOP = 1
+            CUTSCENE cs_play_HOP
+        END
+        c2
+            TEXT inside_house_replay_HOP
+
+            IF n_play_HOP = 1
+                CUTSCENE cs_play_HOP_again
+                n_play_HOP = 2
+            END
+            ELSE
+                CUTSCENE cs_enough_HOP
+            END
+
+        END
+        c3
+            TEXT inside_house_kill_parrot
+
+            SET is_parrot_dead = true
+        END
+        c4
+            TEXT inside_house_go_outside
+
+            GO house
+        END
+    END
+END ROOM
+
+ROOM hospital
+    TITLE hospital_title
+    ATLAUNCH
+        DISPLAY TITLE
+        DISPLAY CHOICES
+    END
+
+    CHOICES
+        c1
+            TEXT hospital_receive_care
+
+            IF is_nugget_eaten EXISTS
+                IF is_nugget_cure = false
+                    CUTSCENE cs_cure_nugget
+                    is_nugget_cure = true
+                END
+                ELSE
+                    CUTSCENE cs_already_cured
+                END
+            END
+            ELSE
+                CUTSCENE hospital_already_cure
+            END
+        END
+        c2
+            TEXT hospital_ask_info
+
+            CUTSCENE cs_hospital_ask_info
+        END
+        c3
+            TEXT take_car_text_choice
+
+            GO take_car_choice
         END
     END
 END ROOM

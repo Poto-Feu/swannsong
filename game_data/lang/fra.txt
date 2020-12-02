@@ -14,6 +14,7 @@ gameover_msg "Pas de chance ! Tu es nul."
 # Inventory
 inventory_empty "(vide)"
 item_Coin "Pièce"
+item_GoldenNugget "Pépite d'or"
 
 # Room prompt
 room_prompt_text "Ton choix : "
@@ -31,10 +32,32 @@ menu_desc "Menu"
 menu_c1 "Jouer"
 menu_c2 "A propos"
 
+take_car_text_choice "Prendre la voiture"
+
 house_title "Maison"
 house_desc "Vous êtes chez vous. Les voisins sont assez calmes."
-house_c1 "Prendre la voiture"
-house_c2 "Tondre le gazon"
+house_mow_lawn "Tondre le gazon"
+house_go_inside "Rentrer à l'intérieur"
+
+inside_house_title "Intérieur de la maison"
+inside_house_desc "Une petite maison comme on en trouve un peu partout"
+
+inside_house_play_HOP "Jouer a HOP II"
+inside_house_replay_HOP "Rejouer a HOP II"
+inside_house_kill_parrot "Tuer ton perroquet"
+inside_house_go_outside "Aller dehors"
+
+take_car_choice_desc "Ou veux-tu aller ?"
+take_car_choice_house "A la maison !"
+take_car_choice_hospital "A l'hopital !"
+
+nugget_choice_desc "Elle brille comme une voiture neuve."
+nugget_choice_keep "La garder"
+nugget_choice_eat "La manger"
+
+hospital_title "Hopital"
+hospital_receive_care "Recevoir des soins"
+hospital_ask_info "Demander des infos"
 
 # Cutscenes
 cs_about_1 "Swannsong Adventure est distribué sous licence GPL v3. Consultez le fichier COPYING pour plus d'informations."
@@ -48,3 +71,26 @@ cs_help_inv_cmd "inventory (ou inv) : affiche l'inventaire"
 cs_help_save_cmd "save : sauvegarde la partie"
 cs_help_load_cmd "load : charge la partie sauvegardée"
 cs_help_help_cmd "help : affiche cet écran"
+
+
+cs_gold_nugget_found_1 "En passant la tondeuse, vous tombez sur une pépite d'or. Quelle chance !"
+
+cs_gold_nugget_kept_1 "Ca pourra toujours etre utile."
+
+cs_gold_nugget_eaten_1 "En mangeant la pépite d'or, vous vous faites mal à la bouche."
+
+cs_gold_nugget_die_1 "Vous vous sentez un peu faible..."
+cs_gold_nugget_die_2 "Mais c'est parce que vous avez mangé une foutue pépite d'or et que vous etes en train de mourir !"
+
+cs_house_metal_detector_on_1 "Votre détecteur de métaux sonne... Ca doit etre la pépite d'or !"
+cs_house_metal_detector_on_2 "Mais qu'est-ce que ce... Serait-ce la police ?"
+cs_house_metal_detector_on_3 "Vous vous faites arreter et embarquer au poste"
+cs_house_metal_detector_on_4 "Après un procès tout à fait équitable, vous etes condamné à mort pour vol de propriété d'autrui. Une histoire banale"
+
+cs_play_HOP_1 "Tu lances Hearts Of Potato II mais tu est tellement nul que tu perds contre la Pologne."
+cs_play_HOP_again_1 "Tu rejoues à Hearts Of Potato II et tu es tellement fort que tu gagnes contre le Brésil (plz kom to brazil)."
+cs_enough_HOP_1 "Quel est l'intéret de rejouer si tu gagnes tout le temps ?"
+
+cs_cure_nugget_1 "Tu te sens beaucoup mieux !"
+cs_already_cured_1 "Qu'est-ce que t'es en train de demander ? Tu n'as rien !"
+cs_hospital_ask_info_1 "Il n'y a l'air d'avoir personne à l'accueil. Foutues coupes budgétaires !"

@@ -21,3 +21,55 @@ help
     cs_help_load_cmd
     cs_help_help_cmd
 END
+
+cs_gold_nugget_found
+    cs_gold_nugget_found_1
+END
+
+cs_gold_nugget_kept
+    cs_gold_nugget_kept_1
+END
+
+cs_gold_nugget_eaten
+    cs_gold_nugget_eaten_1
+END
+
+cs_gold_nugget_die
+    cs_gold_nugget_die_1
+    PAUSE
+    cs_gold_nugget_die_2
+END
+
+cs_house_metal_detector_on
+    cs_house_metal_detector_on_1
+    BLANK
+    cs_house_metal_detector_on_2
+    PAUSE
+    cs_house_metal_detector_on_3
+    BLANK
+    cs_house_metal_detector_on_4
+END
+
+cs_play_HOP
+    cs_play_HOP_1
+END
+
+cs_play_HOP_again
+    cs_play_HOP_again_1
+END
+
+cs_enough_HOP
+    cs_enough_HOP_1
+END
+
+cs_cure_nugget
+    cs_cure_nugget_1
+END
+
+cs_already_cured
+    cs_already_cured_1
+END
+
+cs_hospital_ask_info
+    cs_hospital_ask_info_1
+END

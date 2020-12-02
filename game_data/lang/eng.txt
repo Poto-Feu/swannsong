@@ -13,6 +13,7 @@ gameover_msg "No dice! You suck."
 
 # Inventory
 inventory_empty "(empty)"
+item_GoldenNugget "Golden nugget"
 
 # Room prompt
 room_prompt_text "Your choice: "
@@ -30,10 +31,32 @@ menu_desc "Menu"
 menu_c1 "Play"
 menu_c2 "About"
 
+take_car_text_choice "Take the car"
+
 house_title "House"
 house_desc "Well... That's your house. The neighbors are pretty quiet."
-house_c1 "Take the car"
-house_c2 "Mows the lawn"
+house_mow_lawn "Mow the lawn"
+house_go_inside "Go inside"
+
+inside_house_title "Inside the house"
+inside_house_desc "A small house - it's not like you've never seen one"
+
+inside_house_play_HOP "Play HOP II"
+inside_house_replay_HOP "Play HOP II again"
+inside_house_kill_parrot "Kill your parrot"
+inside_house_go_outside "Go outside"
+
+take_car_choice_desc "Where do you wanna go?"
+take_car_choice_house "Home!"
+take_car_choice_hospital "Hospital!"
+
+nugget_choice_desc "It shines like a brand new car."
+nugget_choice_keep "Keep it"
+nugget_choice_eat "Eat it"
+
+hospital_title "Hospital"
+hospital_receive_care "Receive care"
+hospital_ask_info "Ask for info"
 
 # Cutscenes
 cs_about_1 "Swannsong Adventure is licensed under GPL v3. See the COPYING file for more information."
@@ -47,3 +70,25 @@ cs_help_inv_cmd "inventory (or inv): show inventory"
 cs_help_save_cmd "save: save your progress"
 cs_help_load_cmd "load: load your saved progress"
 cs_help_help_cmd "help: show this screen"
+
+cs_gold_nugget_found_1 "While mowing the lawn you stumble upon a golden nugget. Lucky one!"
+
+cs_gold_nugget_kept_1 "This might come in handy."
+
+cs_gold_nugget_eaten_1 "By eating the golden nugget, you hurt your mouth."
+
+cs_gold_nugget_die_1 "You feel a bit low..."
+cs_gold_nugget_die_2 "Oh wait, actually you're dying because you've eaten a freakin' golden nugget!"
+
+cs_house_metal_detector_on_1 "Your metal dectector is ringing... That must be the golden nugget!"
+cs_house_metal_detector_on_2 "What the... Is it the police ?"
+cs_house_metal_detector_on_3 "You're under arrest and taken to the nearest police station"
+cs_house_metal_detector_on_4 "After a totally fair trial, you are sentenced to death for theft of personal property. The kind of story that happens every day."
+
+cs_play_HOP_1 "You start Hearts Of Potato II but you suck so much that you lose against Poland."
+cs_play_HOP_again_1 "You start Hearts Of Potato II again but you are so pro gamer that you wine against Brazil (plz kom to brazil)"
+cs_enough_HOP_1 "What's the point of playing if you always win?"
+
+cs_cure_nugget_1 "You feel much better now!"
+cs_already_cured_1 "What the hell you're asking? There's nothing wrong!"
+cs_hospital_ask_info_1 "It seems that there is nobody at the front desk. Goddamn cuts!"
