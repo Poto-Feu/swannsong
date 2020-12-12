@@ -211,7 +211,7 @@ ROOM hospital
                 END
             END
             ELSE
-                CUTSCENE hospital_already_cure
+                CUTSCENE cs_already_cured
             END
         END
         c2
