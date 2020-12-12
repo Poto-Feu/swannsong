@@ -44,8 +44,9 @@ Please note that the Windows version is tested with Wine.
 ## Usage
 
 ### Command-line arguments
-* `-local`: fetch the game data from the current folder
-* `-debug`: enable warning and error logs (mainly for developers)
+* `-local`: use the game data from the current directory (this is mainly useful for running the program in its build directory without installing it)
+* `-debug`: enable debug features such as warning logs (mainly for developers).
+* `-reset`: remove the game user configuration as if it was a fresh install.
 
 
 ## Roadmap
