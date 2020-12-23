@@ -95,8 +95,6 @@ endif()
 # Statically link libraries if compiled on MinGW (GCC C++ libs are rarely installed on Windows)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(swannsongadv
-        -static)
 
     add_custom_command(TARGET swannsongadv POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
