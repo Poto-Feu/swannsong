@@ -12,7 +12,7 @@ I started this project in order to improve my skills in C++. Do not take source 
 #### Unix-like (including GNU/Linux)
 * a C++17-compatible version of GCC or Clang
 * ncurses
-* OpenSSL libs
+* Nettle
 * CMake
 
 #### Windows
@@ -55,10 +55,10 @@ Please note that the Windows version is tested with Wine.
 
 
 ## Licensing
-**SwannSong Adventure** is licensed under the GPL v3 License. Libraries licenses can be found in the *licenses* folder.
+**SwannSong Adventure** is licensed under the GNU General Public License Version 3. Third-party libraries licenses can be found in the *licenses* folder.
 
-ncurses is licensed under the MIT X11 License. OpenSSL is licensed under the Apache License 2.0.
+ncurses is developed by Thomas E. Dickey and is licensed under the MIT X11 License. Nettle is developed by Niels Möller and is partially licensed under the GNU General Public License Version 2, the GNU General Public License Version 3 and the GNU Lesser General Public License Version 3.
 
 The following only applies to the MingGW compiled version :
 
-winpthreads is licensed under the Zope Public License v2.1. PDCurses was developed by Mark Hessling and William McBrine and is in the public domain.
+winpthreads is licensed under the Zope Public License v2.1. PDCurses is developed by Mark Hessling and William McBrine and is in the public domain.

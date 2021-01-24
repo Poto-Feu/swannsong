@@ -79,7 +79,7 @@ add_executable(swannsongadv
 
 add_subdirectory(docs)
 
-target_link_libraries(swannsongadv crypto)
+target_link_libraries(swannsongadv nettle)
 
 # Compile pdcurses if the user is on Windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")

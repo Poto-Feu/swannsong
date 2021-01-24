@@ -17,16 +17,22 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <openssl/sha.h>
+#include <nettle/sha1.h>
+
 #include "crypt_functions.hpp"
 
 namespace crypt_functions
 {
     SHA1Checksum getSHA1Checksum(std::vector<unsigned char> p_char_vec)
     {
-        unsigned char hash_array[SHA_DIGEST_LENGTH];
-        SHA1(p_char_vec.data(), p_char_vec.size(), hash_array);
-        SHA1Checksum rtrn_value(hash_array, hash_array + SHA_DIGEST_LENGTH);
+        unsigned char hash_array[SHA1_DIGEST_SIZE];
+        sha1_ctx nettle_state;
+
+        sha1_init(&nettle_state);
+        sha1_update(&nettle_state, p_char_vec.size(), p_char_vec.data());
+        sha1_digest(&nettle_state, SHA1_DIGEST_SIZE, hash_array);
+
+        SHA1Checksum rtrn_value(hash_array, hash_array + SHA1_DIGEST_SIZE);
 
         return rtrn_value;
     }
