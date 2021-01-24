@@ -1,9 +1,10 @@
 # SwannSong Adventure
-A text-adventure game with some humor. Please note that this game is in a pre-alpha stage and is far from being finished.
+A text-adventure game with some humor. Please note that this game is still in a pre-alpha stage.
 
-I started this project in order to improve my skills in C++. Do not take source files from this program as an example of optimized and well-written code.
+This first started as an hobby project to improve my C++ skills but feel free to explore the source.
 
-**WARNING:** this game contains infrequent strong language.
+Note: do not try to load a save from a previous pre-alpha version (< 1.0) as it may cause problems. However, you can safely overwrite it.
+
 
 ## Building the game
 
@@ -38,10 +39,9 @@ There is also a Makefile available for GNU Make (this is the default make on mos
 #### Windows
 TO-DO
 
-Please note that the Windows version is tested with Wine.
-
 
 ## Usage
+Note : On Windows, the program must be run from the executable directory. On Unix-like, if the program is not installed, it must be run in the build directory using the -local argument.
 
 ### Command-line arguments
 * `-local`: use the game data from the current directory (this is mainly useful for running the program in its build directory without installing it)
