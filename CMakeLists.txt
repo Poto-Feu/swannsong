@@ -15,6 +15,8 @@ set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/data")
 add_compile_definitions(GAME_VERSION="${PROJECT_VERSION}")
 add_compile_definitions(GAME_NAME="SwannSong Adventure")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if(UNIX)
     if(IS_PKG)
         add_compile_definitions(IS_PKG)
@@ -132,5 +134,3 @@ add_custom_command(TARGET swannsongadv POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/licenses/
         ${CMAKE_CURRENT_BINARY_DIR}/licenses/)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
