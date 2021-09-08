@@ -42,12 +42,6 @@ endif()
 
 add_executable(swannsongadv
     src/main.cpp
-    src/fileio/save/SaveFileBuffer.cpp
-    src/fileio/save/SaveChunk.cpp
-    src/fileio/save/SaveFile.cpp
-    src/fileio/save/LoadedFile.cpp
-    src/fileio/save/save_file.cpp
-    src/fileio/save/load_savefile.cpp
     src/fileio/conf_files.cpp
     src/fileio/fileio.cpp
     src/fileio/gameconf.cpp
@@ -76,12 +70,13 @@ add_executable(swannsongadv
     src/pcurses.cpp
     src/pstrings.cpp
     src/os_module.cpp
+    src/savefile.cpp
     src/stringsm.cpp
     src/userio.cpp)
 
 add_subdirectory(docs)
 
-target_link_libraries(swannsongadv nettle)
+target_link_libraries(swannsongadv nettle jansson)
 
 # Compile pdcurses if the user is on Windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")

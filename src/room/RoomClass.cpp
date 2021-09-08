@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,16 +14,17 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
 
 #include "room/RoomClass.hpp"
+#include "files_path.hpp"
+#include "savefile.hpp"
 #include "room/interpreter/parser.hpp"
 #include "room/room_struct.hpp"
-#include "fileio/save/load_savefile.hpp"
-#include "fileio/save/save_file.hpp"
 #include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
@@ -146,17 +147,40 @@ static void display(room_struct& p_struct, bool same_room)
             p_struct.currLoopState.endLoop();
             return;
         } else if(menu_input == "load") {
-            auto save_data = load_savefile::start_loading(p_struct.program_strings);
+            using namespace savefile;
 
-            if(save_data.file_exists && save_data.is_savefile && !save_data.is_corrupted) {
-                p_struct.currLoopState.setNextRoom(save_data.room);
-                p_struct.currPlayer.inv = std::move(save_data.inv);
-                gvars::replace_vector(p_struct.currPlayer.gvars, save_data.gvar_vector);
+            savefile::load_data savefile_data;
+
+            if(!load(savefile_data, files_path::get_local_data_path())) {
+                std::vector<std::string> dialogbox_strs;
+
+                if(savefile_data.error == loading_error::NO_FILE) {
+                    dialogbox_strs.push_back(p_struct.program_strings.fetch(
+                                "load_nofile"));
+                } else {
+                    dialogbox_strs.push_back(p_struct.program_strings.fetch(
+                                "load_corrupted"));
+                }
+
+                dialogbox::display(NULL, &dialogbox_strs,
+                        p_struct.program_strings);
+            } else {
+                p_struct.currLoopState.setNextRoom(savefile_data.current_room);
+                p_struct.currPlayer.inv = std::move(savefile_data.gitems);
+                gvars::replace_vector(p_struct.currPlayer.gvars,
+                        savefile_data.gvars);
+                return;
             }
-            return;
         } else if(menu_input == "save") {
-            save_file::start_saving({p_struct.currRoom.getName(), p_struct.currPlayer},
-                    p_struct.program_strings);
+            if(savefile::save(p_struct.currPlayer, p_struct.currRoom.getName(),
+                    files_path::get_local_data_path())) {
+                std::vector<std::string> dialogbox_strs = {
+                    p_struct.program_strings.fetch("save_success")
+                };
+
+                dialogbox::display(NULL, &dialogbox_strs,
+                        p_struct.program_strings);
+            }
             return;
         } else if(menu_input == "help") {
             p_struct.cutscenes_container.display("help", p_struct.program_strings);
