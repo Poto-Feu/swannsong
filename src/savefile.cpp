@@ -193,8 +193,7 @@ static bool set_json_structure(Player const& player,
         return false;
     }
 
-    if(!add_pair_to_json_object(root_json, "current_room",
-                current_room.c_str())) {
+    if(!add_pair_to_json_object(root_json, "current_room", current_room)) {
         game_error::fatal_error("Cannot create savefile game_name string");
         return false;
     }
