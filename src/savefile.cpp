@@ -175,8 +175,7 @@ static bool set_items_json_array(
         }
     }
 
-    if(json_object_set_new(root_json, "items", items_array_json) == -1) {
-        game_error::fatal_error("Cannot add items array to savefile");
+    if(!add_to_json_object(root_json, "items", items_array_json)) {
         json_decref(items_array_json);
         return false;
     }
