@@ -135,17 +135,17 @@ static void display(room_struct& p_struct, bool same_room)
                 unsigned int start_ln = 0;
 
                 p_struct.currState.setBlockType(RoomState::bt::CHOICE);
-                parser::exec_until_end(current_choice->getInstructions(), p_struct, start_ln);
+                parser::exec_until_end(current_choice->getInstructions(),
+                        p_struct, start_ln);
 
-                if(game_error::has_encountered_fatal()) return;
-                else p_struct.currState.displayCutscenes(p_struct.program_strings,
-                        p_struct.cutscenes_container);
-
-                return;
+                if(!game_error::has_encountered_fatal()) {
+                    p_struct.currState.displayCutscenes(
+                            p_struct.program_strings,
+                            p_struct.cutscenes_container);
+                }
             }
         } else if(menu_input == "exit") {
             p_struct.currLoopState.endLoop();
-            return;
         } else if(menu_input == "load") {
             using namespace savefile;
 
@@ -169,7 +169,6 @@ static void display(room_struct& p_struct, bool same_room)
                 p_struct.currPlayer.inv = std::move(savefile_data.gitems);
                 gvars::replace_vector(p_struct.currPlayer.gvars,
                         savefile_data.gvars);
-                return;
             }
         } else if(menu_input == "save") {
             if(savefile::save(p_struct.currPlayer, p_struct.currRoom.getName(),
@@ -181,17 +180,14 @@ static void display(room_struct& p_struct, bool same_room)
                 dialogbox::display(NULL, &dialogbox_strs,
                         p_struct.program_strings);
             }
-            return;
         } else if(menu_input == "help") {
             p_struct.cutscenes_container.display("help", p_struct.program_strings);
-            return;
         } else if(menu_input == "inv" || menu_input == "inventory") {
             inventory::display_screen(p_struct.currPlayer.inv, p_struct.program_strings);
-            return;
         }
 
+        return;
 bad_input:
-
         if(incorrect_input < 3) {
             error_msg_ptr = &incorrect_input_str;
             ++incorrect_input;
