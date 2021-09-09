@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -209,7 +210,7 @@ GameInitData Game::init(pargsMap pargs_map)
     }
 
     if(m_lcvc.getValue("firstlaunch") == "1") {
-        m_cutscenes_container.display("help", m_program_strings);
+        m_cutscenes_container.display(m_program_strings, "help");
         m_lcvc.changeValue("firstlaunch", "0");
         m_lcvc.writeToFile();
     }

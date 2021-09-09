@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -22,11 +23,11 @@
 
 #include "CutscenesContainer.hpp"
 #include "fileio/fileio.h"
-#include "CutsceneClass.hpp"
 #include "dialogbox.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
+#include "rendering.hpp"
 #include "stringsm.h"
 #include "userio.h"
 
@@ -78,17 +79,19 @@ CutscenesContainer::CutscenesContainer(std::string const& csfile,
 }
 
 //Display a cutscene
-void CutscenesContainer::display(std::string const& p_name, PStrings const& program_strings) const
+void CutscenesContainer::display(PStrings const& pstrings,
+        std::string const& name) const
 {
-    auto it = return_cs_it(p_name);
+    auto it = return_cs_it(name);
     display_server::clear_screen();
 
-    if(it != m_map.cend()) it->second.display(program_strings);
-    else {
+    if(it != m_map.cend()) {
+        rendering::display_cutscene(pstrings, it->second);
+    } else {
         const std::string missingCutscene_text = "missingCutscene";
 
-        game_error::emit_warning("\"" + p_name + "\" cutscene does not exists");
-        dialogbox::display(&missingCutscene_text, NULL, program_strings);
+        game_error::emit_warning("\"" + name + "\" cutscene does not exists");
+        dialogbox::display(&missingCutscene_text, NULL, pstrings);
     }
 }
 

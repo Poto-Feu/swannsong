@@ -24,33 +24,3 @@
 #include "userio.h"
 
 Cutscene::Cutscene() { }
-
-static void add_string(std::string const& p_str, std::vector<std::string>& strings_vec)
-{
-    std::vector<std::string> string_lines = pcurses::divide_string_into_lines(p_str);
-
-    strings_vec.insert(strings_vec.end(), string_lines.begin(), string_lines.end());
-}
-
-void Cutscene::display(PStrings const& program_strings) const
-{
-    std::vector<std::string> strings_vec;
-
-    for(auto const& action_it : actions_vec) {
-        switch(action_it.type) {
-            case cs_action_type::STRING:
-                add_string(action_it.content, strings_vec);
-                break;
-            case cs_action_type::BLANK:
-                strings_vec.push_back("");
-                break;
-            case cs_action_type::PAUSE:
-                dialogbox::display(NULL, &strings_vec, program_strings);
-                strings_vec.clear();
-                break;
-        }
-    }
-
-    dialogbox::display(NULL, &strings_vec, program_strings);
-    display_server::clear_screen();
-}

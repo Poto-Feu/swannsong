@@ -181,7 +181,8 @@ static void display(room_struct& p_struct, bool same_room)
                         p_struct.program_strings);
             }
         } else if(menu_input == "help") {
-            p_struct.cutscenes_container.display("help", p_struct.program_strings);
+            p_struct.cutscenes_container.display(p_struct.program_strings,
+                    "help");
         } else if(menu_input == "inv" || menu_input == "inventory") {
             inventory::display_screen(p_struct.currPlayer.inv, p_struct.program_strings);
         }

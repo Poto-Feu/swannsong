@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -72,7 +73,9 @@ RoomState::bt RoomState::getBlockType() const
 void RoomState::displayCutscenes(PStrings const& program_strings,
         CutscenesContainer const& cutscenes_container)
 {
-    for(auto const& it : m_cutscenes_list) cutscenes_container.display(it, program_strings);
+    for(auto const& it : m_cutscenes_list) {
+        cutscenes_container.display(program_strings, it);
+    }
     m_cutscenes_list.clear();
 }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -32,7 +33,7 @@ class CutscenesContainer
         CutscenesContainer();
         CutscenesContainer(std::string const& csfile, std::filesystem::path const& data_path,
                 PStrings const& program_strings);
-        void display(std::string const& p_name, PStrings const& program_strings) const;
+        void display(PStrings const& pstrings, std::string const& name) const;
 
     private:
 
