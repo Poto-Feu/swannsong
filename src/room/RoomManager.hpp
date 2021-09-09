@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -56,15 +57,16 @@ class RoomManager
     public:
 
         explicit RoomManager(std::filesystem::path const& room_file_path,
-                PStrings&& program_strings, CutscenesContainer&& cutscenes_container);
+                PStrings const& program_strings,
+                CutscenesContainer const& cutscenes_container);
         //Start the game loop which loads rooms until the end signal is enabled
         void startLoop(std::string const& start_room);
 
     private:
 
         std::unordered_map<std::string, Room> m_room_map;
-        PStrings&& m_program_strings;
-        CutscenesContainer&& m_cutscenes_container;
+        PStrings const& m_program_strings;
+        CutscenesContainer const& m_cutscenes_container;
         RoomLoopState m_rls;
         Player m_player;
 

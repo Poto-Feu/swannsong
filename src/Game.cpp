@@ -229,8 +229,8 @@ GameInitData Game::init(pargsMap pargs_map)
 void Game::run(GameInitData const& game_init_data)
 {
     if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm(game_init_data.room_file_path, std::move(m_program_strings),
-                std::move(m_cutscenes_container));
+        RoomManager rmm(game_init_data.room_file_path, m_program_strings,
+                m_cutscenes_container);
 
         if(!game_error::has_encountered_fatal()) rmm.startLoop(m_start_room);
     }

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <algorithm>
@@ -255,10 +256,11 @@ Room RoomManager::create_new_room(std::vector<std::string> room_file_lines, unsi
     }
 }
 
-RoomManager::RoomManager(std::filesystem::path const& room_file_path, PStrings&& program_strings,
-        CutscenesContainer&& cutscenes_container) :
-    m_program_strings(std::move(program_strings)),
-    m_cutscenes_container(std::move(cutscenes_container))
+RoomManager::RoomManager(std::filesystem::path const& room_file_path,
+        PStrings const& program_strings,
+        CutscenesContainer const& cutscenes_container) :
+    m_program_strings(program_strings),
+    m_cutscenes_container(cutscenes_container)
 {
     std::vector<std::string> room_file_lines = fileio::copy_to_vector(room_file_path);
 
