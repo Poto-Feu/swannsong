@@ -60,7 +60,6 @@ add_executable(swannsongadv
     src/CutsceneClass.cpp
     src/CutscenesContainer.cpp
     src/rendering.cpp
-    src/crypt_functions.cpp
     src/dialogbox.cpp
     src/display_server.cpp
     src/files_path.cpp
@@ -77,7 +76,7 @@ add_executable(swannsongadv
 
 add_subdirectory(docs)
 
-target_link_libraries(swannsongadv nettle jansson)
+target_link_libraries(swannsongadv jansson)
 
 # Compile pdcurses if the user is on Windows
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
