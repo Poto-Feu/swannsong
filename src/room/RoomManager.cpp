@@ -27,6 +27,7 @@
 #include "fileio/fileio.h"
 #include "game_error.hpp"
 #include "pcurses.hpp"
+#include "rendering.hpp"
 #include "stringsm.h"
 #include "userio.h"
 
@@ -297,24 +298,13 @@ RoomManager::RoomManager(std::filesystem::path const& room_file_path,
     }
 }
 
-void RoomManager::unfinished_game()
-{
-    const display_server::coord_struct exit_struct {pcurses::lines - 3, pcurses::margin};
-
-    display_server::clear_screen();
-    pcurses::display_center_string(m_program_strings.fetch("unfinished_str"), pcurses::top_margin);
-    display_server::add_string(m_program_strings.fetch("exit_penter"), exit_struct, A_BOLD);
-    display_server::show_screen();
-    userio::waitenter();
-}
-
 void RoomManager::startLoop(std::string const& start_room)
 {
     std::string curr_room_id = start_room;
 
-    while(!m_rls.is_endgame() && !m_rls.is_unfinished()) {
-
+    while(!m_rls.is_endgame()) {
         auto const& room_it = m_room_map.find(curr_room_id.c_str());
+
         if(room_it == m_room_map.cend()) {
             game_error::fatal_error(curr_room_id + " ROOM not present in rooms file");
             return;
@@ -327,8 +317,9 @@ void RoomManager::startLoop(std::string const& start_room)
                     m_cutscenes_container)) {
             break;
         }
-        if(!m_rls.is_endgame() && !m_rls.is_unfinished()) curr_room_id = m_rls.getNextRoom();
+        if(!m_rls.is_endgame()) {
+            curr_room_id = m_rls.getNextRoom();
+        }
     }
     display_server::clear_screen();
-    if(m_rls.is_unfinished()) unfinished_game();
 }

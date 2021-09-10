@@ -60,7 +60,6 @@ enum class token_spec_type
     USE,
     GAMEOVER,
     EXIT,
-    UNFINISHED
 };
 
 struct Token

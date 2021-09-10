@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include "room/interpreter/parser.hpp"
@@ -127,16 +128,6 @@ namespace parser
             } else fatal_error(r_vec[1].str + " ROOM does not exist (GO function in "
                     + p_struct.currRoom.getName() + " ROOM)");
         }
-    }
-
-    /*Interpret a line which use the UNFINISHED function, which tells the player they have reached
-    an unfinished part of the program*/
-    static void interp_UNFINISHED_func(TokenVec const& r_vec, RoomLoopState& p_rls)
-    {
-        if(r_vec.size() != 1) {
-            wrg_tkn_num("UNFINISHED");
-        } else p_rls.setUnfinished();
-       
     }
 
     //Interpret a line which use the GET function, which add an item to the player's inventory
@@ -305,9 +296,6 @@ namespace parser
             case token_spec_type::GO:
                 interp_GO_func(r_vec, p_struct);
                 break;
-            case token_spec_type::UNFINISHED:
-                interp_UNFINISHED_func(r_vec, p_struct.currLoopState);
-                break;
             case token_spec_type::GET:
                 interp_GET_func(r_vec, p_struct.currPlayer.inv);
                 break;
@@ -466,7 +454,7 @@ namespace parser
         bool previous_line_condition = false;
         bool prev_condition_exec = false;
 
-        for(; !p_struct.currLoopState.is_unfinished() && i < block_vector.size(); ++i) {
+        for(; i < block_vector.size(); ++i) {
             TokenVec current_line = block_vector[i];
 
             token::set_runtime_tokens(current_line, p_struct.currPlayer.gvars);

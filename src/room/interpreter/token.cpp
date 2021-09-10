@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <array>
@@ -126,7 +127,6 @@ namespace token
             { "USE", token_spec_type::USE },
             { "GAMEOVER", token_spec_type::GAMEOVER },
             { "EXIT", token_spec_type::EXIT },
-            { "UNFINISHED", token_spec_type::UNFINISHED }
         }};
 
         auto found_it = std::find_if(func_list.cbegin(), func_list.cend(),

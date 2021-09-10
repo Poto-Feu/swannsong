@@ -72,7 +72,6 @@ class RoomManager
 
         Room create_new_room(std::vector<std::string> room_file_lines, unsigned int& i,
                 bool& no_error, std::string const& room_name);
-        void unfinished_game();
         bool set_room_property(std::string const& room_name, std::string const& prop_name,
                 std::string const& prop_arg, room_property_rtrn& return_variables);
         bool set_block(std::string const& room_name, RoomVectorData& vec_data,

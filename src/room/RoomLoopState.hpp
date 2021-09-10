@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -27,8 +28,6 @@ class RoomLoopState
 
         //Stop the game room loop
         void endLoop();
-        //Set the state of the game as unfinished
-        void setUnfinished();
         //Trigger a game over
         void setGameOver();
         void resetGameOver();
@@ -38,13 +37,11 @@ class RoomLoopState
         std::string getNextRoom() const;
 
         bool is_endgame() const;
-        bool is_unfinished() const;
         bool is_game_over() const;
 
     private:
 
         bool m_endgame = false;
-        bool m_unfinished = false;
         bool m_gameover = false;
 
         std::string m_next_room;

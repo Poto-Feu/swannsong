@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include "room/RoomLoopState.hpp"
@@ -27,11 +28,6 @@ void RoomLoopState::endLoop()
 void RoomLoopState::setNextRoom(std::string const& p_id)
 {
     m_next_room = p_id;
-}
-
-void RoomLoopState::setUnfinished()
-{
-    m_unfinished = true;
 }
 
 void RoomLoopState::setGameOver()
@@ -52,11 +48,6 @@ std::string RoomLoopState::getNextRoom() const
 bool RoomLoopState::is_endgame() const
 {
     return m_endgame;
-}
-
-bool RoomLoopState::is_unfinished() const
-{
-    return m_unfinished;
 }
 
 bool RoomLoopState::is_game_over() const

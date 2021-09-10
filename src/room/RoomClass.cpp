@@ -231,7 +231,7 @@ bool Room::load(RoomLoopState& p_rls, Player& p_player,
         else if(p_struct.currLoopState.is_game_over()) gameOver(p_player, p_struct.currLoopState,
                 program_strings);
         else same_room = true;
-    } while(p_rls.getNextRoom() == m_name && !p_rls.is_endgame() && !p_rls.is_unfinished());
+    } while(p_rls.getNextRoom() == m_name && !p_rls.is_endgame());
 
     return true;
 }
