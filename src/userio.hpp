@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,22 +14,14 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#ifndef USERIO_H
-#define USERIO_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef USERIO_HPP
+#define USERIO_HPP
 
 #define WIN_ENTER_KEY 13
-
-void userio_gettextinput(char** buf, int max_n);
-
-#ifdef __cplusplus
-}
 
 #include <string>
 
@@ -38,7 +30,4 @@ namespace userio
     void waitenter();
     std::string gettextinput(int max_n);
 }
-
-#endif
-
 #endif

@@ -29,7 +29,7 @@
 #include "pcurses.hpp"
 #include "rendering.hpp"
 #include "stringsm.h"
-#include "userio.h"
+#include "userio.hpp"
 
 static bool is_a_comment(std::string const& p_str)
 {

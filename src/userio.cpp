@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 extern "C" {
@@ -22,11 +23,11 @@ extern "C" {
 }
 
 #include <cstdlib>
-#include "userio.h"
+#include "userio.hpp"
 #include "stringsm.h"
 
 /*Get user text input and return it in a pointer*/
-void userio_gettextinput(char** buf, int max_n)
+static void copy_input_to_char_str(char** buf, int max_n)
 {
     *buf = (char*)calloc(max_n+1, sizeof(char));
 
@@ -56,7 +57,7 @@ namespace userio
         char* buf = NULL;
         std::string r_str;
 
-        userio_gettextinput(&buf, max_n);
+        copy_input_to_char_str(&buf, max_n);
         r_str.assign(buf);
 
         free(buf);

@@ -29,7 +29,7 @@
 #include "game_error.hpp"
 #include "game_menu.hpp"
 #include "pcurses.hpp"
-#include "userio.h"
+#include "userio.hpp"
 
 struct lang_item
 {

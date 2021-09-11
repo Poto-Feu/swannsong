@@ -29,7 +29,7 @@
 #include "pcurses.hpp"
 #include "rendering.hpp"
 #include "stringsm.h"
-#include "userio.h"
+#include "userio.hpp"
 
 CutscenesContainer::CutscenesContainer()
 {
