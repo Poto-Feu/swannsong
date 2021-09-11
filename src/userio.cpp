@@ -38,30 +38,27 @@ static void copy_input_to_char_str(char** buf, int max_n)
     stringsm_chomp(*buf);
 }
 
-namespace userio
+/*Pause the program until the user press Enter*/
+void userio::waitenter()
 {
-    /*Pause the program until the user press Enter*/
-    void waitenter()
-    {
-        #ifdef _WIN32
-        int enter_ch = WIN_ENTER_KEY;
-        #else
-        int enter_ch = '\n';
-        #endif
+    #ifdef _WIN32
+    int enter_ch = WIN_ENTER_KEY;
+    #else
+    int enter_ch = '\n';
+    #endif
 
-        while(getch() != enter_ch) {}
-    }
+    while(getch() != enter_ch) {}
+}
 
-    std::string gettextinput(int max_n)
-    {
-        char* buf = NULL;
-        std::string r_str;
+std::string userio::gettextinput(int max_n)
+{
+    char* buf = NULL;
+    std::string r_str;
 
-        copy_input_to_char_str(&buf, max_n);
-        r_str.assign(buf);
+    copy_input_to_char_str(&buf, max_n);
+    r_str.assign(buf);
 
-        free(buf);
+    free(buf);
 
-        return r_str;
-    }
+    return r_str;
 }
