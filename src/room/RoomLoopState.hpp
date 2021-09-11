@@ -26,8 +26,6 @@ class RoomLoopState
 {
     public:
 
-        //Stop the game room loop
-        void endLoop();
         //Trigger a game over
         void setGameOver();
         void resetGameOver();
@@ -36,12 +34,10 @@ class RoomLoopState
 
         std::string getNextRoom() const;
 
-        bool is_endgame() const;
         bool is_game_over() const;
 
     private:
 
-        bool m_endgame = false;
         bool m_gameover = false;
 
         std::string m_next_room;

@@ -181,9 +181,9 @@ namespace parser
         p_rls.setGameOver();
     }
 
-    static void interp_EXIT_func(RoomLoopState& p_rls)
+    static void interp_EXIT_func(game_state_s& game_state)
     {
-        p_rls.endLoop();
+        game_state.should_game_exit = true;
     }
 
     //Interpret a line which changes a gvar value
@@ -277,7 +277,8 @@ namespace parser
     }
 
     //Interpret a line which uses a function
-    static void interp_func_ins(TokenVec const& r_vec, room_struct& p_struct)
+    static void interp_func_ins(TokenVec const& r_vec, room_struct& p_struct,
+            game_state_s& game_state)
     {
         switch(r_vec[0].spec_type)
         {
@@ -306,7 +307,7 @@ namespace parser
                 interp_GAMEOVER_func(p_struct.currLoopState);
                 break;
             case token_spec_type::EXIT:
-                interp_EXIT_func(p_struct.currLoopState);
+                interp_EXIT_func(game_state);
                 break;
             default:
                 fatal_error("incorrect spec_token_type in function : " + r_vec[0].str);
@@ -315,11 +316,12 @@ namespace parser
     }
 
     //Interpret a line depending on its first token
-    static void interp_ins(TokenVec const& r_vec, room_struct& p_struct)
+    static void interp_ins(TokenVec const& r_vec, room_struct& p_struct,
+            game_state_s& game_state)
     {
         switch(r_vec[0].type) {
             case token_type::FUNCTION:
-                interp_func_ins(r_vec, p_struct);
+                interp_func_ins(r_vec, p_struct, game_state);
                 break;
             case token_type::VARIABLE:
                 interp_gvar_ins(r_vec, p_struct.currPlayer.gvars);
@@ -448,7 +450,8 @@ namespace parser
     }
 
     //Execute instructions until the end of the block
-    void exec_until_end(std::vector<TokenVec> const& block_vector, room_struct& p_struct,
+    void exec_until_end(std::vector<TokenVec> const& block_vector,
+            room_struct& p_struct, game_state_s& game_state,
             unsigned int& i)
     {
         bool previous_line_condition = false;
@@ -459,13 +462,14 @@ namespace parser
 
             token::set_runtime_tokens(current_line, p_struct.currPlayer.gvars);
 
-            if(p_struct.currLoopState.is_endgame()) break;
-            else if(current_line[0].type == token_type::END) break;
+            if(game_state.should_game_exit) {
+                break;
+            } else if(current_line[0].type == token_type::END) break;
             else if(current_line[0].type == token_type::IF) {
                 previous_line_condition = true;
                 if(check_condition(current_line, p_struct.currPlayer)) {
                     ++i;
-                    exec_until_end(block_vector, p_struct, i);
+                    exec_until_end(block_vector, p_struct, game_state, i);
                     prev_condition_exec = true;
                 } else {
                     if(has_encountered_fatal()) break;
@@ -482,12 +486,12 @@ namespace parser
                 if(prev_condition_exec) parser::skip_until_end(block_vector, i);
                 else {
                     ++i;
-                    exec_until_end(block_vector, p_struct, i);
+                    exec_until_end(block_vector, p_struct, game_state, i);
                 }
                 previous_line_condition = false;
             } else if(current_line[0].type != token_type::TEXT) {
                 previous_line_condition = false;
-                interp_ins(current_line, p_struct);
+                interp_ins(current_line, p_struct, game_state);
                 if(has_encountered_fatal()) break;
             }
         }

@@ -298,11 +298,12 @@ RoomManager::RoomManager(std::filesystem::path const& room_file_path,
     }
 }
 
-void RoomManager::startLoop(std::string const& start_room)
+void RoomManager::startLoop(game_state_s& game_state,
+        std::string const& start_room)
 {
     std::string curr_room_id = start_room;
 
-    while(!m_rls.is_endgame()) {
+    while(!game_state.should_game_exit) {
         auto const& room_it = m_room_map.find(curr_room_id.c_str());
 
         if(room_it == m_room_map.cend()) {
@@ -314,10 +315,10 @@ void RoomManager::startLoop(std::string const& start_room)
         m_rls.resetGameOver();
 
         if(!currentRoom.load(m_rls, m_player, m_room_map, m_program_strings,
-                    m_cutscenes_container)) {
+                    m_cutscenes_container, game_state)) {
             break;
         }
-        if(!m_rls.is_endgame()) {
+        if(!game_state.should_game_exit) {
             curr_room_id = m_rls.getNextRoom();
         }
     }

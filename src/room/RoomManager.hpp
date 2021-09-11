@@ -60,7 +60,8 @@ class RoomManager
                 PStrings const& program_strings,
                 CutscenesContainer const& cutscenes_container);
         //Start the game loop which loads rooms until the end signal is enabled
-        void startLoop(std::string const& start_room);
+        void startLoop(game_state_s& game_state,
+                std::string const& start_room);
 
     private:
 

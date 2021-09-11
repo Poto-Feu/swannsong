@@ -98,7 +98,8 @@ bool Room::isChoicePresent(unsigned int choice_n) const
             }) != m_Choices_vec.cend();
 }
 
-static void display(room_struct& p_struct, bool same_room)
+static void display(room_struct& p_struct, game_state_s& game_state,
+        bool same_room)
 {
     const std::string *error_msg_ptr = nullptr;
     const std::string incorrect_input_str = p_struct.program_strings.fetch("incorrect_input");
@@ -137,7 +138,7 @@ static void display(room_struct& p_struct, bool same_room)
 
                 p_struct.currState.setBlockType(RoomState::bt::CHOICE);
                 parser::exec_until_end(current_choice->getInstructions(),
-                        p_struct, start_ln);
+                        p_struct, game_state, start_ln);
 
                 if(!game_error::has_encountered_fatal()) {
                     p_struct.currState.displayCutscenes(
@@ -146,7 +147,7 @@ static void display(room_struct& p_struct, bool same_room)
                 }
             }
         } else if(menu_input == "exit") {
-            p_struct.currLoopState.endLoop();
+            game_state.should_game_exit = true;
         } else if(menu_input == "load") {
             using namespace savefile;
 
@@ -202,23 +203,28 @@ bad_input:
 }
 
 //Read the first ATLAUNCH block encountered starting from specified line
-static void atlaunch(room_struct& p_struct, bool same_room)
+static void atlaunch(room_struct& p_struct, game_state_s& game_state,
+        bool same_room)
 {
     unsigned int foundln = 0;
 
     p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
-    parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct, foundln);
+    parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct,
+            game_state, foundln);
 
     if(game_error::has_encountered_fatal()) return;
-    else if(!p_struct.currLoopState.is_game_over()) display(p_struct, same_room);
-    else {
+    else if(!p_struct.currLoopState.is_game_over()) {
+        display(p_struct, game_state, same_room);
+    } else {
         p_struct.currState.displayCutscenes(p_struct.program_strings, p_struct.cutscenes_container);
     }
 }
 
 bool Room::load(RoomLoopState& p_rls, Player& p_player,
-        std::unordered_map<std::string, Room> const& room_map, PStrings const& program_strings,
-        CutscenesContainer const& cutscenes_container) const
+        std::unordered_map<std::string, Room> const& room_map,
+        PStrings const& program_strings,
+        CutscenesContainer const& cutscenes_container,
+        game_state_s &game_state) const
 {
     bool same_room = false;
     do {
@@ -228,12 +234,12 @@ bool Room::load(RoomLoopState& p_rls, Player& p_player,
 
         p_rls.setNextRoom(m_name);
 
-        atlaunch(p_struct, same_room);
+        atlaunch(p_struct, game_state, same_room);
         if(game_error::has_encountered_fatal()) return false;
         else if(p_struct.currLoopState.is_game_over()) gameOver(p_player, p_struct.currLoopState,
                 program_strings);
         else same_room = true;
-    } while(p_rls.getNextRoom() == m_name && !p_rls.is_endgame());
+    } while(p_rls.getNextRoom() == m_name && !game_state.should_game_exit);
 
     return true;
 }

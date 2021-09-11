@@ -228,10 +228,14 @@ GameInitData Game::init(pargsMap pargs_map)
 
 void Game::run(GameInitData const& game_init_data)
 {
+    game_state_s game_state;
+
     if(!game_error::has_encountered_fatal()) {
         RoomManager rmm(game_init_data.room_file_path, m_program_strings,
                 m_cutscenes_container);
 
-        if(!game_error::has_encountered_fatal()) rmm.startLoop(m_start_room);
+        if(!game_error::has_encountered_fatal()) {
+            rmm.startLoop(game_state, m_start_room);
+        }
     }
 }

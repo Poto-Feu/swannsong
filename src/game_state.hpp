@@ -18,18 +18,11 @@
     <https://www.gnu.org/licenses/>.
 */
 
+#ifndef GAME_STATE_HPP
+#define GAME_STATE_HPP
 
-#ifndef ROOM_PARSER_HPP
-#define ROOM_PARSER_HPP
+struct game_state_s {
+    bool should_game_exit = false;
+};
 
-#include "room/room_struct.hpp"
-#include "game_state.hpp"
-
-namespace parser
-{
-    void skip_until_end(std::vector<TokenVec> const& block_vector, unsigned int& blockln);
-    void exec_until_end(std::vector<TokenVec> const& block_vector,
-            room_struct& p_struct, game_state_s& game_state, unsigned int& i);
-    bool splitline(std::string& type, std::string& arg, std::string ins);
-}
 #endif
