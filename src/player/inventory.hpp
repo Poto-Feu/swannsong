@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,10 +14,12 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef INVENTORY_HPP
+#define INVENTORY_HPP
 
 #include <string>
 #include <vector>
@@ -49,6 +51,5 @@ namespace inventory
     item_val_type return_item_n(Inventory const& p_inv, std::string const& p_name);
     //Remove all items from the inventory
     void clear(Inventory& p_inv);
-    //Display the inventory screen
-    void display_screen(Inventory const& p_inv, PStrings const& program_strings);
 }
+#endif

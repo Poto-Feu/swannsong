@@ -29,6 +29,7 @@
 #include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "pstrings.hpp"
+#include "rendering.hpp"
 #include "stringsm.h"
 
 Room::Room() { }
@@ -184,7 +185,8 @@ static void display(room_struct& p_struct, bool same_room)
             p_struct.cutscenes_container.display(p_struct.program_strings,
                     "help");
         } else if(menu_input == "inv" || menu_input == "inventory") {
-            inventory::display_screen(p_struct.currPlayer.inv, p_struct.program_strings);
+            rendering::display_inventory(p_struct.currPlayer.inv,
+                    p_struct.program_strings);
         }
 
         return;

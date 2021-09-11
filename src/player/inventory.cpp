@@ -88,27 +88,6 @@ namespace inventory
         return rtrn_val;
     }
 
-    void display_screen(Inventory const& p_inv, PStrings const& program_strings)
-    {
-        std::vector<std::string> strings_list;
-
-        if(p_inv.size() == 0) strings_list.push_back(program_strings.fetch("inventory_empty"));
-        else {
-            for(auto const& it : p_inv) {
-                std::string disp_str = it.name;
-                std::string str_name = "item_" + it.name;
-
-                if(program_strings.check_exist(str_name)) {
-                    disp_str = program_strings.fetch(str_name);
-                }
-
-                disp_str += "   " + std::to_string(return_item_n(p_inv, it.name));
-                strings_list.push_back(std::move(disp_str));
-            }
-        }
-        dialogbox::display(nullptr, &strings_list, program_strings);
-    }
-
     void clear(Inventory& p_inv)
     {
         p_inv.clear();

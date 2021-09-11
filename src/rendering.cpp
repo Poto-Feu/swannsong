@@ -55,3 +55,26 @@ void rendering::display_cutscene(PStrings const& program_strings,
     dialogbox::display(NULL, &strings_vec, program_strings);
     display_server::clear_screen();
 }
+
+void rendering::display_inventory(inventory::Inventory const& inv,
+        PStrings const& pstrings)
+{
+    std::vector<std::string> strings_list;
+
+    if(inv.size() == 0) {
+        strings_list.push_back(pstrings.fetch("inventory_empty"));
+    } else {
+        for(auto const& it : inv) {
+            std::string disp_str = it.name;
+            std::string str_name = "item_" + it.name;
+
+            if(pstrings.check_exist(str_name)) {
+                disp_str = pstrings.fetch(str_name);
+            }
+
+            disp_str += "   " + std::to_string(return_item_n(inv, it.name));
+            strings_list.push_back(std::move(disp_str));
+        }
+    }
+    dialogbox::display(nullptr, &strings_list, pstrings);
+}
