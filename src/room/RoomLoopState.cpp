@@ -20,11 +20,6 @@
 
 #include "room/RoomLoopState.hpp"
 
-void RoomLoopState::setNextRoom(std::string const& p_id)
-{
-    m_next_room = p_id;
-}
-
 void RoomLoopState::setGameOver()
 {
     m_gameover = true;
@@ -33,11 +28,6 @@ void RoomLoopState::setGameOver()
 void RoomLoopState::resetGameOver()
 {
     m_gameover = false;
-}
-
-std::string RoomLoopState::getNextRoom() const
-{
-    return m_next_room;
 }
 
 bool RoomLoopState::is_game_over() const

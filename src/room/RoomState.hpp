@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,13 +14,14 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #pragma once
 
+#include "CutscenesContainer.hpp"
 #include "room/Choice.hpp"
-#include "room/RoomClass.hpp"
 #include "pstrings.hpp"
 
 class RoomState
@@ -46,14 +47,21 @@ class RoomState
         void addString(std::string const& p_str);
         void addCutscene(std::string const& p_cs);
 
-        void displayCutscenes(PStrings const& program_strings,
-                CutscenesContainer const& cutscenes_container);
-        std::string displayRoomScreen(Room const& p_room, PStrings const& program_strings,
+        void displayCutscenes(PStrings const& pstrings,
+                CutscenesContainer const& cs_container);
+        std::string displayRoomScreen(PStrings const& pstrings,
+                std::string const* room_name, std::string const* room_title,
+                std::string const* room_desc,
+                std::vector<Choice> room_choices,
                 const std::string *error_msg = nullptr) const;
-        std::string displayAll(Room const& p_room, PStrings const& program_strings,
-                CutscenesContainer const& cutscenes_container, bool same_room);
+        std::string displayAll(PStrings const& pstrings,
+                CutscenesContainer const& cs_container,
+                std::string const* room_name, std::string const* room_title,
+                std::string const* room_desc,
+                std::vector<Choice> room_choices, bool same_room);
 
-        //Return the Choice id corresponding to the specified index of the displayed choices vector
+        /* Return the Choice id corresponding to the specified index of the
+         * displayed choices vector */
         unsigned int getCorrespondantChoiceId(unsigned int choice_n) const;
 
         void setBlockType(bt const p_bt);

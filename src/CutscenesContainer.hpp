@@ -18,22 +18,22 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <filesystem>
-#include <unordered_map>
+#ifndef CUTSCENES_CONTAINER_HPP
+#define CUTSCENES_CONTAINER_HPP
 
 #include "CutsceneClass.hpp"
-#include "pstrings.hpp"
 
 class CutscenesContainer
 {
     public:
 
         CutscenesContainer();
-        CutscenesContainer(std::string const& csfile, std::filesystem::path const& data_path,
+        CutscenesContainer(std::string const& csfile,
+                std::filesystem::path const& data_path,
                 PStrings const& program_strings);
-        void display(PStrings const& pstrings, std::string const& name) const;
+
+        // Return nullptr if the cutscene does not exists
+        Cutscene const* get_cutscene(std::string const& name) const;
 
     private:
 
@@ -43,3 +43,4 @@ class CutscenesContainer
 
         std::unordered_map<std::string, Cutscene> m_map;
 };
+#endif

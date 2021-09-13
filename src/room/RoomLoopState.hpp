@@ -29,16 +29,10 @@ class RoomLoopState
         //Trigger a game over
         void setGameOver();
         void resetGameOver();
-        //Set the room in which the player will spawn at the next loop iteration
-        void setNextRoom(std::string const& p_id);
-
-        std::string getNextRoom() const;
 
         bool is_game_over() const;
 
     private:
 
         bool m_gameover = false;
-
-        std::string m_next_room;
 };

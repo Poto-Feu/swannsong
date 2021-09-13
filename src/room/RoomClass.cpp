@@ -21,16 +21,12 @@
 #include <algorithm>
 
 #include "room/RoomClass.hpp"
-#include "files_path.hpp"
-#include "savefile.hpp"
 #include "room/interpreter/parser.hpp"
-#include "room/room_struct.hpp"
-#include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
-#include "pstrings.hpp"
 #include "rendering.hpp"
 #include "stringsm.h"
+#include "userio.hpp"
 
 Room::Room() { }
 Room::Room(std::string const& room_name) : m_name(room_name) { }
@@ -98,154 +94,48 @@ bool Room::isChoicePresent(unsigned int choice_n) const
             }) != m_Choices_vec.cend();
 }
 
-static void display(room_struct& p_struct, game_state_s& game_state,
-        bool same_room)
+static void display(PStrings const& pstrings,
+        std::unordered_map<std::string, Room> const& room_map,
+        CutscenesContainer const& cs_container, Player& player,
+        Room const& room, RoomLoopState& rls, RoomState& room_state,
+        game_state_s& game_state, bool same_room)
 {
-    const std::string *error_msg_ptr = nullptr;
-    const std::string incorrect_input_str = p_struct.program_strings.fetch("incorrect_input");
-    const std::string need_help_str = p_struct.program_strings.fetch("room_need_help");
+    std::string menu_input = room_state.displayAll(pstrings, cs_container,
+            &room.getName(), &room.getTitle(), &room.getDesc(),
+            room.getChoicesVec(), same_room);
+    unsigned int incorrect_input_n = 0;
 
-    unsigned int incorrect_input = 0;
-
-    std::string menu_input = p_struct.currState.displayAll(p_struct.currRoom,
-            p_struct.program_strings, p_struct.cutscenes_container, same_room);
-
-    while(true) {
-        if(stringsm::is_number(menu_input)) {
-            uint32_t choice_digit = std::stoi(menu_input);
-
-            if(choice_digit != 0) {
-                auto const& choices_vec = p_struct.currRoom.getChoicesVec();
-                unsigned int corres_Choice_id;
-
-                if(p_struct.currState.is_all_choices_displayed()) {
-                    if(choice_digit > choices_vec.size()) goto bad_input;
-                    corres_Choice_id = choice_digit;
-                } else {
-                    corres_Choice_id = p_struct.currState.getCorrespondantChoiceId(
-                            choice_digit);
-                    if(corres_Choice_id == 0) goto bad_input;
-                }
-                auto current_choice = std::find_if(choices_vec.cbegin(), choices_vec.cend(),
-                        [=](Choice const& p_choice) {
-                        return p_choice.getId() == corres_Choice_id;
-                        });
-
-                if(current_choice == choices_vec.cend()) goto bad_input;
-
-                //Process the input if it is a number corresponding to a choice
-                unsigned int start_ln = 0;
-
-                p_struct.currState.setBlockType(RoomState::bt::CHOICE);
-                parser::exec_until_end(current_choice->getInstructions(),
-                        p_struct, game_state, start_ln);
-
-                if(!game_error::has_encountered_fatal()) {
-                    p_struct.currState.displayCutscenes(
-                            p_struct.program_strings,
-                            p_struct.cutscenes_container);
-                }
-            }
-        } else if(menu_input == "exit") {
-            game_state.should_game_exit = true;
-        } else if(menu_input == "load") {
-            using namespace savefile;
-
-            savefile::load_data savefile_data;
-
-            if(!load(savefile_data, files_path::get_local_data_path())) {
-                std::vector<std::string> dialogbox_strs;
-
-                if(savefile_data.error == loading_error::NO_FILE) {
-                    dialogbox_strs.push_back(p_struct.program_strings.fetch(
-                                "load_nofile"));
-                } else {
-                    dialogbox_strs.push_back(p_struct.program_strings.fetch(
-                                "load_corrupted"));
-                }
-
-                dialogbox::display(NULL, &dialogbox_strs,
-                        p_struct.program_strings);
-            } else {
-                p_struct.currLoopState.setNextRoom(savefile_data.current_room);
-                p_struct.currPlayer.inv = std::move(savefile_data.gitems);
-                gvars::replace_vector(p_struct.currPlayer.gvars,
-                        savefile_data.gvars);
-            }
-        } else if(menu_input == "save") {
-            if(savefile::save(p_struct.currPlayer, p_struct.currRoom.getName(),
-                    files_path::get_local_data_path())) {
-                std::vector<std::string> dialogbox_strs = {
-                    p_struct.program_strings.fetch("save_success")
-                };
-
-                dialogbox::display(NULL, &dialogbox_strs,
-                        p_struct.program_strings);
-            }
-        } else if(menu_input == "help") {
-            p_struct.cutscenes_container.display(p_struct.program_strings,
-                    "help");
-        } else if(menu_input == "inv" || menu_input == "inventory") {
-            rendering::display_inventory(p_struct.currPlayer.inv,
-                    p_struct.program_strings);
-        }
-
-        return;
-bad_input:
-        if(incorrect_input < 3) {
-            error_msg_ptr = &incorrect_input_str;
-            ++incorrect_input;
-        } else error_msg_ptr = &need_help_str;
-
-        menu_input = p_struct.currState.displayRoomScreen(p_struct.currRoom,
-                p_struct.program_strings, error_msg_ptr);
-    }
+    do {
+    } while(!userio::interpret_user_input(pstrings, room_map, cs_container,
+                player, room, rls, room_state, game_state, menu_input,
+                incorrect_input_n));
 }
 
 //Read the first ATLAUNCH block encountered starting from specified line
-static void atlaunch(room_struct& p_struct, game_state_s& game_state,
-        bool same_room)
+static void atlaunch(PStrings const& pstrings,
+        std::unordered_map<std::string, Room> room_map,
+        CutscenesContainer const& cs_container, Player& player,
+        Room const& room, RoomLoopState& rls, RoomState& room_state,
+        game_state_s& game_state, bool same_room)
 {
     unsigned int foundln = 0;
 
-    p_struct.currState.setBlockType(RoomState::bt::ATLAUNCH);
-    parser::exec_until_end(p_struct.currRoom.getATLAUNCHIns(), p_struct,
-            game_state, foundln);
+    room_state.setBlockType(RoomState::bt::ATLAUNCH);
+    parser::exec_until_end(pstrings, room_map, room, player, rls, room_state,
+            game_state, room.getATLAUNCHIns(), foundln);
 
-    if(game_error::has_encountered_fatal()) return;
-    else if(!p_struct.currLoopState.is_game_over()) {
-        display(p_struct, game_state, same_room);
+    if(game_error::has_encountered_fatal()) {
+        return;
+    } else if(!rls.is_game_over()) {
+        display(pstrings, room_map, cs_container, player, room, rls,
+                room_state, game_state, same_room);
     } else {
-        p_struct.currState.displayCutscenes(p_struct.program_strings, p_struct.cutscenes_container);
+        room_state.displayCutscenes(pstrings, cs_container);
     }
 }
 
-bool Room::load(RoomLoopState& p_rls, Player& p_player,
-        std::unordered_map<std::string, Room> const& room_map,
-        PStrings const& program_strings,
-        CutscenesContainer const& cutscenes_container,
-        game_state_s &game_state) const
-{
-    bool same_room = false;
-    do {
-        RoomState currentState;
-        room_struct p_struct { *this, currentState, p_rls, p_player, room_map, program_strings,
-        cutscenes_container };
-
-        p_rls.setNextRoom(m_name);
-
-        atlaunch(p_struct, game_state, same_room);
-        if(game_error::has_encountered_fatal()) return false;
-        else if(p_struct.currLoopState.is_game_over()) gameOver(p_player, p_struct.currLoopState,
-                program_strings);
-        else same_room = true;
-    } while(p_rls.getNextRoom() == m_name && !game_state.should_game_exit);
-
-    return true;
-}
-
-void Room::gameOver(Player& player, RoomLoopState& loop_state, PStrings const& program_strings)
-    const
+static void set_game_over(Player& player, game_state_s& game_state,
+        PStrings const& program_strings)
 {
     const std::string gameover_title = "GAME OVER";
 
@@ -256,6 +146,31 @@ void Room::gameOver(Player& player, RoomLoopState& loop_state, PStrings const& p
     gvars::clear(player.gvars);
     /*Kinda bad implementation since it breaks the separation between code and data, but
     that'll do for now - the whole structure of the code is janky anyway*/
-    loop_state.setNextRoom("menu");
+    game_state.next_room = "menu";
     dialogbox::display(&gameover_title, &gameover_strings, program_strings);
+}
+
+bool Room::load(PStrings const& pstrings,
+        std::unordered_map<std::string, Room> const& room_map,
+        CutscenesContainer const& cs_container, Player& player,
+        RoomLoopState& rls, game_state_s& game_state) const
+{
+    bool same_room = false;
+    do {
+        RoomState room_state;
+
+        game_state.next_room = m_name;
+
+        atlaunch(pstrings, room_map, cs_container, player, *this, rls,
+                room_state, game_state, same_room);
+        if(game_error::has_encountered_fatal()) {
+            return false;
+        } else if(rls.is_game_over()) {
+            set_game_over(player, game_state, pstrings);
+        } else {
+            same_room = true;
+        }
+    } while(game_state.next_room == m_name && !game_state.should_game_exit);
+
+    return true;
 }

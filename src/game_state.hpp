@@ -21,7 +21,11 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 
+#include <string>
+
 struct game_state_s {
+    //Set the room in which the player will spawn at the next loop iteration
+    std::string next_room;
     bool should_game_exit = false;
 };
 

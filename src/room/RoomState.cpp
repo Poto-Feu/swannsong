@@ -22,11 +22,9 @@
 #include <stdexcept>
 
 #include "room/RoomState.hpp"
-#include "display_server.hpp"
+#include "rendering.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
-#include "pcurses.hpp"
-#include "stringsm.h"
 
 RoomState::RoomState() { }
 
@@ -70,44 +68,67 @@ RoomState::bt RoomState::getBlockType() const
     return block_type;
 }
 
-void RoomState::displayCutscenes(PStrings const& program_strings,
-        CutscenesContainer const& cutscenes_container)
+void RoomState::displayCutscenes(PStrings const& pstrings,
+        CutscenesContainer const& cs_container)
 {
     for(auto const& it : m_cutscenes_list) {
-        cutscenes_container.display(program_strings, it);
+        auto const* cs = cs_container.get_cutscene(it);
+
+        if(cs) {
+            rendering::display_cutscene(pstrings, *cs);
+        }
     }
     m_cutscenes_list.clear();
 }
 
-std::string RoomState::displayRoomScreen(Room const& p_room, PStrings const& program_strings,
+Choice const* get_choice_from_vector(std::vector<Choice> const& choices,
+        unsigned int choice_id)
+{
+    auto const& choice_it = std::find_if(choices.cbegin(), choices.cend(),
+            [=](Choice const& choice) {
+            return choice_id == choice.getId();
+            });
+
+    if(choice_it == choices.cend()) {
+        return nullptr;
+    } else {
+        return &*choice_it;
+    }
+}
+
+std::string RoomState::displayRoomScreen(PStrings const& pstrings,
+        std::string const* room_name, std::string const* room_title,
+        std::string const* room_desc, std::vector<Choice> room_choices,
         const std::string *error_msg) const
 {
 
-    const std::string *room_title_ptr = nullptr;
-    const std::string *room_desc_ptr = nullptr;
     const std::vector<std::string> *room_other_str_ptr = nullptr;
-    std::string const& room_title = p_room.getTitle();
-    std::string const& room_desc = p_room.getDesc();
     std::vector<std::string> room_choices_str;
 
     game_menu::flags menu_flags;
 
-    if(is_title_displayed()) room_title_ptr = &room_title;
-    if(is_desc_displayed()) room_desc_ptr = &room_desc;
+    if(!is_title_displayed()) {
+        room_title = nullptr;
+    }
+
+    if(!is_desc_displayed()) {
+        room_desc = nullptr;
+    }
 
     if(m_all_choices_displayed) {
-        auto const& room_choices_vec = p_room.getChoicesVec();
-        std::transform(room_choices_vec.begin(), room_choices_vec.end(),
-                std::back_inserter(room_choices_str), [](Choice const& p_choice) {
+        std::transform(room_choices.begin(), room_choices.end(),
+                std::back_inserter(room_choices_str),
+                [](Choice const& p_choice) {
                 return p_choice.getText();
                 });
     } else if(m_choices_list.size() != 0) {
         for(auto const& it : m_choices_list) {
-            const Choice *current_choice = p_room.getChoice(it);
+            Choice const* current_choice = get_choice_from_vector(room_choices,
+                    it);
 
             if(!current_choice) {
-                game_error::emit_warning(std::to_string(it) + " Choice doesn't exist in "
-                        + p_room.getName() + " ROOM");
+                game_error::emit_warning(std::to_string(it)
+                        + " Choice doesn't exist in " + *room_name + " ROOM");
                 continue;
             }
 
@@ -115,17 +136,26 @@ std::string RoomState::displayRoomScreen(Room const& p_room, PStrings const& pro
         }
     }
 
-    if(m_string_list.size() > 0) room_other_str_ptr = &m_string_list;
-    return game_menu::display(room_title_ptr, room_desc_ptr, room_other_str_ptr, room_choices_str,
-            error_msg, &menu_flags, &program_strings);
+    if(m_string_list.size() > 0) {
+        room_other_str_ptr = &m_string_list;
+    }
+    return game_menu::display(room_title, room_desc, room_other_str_ptr,
+            room_choices_str, error_msg, &menu_flags, &pstrings);
 }
 
-std::string RoomState::displayAll(Room const& p_room, PStrings const& program_strings,
-        CutscenesContainer const& cutscenes_container, bool same_room)
+std::string RoomState::displayAll(PStrings const& pstrings,
+        CutscenesContainer const& cs_container, std::string const* room_name,
+        std::string const* room_title, std::string const* room_desc,
+        std::vector<Choice> room_choices, bool same_room)
 {
-    if(!same_room) displayCutscenes(program_strings, cutscenes_container);
-    else m_cutscenes_list.clear();
-    return displayRoomScreen(p_room, program_strings);
+    if(!same_room) {
+        displayCutscenes(pstrings, cs_container);
+    }
+    else {
+        m_cutscenes_list.clear();
+    }
+    return displayRoomScreen(pstrings, room_name, room_title, room_desc,
+            room_choices);
 }
 
 unsigned int RoomState::getCorrespondantChoiceId(unsigned int choice_n) const

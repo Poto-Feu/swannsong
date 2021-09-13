@@ -22,14 +22,19 @@
 #ifndef ROOM_PARSER_HPP
 #define ROOM_PARSER_HPP
 
-#include "room/room_struct.hpp"
 #include "game_state.hpp"
+#include "room/RoomClass.hpp"
+#include "room/RoomState.hpp"
 
 namespace parser
 {
-    void skip_until_end(std::vector<TokenVec> const& block_vector, unsigned int& blockln);
-    void exec_until_end(std::vector<TokenVec> const& block_vector,
-            room_struct& p_struct, game_state_s& game_state, unsigned int& i);
+    void skip_until_end(std::vector<TokenVec> const& block_vector,
+            unsigned int& blockln);
+    void exec_until_end(PStrings const& pstrings,
+            std::unordered_map<std::string, Room> const& room_map,
+            Room const& room, Player& player, RoomLoopState& rls,
+            RoomState& room_state, game_state_s& game_state,
+            std::vector<TokenVec> const& block_vector, unsigned int& i);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }
 #endif

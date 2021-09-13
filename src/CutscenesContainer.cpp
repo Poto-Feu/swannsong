@@ -23,17 +23,11 @@
 
 #include "CutscenesContainer.hpp"
 #include "fileio/fileio.h"
-#include "dialogbox.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "pcurses.hpp"
-#include "rendering.hpp"
 #include "stringsm.h"
-#include "userio.hpp"
 
-CutscenesContainer::CutscenesContainer()
-{
-}
+CutscenesContainer::CutscenesContainer() { }
 
 CutscenesContainer::CutscenesContainer(std::string const& csfile,
         std::filesystem::path const& data_path, PStrings const& program_strings)
@@ -78,25 +72,8 @@ CutscenesContainer::CutscenesContainer(std::string const& csfile,
     }
 }
 
-//Display a cutscene
-void CutscenesContainer::display(PStrings const& pstrings,
-        std::string const& name) const
-{
-    auto it = return_cs_it(name);
-    display_server::clear_screen();
-
-    if(it != m_map.cend()) {
-        rendering::display_cutscene(pstrings, it->second);
-    } else {
-        const std::string missingCutscene_text = "missingCutscene";
-
-        game_error::emit_warning("\"" + name + "\" cutscene does not exists");
-        dialogbox::display(&missingCutscene_text, NULL, pstrings);
-    }
-}
-
-std::unordered_map<std::string, Cutscene>::const_iterator CutscenesContainer::return_cs_it(
-        std::string const& cutscene_name) const
+std::unordered_map<std::string, Cutscene>::const_iterator
+CutscenesContainer::return_cs_it(std::string const& cutscene_name) const
 {
     return m_map.find(cutscene_name);
 }
@@ -105,4 +82,16 @@ bool CutscenesContainer::check_exist(std::string const& cutscene_name) const
 {
     if(return_cs_it(cutscene_name) != m_map.cend()) return true;
     else return false;
+}
+
+Cutscene const* CutscenesContainer::get_cutscene(std::string const& name) const
+{
+    auto const& cs_it = m_map.find(name);
+
+    if(cs_it == m_map.cend()) {
+        game_error::emit_warning(name + " cutscene does not exists");
+        return nullptr;
+    } else {
+        return &(*cs_it).second;
+    }
 }

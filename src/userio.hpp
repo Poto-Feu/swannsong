@@ -25,9 +25,19 @@
 
 #include <string>
 
+#include "game_state.hpp"
+#include "room/RoomClass.hpp"
+#include "room/RoomState.hpp"
+
 namespace userio
 {
     void waitenter();
     std::string gettextinput(int max_n);
+    bool interpret_user_input(PStrings const& pstrings,
+            std::unordered_map<std::string, Room> room_map,
+            CutscenesContainer const& cs_container, Player& player,
+            Room const& room, RoomLoopState& rls, RoomState& room_state,
+            game_state_s& game_state, std::string& input,
+            unsigned int& incorrect_input_n);
 }
 #endif

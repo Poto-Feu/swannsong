@@ -18,16 +18,12 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef ROOM_MANAGER_HPP
+#define ROOM_MANAGER_HPP
 
 #include <filesystem>
-#include <unordered_map>
 
-#include "player/Player.hpp"
 #include "room/RoomClass.hpp"
-#include "room/RoomLoopState.hpp"
-#include "room/RoomState.hpp"
-#include "CutscenesContainer.hpp"
 #include "pstrings.hpp"
 
 struct room_property_rtrn
@@ -56,27 +52,30 @@ class RoomManager
 {
     public:
 
-        explicit RoomManager(std::filesystem::path const& room_file_path,
-                PStrings const& program_strings,
-                CutscenesContainer const& cutscenes_container);
+        explicit RoomManager(PStrings const& pstrings,
+                std::filesystem::path const& room_file_path);
         //Start the game loop which loads rooms until the end signal is enabled
-        void startLoop(game_state_s& game_state,
-                std::string const& start_room);
+        void startLoop(PStrings const& pstrings,
+                CutscenesContainer const& cs_container,
+                game_state_s& game_state, std::string const& start_room);
 
     private:
 
         std::unordered_map<std::string, Room> m_room_map;
-        PStrings const& m_program_strings;
-        CutscenesContainer const& m_cutscenes_container;
         RoomLoopState m_rls;
         Player m_player;
 
-        Room create_new_room(std::vector<std::string> room_file_lines, unsigned int& i,
+        Room create_new_room(PStrings const& pstrings,
+                std::vector<std::string> room_file_lines, unsigned int& i,
                 bool& no_error, std::string const& room_name);
-        bool set_room_property(std::string const& room_name, std::string const& prop_name,
+        bool set_room_property(PStrings const& pstrings,
+                std::string const& room_name, std::string const& prop_name,
                 std::string const& prop_arg, room_property_rtrn& return_variables);
-        bool set_block(std::string const& room_name, RoomVectorData& vec_data,
+        bool set_block(PStrings const& pstrings,
+                std::string const& room_name, RoomVectorData& vec_data,
                 RoomBlockData& block_data);
-        bool set_CHOICES(std::string const& room_name, RoomVectorData& vec_data,
+        bool set_CHOICES(PStrings const& pstrings,
+                std::string const& room_name, RoomVectorData& vec_data,
                 RoomCHOICESData& p_data);
 };
+#endif

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,10 +14,12 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef ROOMCLASS_HPP
+#define ROOMCLASS_HPP
 
 #include <optional>
 #include <unordered_map>
@@ -27,11 +29,11 @@
 #include "player/Player.hpp"
 #include "pstrings.hpp"
 #include "room/interpreter/token.hpp"
-#include "room/RoomLoopState.hpp"
 #include "room/Choice.hpp"
+#include "room/RoomLoopState.hpp"
+#include "room/RoomState.hpp"
 
-class Room 
-{
+class Room {
     public:
 
         Room();
@@ -61,11 +63,10 @@ class Room
 
         void displayAllChoices() const;
 
-        bool load(RoomLoopState& p_rls, Player& p_player,
+        bool load(PStrings const& pstrings,
                 std::unordered_map<std::string, Room> const& room_map,
-                PStrings const& program_strings,
-                CutscenesContainer const& cutscenes_container,
-                game_state_s &game_state) const;
+                CutscenesContainer const& cs_container, Player& player,
+                RoomLoopState& rls, game_state_s& game_state) const;
 
     private:
 
@@ -75,7 +76,5 @@ class Room
 
         std::vector<TokenVec> m_ATLAUNCH_ins;
         std::vector<Choice> m_Choices_vec;
-
-        void gameOver(Player& player, RoomLoopState& loop_state, PStrings const& program_strings)
-            const;
 };
+#endif

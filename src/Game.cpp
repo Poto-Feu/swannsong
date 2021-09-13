@@ -24,11 +24,12 @@
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
-#include "room/RoomManager.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
 #include "pcurses.hpp"
+#include "rendering.hpp"
+#include "room/RoomManager.hpp"
 #include "userio.hpp"
 
 struct lang_item
@@ -210,7 +211,9 @@ GameInitData Game::init(pargsMap pargs_map)
     }
 
     if(m_lcvc.getValue("firstlaunch") == "1") {
-        m_cutscenes_container.display(m_program_strings, "help");
+        auto const* cs = m_cutscenes_container.get_cutscene("help");
+
+        rendering::display_cutscene(m_program_strings, *cs);
         m_lcvc.changeValue("firstlaunch", "0");
         m_lcvc.writeToFile();
     }
@@ -231,11 +234,11 @@ void Game::run(GameInitData const& game_init_data)
     game_state_s game_state;
 
     if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm(game_init_data.room_file_path, m_program_strings,
-                m_cutscenes_container);
+        RoomManager rmm(m_program_strings, game_init_data.room_file_path);
 
         if(!game_error::has_encountered_fatal()) {
-            rmm.startLoop(game_state, m_start_room);
+            rmm.startLoop(m_program_strings, m_cutscenes_container, game_state,
+                    m_start_room);
         }
     }
 }
