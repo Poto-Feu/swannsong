@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,14 +14,17 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef CUTSCENE_HPP
+#define CUTSCENE_HPP
 
+#include <string>
 #include <vector>
 
-#include "pstrings.hpp"
+class PStrings;
 
 enum class cs_action_type
 {
@@ -36,15 +39,8 @@ struct cs_action
     std::string content;
 };
 
-class Cutscene
+struct Cutscene
 {
-    public:
-
-        Cutscene();
-
-        std::vector<cs_action> actions_vec;
-
-    private:
-
-        void execute_all_actions(PStrings const& program_strings) const;
+    std::vector<cs_action> actions_vec;
 };
+#endif

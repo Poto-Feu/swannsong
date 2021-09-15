@@ -19,14 +19,11 @@
 */
 
 #include <algorithm>
-#include <stdexcept>
 
 #include "room/RoomState.hpp"
 #include "rendering.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
-
-RoomState::RoomState() { }
 
 void RoomState::addTitle()
 {

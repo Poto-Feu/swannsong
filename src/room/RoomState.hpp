@@ -18,17 +18,17 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef ROOM_STATE_HPP
+#define ROOM_STATE_HPP
 
 #include "CutscenesContainer.hpp"
 #include "room/Choice.hpp"
-#include "pstrings.hpp"
+
+class PStrings;
 
 class RoomState
 {
     public:
-
-        RoomState();
 
         enum class bt
         {
@@ -82,3 +82,4 @@ class RoomState
 
         bt block_type = bt::ATLAUNCH;
 };
+#endif

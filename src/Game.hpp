@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,13 +14,12 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <filesystem>
-#include <string>
+#ifndef GAME_HPP
+#define GAME_HPP
 
 #include "vars/LocalConfVariable.hpp"
 #include "CutscenesContainer.hpp"
@@ -54,3 +53,4 @@ class Game
         void missing_gcvar(std::string const& p_name);
         auto fetch_gameconf_vars(std::filesystem::path const& system_data_path);
 };
+#endif

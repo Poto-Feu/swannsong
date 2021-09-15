@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,12 +14,11 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
-#include <string>
-#include <vector>
+#include <fstream>
 
 #include "pstrings.hpp"
 #include "fileio/fileio.h"
@@ -90,7 +89,8 @@ PStrings::PStrings(std::string const& lang_code, std::string const& langdir,
     using namespace files_path;
 
     std::string buf;
-    std::ifstream file_stream = open_strfile(lang_code, data_path.string() + langdir);
+    std::ifstream file_stream = open_strfile(lang_code, data_path.string()
+            + langdir);
 
     /*THIS MUST NOT BE REMOVED ! It will serve as a placeholder if the program string was not
     defined*/
@@ -117,7 +117,7 @@ PStrings::PStrings(std::string const& lang_code, std::string const& langdir,
             split_file_line(r_id, r_val, buf);
             if(game_error::has_encountered_fatal()) return;
             else m_map[r_id] = std::move(r_val);
-    
+
         } else continue;
     }
 }

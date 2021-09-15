@@ -21,10 +21,12 @@
 #include <algorithm>
 
 #include "room/RoomClass.hpp"
-#include "room/interpreter/parser.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
+#include "player/Player.hpp"
 #include "rendering.hpp"
+#include "room/RoomLoopState.hpp"
+#include "room/interpreter/parser.hpp"
 #include "stringsm.h"
 #include "userio.hpp"
 

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,13 +14,13 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <cstring>
 
 #include "pargs.hpp"
-#include "files_path.hpp"
 #include "game_error.hpp"
 
 namespace pargs
@@ -30,7 +30,7 @@ namespace pargs
         auto has_arg = [&](const char* p_arg)
         {
             for(int i = 1; i < argc; ++i) {
-                if(!strcmp(p_arg, argv[i])) return true;
+                if(!std::strcmp(p_arg, argv[i])) return true;
             } return false;
         };
 

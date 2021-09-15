@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,20 +14,18 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef PCURSES_HPP
+#define PCURSES_HPP
 
-extern "C" {
-#include <curses.h>
-}
-
-#include <string>
 #include <vector>
 
 #include "display_server.hpp"
-#include "pstrings.hpp"
+
+class PStrings;
 
 namespace pcurses
 {
@@ -50,3 +48,4 @@ namespace pcurses
 
     void display_penter_message(PStrings const& program_strings, bool wait_enter = true);
 }
+#endif

@@ -57,7 +57,6 @@ add_executable(swannsongadv
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp
-    src/CutsceneClass.cpp
     src/CutscenesContainer.cpp
     src/rendering.cpp
     src/dialogbox.cpp
@@ -69,7 +68,6 @@ add_executable(swannsongadv
     src/pargs.cpp
     src/pcurses.cpp
     src/pstrings.cpp
-    src/os_module.cpp
     src/savefile.cpp
     src/stringsm.cpp
     src/userio.cpp)

@@ -21,17 +21,12 @@
 #ifndef ROOMCLASS_HPP
 #define ROOMCLASS_HPP
 
-#include <optional>
-#include <unordered_map>
-
-#include "CutscenesContainer.hpp"
-#include "game_state.hpp"
-#include "player/Player.hpp"
-#include "pstrings.hpp"
 #include "room/interpreter/token.hpp"
 #include "room/Choice.hpp"
-#include "room/RoomLoopState.hpp"
-#include "room/RoomState.hpp"
+
+struct game_state_s;
+class CutscenesContainer;
+class RoomLoopState;
 
 class Room {
     public:

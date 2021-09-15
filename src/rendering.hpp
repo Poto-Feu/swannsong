@@ -21,9 +21,10 @@
 #ifndef RENDERING_HPP
 #define RENDERING_HPP
 
-#include "CutsceneClass.hpp"
 #include "player/inventory.hpp"
-#include "pstrings.hpp"
+
+struct Cutscene;
+class PStrings;
 
 namespace rendering {
     void display_cutscene(PStrings const& pstrings, Cutscene const& cutscene);

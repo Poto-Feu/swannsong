@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,12 +14,13 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <iostream>
+
 #include "files_path.hpp"
-#include "game_error.hpp"
 #include "os_module.hpp"
 
 namespace files_path
@@ -45,13 +46,13 @@ namespace files_path
         } else return "/usr/local/share/swannsong_adventure/";
 #endif
     }
-            
+
     static fs::path init_local_data_path()
     {
         fs::path path_fs;
 
         if(current_os == os_type::UNIXLIKE) {
-            path_fs = getenv("HOME");
+            path_fs = std::getenv("HOME");
             path_fs += "/.local";
             files_path::create_directory(path_fs);
             path_fs += "/share";
@@ -59,14 +60,14 @@ namespace files_path
             path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
         } else if(current_os == os_type::WINDOWSNT) {
-            path_fs = getenv("LOCALAPPDATA");
+            path_fs = std::getenv("LOCALAPPDATA");
 
             path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
         } else {
             std::cout << "Please use a POSIX or a WINDOWS NT environnement to run this program"
                 << "\n";
-            exit(1);
+            std::exit(1);
         }
         return path_fs;
     }
@@ -76,13 +77,13 @@ namespace files_path
         fs::path path_fs;
 
         if(current_os == os_type::UNIXLIKE) {
-            path_fs = getenv("HOME");
+            path_fs = std::getenv("HOME");
             path_fs += "/.config";
             files_path::create_directory(path_fs);
             path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
         } else if(current_os == os_type::WINDOWSNT) {
-            path_fs = getenv("LOCALAPPDATA");
+            path_fs = std::getenv("LOCALAPPDATA");
 
             path_fs += "/swannsong_adventure/";
             files_path::create_directory(path_fs);
@@ -91,7 +92,7 @@ namespace files_path
         } else {
             std::cout << "Please use a POSIX or a WINDOWS NT environnement to run this program"
                 << "\n";
-            exit(1);
+            std::exit(1);
         }
         return path_fs;
     }

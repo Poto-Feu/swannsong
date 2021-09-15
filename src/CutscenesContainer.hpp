@@ -21,6 +21,9 @@
 #ifndef CUTSCENES_CONTAINER_HPP
 #define CUTSCENES_CONTAINER_HPP
 
+#include <unordered_map>
+#include <filesystem>
+
 #include "CutsceneClass.hpp"
 
 class CutscenesContainer

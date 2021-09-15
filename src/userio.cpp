@@ -29,6 +29,7 @@ extern "C" {
 #include "dialogbox.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
+#include "player/Player.hpp"
 #include "rendering.hpp"
 #include "room/interpreter/parser.hpp"
 #include "savefile.hpp"

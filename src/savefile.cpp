@@ -27,6 +27,7 @@ extern "C" {
 #include "savefile.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
+#include "player/Player.hpp"
 
 static const std::string const_game_name = "SwannSong Adventure";
 

@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cstdio>
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
@@ -114,7 +113,7 @@ void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& d
 
         if(buf.size() == 1) {
             size_t intval = buf[0] - '0';
-            
+
             if(intval > 0 && intval <= langarr.size()) {
                 std::string lang = langarr[intval - 1].id;
 

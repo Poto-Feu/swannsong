@@ -21,10 +21,11 @@
 #ifndef ROOM_MANAGER_HPP
 #define ROOM_MANAGER_HPP
 
-#include <filesystem>
-
+#include "player/Player.hpp"
 #include "room/RoomClass.hpp"
-#include "pstrings.hpp"
+#include "room/RoomLoopState.hpp"
+
+class PStrings;
 
 struct room_property_rtrn
 {

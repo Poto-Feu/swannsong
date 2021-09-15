@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,27 +14,27 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include <curses.h>
-}
-
-#include <string>
 #include "stringsm.h"
 
 namespace stringsm
 {
     std::string to_upper(std::string p_str)
     {
-        for(auto& it : p_str) it = toupper(it);
+        for(auto& it : p_str) {
+            it = std::toupper(it);
+        }
         return p_str;
     }
 
     std::string to_lower(std::string p_str)
     {
-        for(auto& it : p_str) it = tolower(it);
+        for(auto& it : p_str) {
+            it = std::tolower(it);
+        }
         return p_str;
     }
 
@@ -43,7 +43,7 @@ namespace stringsm
         if(p_str.size() == 0) return false;
 
         for(auto const& it : p_str) {
-            if(!isdigit(it)) return false;
+            if(!std::isdigit(it)) return false;
         }
 
         return true;

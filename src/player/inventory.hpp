@@ -24,8 +24,6 @@
 #include <string>
 #include <vector>
 
-#include "pstrings.hpp"
-
 namespace inventory
 {
     typedef uint32_t item_val_type;
@@ -40,16 +38,19 @@ namespace inventory
 
     typedef std::vector<gitem> Inventory;
 
-    /*Add the specified number of an item - if it doesn't exist in inventory_vec, the function adds 
-    the item to it*/
-    void getitem(Inventory& p_inv, std::string const& p_name, item_val_type val);
-    /*Reduce the specified number of item - and remove the item from the vector if the result is 
-    equal to 0 or less*/
-    void useitem(Inventory& p_inv, std::string const& p_name, item_val_type val);
-    /*Return the number of pieces of an item present in the inventory - returns 0 if the item
-    does not exist*/
-    item_val_type return_item_n(Inventory const& p_inv, std::string const& p_name);
-    //Remove all items from the inventory
+    /* Add the specified number of an item - if it doesn't exist in
+     * inventory_vec, the function adds the item to it */
+    void getitem(Inventory& p_inv, std::string const& p_name,
+            item_val_type val);
+    /* Reduce the specified number of item - and remove the item from the
+     * vector if the result is equal to 0 or less */
+    void useitem(Inventory& p_inv, std::string const& p_name,
+            item_val_type val);
+    /* Return the number of pieces of an item present in the inventory -
+     * returns 0 if the item does not exist */
+    item_val_type return_item_n(Inventory const& p_inv,
+            std::string const& p_name);
+    // Remove all items from the inventory
     void clear(Inventory& p_inv);
 }
 #endif

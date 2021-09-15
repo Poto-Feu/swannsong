@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,15 +14,12 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include <curses.h>
-}
-
 #include <fstream>
-#include <iostream>
+
 #include "game_error.hpp"
 #include "files_path.hpp"
 #include "stringsm.h"
@@ -101,7 +98,8 @@ namespace game_error
             auto curr_time = *std::localtime(&time_var);
             char time_buffer[buf_size] = "\0";
 
-            strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S", &curr_time);
+            std::strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S",
+                    &curr_time);
 
             log_file_path = local_data_path;
             log_file_path += "logs";
@@ -122,7 +120,7 @@ namespace game_error
 
             log_intro += time_buffer;
             log_intro += "]";
-            
+
             log_write({log_intro,
                     "These first two lines are for testing purposes.",
                     "They can be ignored.",

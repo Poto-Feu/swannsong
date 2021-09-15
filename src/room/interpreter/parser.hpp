@@ -22,9 +22,9 @@
 #ifndef ROOM_PARSER_HPP
 #define ROOM_PARSER_HPP
 
-#include "game_state.hpp"
 #include "room/RoomClass.hpp"
-#include "room/RoomState.hpp"
+
+class RoomState;
 
 namespace parser
 {

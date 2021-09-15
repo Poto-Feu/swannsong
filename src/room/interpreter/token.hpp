@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,17 +14,17 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
-#include <string>
-#include <vector>
+#include "vars/gvars.hpp"
 
-#include "player/Player.hpp"
-#include "pstrings.hpp"
+class PStrings;
+class Player;
 
 enum class token_type
 {
@@ -74,7 +74,6 @@ typedef std::vector<Token> TokenVec;
 namespace token
 {
     TokenVec create_arr(std::string const& p_str, PStrings const& program_strings);
-    void set_runtime_tokens(TokenVec& p_vec, gvarVector const& p_player);
+    void set_runtime_tokens(TokenVec& p_vec, gvarVector const& p_gvars);
 }
-
 #endif

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,13 +14,17 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef GAME_MENU_HPP
+#define GAME_MENU_HPP
 
+#include <string>
 #include <vector>
-#include "pstrings.hpp"
+
+class PStrings;
 
 namespace game_menu
 {
@@ -36,3 +40,4 @@ namespace game_menu
             const std::vector<std::string> *other_str, std::vector<std::string> choices,
             const std::string *error_msg, flags *p_flags, const PStrings *program_strings);
 }
+#endif

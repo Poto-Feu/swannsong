@@ -19,8 +19,10 @@
 */
 
 #include "rendering.hpp"
+#include "CutsceneClass.hpp"
 #include "dialogbox.hpp"
 #include "pcurses.hpp"
+#include "pstrings.hpp"
 
 static void add_string(std::vector<std::string>& strings_vec,
         std::string const& p_str)

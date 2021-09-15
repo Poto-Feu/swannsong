@@ -18,13 +18,12 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
 #include <fstream>
 
 #include "CutscenesContainer.hpp"
 #include "fileio/fileio.h"
-#include "files_path.hpp"
 #include "game_error.hpp"
+#include "pstrings.hpp"
 #include "stringsm.h"
 
 CutscenesContainer::CutscenesContainer() { }

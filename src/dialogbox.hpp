@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,16 +14,21 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
- 
+
+#ifndef DIALOGBOX_HPP
+#define DIALOGBOX_HPP
+
 #include <string>
 #include <vector>
 
-#include "pstrings.hpp"
+class PStrings;
 
 namespace dialogbox
 {
     void display(const std::string *title, const std::vector<std::string> *p_strings,
             PStrings const& program_strings);
 }
+#endif

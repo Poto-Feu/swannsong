@@ -18,12 +18,15 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SAVE_HPP
-#define SAVE_HPP
+#ifndef SAVEFILE_HPP
+#define SAVEFILE_HPP
 
 #include <filesystem>
 
-#include "player/Player.hpp"
+#include "player/inventory.hpp"
+#include "vars/gvars.hpp"
+
+class Player;
 
 namespace savefile {
     enum class loading_error {

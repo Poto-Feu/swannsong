@@ -21,6 +21,7 @@
 #include <array>
 #include <algorithm>
 
+#include "pstrings.hpp"
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
 #include "stringsm.h"
@@ -116,18 +117,19 @@ namespace token
         };
 
         //An enum is used for faster condition checking in the parser
-        const std::array<func_list_item, 10> func_list = 
-        {{
-            { "PRINT", token_spec_type::PRINT },
-            { "DISPLAY", token_spec_type::DISPLAY },
-            { "SET", token_spec_type::SET },
-            { "GO", token_spec_type::GO },
-            { "CUTSCENE", token_spec_type::CUTSCENE },
-            { "GET", token_spec_type::GET },
-            { "USE", token_spec_type::USE },
-            { "GAMEOVER", token_spec_type::GAMEOVER },
-            { "EXIT", token_spec_type::EXIT },
-        }};
+        const std::array<func_list_item, 10> func_list = {
+            {
+                { "PRINT", token_spec_type::PRINT },
+                { "DISPLAY", token_spec_type::DISPLAY },
+                { "SET", token_spec_type::SET },
+                { "GO", token_spec_type::GO },
+                { "CUTSCENE", token_spec_type::CUTSCENE },
+                { "GET", token_spec_type::GET },
+                { "USE", token_spec_type::USE },
+                { "GAMEOVER", token_spec_type::GAMEOVER },
+                { "EXIT", token_spec_type::EXIT },
+            }
+        };
 
         auto found_it = std::find_if(func_list.cbegin(), func_list.cend(),
                 [&p_tkn](func_list_item const& cfunc) {
@@ -158,7 +160,7 @@ namespace token
     {
         int str_ln = p_tkn.size();
         char symbol = '\0';
-        
+
         switch(p_tkn[0]) {
             case '\'':
                 symbol = '\'';

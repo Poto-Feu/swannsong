@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,10 +14,12 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef PSTRINGS_HPP
+#define PSTRINGS_HPP
 
 #include <filesystem>
 #include <string>
@@ -44,3 +46,4 @@ class PStrings
         //Return an iterator corresponding to p_id key
         auto find_it_vec(std::string const& id) const;
 };
+#endif

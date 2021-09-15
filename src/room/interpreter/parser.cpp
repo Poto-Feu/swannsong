@@ -19,13 +19,16 @@
 */
 
 #include "room/interpreter/parser.hpp"
-#include "room/interpreter/token.hpp"
-#include "vars/gvars.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
-#include "player/inventory.hpp"
+#include "game_state.hpp"
+#include "player/Player.hpp"
 #include "pcurses.hpp"
+#include "room/RoomLoopState.hpp"
+#include "room/RoomState.hpp"
+#include "room/interpreter/token.hpp"
 #include "stringsm.h"
+#include "vars/gvars.hpp"
 
 static void CHOICE_block_err(std::string const& func_name)
 {
