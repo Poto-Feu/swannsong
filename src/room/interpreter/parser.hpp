@@ -30,7 +30,7 @@ namespace parser
 {
     void skip_until_end(std::vector<TokenVec> const& block_vector,
             unsigned int& blockln);
-    void exec_until_end(PStrings const& pstrings,
+    void exec_until_end(
             std::unordered_map<std::string, Room> const& room_map,
             Room const& room, Player& player, RoomLoopState& rls,
             RoomState& room_state, game_state_s& game_state,

@@ -128,9 +128,8 @@ bool userio::interpret_user_input(PStrings const& pstrings,
 
             //Process the input if it is a number corresponding to a choice
             room_state.setBlockType(RoomState::bt::CHOICE);
-            parser::exec_until_end(pstrings, room_map, room, player, rls,
-                    room_state, game_state, current_choice->getInstructions(),
-                    start_ln);
+            parser::exec_until_end(room_map, room, player, rls, room_state,
+                    game_state, current_choice->getInstructions(), start_ln);
 
             if(!game_error::has_encountered_fatal()) {
                 room_state.displayCutscenes(pstrings, cs_container);

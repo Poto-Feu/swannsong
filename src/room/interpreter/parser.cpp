@@ -98,31 +98,6 @@ static void interp_DISPLAY_func(Room const& room, RoomState& room_state,
     }
 }
 
-//Interpret a line which use the PRINT function
-static void interp_PRINT_func(RoomState& p_state, PStrings const& pstrings,
-        TokenVec const& r_vec)
-{
-    if(r_vec.size() != 2) {
-        wrg_tkn_num("PRINT");
-        return;
-    }
-    if(p_state.getBlockType() == RoomState::bt::CHOICE) {
-        CHOICE_block_err("PRINT");
-    }
-
-    switch(r_vec[1].type) {
-        case token_type::STRING:
-            p_state.addString(r_vec[1].str);
-            break;
-        case token_type::STRING_ID:
-            p_state.addString(pstrings.fetch(r_vec[1].str));
-            break;
-        default:
-            game_error::emit_warning("token cannot be displayed (PRINT)");
-            break;
-    }
-}
-
 //Interpret a line which use the CUTSCENE function
 static void interp_CUTSCENE_func(RoomState& p_state, TokenVec const& r_vec)
 {
@@ -303,7 +278,7 @@ static void interp_gvar_ins(gvarVector& p_gvars, TokenVec r_vec)
 }
 
 //Interpret a line which uses a function
-static void interp_func_ins(PStrings const& pstrings,
+static void interp_func_ins(
         std::unordered_map<std::string, Room> const& room_map,
         Room const& room, Player& player, RoomLoopState& rls,
         RoomState& room_state, game_state_s& game_state,
@@ -315,9 +290,6 @@ static void interp_func_ins(PStrings const& pstrings,
     {
         case token_spec_type::DISPLAY:
             interp_DISPLAY_func(room, room_state, r_vec);
-            break;
-        case token_spec_type::PRINT:
-            interp_PRINT_func(room_state, pstrings, r_vec);
             break;
         case token_spec_type::SET:
             interp_SET_func(player.gvars, r_vec);
@@ -348,7 +320,7 @@ static void interp_func_ins(PStrings const& pstrings,
 }
 
 //Interpret a line depending on its first token
-static void interp_ins(PStrings const& pstrings,
+static void interp_ins(
         std::unordered_map<std::string, Room> const& room_map,
         Room const& room, Player& player, RoomLoopState& rls,
         RoomState& room_state,
@@ -358,7 +330,7 @@ static void interp_ins(PStrings const& pstrings,
 
     switch(r_vec[0].type) {
         case token_type::FUNCTION:
-            interp_func_ins(pstrings, room_map, room, player, rls, room_state,
+            interp_func_ins(room_map, room, player, rls, room_state,
                     game_state, r_vec);
             break;
         case token_type::VARIABLE:
@@ -524,7 +496,7 @@ void parser::skip_until_end(std::vector<TokenVec> const& block_vector,
 }
 
 //Execute instructions until the end of the block
-void parser::exec_until_end(PStrings const& pstrings,
+void parser::exec_until_end(
         std::unordered_map<std::string, Room> const& room_map,
         Room const& room, Player& player, RoomLoopState& rls,
         RoomState& room_state, game_state_s& game_state,
@@ -547,7 +519,7 @@ void parser::exec_until_end(PStrings const& pstrings,
             previous_line_condition = true;
             if(check_condition(player, tok_vec)) {
                 ++i;
-                exec_until_end(pstrings, room_map, room, player, rls,
+                exec_until_end(room_map, room, player, rls,
                         room_state, game_state, block_vector, i);
                 prev_condition_exec = true;
             } else {
@@ -565,15 +537,18 @@ void parser::exec_until_end(PStrings const& pstrings,
             if(prev_condition_exec) parser::skip_until_end(block_vector, i);
             else {
                 ++i;
-                exec_until_end(pstrings, room_map, room, player, rls,
+                exec_until_end(room_map, room, player, rls,
                         room_state, game_state, block_vector, i);
             }
             previous_line_condition = false;
         } else if(tok_vec[0].type != token_type::TEXT) {
             previous_line_condition = false;
-            interp_ins(pstrings, room_map, room, player, rls, room_state,
-                    game_state, tok_vec);
-            if(has_encountered_fatal()) break;
+            interp_ins(room_map, room, player, rls, room_state, game_state,
+                    tok_vec);
+
+            if(has_encountered_fatal()) {
+                break;
+            }
         }
     }
 }

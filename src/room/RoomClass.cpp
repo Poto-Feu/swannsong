@@ -123,7 +123,7 @@ static void atlaunch(PStrings const& pstrings,
     unsigned int foundln = 0;
 
     room_state.setBlockType(RoomState::bt::ATLAUNCH);
-    parser::exec_until_end(pstrings, room_map, room, player, rls, room_state,
+    parser::exec_until_end(room_map, room, player, rls, room_state,
             game_state, room.getATLAUNCHIns(), foundln);
 
     if(game_error::has_encountered_fatal()) {
