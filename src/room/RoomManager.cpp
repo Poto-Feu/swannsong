@@ -26,6 +26,7 @@
 #include "display_server.hpp"
 #include "fileio/fileio.h"
 #include "game_error.hpp"
+#include "game_state.hpp"
 #include "pcurses.hpp"
 #include "rendering.hpp"
 #include "stringsm.h"

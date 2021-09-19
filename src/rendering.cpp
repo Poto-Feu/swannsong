@@ -18,11 +18,17 @@
     <https://www.gnu.org/licenses/>.
 */
 
+#include <algorithm>
+
 #include "rendering.hpp"
 #include "CutsceneClass.hpp"
 #include "dialogbox.hpp"
+#include "game_error.hpp"
+#include "game_menu.hpp"
 #include "pcurses.hpp"
 #include "pstrings.hpp"
+#include "room/RoomClass.hpp"
+#include "room/RoomDisplay.hpp"
 
 static void add_string(std::vector<std::string>& strings_vec,
         std::string const& p_str)
@@ -79,4 +85,62 @@ void rendering::display_inventory(inventory::Inventory const& inv,
         }
     }
     dialogbox::display(nullptr, &strings_list, pstrings);
+}
+
+Choice const* get_choice_from_vector(std::vector<Choice> const& choices,
+        unsigned int choice_id)
+{
+    auto const& choice_it = std::find_if(choices.cbegin(), choices.cend(),
+            [=](Choice const& choice) {
+            return choice_id == choice.getId();
+            });
+
+    if(choice_it == choices.cend()) {
+        return nullptr;
+    } else {
+        return &*choice_it;
+    }
+}
+
+std::string rendering::display_room(PStrings const& pstrings, Room const& room,
+        RoomDisplay const& room_display, const std::string *error_msg)
+{
+    std::string const* room_title_str = nullptr;
+    std::string const* room_desc_str = nullptr;
+    std::vector<Choice> const& room_choices = room.getChoicesVec();
+    std::vector<std::string> room_choices_str;
+    game_menu::flags menu_flags;
+
+    if(room_display.show_title) {
+        room_title_str = room.getTitle();
+    }
+
+    if(room_display.show_desc) {
+        room_desc_str = room.getDesc();
+    }
+
+    if(room_display.are_all_choices_displayed) {
+        std::transform(room_choices.begin(), room_choices.end(),
+                std::back_inserter(room_choices_str),
+                [](Choice const& p_choice) {
+                return p_choice.getText();
+                });
+    } else if(room_display.choices_displayed.size() != 0) {
+        for(auto const& it : room_display.choices_displayed) {
+            Choice const* current_choice = get_choice_from_vector(room_choices,
+                    it);
+
+            if(!current_choice) {
+                game_error::emit_warning(std::to_string(it)
+                        + " Choice doesn't exist in " + room.getName()
+                        + " ROOM");
+                continue;
+            }
+
+            room_choices_str.push_back(current_choice->getText());
+        }
+    }
+
+    return game_menu::display(room_title_str, room_desc_str, nullptr,
+            room_choices_str, error_msg, &menu_flags, &pstrings);
 }

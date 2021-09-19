@@ -20,7 +20,7 @@
 
 #include "dialogbox.hpp"
 #include "pcurses.hpp"
-#include "userio.hpp"
+#include "pstrings.hpp"
 
 namespace dialogbox
 {

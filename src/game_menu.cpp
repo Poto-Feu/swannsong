@@ -18,9 +18,9 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include "display_server.hpp"
 #include "game_menu.hpp"
 #include "pcurses.hpp"
+#include "pstrings.hpp"
 #include "userio.hpp"
 
 std::string game_menu::display(const std::string *title, const std::string *desc,

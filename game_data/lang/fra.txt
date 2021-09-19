@@ -18,8 +18,7 @@ item_GoldenNugget "Pépite d'or"
 
 # Room prompt
 room_prompt_text "Ton choix : "
-incorrect_input "Pardon ?"
-room_need_help "Besoin d'aide ? Ecris \"help\"."
+incorrect_input "Pardon ? (écris \"help\" pour afficher les commandes)"
 
 # Save/Load
 save_success "Ta partie a été sauvegardée !"

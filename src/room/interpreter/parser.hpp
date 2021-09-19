@@ -24,17 +24,21 @@
 
 #include "room/RoomClass.hpp"
 
-class RoomState;
+class RoomDisplay;
 
 namespace parser
 {
-    void skip_until_end(std::vector<TokenVec> const& block_vector,
-            unsigned int& blockln);
-    void exec_until_end(
+    enum class block_type {
+        ATLAUNCH,
+        CHOICE
+    };
+
+    bool exec_until_end(std::vector<TokenVec> const& block_vector,
             std::unordered_map<std::string, Room> const& room_map,
-            Room const& room, Player& player, RoomLoopState& rls,
-            RoomState& room_state, game_state_s& game_state,
-            std::vector<TokenVec> const& block_vector, unsigned int& i);
+            Room const& room, parser::block_type block_type,
+            Player& player, RoomLoopState& rls, RoomDisplay* room_display,
+            game_state_s& game_state,
+            std::vector<std::string>& cutscenes_vec, unsigned int& i);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }
 #endif

@@ -26,12 +26,15 @@ extern "C" {
 #include <cstdlib>
 
 #include "userio.hpp"
+#include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
+#include "game_state.hpp"
 #include "player/Player.hpp"
 #include "rendering.hpp"
 #include "room/interpreter/parser.hpp"
+#include "room/RoomDisplay.hpp"
 #include "savefile.hpp"
 #include "stringsm.h"
 
@@ -72,76 +75,65 @@ std::string userio::gettextinput(int max_n)
     return r_str;
 }
 
-static const Choice* get_current_choice(std::vector<Choice> const& choices,
-        unsigned int corres_choice_id)
-{
-    auto current_choice = std::find_if(choices.cbegin(), choices.cend(),
-            [=](Choice const& p_choice) {
-            return p_choice.getId() == corres_choice_id;
-            });
-
-    if(current_choice == choices.cend()) {
-        return NULL;
-    } else {
-        return &*current_choice;
-    }
-}
-
 bool userio::interpret_user_input(PStrings const& pstrings,
-        std::unordered_map<std::string, Room> room_map,
-        CutscenesContainer const& cs_container, Player& player,
-        Room const& room, RoomLoopState& rls, RoomState& room_state,
-        game_state_s& game_state, std::string& input,
-        unsigned int& incorrect_input_n)
+        std::unordered_map<std::string, Room> const& room_map,
+        CutscenesContainer const& cs_container, Room const& room,
+        Player& player, RoomDisplay const& room_display, RoomLoopState& rls,
+        game_state_s& game_state, std::string& menu_input,
+        bool& wrong_input)
 {
-    const std::string *error_msg_ptr = nullptr;
-    const std::string need_help_str = pstrings.fetch("room_need_help");
-    const std::string incorrect_input_str = pstrings.fetch("incorrect_input");
+    wrong_input = false;
 
-    if(stringsm::is_number(input)) {
-        uint32_t choice_digit = std::stoi(input);
+    if(stringsm::is_number(menu_input)) {
+        uint32_t choice_digit = std::stoi(menu_input);
 
         if(choice_digit != 0) {
             const Choice *current_choice;
-            auto const& choices_vec = room.getChoicesVec();
-            unsigned int corres_choice_id;
+            std::vector<std::string> displayed_cs;
+            int corres_choice_id;
             unsigned int start_ln = 0;
 
-            if(room_state.is_all_choices_displayed()) {
-                if(choice_digit > choices_vec.size()) {
-                    goto bad_input;
+            if(room_display.are_all_choices_displayed) {
+                if(choice_digit > room.getChoicesVec().size()) {
+                    wrong_input = true;
+                    return true;
+                } else {
+                    corres_choice_id = choice_digit;
                 }
-                corres_choice_id = choice_digit;
             } else {
-                corres_choice_id = room_state.getCorrespondantChoiceId(
-                        choice_digit);
-                if(corres_choice_id == 0) {
-                    goto bad_input;
+                if(choice_digit > room_display.choices_displayed.size()) {
+                    wrong_input = true;
+                    return true;
+                } else {
+                    corres_choice_id =
+                        room_display.choices_displayed[choice_digit - 1];
                 }
             }
-            current_choice = get_current_choice(room.getChoicesVec(),
-                    corres_choice_id);
 
-            if(!current_choice) {
-                goto bad_input;
-            }
+            current_choice = room.getChoice(corres_choice_id);
 
             //Process the input if it is a number corresponding to a choice
-            room_state.setBlockType(RoomState::bt::CHOICE);
-            parser::exec_until_end(room_map, room, player, rls, room_state,
-                    game_state, current_choice->getInstructions(), start_ln);
-
-            if(!game_error::has_encountered_fatal()) {
-                room_state.displayCutscenes(pstrings, cs_container);
+            if(!parser::exec_until_end(current_choice->getInstructions(),
+                    room_map, room, parser::block_type::CHOICE, player,
+                    rls, nullptr, game_state, displayed_cs, start_ln)) {
+                return false;
             }
+
+            for(auto const& it : displayed_cs) {
+                auto const* cs = cs_container.get_cutscene(it);
+
+                if(!cs) {
+                    game_error::emit_warning("Unknown cutscene");
+                } else {
+                    rendering::display_cutscene(pstrings, *cs);
+                }
+            }
+        } else {
+            wrong_input = true;
         }
-    }
-
-    if(input == "exit") {
+    } else if(menu_input == "exit") {
         game_state.should_game_exit = true;
-    }
-
-    if(input == "load") {
+    } else if(menu_input == "load") {
         using namespace savefile;
 
         savefile::load_data savefile_data;
@@ -161,7 +153,7 @@ bool userio::interpret_user_input(PStrings const& pstrings,
             player.inv = std::move(savefile_data.gitems);
             gvars::replace_vector(player.gvars, savefile_data.gvars);
         }
-    } else if(input == "save") {
+    } else if(menu_input == "save") {
         if(savefile::save(player, room.getName(),
                 files_path::get_local_data_path())) {
             std::vector<std::string> dialogbox_strs = {
@@ -170,23 +162,15 @@ bool userio::interpret_user_input(PStrings const& pstrings,
 
             dialogbox::display(NULL, &dialogbox_strs, pstrings);
         }
-    } else if(input == "help") {
+    } else if(menu_input == "help") {
         auto const* cs = cs_container.get_cutscene("help");
 
         rendering::display_cutscene(pstrings, *cs);
-    } else if(input == "inv" || input == "inventory") {
+    } else if(menu_input == "inv" || menu_input == "inventory") {
         rendering::display_inventory(player.inv, pstrings);
+    } else {
+        wrong_input = true;
     }
 
     return true;
-bad_input:
-    if(incorrect_input_n < 3) {
-        error_msg_ptr = &incorrect_input_str;
-        ++incorrect_input_n;
-    } else error_msg_ptr = &need_help_str;
-
-    input = room_state.displayRoomScreen(pstrings, &room.getName(),
-            &room.getTitle(), &room.getDesc(), room.getChoicesVec(),
-            error_msg_ptr);
-    return false;
 }

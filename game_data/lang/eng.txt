@@ -18,7 +18,7 @@ item_GoldenNugget "Golden nugget"
 # Room prompt
 room_prompt_text "Your choice: "
 incorrect_input "Eh?"
-room_need_help "Need help ? Simply type \"help"."
+incorrect_input "Eh? (type \"help\" to display commands)"
 
 #Save/Load
 save_success "Your game was saved!"

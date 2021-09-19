@@ -19,7 +19,7 @@
 */
 
 #include "pcurses.hpp"
-#include "display_server.hpp"
+#include "pstrings.hpp"
 #include "userio.hpp"
 
 namespace pcurses

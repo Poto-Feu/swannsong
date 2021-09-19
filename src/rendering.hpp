@@ -24,11 +24,16 @@
 #include "player/inventory.hpp"
 
 struct Cutscene;
+struct RoomDisplay;
 class PStrings;
+class Room;
 
 namespace rendering {
     void display_cutscene(PStrings const& pstrings, Cutscene const& cutscene);
     void display_inventory(inventory::Inventory const& inv,
             PStrings const& pstrings);
+    std::string display_room(PStrings const& pstrings, Room const& room,
+            RoomDisplay const& room_display,
+            const std::string *error_msg = nullptr);
 }
 #endif

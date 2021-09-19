@@ -19,13 +19,13 @@
 */
 
 #include <algorithm>
-#include <array>
 
 #include "Game.hpp"
 #include "fileio/gameconf.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
+#include "game_state.hpp"
 #include "pcurses.hpp"
 #include "rendering.hpp"
 #include "room/RoomManager.hpp"

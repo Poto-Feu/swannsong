@@ -18,31 +18,16 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef USERIO_HPP
-#define USERIO_HPP
+#ifndef ROOM_DISPLAY_HPP
+#define ROOM_DISPLAY_HPP
 
-#define WIN_ENTER_KEY 13
+#include <vector>
 
-#include <string>
-#include <unordered_map>
+struct RoomDisplay {
+    std::vector<int> choices_displayed;
+    bool show_title = false;
+    bool show_desc = false;
+    bool are_all_choices_displayed = false;
+};
 
-struct Player;
-struct game_state_s;
-class CutscenesContainer;
-class PStrings;
-class Room;
-class RoomDisplay;
-class RoomLoopState;
-
-namespace userio
-{
-    void waitenter();
-    std::string gettextinput(int max_n);
-    bool interpret_user_input(PStrings const& pstrings,
-            std::unordered_map<std::string, Room> const& room_map,
-            CutscenesContainer const& cs_container, Room const& room,
-            Player& player, RoomDisplay const& room_display,
-            RoomLoopState& rls, game_state_s& game_state, std::string& input,
-            bool& has_wrong_input);
-}
 #endif

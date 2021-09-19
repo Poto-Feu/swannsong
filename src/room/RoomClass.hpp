@@ -38,8 +38,8 @@ class Room {
                 std::string const& room_desc);
 
         std::string const& getName() const;
-        std::string const& getTitle() const;
-        std::string const& getDesc() const;
+        std::string const* getTitle() const;
+        std::string const* getDesc() const;
 
         std::vector<TokenVec> const& getATLAUNCHIns() const;
         //Use a const reference to prevent excessive copying
