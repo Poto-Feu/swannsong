@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
 #ifndef DISPLAY_SERVER_HPP
@@ -38,11 +39,10 @@ namespace display_server
     };
 
     void add_string(std::string const& p_str,
-            coord_struct p_struct = {getcury(stdscr), getcurx(stdscr)}, int p_attr = NULL_ATTR);
+            coord_struct p_struct = { getcury(stdscr), getcurx(stdscr) },
+            int p_attr = NULL_ATTR);
     void clear_screen();
     int get_last_line();
-    void load_save();
-    void save_screen();
     void show_screen();
 }
 

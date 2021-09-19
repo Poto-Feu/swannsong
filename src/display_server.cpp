@@ -18,65 +18,53 @@
     If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <array>
 #include <vector>
 
 #include "display_server.hpp"
 
-namespace display_server
+struct displayed_sting
 {
-    static const int arr_y = 0;
-    static const int arr_x = 1;
+    std::string str;
+    int attribute = display_server::NULL_ATTR;
+    int y;
+    int x;
+};
 
-    struct displayed_sting
-    {
-        std::string str;
-        int attribute = NULL_ATTR;
-        std::array<int, 2> coord;
-    };
+static std::vector<displayed_sting> current_screen;
 
-    static std::vector<displayed_sting> current_screen;
+void display_server::add_string(std::string const& p_str,
+        coord_struct p_struct, int p_attr)
+{
+    current_screen.push_back(displayed_sting{p_str, p_attr, p_struct.y,
+            p_struct.x});
+}
 
-    //This vector act as a kind of temporary location to store a reusable screen
-    static std::vector<displayed_sting> saved_screen;
+void display_server::clear_screen()
+{
+    current_screen.clear();
+}
 
-    void add_string(std::string const& p_str, coord_struct p_struct, int p_attr)
-    {
-        std::array<int, 2> p_coord { p_struct.y, p_struct.x };
-        current_screen.push_back(displayed_sting{p_str, p_attr, p_coord});
+int display_server::get_last_line()
+{
+    if(!current_screen.empty()) {
+        return current_screen[current_screen.size() - 1].y;
+    } else {
+        return LAST_LINE_ERR;
     }
+}
 
-    void clear_screen()
-    {
-        current_screen.clear();
-    }
-
-    int get_last_line()
-    {
-        if(!current_screen.empty()) return current_screen[current_screen.size() - 1].coord[arr_y];
-        else return LAST_LINE_ERR;
-    }
-
-    void load_save()
-    {
-        std::copy(saved_screen.cbegin(), saved_screen.cend(), std::back_inserter(current_screen));
-    }
-
-    void save_screen()
-    {
-        saved_screen.clear();
-        saved_screen = current_screen;
-    }
-
-    void show_screen()
-    {
-        clear();
-        for(auto const& it : current_screen) {
-            if(it.attribute != NULL_ATTR) attron(it.attribute);
-            move(it.coord[arr_y], it.coord[arr_x]);
-            printw(it.str.c_str());
-            if(it.attribute != NULL_ATTR) attroff(it.attribute);
+void display_server::show_screen()
+{
+    clear();
+    for(auto const& it : current_screen) {
+        if(it.attribute != NULL_ATTR) {
+            attron(it.attribute);
         }
-        refresh();
+        move(it.y, it.x);
+        printw(it.str.c_str());
+        if(it.attribute != NULL_ATTR) {
+            attroff(it.attribute);
+        }
     }
+    refresh();
 }
