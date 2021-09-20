@@ -141,7 +141,7 @@ Game::~Game()
 GameInitData Game::init(pargsMap pargs_map)
 {
     files_path::paths_struct p_paths = files_path::getpaths(pargs_map["local"]);
-    m_lcvc = LocalConfVariableContainer(p_paths.local_conf_path.string());
+    m_lcvc = LocalConfVariableContainer(p_paths.local_conf_path);
 
     if(pargs_map["reset"]) {
         m_lcvc.deleteFile();
