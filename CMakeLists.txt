@@ -52,11 +52,11 @@ add_executable(swannsongadv
     src/room/RoomClass.cpp
     src/room/RoomLoopState.cpp
     src/room/RoomManager.cpp
-    src/vars/LocalConfVariable.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp
     src/CutscenesContainer.cpp
+    src/LocalConfVars.cpp
     src/rendering.cpp
     src/dialogbox.cpp
     src/display_server.cpp

@@ -40,9 +40,14 @@ struct lang_item
     std::string disp;
 };
 
-void Game::missing_gcvar(std::string const& p_name)
+static void missing_gcvar(std::string const& p_name)
 {
     game_error::fatal_error("missing gameconf var (" + p_name +")");
+}
+
+static void missing_lcvar(std::string const& p_name)
+{
+    game_error::fatal_error("missing local conf var (" + p_name +")");
 }
 
 static void set_curses()
@@ -62,8 +67,10 @@ static void set_curses()
 }
 
 //Fetch variables from the gameconf file and return a vector containing them
-auto Game::fetch_gameconf_vars(std::filesystem::path const& system_data_path)
+static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
+        std::filesystem::path const& system_data_path)
 {
+    std::string const* firstlaunch_val;
     auto gc_vec = gameconf::readfile(system_data_path);
 
     auto get_gcvar_it = [gc_vec](std::string const& p_name) {
@@ -74,19 +81,26 @@ auto Game::fetch_gameconf_vars(std::filesystem::path const& system_data_path)
     };
 
     //Avoid overwriting user-selected language
-    if(m_lcvc.getValue("firstlaunch") == "1") {
+    firstlaunch_val = LocalConfVars::get_value(lcv, "firstlaunch");
+    if(!firstlaunch_val) {
+        missing_lcvar("firstlaunch");
+    } else if(*firstlaunch_val == "1") {
         auto defaultlang_it = get_gcvar_it("defaultlang");
 
         if(defaultlang_it != gc_vec.cend()) {
-            m_lcvc.changeValue("lang", defaultlang_it->value);
-        } else missing_gcvar("defaultlang");
+            LocalConfVars::change_value(lcv, "lang",
+                    defaultlang_it->value);
+        } else {
+            missing_gcvar("defaultlang");
+        }
     }
 
     return gc_vec;
 }
 
 //Show a prompt asking the user to choose the language and the prompt to do so
-void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path)
+void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
+        std::string const& p_langdir, std::filesystem::path const& data_path)
 {
     bool validinp = false;
 
@@ -118,7 +132,8 @@ void Game::ask_lang(std::string const& p_langdir, std::filesystem::path const& d
                 std::string lang = langarr[intval - 1].id;
 
                 validinp = true;
-                m_lcvc.changeValue("lang", langarr[intval - 1].id);
+                LocalConfVars::change_value(lcv, "lang",
+                        langarr[intval - 1].id);
                 m_program_strings = PStrings(langarr[intval - 1].id, p_langdir, data_path);
                 if(!game_error::has_encountered_fatal()) m_strings_init = true;
             } else error_msg_ptr = &not_valid_error_str;
@@ -140,18 +155,25 @@ Game::~Game()
 
 GameInitData Game::init(pargsMap pargs_map)
 {
-    files_path::paths_struct p_paths = files_path::getpaths(pargs_map["local"]);
-    m_lcvc = LocalConfVariableContainer(p_paths.local_conf_path);
+    GameInitData game_init_data;
+    LocalConfVars::lcv_data_ptr lcv;
 
-    if(pargs_map["reset"]) {
-        m_lcvc.deleteFile();
-        m_lcvc.reset();
+    files_path::paths_struct p_paths = files_path::getpaths(pargs_map["local"]);
+
+    if(pargs_map.find("reset") == pargs_map.cend()) {
+        lcv= LocalConfVars::init_data(p_paths.local_conf_path);
+    } else {
+        lcv= LocalConfVars::init_data(p_paths.local_conf_path, true);
     }
     game_error::set_filepath(p_paths.local_data_path);
 
-    set_curses();
+    // If this function succeed, "firstlaunch" is guaranteed to exists
+    auto gc_vec = fetch_gameconf_vars(lcv, p_paths.data_path);
 
-    auto gc_vec = fetch_gameconf_vars(p_paths.data_path);
+    if(game_error::has_encountered_fatal()) {
+        game_init_data.no_error = false;
+        return game_init_data;
+    }
 
     auto get_gcvar_it = [gc_vec](std::string const& p_name) {
         return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
@@ -160,7 +182,7 @@ GameInitData Game::init(pargsMap pargs_map)
             });
     };
 
-    GameInitData game_init_data;
+    set_curses();
 
     auto langdir_it = get_gcvar_it("langdir");
     auto roomfile_it = get_gcvar_it("roomfile");
@@ -168,9 +190,17 @@ GameInitData Game::init(pargsMap pargs_map)
     auto firstroom_it = get_gcvar_it("firstroom");
 
     if(langdir_it != gc_vec.cend()) {
-        if(m_lcvc.getValue("firstlaunch") == "1") ask_lang(langdir_it->value, p_paths.data_path);
-        else {
-            m_program_strings = PStrings(m_lcvc.getValue("lang"), langdir_it->value,
+        if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
+            ask_lang(lcv, langdir_it->value, p_paths.data_path);
+        } else {
+            std::string const* lang_lcv = LocalConfVars::get_value(lcv,
+                    "lang");
+            if(!lang_lcv) {
+                missing_lcvar("lang");
+                game_init_data.no_error = false;
+                return game_init_data;
+            }
+            m_program_strings = PStrings(*lang_lcv, langdir_it->value,
                     p_paths.data_path);
         }
     } else {
@@ -197,24 +227,27 @@ GameInitData Game::init(pargsMap pargs_map)
         return game_init_data;
     }
 
-    if(csfile_it != gc_vec.cend()) m_cutscenes_container = CutscenesContainer(csfile_it->value,
-            p_paths.data_path, m_program_strings);
-    else {
+    if(csfile_it != gc_vec.cend()) {
+        m_cutscenes_container = CutscenesContainer(csfile_it->value,
+                p_paths.data_path, m_program_strings);
+    } else {
         game_init_data.no_error = false;
         missing_gcvar("csfile");
+
         return game_init_data;
     }
+
     if(game_error::has_encountered_fatal()) {
         game_init_data.no_error = false;
         return game_init_data;
     }
 
-    if(m_lcvc.getValue("firstlaunch") == "1") {
+    if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
         auto const* cs = m_cutscenes_container.get_cutscene("help");
 
         rendering::display_cutscene(m_program_strings, *cs);
-        m_lcvc.changeValue("firstlaunch", "0");
-        m_lcvc.writeToFile();
+        LocalConfVars::change_value(lcv, "firstlaunch", "0");
+        LocalConfVars::write_to_file(lcv, p_paths.local_conf_path);
     }
 
     if(firstroom_it != gc_vec.cend()) {

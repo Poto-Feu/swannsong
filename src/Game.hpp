@@ -21,8 +21,8 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "vars/LocalConfVariable.hpp"
 #include "CutscenesContainer.hpp"
+#include "LocalConfVars.hpp"
 #include "pargs.hpp"
 #include "pstrings.hpp"
 
@@ -44,13 +44,12 @@ class Game
 
         std::string m_start_room;
 
-        LocalConfVariableContainer m_lcvc;
         bool m_strings_init = false;
         PStrings m_program_strings;
         CutscenesContainer m_cutscenes_container;
 
-        void ask_lang(std::string const& p_langdir, std::filesystem::path const& data_path);
-        void missing_gcvar(std::string const& p_name);
-        auto fetch_gameconf_vars(std::filesystem::path const& system_data_path);
+        void ask_lang(LocalConfVars::lcv_data_ptr lcv_data,
+                std::string const& p_langdir,
+                std::filesystem::path const& data_path);
 };
 #endif
