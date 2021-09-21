@@ -18,17 +18,18 @@
     If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <filesystem>
+#include <ctime>
 #include <fstream>
 
 #include "game_error.hpp"
 #include "files_path.hpp"
 #include "stringsm.h"
 
-static std::string log_file_path;
+static bool is_filepath_already_set = false;
 static bool is_debug = false;
-
 static bool has_error = false;
+
+static std::string log_file_path;
 static std::string fatal_error_msg;
 
 void game_error::setdebug()
@@ -87,47 +88,33 @@ void game_error::emit_warning(std::string const& p_text)
 void game_error::set_filepath(std::string const& local_data_path)
 {
     if(is_debug) {
-        static bool already_used = false;
-
-        if(already_used) {
-            emit_warning("game_error::files_path used twice - this might "
-                    "cause problems later");
-        }
-
         const unsigned int buf_size = 30;
+        std::string log_intro;
+        std::ofstream file_stream;
         auto time_var = std::time(nullptr);
         auto curr_time = *std::localtime(&time_var);
         char time_buffer[buf_size] = "\0";
+
+        if(is_filepath_already_set) {
+            emit_warning("game_error::files_path used twice");
+        }
 
         std::strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S",
                 &curr_time);
 
         log_file_path = local_data_path;
-        log_file_path += "logs";
-        files_path::create_directory(log_file_path);
-
-        for(auto& it : std::filesystem::directory_iterator(
-                    log_file_path)) {
-            if(std::filesystem::is_regular_file(it.status())
-                    && stringsm::to_lower(it.path().extension().string())
-                    == ".txt") {
-                std::filesystem::remove(it.path());
-            }
-        }
 
         log_file_path += "/";
-        log_file_path += time_buffer;
-        log_file_path += "_log.txt";
+        log_file_path += "log.txt";
 
-        std::string log_intro = "[";
+        file_stream.open(log_file_path);
 
+        log_intro = "[";
         log_intro += time_buffer;
-        log_intro += "]";
+        log_intro += "]\n\n";
 
-        log_write({log_intro,
-                "These first two lines are for testing purposes.",
-                "They can be ignored.",
-                ""});
-        already_used = true;
+        file_stream << log_intro;
+
+        is_filepath_already_set = true;
     }
 }
