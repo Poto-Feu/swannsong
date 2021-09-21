@@ -84,13 +84,12 @@ bool PStrings::check_exist(std::string const& id) const
 
 PStrings::PStrings() { }
 PStrings::PStrings(std::string const& lang_code, std::string const& langdir,
-        std::filesystem::path const& data_path)
+        std::string const& data_path)
 {
     using namespace files_path;
 
     std::string buf;
-    std::ifstream file_stream = open_strfile(lang_code, data_path.string()
-            + langdir);
+    std::ifstream file_stream = open_strfile(lang_code, data_path + langdir);
 
     /*THIS MUST NOT BE REMOVED ! It will serve as a placeholder if the program string was not
     defined*/

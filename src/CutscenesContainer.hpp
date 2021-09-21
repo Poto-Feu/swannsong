@@ -22,7 +22,6 @@
 #define CUTSCENES_CONTAINER_HPP
 
 #include <unordered_map>
-#include <filesystem>
 
 #include "CutsceneClass.hpp"
 
@@ -32,8 +31,7 @@ class CutscenesContainer
 
         CutscenesContainer();
         CutscenesContainer(std::string const& csfile,
-                std::filesystem::path const& data_path,
-                PStrings const& program_strings);
+                std::string const& data_path, PStrings const& program_strings);
 
         // Return nullptr if the cutscene does not exists
         Cutscene const* get_cutscene(std::string const& name) const;

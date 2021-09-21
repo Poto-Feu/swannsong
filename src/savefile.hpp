@@ -21,8 +21,6 @@
 #ifndef SAVEFILE_HPP
 #define SAVEFILE_HPP
 
-#include <filesystem>
-
 #include "player/inventory.hpp"
 #include "vars/gvars.hpp"
 
@@ -44,8 +42,8 @@ namespace savefile {
         loading_error error;
     };
     bool save(Player const& player, std::string const& current_room,
-            std::filesystem::path const& local_data_path);
+            std::string const& local_data_path);
     bool load(savefile::load_data& savefile_data,
-            std::filesystem::path const& local_data_path);
+            std::string const& local_data_path);
 }
 #endif

@@ -19,6 +19,7 @@
 */
 
 #include <fstream>
+#include <sstream>
 
 extern "C" {
 #include <jansson.h>
@@ -32,9 +33,9 @@ extern "C" {
 static const std::string const_game_name = "SwannSong Adventure";
 
 static bool open_save_file_write(std::ofstream& file_stream,
-        std::filesystem::path const& local_data_path)
+        std::string const& local_data_path)
 {
-    file_stream.open(local_data_path / "save.json");
+    file_stream.open(local_data_path + "save.json");
 
     if(!file_stream.is_open()) {
         game_error::fatal_error("Cannot open save file");
@@ -231,7 +232,7 @@ static bool write_save_to_file(std::ofstream& file_stream,
 }
 
 bool savefile::save(Player const& player, std::string const& current_room,
-        std::filesystem::path const& local_data_path)
+        std::string const& local_data_path)
 {
     std::ofstream file_stream;
     json_t* root_json;
@@ -263,12 +264,11 @@ bool savefile::save(Player const& player, std::string const& current_room,
 }
 
 static bool open_save_file_load(savefile::load_data& savefile_data,
-        std::ifstream& file_stream,
-        std::filesystem::path const& local_data_path)
+        std::ifstream& file_stream, std::string const& local_data_path)
 {
     using namespace savefile;
 
-    file_stream.open(local_data_path / "save.json");
+    file_stream.open(local_data_path + "save.json");
 
     if(!file_stream.is_open()) {
         savefile_data.error = loading_error::NO_FILE;
@@ -386,7 +386,7 @@ static bool parse_json_structure(savefile::load_data& savefile_data,
 }
 
 bool savefile::load(savefile::load_data& savefile_data,
-        std::filesystem::path const& local_data_path)
+        std::string const& local_data_path)
 {
     std::ifstream file_stream;
     std::stringstream buf;

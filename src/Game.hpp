@@ -28,7 +28,7 @@
 
 struct GameInitData
 {
-    std::filesystem::path room_file_path;
+    std::string room_file_path;
     bool no_error;
 };
 
@@ -49,7 +49,6 @@ class Game
         CutscenesContainer m_cutscenes_container;
 
         void ask_lang(LocalConfVars::lcv_data_ptr lcv_data,
-                std::string const& p_langdir,
-                std::filesystem::path const& data_path);
+                std::string const& p_langdir, std::string const& data_path);
 };
 #endif

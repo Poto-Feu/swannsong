@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -17,9 +17,9 @@
     along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef GAME_ERROR_HPP
+#define GAME_ERROR_HPP
 
-#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -32,5 +32,6 @@ namespace game_error
     void log_write(std::vector<std::string> p_vector);
     void emit_warning(std::string const& p_text);
     void fatal_error(std::string const& p_text);
-    void set_filepath(std::filesystem::path const& local_data_path);
+    void set_filepath(std::string const& local_data_path);
 }
+#endif

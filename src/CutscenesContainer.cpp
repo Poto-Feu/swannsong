@@ -29,10 +29,10 @@
 CutscenesContainer::CutscenesContainer() { }
 
 CutscenesContainer::CutscenesContainer(std::string const& csfile,
-        std::filesystem::path const& data_path, PStrings const& program_strings)
+        std::string const& data_path, PStrings const& program_strings)
 {
     std::string buf;
-    std::ifstream file_stream(data_path.string() + csfile);
+    std::ifstream file_stream(data_path + csfile);
 
     while(fileio::getfileln(buf, file_stream)) {
         Cutscene curr_cs;

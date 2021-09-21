@@ -68,7 +68,7 @@ static void set_curses()
 
 //Fetch variables from the gameconf file and return a vector containing them
 static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
-        std::filesystem::path const& system_data_path)
+        std::string const& system_data_path)
 {
     std::string const* firstlaunch_val;
     auto gc_vec = gameconf::readfile(system_data_path);
@@ -100,7 +100,7 @@ static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
 
 //Show a prompt asking the user to choose the language and the prompt to do so
 void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
-        std::string const& p_langdir, std::filesystem::path const& data_path)
+        std::string const& p_langdir, std::string const& data_path)
 {
     bool validinp = false;
 

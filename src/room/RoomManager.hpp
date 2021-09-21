@@ -54,7 +54,7 @@ class RoomManager
     public:
 
         explicit RoomManager(PStrings const& pstrings,
-                std::filesystem::path const& room_file_path);
+                std::string const& room_file_path);
         //Start the game loop which loads rooms until the end signal is enabled
         void startLoop(PStrings const& pstrings,
                 CutscenesContainer const& cs_container,

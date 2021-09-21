@@ -18,6 +18,7 @@
     If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <filesystem>
 #include <fstream>
 
 #include "game_error.hpp"
@@ -26,9 +27,7 @@
 
 namespace game_error
 {
-    namespace fs = std::filesystem;
-
-    static std::filesystem::path log_file_path;
+    static std::string log_file_path;
     static bool is_debug = false;
 
     static bool has_error = false;
@@ -84,7 +83,7 @@ namespace game_error
         }
     }
 
-    void set_filepath(fs::path const& local_data_path)
+    void set_filepath(std::string const& local_data_path)
     {
         if(is_debug) {
             static bool already_used = false;
@@ -105,10 +104,12 @@ namespace game_error
             log_file_path += "logs";
             files_path::create_directory(log_file_path);
 
-            for(auto& it : fs::directory_iterator(log_file_path)) {
-                if(fs::is_regular_file(it.status())
-                        && stringsm::to_lower(it.path().extension().string()) == ".txt") {
-                    fs::remove(it.path());
+            for(auto& it : std::filesystem::directory_iterator(
+                        log_file_path)) {
+                if(std::filesystem::is_regular_file(it.status())
+                        && stringsm::to_lower(it.path().extension().string())
+                        == ".txt") {
+                    std::filesystem::remove(it.path());
                 }
             }
 

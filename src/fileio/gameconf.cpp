@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.
+    If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include <fstream>
@@ -28,11 +29,11 @@ namespace gameconf
 {
     /*Read data contained in the gameconf file and set the gameconf variable to the appropriate
     value*/
-    std::vector<gcvar_struct> readfile(std::filesystem::path const& data_path)
+    std::vector<gcvar_struct> readfile(std::string const& data_path)
     {
         using namespace game_error;
 
-        std::ifstream gc_stream(data_path.string() + "gameconf.txt");
+        std::ifstream gc_stream(data_path + "gameconf.txt");
 
         if(!gc_stream.good()) {
             fatal_error("gameconf file not found (this may also applies to other game files)");

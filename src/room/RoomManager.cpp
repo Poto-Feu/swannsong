@@ -292,7 +292,7 @@ Room RoomManager::create_new_room(PStrings const& pstrings,
 }
 
 RoomManager::RoomManager(PStrings const& pstrings,
-        std::filesystem::path const& room_file_path)
+        std::string const& room_file_path)
 {
     std::vector<std::string> room_file_lines = fileio::copy_to_vector(room_file_path);
 

@@ -21,7 +21,6 @@
 #ifndef PSTRINGS_HPP
 #define PSTRINGS_HPP
 
-#include <filesystem>
 #include <string>
 #include <unordered_map>
 
@@ -34,7 +33,7 @@ class PStrings
 
         PStrings();
         PStrings(std::string const& lang_code, std::string const& langdir,
-                std::filesystem::path const& data_path);
+                std::string const& data_path);
 
         std::string const& fetch(std::string const& id) const;
         bool check_exist(std::string const& id) const;

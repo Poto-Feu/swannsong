@@ -33,7 +33,7 @@ namespace fileio
         else return false;
     }
 
-    std::vector<std::string> copy_to_vector(std::filesystem::path const& file_path)
+    std::vector<std::string> copy_to_vector(std::string const& file_path)
     {
         std::string buf;
         std::vector<std::string> file_content;
@@ -49,9 +49,9 @@ namespace fileio
         return file_content;
     }
 
-    bool file_exists(std::filesystem::path const& file_path)
+    bool file_exists(std::string const& file_path)
     {
         struct stat buffer;
-        return (stat(file_path.string().c_str(), &buffer) == 0);
+        return (stat(file_path.c_str(), &buffer) == 0);
     }
 }
