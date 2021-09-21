@@ -25,108 +25,109 @@
 #include "files_path.hpp"
 #include "stringsm.h"
 
-namespace game_error
+static std::string log_file_path;
+static bool is_debug = false;
+
+static bool has_error = false;
+static std::string fatal_error_msg;
+
+void game_error::setdebug()
 {
-    static std::string log_file_path;
-    static bool is_debug = false;
+    is_debug = true;
+}
 
-    static bool has_error = false;
-    static std::string fatal_error_msg;
+std::string const& game_error::get_fatal_error_msg()
+{
+    return fatal_error_msg;
+}
 
-    void setdebug()
-    {
-        is_debug = true;
-    }
+bool game_error::has_encountered_fatal()
+{
+    return has_error;
+}
 
-    std::string const& get_fatal_error_msg()
-    {
-        return fatal_error_msg;
-    }
+void game_error::fatal_error(std::string const& p_text)
+{
+    has_error = true;
+    fatal_error_msg = p_text;
+}
 
-    bool has_encountered_fatal()
-    {
-        return has_error;
-    }
-
-    void fatal_error(std::string const& p_text)
-    {
-        has_error = true;
-        fatal_error_msg = p_text;
-    }
-
-    void log_write(std::string const& p_text)
-    {
-        if(is_debug) {
-            if(!log_file_path.empty()) {
-                std::ofstream log_stream(log_file_path, std::ios::app);
-
-                log_stream << p_text << std::endl;
-            } else fatal_error("log file path not set (game_error::set_filepath must be run!)");
-        }
-    }
-
-    void log_write(std::vector<std::string> p_vector)
-    {
-        if(is_debug) {
-            for(auto const& it : p_vector) log_write(it);
-        }
-    }
-
-    void emit_warning(std::string const& p_text)
-    {
-        if(is_debug) {
+void game_error::log_write(std::string const& p_text)
+{
+    if(is_debug) {
+        if(!log_file_path.empty()) {
             std::ofstream log_stream(log_file_path, std::ios::app);
 
-            log_stream << "WARNING: ";
-            log_stream.close();
-            log_write(p_text);
+            log_stream << p_text << std::endl;
+        } else {
+            fatal_error("log file path not set (game_error::set_filepath must "
+                    "be run!)");
         }
     }
+}
 
-    void set_filepath(std::string const& local_data_path)
-    {
-        if(is_debug) {
-            static bool already_used = false;
+void game_error::log_write(std::vector<std::string> p_vector)
+{
+    if(is_debug) {
+        for(auto const& it : p_vector) log_write(it);
+    }
+}
 
-            if(already_used) {
-                emit_warning("game_error::files_path used twice - this might cause problems later");
-            }
+void game_error::emit_warning(std::string const& p_text)
+{
+    if(is_debug) {
+        std::ofstream log_stream(log_file_path, std::ios::app);
 
-            const unsigned int buf_size = 30;
-            auto time_var = std::time(nullptr);
-            auto curr_time = *std::localtime(&time_var);
-            char time_buffer[buf_size] = "\0";
+        log_stream << "WARNING: ";
+        log_stream.close();
+        log_write(p_text);
+    }
+}
 
-            std::strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S",
-                    &curr_time);
+void game_error::set_filepath(std::string const& local_data_path)
+{
+    if(is_debug) {
+        static bool already_used = false;
 
-            log_file_path = local_data_path;
-            log_file_path += "logs";
-            files_path::create_directory(log_file_path);
-
-            for(auto& it : std::filesystem::directory_iterator(
-                        log_file_path)) {
-                if(std::filesystem::is_regular_file(it.status())
-                        && stringsm::to_lower(it.path().extension().string())
-                        == ".txt") {
-                    std::filesystem::remove(it.path());
-                }
-            }
-
-            log_file_path += "/";
-            log_file_path += time_buffer;
-            log_file_path += "_log.txt";
-
-            std::string log_intro = "[";
-
-            log_intro += time_buffer;
-            log_intro += "]";
-
-            log_write({log_intro,
-                    "These first two lines are for testing purposes.",
-                    "They can be ignored.",
-                    ""});
-            already_used = true;
+        if(already_used) {
+            emit_warning("game_error::files_path used twice - this might "
+                    "cause problems later");
         }
+
+        const unsigned int buf_size = 30;
+        auto time_var = std::time(nullptr);
+        auto curr_time = *std::localtime(&time_var);
+        char time_buffer[buf_size] = "\0";
+
+        std::strftime(time_buffer, buf_size - 1, "%Y-%m-%d_%H-%M-%S",
+                &curr_time);
+
+        log_file_path = local_data_path;
+        log_file_path += "logs";
+        files_path::create_directory(log_file_path);
+
+        for(auto& it : std::filesystem::directory_iterator(
+                    log_file_path)) {
+            if(std::filesystem::is_regular_file(it.status())
+                    && stringsm::to_lower(it.path().extension().string())
+                    == ".txt") {
+                std::filesystem::remove(it.path());
+            }
+        }
+
+        log_file_path += "/";
+        log_file_path += time_buffer;
+        log_file_path += "_log.txt";
+
+        std::string log_intro = "[";
+
+        log_intro += time_buffer;
+        log_intro += "]";
+
+        log_write({log_intro,
+                "These first two lines are for testing purposes.",
+                "They can be ignored.",
+                ""});
+        already_used = true;
     }
 }
