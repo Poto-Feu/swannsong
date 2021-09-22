@@ -25,6 +25,7 @@
 #include "fileio/fileio.h"
 #include "game_error.hpp"
 #include "stringsm.h"
+#include "terminal.hpp"
 
 struct pstrings::ps_data {
     std::unordered_map<std::string, std::string> map;
@@ -114,6 +115,8 @@ pstrings::ps_data_ptr pstrings::init_data(std::string const& data_path,
     const std::string lang_dir = "lang/";
     std::ifstream file_stream;
     pstrings::ps_data_ptr pstrings_data(new pstrings::ps_data);
+
+    terminal::set_locale(lang_code);
 
     file_stream = open_strfile(lang_code, data_path + lang_dir);
 

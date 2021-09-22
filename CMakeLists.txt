@@ -68,33 +68,18 @@ add_executable(swannsongadv
     src/pcurses.cpp
     src/pstrings.cpp
     src/savefile.cpp
+    src/terminal.cpp
     src/stringsm.cpp
     src/userio.cpp)
 
 add_subdirectory(docs)
 
-target_link_libraries(swannsongadv jansson)
-
-# Compile pdcurses if the user is on Windows
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    find_package(Curses REQUIRED)
-    include_directories(${CURSES_INCLUDE_DIRS})
-    target_link_libraries(swannsongadv ${CURSES_LIBRARIES} )
-else()
-    add_subdirectory(lib/pdcurses)
-    include_directories(lib/pdcurses)
-    target_link_libraries(swannsongadv pdcurses)
-endif()
+target_link_libraries(swannsongadv jansson ncursesw)
 
 # Statically link libraries if compiled on MinGW (GCC C++ libs are rarely installed on Windows)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
         AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_link_libraries(swannsongadv -static-libgcc -static-libstdc++)
-
-    add_custom_command(TARGET swannsongadv POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/lib/pdcurses/libpdcurses.dll
-            ${CMAKE_CURRENT_BINARY_DIR}/libpdcurses.dll)
 endif()
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU"

@@ -14,36 +14,16 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure. If not, see
+    along with SwannSong Adventure.  If not, see
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPLAY_SERVER_HPP
-#define DISPLAY_SERVER_HPP
-
-extern "C" {
-#include <ncursesw/curses.h>
-}
+#ifndef TERMINAL_HPP
+#define TERMINAL_HPP
 
 #include <string>
 
-namespace display_server
-{
-    const int NULL_ATTR = 0;
-    const int LAST_LINE_ERR = 0;
-
-    struct coord_struct
-    {
-        int y = getcury(stdscr);
-        int x = getcurx(stdscr);
-    };
-
-    void add_string(std::string const& p_str,
-            coord_struct p_struct = { getcury(stdscr), getcurx(stdscr) },
-            int p_attr = NULL_ATTR);
-    void clear_screen();
-    int get_last_line();
-    void show_screen();
+namespace terminal {
+    void set_locale(std::string const& lang_code);
 }
-
 #endif

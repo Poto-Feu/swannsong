@@ -10,16 +10,10 @@ Note: do not try to load a save from a previous pre-alpha version (< 1.0) as it 
 
 ### Building prerequisites
 
-#### Unix-like (including GNU/Linux)
-* a C++17-compatible version of GCC or Clang
-* CMake
-* ncurses
-* jansson
-
-#### Windows
-* a C++17-compatible version of MinGW
+* a C++17-compatible version of GCC/MinGW
 * CMake
 * jansson
+* ncursesw
 
 Please note that while this program may be compiled with another toolchain, we cannot guarantee that it will work as intended.
 
@@ -56,5 +50,3 @@ Note : On Windows, the program must be run from the executable directory. On Uni
 
 ## Licensing
 **SwannSong Adventure** is licensed under the GNU General Public License Version 3. Third-party libraries licenses can be found in the *licenses* folder.
-
-PDCurses is developed by Mark Hessling and William McBrine and is in the public domain.

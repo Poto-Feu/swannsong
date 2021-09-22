@@ -26,9 +26,11 @@
 #include "game_error.hpp"
 #include "game_menu.hpp"
 #include "game_state.hpp"
+#include "os_module.hpp"
 #include "pcurses.hpp"
 #include "rendering.hpp"
 #include "room/RoomManager.hpp"
+#include "terminal.hpp"
 #include "userio.hpp"
 
 struct lang_item
@@ -110,6 +112,9 @@ void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
     };
 
     const std::string *error_msg_ptr = nullptr;
+
+    // Slight hack to get "Français" to display correctly
+    terminal::set_locale("fra");
 
     while(!validinp) {
         const std::string hint_str = "Hint : make a choice by typing the corresponding number.";
