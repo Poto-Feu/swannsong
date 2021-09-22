@@ -37,7 +37,7 @@ class Game
     public:
 
         ~Game();
-        GameInitData init(pargsMap pargs_map);
+        GameInitData init(pargs::args_data const& args_data);
         void run(GameInitData const& game_init_data);
 
     private:

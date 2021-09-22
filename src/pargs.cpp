@@ -14,37 +14,36 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <cstring>
 
 #include "pargs.hpp"
-#include "game_error.hpp"
 
-namespace pargs
+static bool is_arg_present(int argc, char **argv, const char *arg_str)
 {
-    std::unordered_map<std::string, bool> init(int const argc, char* argv[])
-    {
-        auto has_arg = [&](const char* p_arg)
-        {
-            for(int i = 1; i < argc; ++i) {
-                if(!std::strcmp(p_arg, argv[i])) return true;
-            } return false;
-        };
-
-        std::unordered_map<std::string, bool> args_map;
-
-#ifndef IS_PKG
-        if(has_arg("-local")) args_map["local"] = true;
-#endif
-        if(has_arg("-debug")) {
-            game_error::setdebug();
-            args_map["debug"] = true;
+    for(int i = 0; i < argc; ++i) {
+        if(strcmp(argv[i], arg_str) == 0) {
+            return true;
         }
-        if(has_arg("-reset")) args_map["reset"] = true;
+    }
 
-        return args_map;
+    return false;
+}
+
+void pargs::init_data(args_data& data, int argc, char **argv)
+{
+    if(is_arg_present(argc, argv, "-debug")) {
+        data.debug = true;
+    }
+
+    if(is_arg_present(argc, argv, "-local")) {
+        data.local = true;
+    }
+
+    if(is_arg_present(argc, argv, "-reset")) {
+        data.reset = true;
     }
 }

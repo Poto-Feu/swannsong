@@ -153,14 +153,14 @@ Game::~Game()
     }
 }
 
-GameInitData Game::init(pargsMap pargs_map)
+GameInitData Game::init(pargs::args_data const& args_data)
 {
     GameInitData game_init_data;
     LocalConfVars::lcv_data_ptr lcv;
 
-    files_path::paths_struct p_paths = files_path::getpaths(pargs_map["local"]);
+    files_path::paths_struct p_paths = files_path::getpaths(args_data.local);
 
-    if(pargs_map.find("reset") == pargs_map.cend()) {
+    if(!args_data.reset) {
         lcv= LocalConfVars::init_data(p_paths.local_conf_path);
     } else {
         lcv= LocalConfVars::init_data(p_paths.local_conf_path, true);

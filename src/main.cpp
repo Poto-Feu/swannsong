@@ -14,20 +14,30 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include "Game.hpp"
+#include "game_error.hpp"
 
-int main (int argc, char *argv[])
+int main (int argc, char **argv)
 {
-    pargsMap pargs_map = pargs::init(argc, argv);
-
     Game game;
+    GameInitData game_init_data;
+    pargs::args_data args_data;
 
-    GameInitData game_init_data = game.init(pargs_map);
-    if(game_init_data.no_error) game.run(game_init_data);
+    pargs::init_data(args_data, argc, argv);
+
+    if(args_data.debug) {
+        game_error::setdebug();
+    }
+
+    game_init_data = game.init(args_data);
+
+    if(game_init_data.no_error) {
+        game.run(game_init_data);
+    }
 
     return 0;
 }

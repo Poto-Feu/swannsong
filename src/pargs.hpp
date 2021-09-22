@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,17 +14,20 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef PARGS_HPP
+#define PARGS_HPP
 
-#include <string>
-#include <unordered_map>
+namespace pargs {
+    struct args_data {
+        bool debug = false;
+        bool local = false;
+        bool reset = false;
+    };
 
-typedef std::unordered_map<std::string, bool> pargsMap;
-
-namespace pargs
-{
-    pargsMap init(int const argc, char* argv[]);
+    void init_data(args_data& data, int argc, char **argv);
 }
+#endif
