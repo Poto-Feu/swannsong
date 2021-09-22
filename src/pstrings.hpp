@@ -14,35 +14,26 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #ifndef PSTRINGS_HPP
 #define PSTRINGS_HPP
 
 #include <string>
-#include <unordered_map>
+#include <memory>
 
-typedef std::string PStringsElement;
+// Stores program strings
+namespace pstrings {
+    struct ps_data;
+    typedef std::shared_ptr<ps_data> ps_data_ptr;
 
-//Stores program strings
-class PStrings
-{
-    public:
-
-        PStrings();
-        PStrings(std::string const& lang_code, std::string const& langdir,
-                std::string const& data_path);
-
-        std::string const& fetch(std::string const& id) const;
-        bool check_exist(std::string const& id) const;
-
-    private:
-
-        std::unordered_map<std::string, PStringsElement> m_map;
-
-        //Return an iterator corresponding to p_id key
-        auto find_it_vec(std::string const& id) const;
-};
+    ps_data_ptr init_data(std::string const& data_path,
+            std::string const& lang_code);
+    bool check_if_exists(pstrings::ps_data_ptr const& data,
+            std::string const& id);
+    std::string const& fetch_string(pstrings::ps_data_ptr const& data,
+            std::string const& id);
+}
 #endif

@@ -100,7 +100,7 @@ static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
 
 //Show a prompt asking the user to choose the language and the prompt to do so
 void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
-        std::string const& p_langdir, std::string const& data_path)
+        std::string const& data_path)
 {
     bool validinp = false;
 
@@ -134,7 +134,8 @@ void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
                 validinp = true;
                 LocalConfVars::change_value(lcv, "lang",
                         langarr[intval - 1].id);
-                m_program_strings = PStrings(langarr[intval - 1].id, p_langdir, data_path);
+                this->pstrings_data = pstrings::init_data(data_path,
+                        langarr[intval - 1].id);
                 if(!game_error::has_encountered_fatal()) m_strings_init = true;
             } else error_msg_ptr = &not_valid_error_str;
         } else if(buf.size() == 0) error_msg_ptr = &nothing_error_str;
@@ -184,29 +185,27 @@ GameInitData Game::init(pargs::args_data const& args_data)
 
     set_curses();
 
-    auto langdir_it = get_gcvar_it("langdir");
     auto roomfile_it = get_gcvar_it("roomfile");
     auto csfile_it = get_gcvar_it("csfile");
     auto firstroom_it = get_gcvar_it("firstroom");
 
-    if(langdir_it != gc_vec.cend()) {
-        if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
-            ask_lang(lcv, langdir_it->value, p_paths.data_path);
-        } else {
-            std::string const* lang_lcv = LocalConfVars::get_value(lcv,
-                    "lang");
-            if(!lang_lcv) {
-                missing_lcvar("lang");
-                game_init_data.no_error = false;
-                return game_init_data;
-            }
-            m_program_strings = PStrings(*lang_lcv, langdir_it->value,
-                    p_paths.data_path);
-        }
+    if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
+        ask_lang(lcv, p_paths.data_path);
     } else {
-        game_init_data.no_error = false;
-        missing_gcvar("langdir");
-        return game_init_data;
+        std::string const* lang_lcv = LocalConfVars::get_value(lcv,
+                "lang");
+        if(!lang_lcv) {
+            missing_lcvar("lang");
+            game_init_data.no_error = false;
+            return game_init_data;
+        }
+        this->pstrings_data = pstrings::init_data(p_paths.data_path,
+                *lang_lcv);
+
+        if(!this->pstrings_data) {
+            game_init_data.no_error = false;
+            return game_init_data;
+        }
     }
 
     if(game_error::has_encountered_fatal()) {
@@ -229,7 +228,7 @@ GameInitData Game::init(pargs::args_data const& args_data)
 
     if(csfile_it != gc_vec.cend()) {
         m_cutscenes_container = CutscenesContainer(csfile_it->value,
-                p_paths.data_path, m_program_strings);
+                p_paths.data_path, this->pstrings_data);
     } else {
         game_init_data.no_error = false;
         missing_gcvar("csfile");
@@ -245,7 +244,7 @@ GameInitData Game::init(pargs::args_data const& args_data)
     if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
         auto const* cs = m_cutscenes_container.get_cutscene("help");
 
-        rendering::display_cutscene(m_program_strings, *cs);
+        rendering::display_cutscene(this->pstrings_data, *cs);
         LocalConfVars::change_value(lcv, "firstlaunch", "0");
         LocalConfVars::write_to_file(lcv, p_paths.local_conf_path);
     }
@@ -266,11 +265,11 @@ void Game::run(GameInitData const& game_init_data)
     game_state_s game_state;
 
     if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm(m_program_strings, game_init_data.room_file_path);
+        RoomManager rmm(this->pstrings_data, game_init_data.room_file_path);
 
         if(!game_error::has_encountered_fatal()) {
-            rmm.startLoop(m_program_strings, m_cutscenes_container, game_state,
-                    m_start_room);
+            rmm.startLoop(this->pstrings_data, m_cutscenes_container,
+                    game_state, m_start_room);
         }
     }
 }

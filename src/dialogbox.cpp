@@ -20,13 +20,12 @@
 
 #include "dialogbox.hpp"
 #include "pcurses.hpp"
-#include "pstrings.hpp"
 
 namespace dialogbox
 {
     static void display_strings(std::vector<std::string> const& p_strings,
             const unsigned int first_line_index, unsigned int start_line, unsigned int max_lines,
-            PStrings const& program_strings)
+            pstrings::ps_data_ptr const& pstrings_data)
     {
         size_t i = first_line_index;
         for( ; i < p_strings.size(); ++i) {
@@ -38,12 +37,14 @@ namespace dialogbox
         }
 
         if(p_strings.size() - first_line_index >= max_lines + 1) {
-            pcurses::display_center_string(program_strings.fetch("dialogbox_more"), LINES - 5);
+            pcurses::display_center_string(
+                    pstrings::fetch_string(pstrings_data, "dialogbox_more"),
+                    LINES - 5);
         }
     }
 
     void display(const std::string *title, const std::vector<std::string> *p_strings,
-            PStrings const& program_strings)
+            pstrings::ps_data_ptr const& pstrings_data)
     {
         bool screen_exited = false;
         //Keep track of the scrolling state
@@ -72,9 +73,9 @@ namespace dialogbox
                 }
                 strings_n_lines = vec_lines.size();
                 display_strings(vec_lines, strings_display_offset, content_start_line,
-                        current_max_content_lines, program_strings);
+                        current_max_content_lines, pstrings_data);
             }
-            pcurses::display_penter_message(program_strings, false);
+            pcurses::display_penter_message(pstrings_data, false);
 
             bool is_key_pressed = false;
             while(!is_key_pressed) {

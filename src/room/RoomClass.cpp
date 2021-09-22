@@ -101,22 +101,22 @@ bool Room::isChoicePresent(unsigned int choice_n) const
 }
 
 static void set_game_over(Player& player, game_state_s& game_state,
-        PStrings const& program_strings)
+        pstrings::ps_data_ptr const& pstrings_data)
 {
     const std::string gameover_title = "GAME OVER";
 
     const std::vector<std::string> gameover_strings {
-        program_strings.fetch("gameover_msg")
+        pstrings::fetch_string(pstrings_data, "gameover_msg")
     };
     inventory::clear(player.inv);
     gvars::clear(player.gvars);
     /*Kinda bad implementation since it breaks the separation between code and data, but
     that'll do for now - the whole structure of the code is janky anyway*/
     game_state.next_room = "menu";
-    dialogbox::display(&gameover_title, &gameover_strings, program_strings);
+    dialogbox::display(&gameover_title, &gameover_strings, pstrings_data);
 }
 
-static void display_cutscenes(PStrings const& pstrings,
+static void display_cutscenes(pstrings::ps_data_ptr const& pstrings_data,
         CutscenesContainer const& cs_container,
         std::vector<std::string> const& displayed_cutscenes)
 {
@@ -126,17 +126,18 @@ static void display_cutscenes(PStrings const& pstrings,
         if(!cs) {
             game_error::emit_warning("Unknown cutscene");
         } else {
-            rendering::display_cutscene(pstrings, *cs);
+            rendering::display_cutscene(pstrings_data, *cs);
         }
     }
 }
 
-bool Room::load(PStrings const& pstrings,
+bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
         std::unordered_map<std::string, Room> const& room_map,
         CutscenesContainer const& cs_container, Player& player,
         RoomLoopState& rls, game_state_s& game_state) const
 {
-    std::string const& incorrect_input_str = pstrings.fetch("incorrect_input");
+    std::string const& incorrect_input_str = pstrings::fetch_string(
+            pstrings_data, "incorrect_input");
     std::vector<std::string> displayed_cutscenes;
     bool wrong_input = false;
 
@@ -153,28 +154,28 @@ bool Room::load(PStrings const& pstrings,
             return false;
         }
 
-        display_cutscenes(pstrings, cs_container, displayed_cutscenes);
+        display_cutscenes(pstrings_data, cs_container, displayed_cutscenes);
         if(rls.is_game_over()) {
-            set_game_over(player, game_state, pstrings);
+            set_game_over(player, game_state, pstrings_data);
             return true;
         }
 
         if(!wrong_input) {
-            menu_input = rendering::display_room(pstrings, *this,
+            menu_input = rendering::display_room(pstrings_data, *this,
                     room_display);
         } else {
-            menu_input = rendering::display_room(pstrings, *this, room_display,
+            menu_input = rendering::display_room(pstrings_data, *this, room_display,
                     &incorrect_input_str);
         }
 
-        if(!userio::interpret_user_input(pstrings, room_map, cs_container,
+        if(!userio::interpret_user_input(pstrings_data, room_map, cs_container,
                     *this, player, room_display, rls, game_state, menu_input,
                     wrong_input)) {
             return false;
         }
 
         if(rls.is_game_over()) {
-            set_game_over(player, game_state, pstrings);
+            set_game_over(player, game_state, pstrings_data);
             return true;
         }
     } while(wrong_input);

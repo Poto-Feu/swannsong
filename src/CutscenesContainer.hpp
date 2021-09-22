@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include "CutsceneClass.hpp"
+#include "pstrings.hpp"
 
 class CutscenesContainer
 {
@@ -31,7 +32,8 @@ class CutscenesContainer
 
         CutscenesContainer();
         CutscenesContainer(std::string const& csfile,
-                std::string const& data_path, PStrings const& program_strings);
+                std::string const& data_path,
+                pstrings::ps_data_ptr const& pstrings_data);
 
         // Return nullptr if the cutscene does not exists
         Cutscene const* get_cutscene(std::string const& name) const;

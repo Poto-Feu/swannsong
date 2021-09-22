@@ -20,12 +20,12 @@
 
 #include "game_menu.hpp"
 #include "pcurses.hpp"
-#include "pstrings.hpp"
 #include "userio.hpp"
 
-std::string game_menu::display(const std::string *title, const std::string *desc,
-        const std::vector<std::string> *other_str, std::vector<std::string> choices,
-        const std::string *error_msg, flags *p_flags, const PStrings *program_strings)
+std::string game_menu::display(const std::string *title,
+        const std::string *desc, const std::vector<std::string> *other_str,
+        std::vector<std::string> choices, const std::string *error_msg,
+        flags *p_flags, pstrings::ps_data_ptr const* pstrings_data)
 {
     flags default_flags;
     if(!p_flags) p_flags = &default_flags;
@@ -84,11 +84,17 @@ std::string game_menu::display(const std::string *title, const std::string *desc
         prompt_line = choices_line + 1;
     }
 
-    if(program_strings) {
-        pcurses::display_pos_string(program_strings->fetch("room_prompt_text"), prompt_cols_offset,
+    if(pstrings_data) {
+        std::string const& room_prompt_text = pstrings::fetch_string(
+                *pstrings_data, "room_prompt_text");
+        pcurses::display_pos_string(room_prompt_text, prompt_cols_offset,
                 prompt_line);
-    } else pcurses::display_pos_string("Your choice: ", prompt_cols_offset, prompt_line);
+    } else {
+        pcurses::display_pos_string("Your choice: ", prompt_cols_offset,
+                prompt_line);
+    }
 
     display_server::show_screen();
+
     return userio::gettextinput(p_flags->input_length);
 }

@@ -14,8 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #ifndef CUTSCENE_HPP
@@ -23,8 +23,6 @@
 
 #include <string>
 #include <vector>
-
-class PStrings;
 
 enum class cs_action_type
 {

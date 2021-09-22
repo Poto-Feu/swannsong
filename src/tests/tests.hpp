@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,17 +14,20 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef TESTS_HPP
+#define TESTS_HPP
 
 #include "pstrings.hpp"
 
 namespace tests
 {
     void stringsm_is_str();
-    void cutscenes_test(PStrings const& program_strings);
+    void cutscenes_test(pstrings::ps_data_ptr const& pstrings_data);
     void token();
     void savechunk();
 }
+#endif

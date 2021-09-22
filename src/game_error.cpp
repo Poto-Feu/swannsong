@@ -14,15 +14,14 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <ctime>
 #include <fstream>
 
 #include "game_error.hpp"
-#include "files_path.hpp"
 #include "stringsm.h"
 
 static bool is_filepath_already_set = false;

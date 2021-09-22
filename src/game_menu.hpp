@@ -21,10 +21,9 @@
 #ifndef GAME_MENU_HPP
 #define GAME_MENU_HPP
 
-#include <string>
 #include <vector>
 
-class PStrings;
+#include "pstrings.hpp"
 
 namespace game_menu
 {
@@ -37,7 +36,9 @@ namespace game_menu
     };
 
     std::string display(const std::string *title, const std::string *desc,
-            const std::vector<std::string> *other_str, std::vector<std::string> choices,
-            const std::string *error_msg, flags *p_flags, const PStrings *program_strings);
+            const std::vector<std::string> *other_str,
+            std::vector<std::string> choices,
+            const std::string *error_msg, flags *p_flags,
+            pstrings::ps_data_ptr const* pstrings_data);
 }
 #endif

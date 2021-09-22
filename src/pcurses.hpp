@@ -14,8 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #ifndef PCURSES_HPP
@@ -24,8 +24,7 @@
 #include <vector>
 
 #include "display_server.hpp"
-
-class PStrings;
+#include "pstrings.hpp"
 
 namespace pcurses
 {
@@ -46,6 +45,7 @@ namespace pcurses
     unsigned int display_center_string(std::string const& p_str, int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
 
-    void display_penter_message(PStrings const& program_strings, bool wait_enter = true);
+    void display_penter_message(pstrings::ps_data_ptr const& pstrings_data,
+            bool wait_enter = true);
 }
 #endif

@@ -23,13 +23,13 @@
 #include "CutscenesContainer.hpp"
 #include "fileio/fileio.h"
 #include "game_error.hpp"
-#include "pstrings.hpp"
 #include "stringsm.h"
 
 CutscenesContainer::CutscenesContainer() { }
 
 CutscenesContainer::CutscenesContainer(std::string const& csfile,
-        std::string const& data_path, PStrings const& program_strings)
+        std::string const& data_path,
+        pstrings::ps_data_ptr const& pstrings_data)
 {
     std::string buf;
     std::ifstream file_stream(data_path + csfile);
@@ -63,7 +63,8 @@ CutscenesContainer::CutscenesContainer(std::string const& csfile,
             } else if(fw == "END") break;
             else {
                 curr_action.type = cs_action_type::STRING;
-                curr_action.content = program_strings.fetch(fw);
+                curr_action.content = pstrings::fetch_string(pstrings_data,
+                        fw);
             }
             curr_cs.actions_vec.push_back(curr_action);
         }

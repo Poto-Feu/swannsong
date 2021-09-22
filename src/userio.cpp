@@ -74,7 +74,7 @@ std::string userio::gettextinput(int max_n)
     return r_str;
 }
 
-bool userio::interpret_user_input(PStrings const& pstrings,
+bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
         std::unordered_map<std::string, Room> const& room_map,
         CutscenesContainer const& cs_container, Room const& room,
         Player& player, RoomDisplay const& room_display, RoomLoopState& rls,
@@ -124,7 +124,7 @@ bool userio::interpret_user_input(PStrings const& pstrings,
                 if(!cs) {
                     game_error::emit_warning("Unknown cutscene");
                 } else {
-                    rendering::display_cutscene(pstrings, *cs);
+                    rendering::display_cutscene(pstrings_data, *cs);
                 }
             }
         } else {
@@ -141,12 +141,15 @@ bool userio::interpret_user_input(PStrings const& pstrings,
             std::vector<std::string> dialogbox_strs;
 
             if(savefile_data.error == loading_error::NO_FILE) {
-                dialogbox_strs.push_back(pstrings.fetch("load_nofile"));
+                dialogbox_strs.push_back(pstrings::fetch_string(pstrings_data,
+                            "load_nofile"));
             } else {
-                dialogbox_strs.push_back(pstrings.fetch("load_corrupted"));
+                dialogbox_strs.push_back(
+                        pstrings::fetch_string(pstrings_data,
+                            "load_corrupted"));
             }
 
-            dialogbox::display(NULL, &dialogbox_strs, pstrings);
+            dialogbox::display(NULL, &dialogbox_strs, pstrings_data);
         } else {
             game_state.next_room = savefile_data.current_room;
             player.inv = std::move(savefile_data.gitems);
@@ -156,17 +159,17 @@ bool userio::interpret_user_input(PStrings const& pstrings,
         if(savefile::save(player, room.getName(),
                 files_path::get_local_data_path())) {
             std::vector<std::string> dialogbox_strs = {
-                pstrings.fetch("save_success")
+                pstrings::fetch_string(pstrings_data, "save_success")
             };
 
-            dialogbox::display(NULL, &dialogbox_strs, pstrings);
+            dialogbox::display(NULL, &dialogbox_strs, pstrings_data);
         }
     } else if(menu_input == "help") {
         auto const* cs = cs_container.get_cutscene("help");
 
-        rendering::display_cutscene(pstrings, *cs);
+        rendering::display_cutscene(pstrings_data, *cs);
     } else if(menu_input == "inv" || menu_input == "inventory") {
-        rendering::display_inventory(player.inv, pstrings);
+        rendering::display_inventory(pstrings_data, player.inv);
     } else {
         wrong_input = true;
     }

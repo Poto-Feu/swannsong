@@ -14,8 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure. If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #ifndef GAME_HPP
@@ -24,7 +24,6 @@
 #include "CutscenesContainer.hpp"
 #include "LocalConfVars.hpp"
 #include "pargs.hpp"
-#include "pstrings.hpp"
 
 struct GameInitData
 {
@@ -45,10 +44,10 @@ class Game
         std::string m_start_room;
 
         bool m_strings_init = false;
-        PStrings m_program_strings;
+        pstrings::ps_data_ptr pstrings_data;
         CutscenesContainer m_cutscenes_container;
 
         void ask_lang(LocalConfVars::lcv_data_ptr lcv_data,
-                std::string const& p_langdir, std::string const& data_path);
+                std::string const& data_path);
 };
 #endif

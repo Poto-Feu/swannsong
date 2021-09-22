@@ -25,8 +25,6 @@
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
 
-class PStrings;
-
 struct room_property_rtrn
 {
     std::string& str;
@@ -53,10 +51,11 @@ class RoomManager
 {
     public:
 
-        explicit RoomManager(PStrings const& pstrings,
+        explicit RoomManager(pstrings::ps_data_ptr const& pstrings_data,
                 std::string const& room_file_path);
-        //Start the game loop which loads rooms until the end signal is enabled
-        void startLoop(PStrings const& pstrings,
+        /* Start the game loop which loads rooms until the end signal is
+         * enabled */
+        void startLoop(pstrings::ps_data_ptr const& pstrings_data,
                 CutscenesContainer const& cs_container,
                 game_state_s& game_state, std::string const& start_room);
 
@@ -66,16 +65,17 @@ class RoomManager
         RoomLoopState m_rls;
         Player m_player;
 
-        Room create_new_room(PStrings const& pstrings,
+        Room create_new_room(pstrings::ps_data_ptr const& pstrings_data,
                 std::vector<std::string> room_file_lines, unsigned int& i,
                 bool& no_error, std::string const& room_name);
-        bool set_room_property(PStrings const& pstrings,
+        bool set_room_property(pstrings::ps_data_ptr const& pstrings_data,
                 std::string const& room_name, std::string const& prop_name,
-                std::string const& prop_arg, room_property_rtrn& return_variables);
-        bool set_block(PStrings const& pstrings,
+                std::string const& prop_arg,
+                room_property_rtrn& return_variables);
+        bool set_block(pstrings::ps_data_ptr const& pstrings_data,
                 std::string const& room_name, RoomVectorData& vec_data,
                 RoomBlockData& block_data);
-        bool set_CHOICES(PStrings const& pstrings,
+        bool set_CHOICES(pstrings::ps_data_ptr const& pstrings_data,
                 std::string const& room_name, RoomVectorData& vec_data,
                 RoomCHOICESData& p_data);
 };

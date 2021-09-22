@@ -21,14 +21,14 @@
 #ifndef DIALOGBOX_HPP
 #define DIALOGBOX_HPP
 
-#include <string>
 #include <vector>
 
-class PStrings;
+#include "pstrings.hpp"
 
 namespace dialogbox
 {
-    void display(const std::string *title, const std::vector<std::string> *p_strings,
-            PStrings const& program_strings);
+    void display(const std::string *title,
+            const std::vector<std::string> *p_strings,
+            pstrings::ps_data_ptr const& pstrings_data);
 }
 #endif

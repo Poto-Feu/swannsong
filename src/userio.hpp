@@ -23,13 +23,13 @@
 
 #define WIN_ENTER_KEY 13
 
-#include <string>
 #include <unordered_map>
+
+#include "pstrings.hpp"
 
 struct Player;
 struct game_state_s;
 class CutscenesContainer;
-class PStrings;
 class Room;
 class RoomDisplay;
 class RoomLoopState;
@@ -38,7 +38,7 @@ namespace userio
 {
     void waitenter();
     std::string gettextinput(int max_n);
-    bool interpret_user_input(PStrings const& pstrings,
+    bool interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
             std::unordered_map<std::string, Room> const& room_map,
             CutscenesContainer const& cs_container, Room const& room,
             Player& player, RoomDisplay const& room_display,

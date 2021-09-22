@@ -40,7 +40,7 @@ static void add_string(std::vector<std::string>& strings_vec,
             string_lines.begin(), string_lines.end());
 }
 
-void rendering::display_cutscene(PStrings const& program_strings,
+void rendering::display_cutscene(pstrings::ps_data_ptr const& pstrings_data,
         Cutscene const& cutscene)
 {
     std::vector<std::string> strings_vec;
@@ -54,37 +54,36 @@ void rendering::display_cutscene(PStrings const& program_strings,
                 strings_vec.push_back("");
                 break;
             case cs_action_type::PAUSE:
-                dialogbox::display(NULL, &strings_vec, program_strings);
+                dialogbox::display(NULL, &strings_vec, pstrings_data);
                 strings_vec.clear();
                 break;
         }
     }
 
-    dialogbox::display(NULL, &strings_vec, program_strings);
+    dialogbox::display(NULL, &strings_vec, pstrings_data);
     display_server::clear_screen();
 }
 
-void rendering::display_inventory(inventory::Inventory const& inv,
-        PStrings const& pstrings)
+void rendering::display_inventory(pstrings::ps_data_ptr const& pstrings_data,
+        inventory::Inventory const& inv)
 {
     std::vector<std::string> strings_list;
 
     if(inv.size() == 0) {
-        strings_list.push_back(pstrings.fetch("inventory_empty"));
+        strings_list.push_back(pstrings::fetch_string(pstrings_data,
+                    "inventory_empty"));
     } else {
         for(auto const& it : inv) {
             std::string disp_str = it.name;
             std::string str_name = "item_" + it.name;
 
-            if(pstrings.check_exist(str_name)) {
-                disp_str = pstrings.fetch(str_name);
-            }
+            disp_str = pstrings::fetch_string(pstrings_data, str_name);
 
             disp_str += "   " + std::to_string(return_item_n(inv, it.name));
             strings_list.push_back(std::move(disp_str));
         }
     }
-    dialogbox::display(nullptr, &strings_list, pstrings);
+    dialogbox::display(nullptr, &strings_list, pstrings_data);
 }
 
 Choice const* get_choice_from_vector(std::vector<Choice> const& choices,
@@ -102,8 +101,9 @@ Choice const* get_choice_from_vector(std::vector<Choice> const& choices,
     }
 }
 
-std::string rendering::display_room(PStrings const& pstrings, Room const& room,
-        RoomDisplay const& room_display, const std::string *error_msg)
+std::string rendering::display_room(pstrings::ps_data_ptr const& pstrings_data,
+        Room const& room, RoomDisplay const& room_display,
+        const std::string *error_msg)
 {
     std::string const* room_title_str = nullptr;
     std::string const* room_desc_str = nullptr;
@@ -142,5 +142,5 @@ std::string rendering::display_room(PStrings const& pstrings, Room const& room,
     }
 
     return game_menu::display(room_title_str, room_desc_str, nullptr,
-            room_choices_str, error_msg, &menu_flags, &pstrings);
+            room_choices_str, error_msg, &menu_flags, &pstrings_data);
 }

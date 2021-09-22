@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,7 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <fstream>
@@ -37,10 +38,10 @@ namespace tests
         exit(0);
     }
 
-    void token(PStrings const& program_strings)
+    void token(pstrings::ps_data_ptr const& pstrings_data)
     {
         std::string test_str("TITLE SwannSong Adventure");
-        TokenVec test_vec = token::create_arr(test_str, program_strings);
+        TokenVec test_vec = token::create_arr(test_str, pstrings_data);
 
         for(auto& it : test_vec) {
             printf("type: %d\nvalue: %s\n\n", static_cast<int>(it.type),

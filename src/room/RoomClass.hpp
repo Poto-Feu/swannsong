@@ -21,6 +21,8 @@
 #ifndef ROOMCLASS_HPP
 #define ROOMCLASS_HPP
 
+#include <unordered_map>
+
 #include "room/interpreter/token.hpp"
 #include "room/Choice.hpp"
 
@@ -58,7 +60,7 @@ class Room {
 
         void displayAllChoices() const;
 
-        bool load(PStrings const& pstrings,
+        bool load(pstrings::ps_data_ptr const& pstrings_data,
                 std::unordered_map<std::string, Room> const& room_map,
                 CutscenesContainer const& cs_container, Player& player,
                 RoomLoopState& rls, game_state_s& game_state) const;

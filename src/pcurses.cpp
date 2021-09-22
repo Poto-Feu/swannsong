@@ -19,7 +19,6 @@
 */
 
 #include "pcurses.hpp"
-#include "pstrings.hpp"
 #include "userio.hpp"
 
 namespace pcurses
@@ -129,10 +128,13 @@ namespace pcurses
         } else return multiline_center_string(p_str, startline, p_attr);
     }
 
-    void display_penter_message(PStrings const& program_strings, bool wait_enter)
+    void display_penter_message(pstrings::ps_data_ptr const& pstrings_data,
+            bool wait_enter)
     {
-            display_server::add_string(program_strings.fetch("continue_penter"),
-                    {pcurses::lines - pcurses::bottom_margin, pcurses::margin}, A_BOLD);
+            display_server::add_string(
+                    pstrings::fetch_string(pstrings_data, "continue_penter"),
+                    {pcurses::lines - pcurses::bottom_margin, pcurses::margin},
+                    A_BOLD);
             display_server::show_screen();
             if(wait_enter) userio::waitenter();
     }

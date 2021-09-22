@@ -26,7 +26,8 @@
 
 Choice::Choice() { }
 Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,
-        PStrings const& program_strings) : m_id(choice_n), m_instructions(instructions)
+        pstrings::ps_data_ptr const& pstrings_data) : m_id(choice_n),
+    m_instructions(instructions)
 {
     auto TEXT_prop = std::find_if(m_instructions.cbegin(), m_instructions.cend(),
             [&] (TokenVec const& tkns) {
@@ -36,10 +37,14 @@ Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,
     if(TEXT_prop != m_instructions.cend()) {
         if((*TEXT_prop)[1].type == token_type::STRING) {
             m_text = stringsm::ext_str_quotes((*TEXT_prop)[1].str);
-        } else m_text = program_strings.fetch((*TEXT_prop)[1].str);
+        } else {
+            m_text = pstrings::fetch_string(pstrings_data,
+                    (*TEXT_prop)[1].str);
+        }
         if((*TEXT_prop)[1].type != token_type::STRING_ID) {
-            game_error::emit_warning("TEXT token not followed by STRING or STRING_ID token ("
-                + (*TEXT_prop)[1].str + ")");
+            game_error::emit_warning(
+                    "TEXT token not followed by STRING or STRING_ID token ("
+                    + (*TEXT_prop)[1].str + ")");
         }
     }
 }

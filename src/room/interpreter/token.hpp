@@ -21,9 +21,9 @@
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
+#include "pstrings.hpp"
 #include "vars/gvars.hpp"
 
-class PStrings;
 class Player;
 
 enum class token_type
@@ -73,7 +73,8 @@ typedef std::vector<Token> TokenVec;
 
 namespace token
 {
-    TokenVec create_arr(std::string const& p_str, PStrings const& program_strings);
+    TokenVec create_arr(std::string const& p_str,
+            pstrings::ps_data_ptr const& pstrings_data);
     void set_runtime_tokens(TokenVec& p_vec, gvarVector const& p_gvars);
 }
 #endif

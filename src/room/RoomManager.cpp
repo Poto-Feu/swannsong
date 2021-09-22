@@ -38,7 +38,7 @@ static bool is_a_comment(std::string const& p_str)
     else return false;
 }
 
-bool RoomManager::set_room_property(PStrings const& pstrings,
+bool RoomManager::set_room_property(pstrings::ps_data_ptr const& pstrings_data,
         std::string const& room_name, std::string const& prop_name,
         std::string const& prop_arg, room_property_rtrn& return_variables)
 {
@@ -50,22 +50,23 @@ bool RoomManager::set_room_property(PStrings const& pstrings,
         return_variables.str = stringsm::ext_str_quotes(prop_arg);
     } else {
         return_variables.use_flag = true;
-        return_variables.str = pstrings.fetch(prop_arg);
+        return_variables.str = pstrings::fetch_string(pstrings_data, prop_arg);
     }
     return true;
 }
 
-bool RoomManager::set_CHOICES(PStrings const& pstrings,
+bool RoomManager::set_CHOICES(pstrings::ps_data_ptr const& pstrings_data,
         std::string const& room_name, RoomVectorData& vec_data,
         RoomCHOICESData& p_data)
 {
-    if(p_data.use_flag) {
-        game_error::fatal_error("More than one CHOICES block in " + room_name + " ROOM");
-        return false;
-    }
-
     bool end_of_block = false;
     std::vector<int> defined_choices;
+
+    if(p_data.use_flag) {
+        game_error::fatal_error("More than one CHOICES block in " + room_name
+                + " ROOM");
+        return false;
+    }
 
     while(vec_data.i < vec_data.room_file_lines.size() && !end_of_block) {
         ++vec_data.i;
@@ -73,13 +74,16 @@ bool RoomManager::set_CHOICES(PStrings const& pstrings,
 
         stringsm::rtab(current_line);
 
-        if(current_line == "" || is_a_comment(current_line)) continue;
-        else if(current_line[0] == 'c' && isdigit(current_line[1]) && current_line[2] == '\0') {
+        if(current_line == "" || is_a_comment(current_line)) {
+            continue;
+        } else if(current_line[0] == 'c' && isdigit(current_line[1])
+                && current_line[2] == '\0') {
             int new_choice_id = current_line[1] - '0';
 
             if(std::find(defined_choices.cbegin(), defined_choices.cend(), new_choice_id)
                     != defined_choices.cend()) {
-                game_error::fatal_error("Choice " + std::to_string(new_choice_id) + " defined"
+                game_error::fatal_error("Choice "
+                        + std::to_string(new_choice_id) + " defined"
                         + " multiple times in " + room_name + " ROOM");
                 return false;
             }
@@ -88,12 +92,12 @@ bool RoomManager::set_CHOICES(PStrings const& pstrings,
             std::vector<TokenVec> new_choice_ins;
             RoomBlockData block_data { new_choice_ins, "CHOICE" + std::to_string(new_choice_id),
                 filler_use_flag };
-            if(!set_block(pstrings, room_name, vec_data, block_data)) {
+            if(!set_block(pstrings_data, room_name, vec_data, block_data)) {
                 return false;
             }
 
             Choice new_choice(new_choice_id, std::move(new_choice_ins),
-                    pstrings);
+                    pstrings_data);
 
             if(game_error::has_encountered_fatal()) {
                 return false;
@@ -121,7 +125,7 @@ bool RoomManager::set_CHOICES(PStrings const& pstrings,
 
 }
 
-bool RoomManager::set_block(PStrings const& pstrings,
+bool RoomManager::set_block(pstrings::ps_data_ptr const& pstrings_data,
         std::string const& room_name, RoomVectorData& vec_data,
         RoomBlockData& block_data)
 {
@@ -145,14 +149,14 @@ bool RoomManager::set_block(PStrings const& pstrings,
         } else if(stringsm::getfw(current_line) == "IF") {
             TokenVec new_tknvec = token::create_arr(
                     vec_data.room_file_lines[vec_data.i],
-                    pstrings);
+                    pstrings_data);
             block_data.block_ins.push_back(std::move(new_tknvec));
 
             bool block_flag = false;
             RoomBlockData if_block_data { block_data.block_ins,
                 block_data.block_name, block_flag };
 
-            if(!set_block(pstrings, room_name, vec_data, if_block_data)) {
+            if(!set_block(pstrings_data, room_name, vec_data, if_block_data)) {
                 return false;
             }
 
@@ -166,14 +170,15 @@ bool RoomManager::set_block(PStrings const& pstrings,
             }
 
             TokenVec new_tknvec = token::create_arr(
-                    vec_data.room_file_lines[vec_data.i], pstrings);
+                    vec_data.room_file_lines[vec_data.i], pstrings_data);
             block_data.block_ins.push_back(std::move(new_tknvec));
 
             bool block_flag = false;
             RoomBlockData else_block_data { block_data.block_ins, block_data.block_name,
                 block_flag };
 
-            if(!set_block(pstrings, room_name, vec_data, else_block_data)) {
+            if(!set_block(pstrings_data, room_name, vec_data,
+                        else_block_data)) {
                 return false;
             }
             TokenVec end_tokenvec { { "END", token_type::END,
@@ -183,7 +188,7 @@ bool RoomManager::set_block(PStrings const& pstrings,
             end_of_block = true;
         } else if(!is_a_comment(vec_data.room_file_lines[vec_data.i])) {
             TokenVec new_tknvec = token::create_arr(
-                    vec_data.room_file_lines[vec_data.i], pstrings);
+                    vec_data.room_file_lines[vec_data.i], pstrings_data);
             block_data.block_ins.push_back(std::move(new_tknvec));
         }
     }
@@ -198,7 +203,7 @@ bool RoomManager::set_block(PStrings const& pstrings,
     return true;
 }
 
-Room RoomManager::create_new_room(PStrings const& pstrings,
+Room RoomManager::create_new_room(pstrings::ps_data_ptr const& pstrings_data,
         std::vector<std::string> room_file_lines, unsigned int& i,
         bool& no_error, std::string const& room_name)
 {
@@ -226,14 +231,14 @@ Room RoomManager::create_new_room(PStrings const& pstrings,
         if(ins_type == "TITLE") {
             room_property_rtrn title_rtrn { room_title, has_title };
 
-            if(!set_room_property(pstrings, room_name, "TITLE", ins_arg,
+            if(!set_room_property(pstrings_data, room_name, "TITLE", ins_arg,
                         title_rtrn)) {
                 return Room();
             }
         } else if(ins_type == "DESC") {
             room_property_rtrn desc_rtrn { room_desc, has_desc };
 
-            if(!set_room_property(pstrings, room_name, "DESC", ins_arg,
+            if(!set_room_property(pstrings_data, room_name, "DESC", ins_arg,
                         desc_rtrn)) {
                 return Room();
             }
@@ -242,14 +247,15 @@ Room RoomManager::create_new_room(PStrings const& pstrings,
                 has_atlaunch };
             RoomVectorData vec_data { room_file_lines, i };
 
-            if(!set_block(pstrings, room_name, vec_data, atlaunch_data)) {
+            if(!set_block(pstrings_data, room_name, vec_data, atlaunch_data)) {
                 return Room();
             }
         } else if(ins_type == "CHOICES") {
             RoomCHOICESData CHOICES_data { Choices_vec, has_choices };
             RoomVectorData vec_data { room_file_lines, i };
 
-            if(!set_CHOICES(pstrings, room_name, vec_data, CHOICES_data)) {
+            if(!set_CHOICES(pstrings_data, room_name, vec_data,
+                        CHOICES_data)) {
                 return Room();
             }
         } else if(ins_type == "END") {
@@ -291,7 +297,7 @@ Room RoomManager::create_new_room(PStrings const& pstrings,
     }
 }
 
-RoomManager::RoomManager(PStrings const& pstrings,
+RoomManager::RoomManager(pstrings::ps_data_ptr const& pstrings_data,
         std::string const& room_file_path)
 {
     std::vector<std::string> room_file_lines = fileio::copy_to_vector(room_file_path);
@@ -319,8 +325,8 @@ RoomManager::RoomManager(PStrings const& pstrings,
         }
 
         bool room_no_error;
-        Room new_room = create_new_room(pstrings,
-                room_file_lines, i, room_no_error, ins_arg);
+        Room new_room = create_new_room(pstrings_data, room_file_lines, i,
+                room_no_error, ins_arg);
 
         if(!room_no_error) break;
         else if(!m_room_map.insert(std::make_pair(new_room.getName(), new_room)).second) {
@@ -330,7 +336,7 @@ RoomManager::RoomManager(PStrings const& pstrings,
     }
 }
 
-void RoomManager::startLoop(PStrings const& pstrings,
+void RoomManager::startLoop(pstrings::ps_data_ptr const& pstrings_data,
         CutscenesContainer const& cs_container, game_state_s& game_state,
         std::string const& start_room)
 {
@@ -347,7 +353,7 @@ void RoomManager::startLoop(PStrings const& pstrings,
         Room const& currentRoom = room_it->second;
         m_rls.resetGameOver();
 
-        if(!currentRoom.load(pstrings, m_room_map, cs_container, m_player,
+        if(!currentRoom.load(pstrings_data, m_room_map, cs_container, m_player,
                     m_rls, game_state)) {
             break;
         }
