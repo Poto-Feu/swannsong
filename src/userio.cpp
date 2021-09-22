@@ -22,7 +22,6 @@ extern "C" {
 #include <curses.h>
 }
 
-#include <algorithm>
 #include <cstdlib>
 
 #include "userio.hpp"
