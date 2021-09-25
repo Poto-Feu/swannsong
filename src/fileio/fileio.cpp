@@ -50,3 +50,8 @@ bool fileio::file_exists(std::string const& file_path)
 {
     return std::filesystem::exists(file_path);
 }
+
+bool fileio::create_directories(std::string const& path)
+{
+    return std::filesystem::create_directories(path);
+}

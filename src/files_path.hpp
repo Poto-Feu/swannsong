@@ -14,8 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #ifndef FILES_PATH_HPP
@@ -31,7 +31,6 @@ namespace files_path
         std::string local_conf_path;
     };
 
-    bool create_directory(std::string const& p_path);
     /*is_local indicate if the program is run from the build folder or if it is installed on the
     user machine*/
     paths_struct getpaths(bool is_local);

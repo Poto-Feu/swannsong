@@ -26,7 +26,7 @@ extern "C" {
 }
 
 #include "savefile.hpp"
-#include "files_path.hpp"
+#include "fileio/fileio.h"
 #include "game_error.hpp"
 #include "player/Player.hpp"
 
@@ -237,7 +237,7 @@ bool savefile::save(Player const& player, std::string const& current_room,
     std::ofstream file_stream;
     json_t* root_json;
 
-    files_path::create_directory(local_data_path);
+    fileio::create_directories(local_data_path);
 
     if(!open_save_file_write(file_stream, local_data_path)) {
         return false;

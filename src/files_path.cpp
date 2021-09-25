@@ -14,14 +14,12 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#include <cstdio>
-#include <filesystem>
-
 #include "files_path.hpp"
+#include "fileio/fileio.h"
 #include "os_module.hpp"
 
 using namespace os_module;
@@ -50,16 +48,16 @@ static std::string init_local_data_path()
     if(current_os == os_type::UNIXLIKE) {
         local_data_path = std::getenv("HOME");
         local_data_path += "/.local";
-        files_path::create_directory(local_data_path);
+        fileio::create_directories(local_data_path);
         local_data_path += "/share";
-        files_path::create_directory(local_data_path);
+        fileio::create_directories(local_data_path);
         local_data_path += "/swannsong_adventure/";
-        files_path::create_directory(local_data_path);
+        fileio::create_directories(local_data_path);
     } else if(current_os == os_type::WINDOWSNT) {
         local_data_path = std::getenv("LOCALAPPDATA");
 
         local_data_path += "/swannsong_adventure/";
-        files_path::create_directory(local_data_path);
+        fileio::create_directories(local_data_path);
     } else {
         print_wrong_os_error();
         std::exit(1);
@@ -74,29 +72,21 @@ static std::string init_local_conf_path()
     if(current_os == os_type::UNIXLIKE) {
         local_conf_path = std::getenv("HOME");
         local_conf_path += "/.config";
-        files_path::create_directory(local_conf_path);
+        fileio::create_directories(local_conf_path);
         local_conf_path += "/swannsong_adventure/";
-        files_path::create_directory(local_conf_path);
+        fileio::create_directories(local_conf_path);
     } else if(current_os == os_type::WINDOWSNT) {
         local_conf_path = std::getenv("LOCALAPPDATA");
 
         local_conf_path += "/swannsong_adventure/";
-        files_path::create_directory(local_conf_path);
+        fileio::create_directories(local_conf_path);
         local_conf_path += "/config/";
-        files_path::create_directory(local_conf_path);
+        fileio::create_directories(local_conf_path);
     } else {
         print_wrong_os_error();
         std::exit(1);
     }
     return local_conf_path;
-}
-
-bool files_path::create_directory(std::string const& p_path)
-{
-    if(!std::filesystem::exists(p_path)) {
-        std::filesystem::create_directory(p_path);
-        return true;
-    } else return false;
 }
 
 /* Return a struct containing the system game data path and the user-specific
