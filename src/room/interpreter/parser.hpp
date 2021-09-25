@@ -27,8 +27,8 @@
 #include "room/interpreter/token.hpp"
 #include "room/rooms.hpp"
 
+struct RoomDisplay;
 class Room;
-class RoomDisplay;
 
 namespace parser
 {

@@ -27,10 +27,10 @@
 #include "room/rooms.hpp"
 
 struct Player;
+struct RoomDisplay;
 struct game_state_s;
 class CutscenesContainer;
 class Room;
-class RoomDisplay;
 class RoomLoopState;
 
 namespace userio
