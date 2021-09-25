@@ -18,29 +18,38 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include "Game.hpp"
-#include "game_error.hpp"
+#include <algorithm>
 
-int main (int argc, char **argv)
+#include "room/rooms.hpp"
+#include "room/RoomClass.hpp"
+#include "room/room_parsing.hpp"
+
+struct rooms::RoomsData {
+    std::unordered_map<std::string, Room> rooms_map;
+};
+
+rooms::RoomsData_ptr rooms::init_data(
+        pstrings::ps_data_ptr const& pstrings_data,
+        std::string const& data_path)
 {
-    Game game;
-    pargs::args_data args_data;
+    RoomsData_ptr room_data(new RoomsData);
 
-    pargs::init_data(args_data, argc, argv);
-
-    if(args_data.debug) {
-        game_error::setdebug();
+    if(!room_parsing::parse_rooms_file(pstrings_data, data_path,
+                room_data->rooms_map)) {
+        return nullptr;
     }
 
-    if(game.init(args_data)) {
-        if(!game.run()) {
-            puts(game_error::get_fatal_error_msg().c_str());
-            return EXIT_FAILURE;
-        }
+    return room_data;
+}
+
+Room const* rooms::get_room(RoomsData_ptr const& rooms_data,
+        std::string const& name)
+{
+    auto const& room_it = rooms_data->rooms_map.find(name);
+
+    if(room_it == rooms_data->rooms_map.cend()) {
+        return nullptr;
     } else {
-        puts(game_error::get_fatal_error_msg().c_str());
-        return EXIT_FAILURE;
+        return &room_it->second;
     }
-
-    return EXIT_SUCCESS;
 }

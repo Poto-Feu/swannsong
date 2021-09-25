@@ -14,34 +14,26 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see
+    along with SwannSong Adventure. If not, see
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef USERIO_HPP
-#define USERIO_HPP
+#ifndef ROOMS_HPP
+#define ROOMS_HPP
 
-#define WIN_ENTER_KEY 13
+#include <memory>
 
 #include "pstrings.hpp"
-#include "room/rooms.hpp"
 
-struct Player;
-struct game_state_s;
-class CutscenesContainer;
 class Room;
-class RoomDisplay;
-class RoomLoopState;
 
-namespace userio
-{
-    void waitenter();
-    std::string gettextinput(int max_n);
-    bool interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
-            rooms::RoomsData_ptr const& rooms_data,
-            CutscenesContainer const& cs_container, Room const& room,
-            Player& player, RoomDisplay const& room_display,
-            RoomLoopState& rls, game_state_s& game_state, std::string& input,
-            bool& has_wrong_input);
+namespace rooms {
+    struct RoomsData;
+    typedef std::shared_ptr<RoomsData> RoomsData_ptr;
+
+    RoomsData_ptr init_data(pstrings::ps_data_ptr const& pstrings_data,
+            std::string const& data_path);
+    Room const* get_room(RoomsData_ptr const& rooms_data,
+            std::string const& name);
 }
 #endif

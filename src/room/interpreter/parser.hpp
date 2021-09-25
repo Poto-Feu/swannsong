@@ -22,8 +22,12 @@
 #ifndef ROOM_PARSER_HPP
 #define ROOM_PARSER_HPP
 
-#include "room/RoomClass.hpp"
+#include "game_state.hpp"
+#include "room/RoomLoopState.hpp"
+#include "room/interpreter/token.hpp"
+#include "room/rooms.hpp"
 
+class Room;
 class RoomDisplay;
 
 namespace parser
@@ -34,10 +38,9 @@ namespace parser
     };
 
     bool exec_until_end(std::vector<TokenVec> const& block_vector,
-            std::unordered_map<std::string, Room> const& room_map,
-            Room const& room, parser::block_type block_type,
-            Player& player, RoomLoopState& rls, RoomDisplay* room_display,
-            game_state_s& game_state,
+            rooms::RoomsData_ptr const& rooms_data, Room const& room,
+            parser::block_type block_type, Player& player, RoomLoopState& rls,
+            RoomDisplay* room_display, game_state_s& game_state,
             std::vector<std::string>& cutscenes_vec, unsigned int& i);
     bool splitline(std::string& type, std::string& arg, std::string ins);
 }

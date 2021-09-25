@@ -19,16 +19,12 @@
 */
 
 #include "room/interpreter/parser.hpp"
-#include "dialogbox.hpp"
 #include "game_error.hpp"
-#include "game_state.hpp"
-#include "player/Player.hpp"
 #include "pcurses.hpp"
+#include "player/Player.hpp"
+#include "room/RoomClass.hpp"
 #include "room/RoomDisplay.hpp"
-#include "room/RoomLoopState.hpp"
-#include "room/interpreter/token.hpp"
 #include "stringsm.h"
-#include "vars/gvars.hpp"
 
 static void CHOICE_block_err(std::string const& func_name)
 {
@@ -124,15 +120,15 @@ static bool interp_CUTSCENE_func(TokenVec const& r_vec,
 
 //Intepret a line which use the GO function
 static bool interp_GO_func(game_state_s& game_state,
-        std::unordered_map<std::string, Room> const& room_map,
-        Room const& room, TokenVec const& r_vec)
+        rooms::RoomsData_ptr const& rooms_data, Room const& room,
+        TokenVec const& r_vec)
 {
     if(r_vec.size() != 2) {
         wrg_tkn_num("GO");
         return false;
     }
 
-    if(room_map.find(r_vec[1].str) == room_map.cend()) {
+    if(!rooms::get_room(rooms_data, r_vec[1].str)) {
         game_error::fatal_error(r_vec[1].str
                 + " ROOM does not exist (GO function in " + room.getName()
                 + " ROOM)");
@@ -308,10 +304,10 @@ static bool interp_gvar_ins(gvarVector& p_gvars, TokenVec r_vec)
 
 //Interpret a line which uses a function
 static bool interp_func_ins(TokenVec const& r_vec,
-        std::unordered_map<std::string, Room> const& room_map,
-        Room const& room, parser::block_type block_type,
-        Player& player, RoomLoopState& rls, RoomDisplay* room_display,
-        game_state_s& game_state, std::vector<std::string>& cutscenes_vec)
+        rooms::RoomsData_ptr const& rooms_data, Room const& room,
+        parser::block_type block_type, Player& player, RoomLoopState& rls,
+        RoomDisplay* room_display, game_state_s& game_state,
+        std::vector<std::string>& cutscenes_vec)
 {
     using namespace game_error;
 
@@ -327,7 +323,7 @@ static bool interp_func_ins(TokenVec const& r_vec,
             return interp_CUTSCENE_func(r_vec, cutscenes_vec);
             break;
         case token_spec_type::GO:
-            return interp_GO_func(game_state, room_map, room, r_vec);
+            return interp_GO_func(game_state, rooms_data, room, r_vec);
             break;
         case token_spec_type::GET:
             return interp_GET_func(player.inv, r_vec);
@@ -353,16 +349,16 @@ static bool interp_func_ins(TokenVec const& r_vec,
 
 //Interpret a line depending on its first token
 static bool interp_ins(TokenVec const& r_vec,
-        std::unordered_map<std::string, Room> const& room_map,
-        Room const& room, parser::block_type block_type,
-        Player& player, RoomLoopState& rls, RoomDisplay* room_display,
-        game_state_s& game_state, std::vector<std::string>& cutscenes_vec)
+        rooms::RoomsData_ptr const& rooms_data, Room const& room,
+        parser::block_type block_type, Player& player, RoomLoopState& rls,
+        RoomDisplay* room_display, game_state_s& game_state,
+        std::vector<std::string>& cutscenes_vec)
 {
     using namespace game_error;
 
     switch(r_vec[0].type) {
         case token_type::FUNCTION:
-            return interp_func_ins(r_vec, room_map, room, block_type, player,
+            return interp_func_ins(r_vec, rooms_data, room, block_type, player,
                     rls, room_display, game_state, cutscenes_vec);
             break;
         case token_type::VARIABLE:
@@ -525,13 +521,13 @@ static void skip_until_end(std::vector<TokenVec> const& block_vector,
 
 //Execute instructions until the end of the block
 bool parser::exec_until_end(std::vector<TokenVec> const& block_vector,
-        std::unordered_map<std::string, Room> const& room_map,
-        Room const& room, parser::block_type block_type,
-        Player& player, RoomLoopState& rls, RoomDisplay* room_display,
-        game_state_s& game_state,
+        rooms::RoomsData_ptr const& rooms_data, Room const& room,
+        parser::block_type block_type, Player& player, RoomLoopState& rls,
+        RoomDisplay* room_display, game_state_s& game_state,
         std::vector<std::string>& cutscenes_vec, unsigned int& i)
 {
     using namespace game_error;
+
     bool previous_line_condition = false;
     bool prev_condition_exec = false;
 
@@ -553,7 +549,7 @@ bool parser::exec_until_end(std::vector<TokenVec> const& block_vector,
 
             if(condition_result) {
                 ++i;
-                if(!exec_until_end(block_vector, room_map, room, block_type,
+                if(!exec_until_end(block_vector, rooms_data, room, block_type,
                         player, rls, room_display, game_state, cutscenes_vec,
                         i)) {
                     return false;
@@ -574,7 +570,7 @@ bool parser::exec_until_end(std::vector<TokenVec> const& block_vector,
                 skip_until_end(block_vector, i);
             } else {
                 ++i;
-                if(!exec_until_end(block_vector, room_map, room, block_type,
+                if(!exec_until_end(block_vector, rooms_data, room, block_type,
                         player, rls, room_display, game_state, cutscenes_vec,
                         i)) {
                     return false;
@@ -583,7 +579,7 @@ bool parser::exec_until_end(std::vector<TokenVec> const& block_vector,
             previous_line_condition = false;
         } else if(tok_vec[0].type != token_type::TEXT) {
             previous_line_condition = false;
-            if(!interp_ins(tok_vec, room_map, room, block_type, player, rls,
+            if(!interp_ins(tok_vec, rooms_data, room, block_type, player, rls,
                     room_display, game_state, cutscenes_vec)) {
                 return false;
             }

@@ -51,7 +51,8 @@ add_executable(swannsongadv
     src/room/Choice.cpp
     src/room/RoomClass.cpp
     src/room/RoomLoopState.cpp
-    src/room/RoomManager.cpp
+    src/room/room_parsing.cpp
+    src/room/rooms.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
     src/tests/tests.cpp

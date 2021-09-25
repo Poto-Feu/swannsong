@@ -21,10 +21,9 @@
 #ifndef ROOMCLASS_HPP
 #define ROOMCLASS_HPP
 
-#include <unordered_map>
-
-#include "room/interpreter/token.hpp"
 #include "room/Choice.hpp"
+#include "room/interpreter/token.hpp"
+#include "room/rooms.hpp"
 
 struct game_state_s;
 class CutscenesContainer;
@@ -51,6 +50,7 @@ class Room {
         unsigned int getChoicesSize() const;
         const Choice *getChoice(unsigned int choice_n) const;
 
+        void setTitle(std::string const& title);
         void setDesc(std::string const& room_desc);
         void setATLAUNCH_ins(std::vector<TokenVec>&& atlaunch_ins);
         void setChoices(std::vector<Choice>&& choices_vec);
@@ -61,7 +61,7 @@ class Room {
         void displayAllChoices() const;
 
         bool load(pstrings::ps_data_ptr const& pstrings_data,
-                std::unordered_map<std::string, Room> const& room_map,
+                rooms::RoomsData_ptr const& rooms_data,
                 CutscenesContainer const& cs_container, Player& player,
                 RoomLoopState& rls, game_state_s& game_state) const;
 

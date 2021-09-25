@@ -1,6 +1,5 @@
 # files path
 langdir="lang/"
-roomfile="rooms.txt"
 csfile="cutscenes.txt"
 
 # game vars

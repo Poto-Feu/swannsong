@@ -24,27 +24,21 @@
 #include "CutscenesContainer.hpp"
 #include "LocalConfVars.hpp"
 #include "pargs.hpp"
-
-struct GameInitData
-{
-    std::string room_file_path;
-    bool no_error;
-};
+#include "room/rooms.hpp"
 
 class Game
 {
     public:
 
         ~Game();
-        GameInitData init(pargs::args_data const& args_data);
-        void run(GameInitData const& game_init_data);
+        bool init(pargs::args_data const& args_data);
+        bool run();
 
     private:
 
         std::string m_start_room;
-
-        bool m_strings_init = false;
         pstrings::ps_data_ptr pstrings_data;
+        rooms::RoomsData_ptr rooms_data;
         CutscenesContainer m_cutscenes_container;
 
         void ask_lang(LocalConfVars::lcv_data_ptr lcv_data,

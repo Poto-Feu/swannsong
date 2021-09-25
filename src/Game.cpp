@@ -28,8 +28,10 @@
 #include "game_state.hpp"
 #include "os_module.hpp"
 #include "pcurses.hpp"
+#include "player/Player.hpp"
 #include "rendering.hpp"
-#include "room/RoomManager.hpp"
+#include "room/RoomClass.hpp"
+#include "room/RoomLoopState.hpp"
 #include "terminal.hpp"
 #include "userio.hpp"
 
@@ -141,10 +143,12 @@ void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
                         langarr[intval - 1].id);
                 this->pstrings_data = pstrings::init_data(data_path,
                         langarr[intval - 1].id);
-                if(!game_error::has_encountered_fatal()) m_strings_init = true;
             } else error_msg_ptr = &not_valid_error_str;
-        } else if(buf.size() == 0) error_msg_ptr = &nothing_error_str;
-        else error_msg_ptr = &too_long_error_str;
+        } else if(buf.size() == 0) {
+            error_msg_ptr = &nothing_error_str;
+        } else {
+            error_msg_ptr = &too_long_error_str;
+        }
     }
 }
 
@@ -159,9 +163,8 @@ Game::~Game()
     }
 }
 
-GameInitData Game::init(pargs::args_data const& args_data)
+bool Game::init(pargs::args_data const& args_data)
 {
-    GameInitData game_init_data;
     LocalConfVars::lcv_data_ptr lcv;
 
     files_path::paths_struct p_paths = files_path::getpaths(args_data.local);
@@ -177,8 +180,7 @@ GameInitData Game::init(pargs::args_data const& args_data)
     auto gc_vec = fetch_gameconf_vars(lcv, p_paths.data_path);
 
     if(game_error::has_encountered_fatal()) {
-        game_init_data.no_error = false;
-        return game_init_data;
+        return false;
     }
 
     auto get_gcvar_it = [gc_vec](std::string const& p_name) {
@@ -190,7 +192,6 @@ GameInitData Game::init(pargs::args_data const& args_data)
 
     set_curses();
 
-    auto roomfile_it = get_gcvar_it("roomfile");
     auto csfile_it = get_gcvar_it("csfile");
     auto firstroom_it = get_gcvar_it("firstroom");
 
@@ -201,49 +202,32 @@ GameInitData Game::init(pargs::args_data const& args_data)
                 "lang");
         if(!lang_lcv) {
             missing_lcvar("lang");
-            game_init_data.no_error = false;
-            return game_init_data;
+            return false;
         }
+
         this->pstrings_data = pstrings::init_data(p_paths.data_path,
                 *lang_lcv);
-
         if(!this->pstrings_data) {
-            game_init_data.no_error = false;
-            return game_init_data;
+            return false;
         }
     }
 
-    if(game_error::has_encountered_fatal()) {
-        game_init_data.no_error = false;
-        return game_init_data;
-    }
-
-    if(roomfile_it != gc_vec.cend()) {
-        game_init_data.room_file_path = p_paths.data_path;
-        game_init_data.room_file_path += roomfile_it->value;
-    } else {
-        game_init_data.no_error = false;
-        missing_gcvar("roomfile");
-        return game_init_data;
-    }
-    if(game_error::has_encountered_fatal()) {
-        game_init_data.no_error = false;
-        return game_init_data;
+    this->rooms_data = rooms::init_data(this->pstrings_data,
+            p_paths.data_path);
+    if(!this->rooms_data) {
+        return false;
     }
 
     if(csfile_it != gc_vec.cend()) {
         m_cutscenes_container = CutscenesContainer(csfile_it->value,
                 p_paths.data_path, this->pstrings_data);
     } else {
-        game_init_data.no_error = false;
         missing_gcvar("csfile");
-
-        return game_init_data;
+        return false;
     }
 
     if(game_error::has_encountered_fatal()) {
-        game_init_data.no_error = false;
-        return game_init_data;
+        return false;
     }
 
     if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
@@ -255,26 +239,43 @@ GameInitData Game::init(pargs::args_data const& args_data)
     }
 
     if(firstroom_it != gc_vec.cend()) {
-        game_init_data.no_error = true;
         m_start_room = firstroom_it->value;
-        return game_init_data;
+        return true;
     } else {
-        game_init_data.no_error = false;
         missing_gcvar("firstroom");
-        return game_init_data;
+        return false;
     }
 }
 
-void Game::run(GameInitData const& game_init_data)
+bool Game::run()
 {
+    RoomLoopState rls;
+    Player player;
     game_state_s game_state;
+    std::string current_room_id = this->m_start_room;
 
-    if(!game_error::has_encountered_fatal()) {
-        RoomManager rmm(this->pstrings_data, game_init_data.room_file_path);
+    while(!game_state.should_game_exit) {
+        Room const* room = rooms::get_room(this->rooms_data,
+                current_room_id);
 
-        if(!game_error::has_encountered_fatal()) {
-            rmm.startLoop(this->pstrings_data, m_cutscenes_container,
-                    game_state, m_start_room);
+        if(!room) {
+            game_error::fatal_error(current_room_id
+                    + " ROOM not present in rooms file");
+            display_server::clear_screen();
+            return false;
+        }
+
+        rls.resetGameOver();
+
+        if(!room->load(pstrings_data, this->rooms_data,
+                    this->m_cutscenes_container, player, rls, game_state)) {
+            return false;
+        }
+        if(!game_state.should_game_exit) {
+            current_room_id = game_state.next_room;
         }
     }
+    display_server::clear_screen();
+
+    return true;
 }

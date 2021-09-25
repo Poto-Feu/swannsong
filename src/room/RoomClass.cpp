@@ -77,6 +77,11 @@ const Choice *Room::getChoice(unsigned int choice_n) const
     else return &(*Choice_it);
 }
 
+void Room::setTitle(std::string const& title)
+{
+    m_title = title;
+}
+
 void Room::setDesc(std::string const& room_desc)
 {
     m_desc = room_desc;
@@ -132,7 +137,7 @@ static void display_cutscenes(pstrings::ps_data_ptr const& pstrings_data,
 }
 
 bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
-        std::unordered_map<std::string, Room> const& room_map,
+        rooms::RoomsData_ptr const& rooms_data,
         CutscenesContainer const& cs_container, Player& player,
         RoomLoopState& rls, game_state_s& game_state) const
 {
@@ -148,7 +153,7 @@ bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
         std::string menu_input;
         unsigned int atlaunch_start_ln = 0;
 
-        if(!parser::exec_until_end(this->getATLAUNCHIns(), room_map, *this,
+        if(!parser::exec_until_end(this->getATLAUNCHIns(), rooms_data, *this,
                 parser::block_type::ATLAUNCH, player, rls, &room_display,
                 game_state, displayed_cutscenes, atlaunch_start_ln)) {
             return false;
@@ -164,13 +169,13 @@ bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
             menu_input = rendering::display_room(pstrings_data, *this,
                     room_display);
         } else {
-            menu_input = rendering::display_room(pstrings_data, *this, room_display,
-                    &incorrect_input_str);
+            menu_input = rendering::display_room(pstrings_data, *this,
+                    room_display, &incorrect_input_str);
         }
 
-        if(!userio::interpret_user_input(pstrings_data, room_map, cs_container,
-                    *this, player, room_display, rls, game_state, menu_input,
-                    wrong_input)) {
+        if(!userio::interpret_user_input(pstrings_data, rooms_data,
+                    cs_container, *this, player, room_display, rls, game_state,
+                    menu_input, wrong_input)) {
             return false;
         }
 

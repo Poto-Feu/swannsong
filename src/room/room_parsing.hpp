@@ -18,30 +18,19 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef USERIO_HPP
-#define USERIO_HPP
+#ifndef ROOM_PARSING_HPP
+#define ROOM_PARSING_HPP
 
-#define WIN_ENTER_KEY 13
+#include <unordered_map>
 
 #include "pstrings.hpp"
-#include "room/rooms.hpp"
 
-struct Player;
-struct game_state_s;
-class CutscenesContainer;
 class Room;
-class RoomDisplay;
-class RoomLoopState;
 
-namespace userio
-{
-    void waitenter();
-    std::string gettextinput(int max_n);
-    bool interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
-            rooms::RoomsData_ptr const& rooms_data,
-            CutscenesContainer const& cs_container, Room const& room,
-            Player& player, RoomDisplay const& room_display,
-            RoomLoopState& rls, game_state_s& game_state, std::string& input,
-            bool& has_wrong_input);
-}
+namespace room_parsing {
+    bool parse_rooms_file(pstrings::ps_data_ptr const& pstrings_data,
+            std::string const& data_path,
+            std::unordered_map<std::string, Room>& room_map);
+};
+
 #endif

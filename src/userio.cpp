@@ -32,8 +32,9 @@ extern "C" {
 #include "game_state.hpp"
 #include "player/Player.hpp"
 #include "rendering.hpp"
-#include "room/interpreter/parser.hpp"
+#include "room/RoomClass.hpp"
 #include "room/RoomDisplay.hpp"
+#include "room/interpreter/parser.hpp"
 #include "savefile.hpp"
 #include "stringsm.h"
 
@@ -75,11 +76,10 @@ std::string userio::gettextinput(int max_n)
 }
 
 bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
-        std::unordered_map<std::string, Room> const& room_map,
+        rooms::RoomsData_ptr const& rooms_data,
         CutscenesContainer const& cs_container, Room const& room,
         Player& player, RoomDisplay const& room_display, RoomLoopState& rls,
-        game_state_s& game_state, std::string& menu_input,
-        bool& wrong_input)
+        game_state_s& game_state, std::string& menu_input, bool& wrong_input)
 {
     wrong_input = false;
 
@@ -113,8 +113,8 @@ bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
 
             //Process the input if it is a number corresponding to a choice
             if(!parser::exec_until_end(current_choice->getInstructions(),
-                    room_map, room, parser::block_type::CHOICE, player,
-                    rls, nullptr, game_state, displayed_cs, start_ln)) {
+                    rooms_data, room, parser::block_type::CHOICE, player, rls,
+                    nullptr, game_state, displayed_cs, start_ln)) {
                 return false;
             }
 
