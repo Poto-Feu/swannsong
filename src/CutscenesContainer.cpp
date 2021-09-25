@@ -21,7 +21,7 @@
 #include <fstream>
 
 #include "CutscenesContainer.hpp"
-#include "fileio/fileio.h"
+#include "fileio/fileio.hpp"
 #include "game_error.hpp"
 #include "stringsm.h"
 

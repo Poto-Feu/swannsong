@@ -26,7 +26,7 @@ extern "C" {
 }
 
 #include "savefile.hpp"
-#include "fileio/fileio.h"
+#include "fileio/fileio.hpp"
 #include "game_error.hpp"
 #include "player/Player.hpp"
 

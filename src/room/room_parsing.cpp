@@ -21,7 +21,7 @@
 #include <algorithm>
 
 #include "room/room_parsing.hpp"
-#include "fileio/fileio.h"
+#include "fileio/fileio.hpp"
 #include "game_error.hpp"
 #include "pstrings.hpp"
 #include "room/RoomClass.hpp"

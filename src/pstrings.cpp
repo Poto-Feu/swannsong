@@ -23,7 +23,7 @@
 #include <unordered_map>
 
 #include "pstrings.hpp"
-#include "fileio/fileio.h"
+#include "fileio/fileio.hpp"
 #include "game_error.hpp"
 #include "stringsm.h"
 #include "terminal.hpp"
