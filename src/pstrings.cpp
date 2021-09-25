@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <unordered_map>
 
 #include "pstrings.hpp"
 #include "fileio/fileio.h"

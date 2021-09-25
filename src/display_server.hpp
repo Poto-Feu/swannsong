@@ -22,7 +22,7 @@
 #define DISPLAY_SERVER_HPP
 
 extern "C" {
-#include <ncursesw/curses.h>
+#include <ncurses.h>
 }
 
 #include <string>

@@ -19,7 +19,7 @@
 */
 
 extern "C" {
-#include <ncursesw/curses.h>
+#include <ncurses.h>
 }
 
 #include <cstdlib>

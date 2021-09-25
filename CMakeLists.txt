@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(src)
+include_directories(SYSTEM /usr/local/include)
+link_directories(SYSTEM /usr/local/lib)
 
 set(src_data_folder ${CMAKE_CURRENT_SOURCE_DIR}"/data")
 set(build_data_folder ${CMAKE_CURRENT_BINARY_DIR}"/data")

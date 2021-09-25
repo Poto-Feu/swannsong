@@ -18,6 +18,8 @@
     <https://www.gnu.org/licenses/>.
 */
 
+#include <clocale>
+
 #include "terminal.hpp"
 #include "os_module.hpp"
 

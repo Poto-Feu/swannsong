@@ -18,6 +18,8 @@
     <https://www.gnu.org/licenses/>.
 */
 
+#include <cstdio>
+
 #include "Game.hpp"
 #include "game_error.hpp"
 
