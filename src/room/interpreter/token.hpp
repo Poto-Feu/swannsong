@@ -24,7 +24,7 @@
 #include "pstrings.hpp"
 #include "vars/gvars.hpp"
 
-class Player;
+struct Player;
 
 enum class token_type
 {

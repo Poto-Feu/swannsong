@@ -24,7 +24,7 @@
 #include "player/inventory.hpp"
 #include "vars/gvars.hpp"
 
-class Player;
+struct Player;
 
 namespace savefile {
     enum class loading_error {
