@@ -14,44 +14,39 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
+#include <filesystem>
 #include <fstream>
-
-#include <sys/stat.h>
 
 #include "fileio.h"
 #include "stringsm.h"
 
-namespace fileio
+bool fileio::getfileln(std::string& r_str, std::ifstream& p_stream)
 {
-    bool getfileln(std::string& r_str, std::ifstream& p_stream)
-    {
-        if(std::getline(p_stream, r_str)) return true;
-        else return false;
+    if(std::getline(p_stream, r_str)) return true;
+    else return false;
+}
+
+std::vector<std::string> fileio::copy_to_vector(std::string const& file_path)
+{
+    std::string buf;
+    std::vector<std::string> file_content;
+    std::ifstream file_stream(file_path);
+
+    while(fileio::getfileln(buf, file_stream)) {
+        stringsm::rtab(buf);
+
+        if(!buf.empty()) file_content.push_back(buf);
+        else continue;
     }
 
-    std::vector<std::string> copy_to_vector(std::string const& file_path)
-    {
-        std::string buf;
-        std::vector<std::string> file_content;
-        std::ifstream file_stream(file_path);
+    return file_content;
+}
 
-        while(fileio::getfileln(buf, file_stream)) {
-            stringsm::rtab(buf);
-
-            if(!buf.empty()) file_content.push_back(buf);
-            else continue;
-        }
-
-        return file_content;
-    }
-
-    bool file_exists(std::string const& file_path)
-    {
-        struct stat buffer;
-        return (stat(file_path.c_str(), &buffer) == 0);
-    }
+bool fileio::file_exists(std::string const& file_path)
+{
+    return std::filesystem::exists(file_path);
 }
