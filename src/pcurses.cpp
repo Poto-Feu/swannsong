@@ -21,121 +21,123 @@
 #include "pcurses.hpp"
 #include "userio.hpp"
 
-namespace pcurses
-{
-    int margin = 0;
-    int title_y = 0;
-    int lines = 0;
-    int cols = 0;
+int pcurses::margin = 0;
+int pcurses::title_y = 0;
+int pcurses::lines = 0;
+int pcurses::cols = 0;
 
-    unsigned int max_size_str()
-    {
-        return COLS - margin * 2;
+static unsigned int max_size_str()
+{
+    return COLS - pcurses::margin * 2;
+}
+
+static unsigned int multiline_center_string(std::string const& p_str,
+        int startline, int p_attr)
+{
+    bool end_of_str = false;
+    unsigned int line_count = 0;
+    std::string remain_str = p_str;
+    std::vector<std::string> str_vec;
+
+    while(!end_of_str) {
+        std::string vec_item;
+
+        if(remain_str.size() > max_size_str()) {
+            vec_item = remain_str.substr(0, max_size_str());
+            remain_str.erase(0, max_size_str());
+            str_vec.push_back(vec_item);
+        } else end_of_str = true;
     }
 
-    static unsigned int multiline_center_string(std::string const& p_str, int startline, int p_attr)
-    {
+    for(auto const& vec_it : str_vec) {
+        display_server::add_string(vec_it, {startline, pcurses::margin},
+                p_attr);
+        ++startline;
+        ++line_count;
+    }
+
+    display_server::add_string(remain_str, {startline, pcurses::margin});
+    return ++line_count;
+}
+
+static int find_centered_x(std::string const& p_str)
+{
+    return COLS / 2 - static_cast<int>(p_str.size()) / 2;
+}
+
+void pcurses::display_pos_string(std::string p_str, int x_space, int startline,
+        int p_attr)
+{
+    const int multiline_space = 3;
+    bool end_of_str = false;
+    bool end_of_zone = false;
+    unsigned int pos_str_max_size = max_size_str() / 2 + x_space;
+
+    for(auto i = 0; !end_of_str && !end_of_zone; ++i) {
+        unsigned int str_size = p_str.size();
+
+        if(startline > lines - 5) end_of_zone = true;
+        else if(str_size > pos_str_max_size) {
+            std::string curr_str = p_str.substr(0, pos_str_max_size);
+
+            p_str.erase(0, pos_str_max_size);
+            display_server::add_string(curr_str,
+                    {startline, cols / 2 - x_space}, p_attr);
+            ++startline;
+        } else {
+            display_server::add_string(p_str, {startline, cols / 2 - x_space},
+                    p_attr);
+            end_of_str = true;
+        }
+
+        if(i == 0) {
+            x_space += multiline_space;
+            pos_str_max_size -= multiline_space;
+        }
+    }
+}
+
+std::vector<std::string> pcurses::divide_string_into_lines(std::string p_string)
+{
+    if(p_string.size() < max_size_str()) {
+        return std::vector<std::string> { std::move(p_string) };
+    } else {
         bool end_of_str = false;
-        unsigned int line_count = 0;
-        std::string remain_str = p_str;
         std::vector<std::string> str_vec;
 
         while(!end_of_str) {
             std::string vec_item;
 
-            if(remain_str.size() > max_size_str()) {
-                vec_item = remain_str.substr(0, max_size_str());
-                remain_str.erase(0, max_size_str());
-                str_vec.push_back(vec_item);
+            if(p_string.size() > max_size_str()) {
+                vec_item = p_string.substr(0, max_size_str());
+                p_string.erase(0, max_size_str());
+                str_vec.push_back(std::move(vec_item));
             } else end_of_str = true;
         }
-
-        for(auto const& vec_it : str_vec) {
-            display_server::add_string(vec_it, {startline, pcurses::margin}, p_attr);
-            ++startline;
-            ++line_count;
-        }
-
-        display_server::add_string(remain_str, {startline, pcurses::margin});
-        return ++line_count;
+        str_vec.push_back(std::move(p_string));
+        return str_vec;
     }
+}
 
-    int find_centered_x(std::string const& p_str)
-    {
-        return COLS / 2 - static_cast<int>(p_str.size()) / 2;
-    }
+unsigned int pcurses::display_center_string(std::string const& p_str, int startline, int p_attr)
+{
+    unsigned int max_size_func = max_size_str();
 
-    void display_pos_string(std::string p_str, int x_space, int startline, int p_attr)
-    {
-        const int multiline_space = 3;
-        bool end_of_str = false;
-        bool end_of_zone = false;
-        unsigned int pos_str_max_size = max_size_str() / 2 + x_space;
+    if(p_str.size() < max_size_func) {
+        int p_x = find_centered_x(p_str);
 
-        for(auto i = 0; !end_of_str && !end_of_zone; ++i) {
-            unsigned int str_size = p_str.size();
+        display_server::add_string(p_str, {startline, p_x}, p_attr);
+        return 1;
+    } else return multiline_center_string(p_str, startline, p_attr);
+}
 
-            if(startline > lines - 5) end_of_zone = true;
-            else if(str_size > pos_str_max_size) {
-                std::string curr_str = p_str.substr(0, pos_str_max_size);
-
-                p_str.erase(0, pos_str_max_size);
-                display_server::add_string(curr_str, {startline, cols / 2 - x_space}, p_attr);
-                ++startline;
-            } else {
-                display_server::add_string(p_str, {startline, cols / 2 - x_space}, p_attr);
-                end_of_str = true;
-            }
-
-            if(i == 0) {
-                x_space += multiline_space;
-                pos_str_max_size -= multiline_space;
-            }
-        }
-    }
-
-    std::vector<std::string> divide_string_into_lines(std::string p_string)
-    {
-        if(p_string.size() < max_size_str()) {
-            return std::vector<std::string> { std::move(p_string) };
-        } else {
-            bool end_of_str = false;
-            std::vector<std::string> str_vec;
-
-            while(!end_of_str) {
-                std::string vec_item;
-
-                if(p_string.size() > max_size_str()) {
-                    vec_item = p_string.substr(0, max_size_str());
-                    p_string.erase(0, max_size_str());
-                    str_vec.push_back(std::move(vec_item));
-                } else end_of_str = true;
-            }
-            str_vec.push_back(std::move(p_string));
-            return str_vec;
-        }
-    }
-
-    unsigned int display_center_string(std::string const& p_str, int startline, int p_attr)
-    {
-        unsigned int max_size_func = max_size_str();
-
-        if(p_str.size() < max_size_func) {
-            int p_x = find_centered_x(p_str);
-
-            display_server::add_string(p_str, {startline, p_x}, p_attr);
-            return 1;
-        } else return multiline_center_string(p_str, startline, p_attr);
-    }
-
-    void display_penter_message(pstrings::ps_data_ptr const& pstrings_data,
-            bool wait_enter)
-    {
-            display_server::add_string(
-                    pstrings::fetch_string(pstrings_data, "continue_penter"),
-                    {pcurses::lines - pcurses::bottom_margin, pcurses::margin},
-                    A_BOLD);
-            display_server::show_screen();
-            if(wait_enter) userio::waitenter();
-    }
+void pcurses::display_penter_message(
+        pstrings::ps_data_ptr const& pstrings_data, bool wait_enter)
+{
+        display_server::add_string(
+                pstrings::fetch_string(pstrings_data, "continue_penter"),
+                {pcurses::lines - pcurses::bottom_margin, pcurses::margin},
+                A_BOLD);
+        display_server::show_screen();
+        if(wait_enter) userio::waitenter();
 }

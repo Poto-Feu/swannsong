@@ -14,7 +14,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure. If not, see
+    along with SwannSong Adventure.  If not, see
     <https://www.gnu.org/licenses/>.
 */
 
@@ -36,13 +36,14 @@ namespace pcurses
     extern int lines;
     extern int cols;
 
-    int find_centered_x(std::string& p_str);
-    /*Return a vector in which the string has been cut into multiple string to fit the terminal
-    width*/
+    /*Return a vector in which the string has been cut into multiple string to
+     * fit the terminal width */
     std::vector<std::string> divide_string_into_lines(std::string p_string);
-    void display_pos_string(std::string p_str, int x_space, int startline = getcury(stdscr),
+    void display_pos_string(std::string p_str, int x_space,
+            int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
-    unsigned int display_center_string(std::string const& p_str, int startline = getcury(stdscr),
+    unsigned int display_center_string(std::string const& p_str,
+            int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
 
     void display_penter_message(pstrings::ps_data_ptr const& pstrings_data,
