@@ -25,7 +25,7 @@
 #include "fileio/conf_files.hpp"
 #include "fileio/fileio.hpp"
 #include "game_error.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 struct LocalConfVars::lcv_data {
     std::unordered_map<std::string, std::string> map;

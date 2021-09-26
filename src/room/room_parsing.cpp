@@ -26,7 +26,7 @@
 #include "pstrings.hpp"
 #include "room/RoomClass.hpp"
 #include "room/interpreter/parser.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 enum block_type {
     ATLAUNCH = 0,

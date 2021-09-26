@@ -22,7 +22,7 @@
 #include "room/Choice.hpp"
 #include "game_error.hpp"
 #include "pcurses.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 Choice::Choice() { }
 Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,

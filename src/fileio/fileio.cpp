@@ -22,7 +22,7 @@
 #include <fstream>
 
 #include "fileio.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 bool fileio::getfileln(std::string& r_str, std::ifstream& p_stream)
 {

@@ -25,7 +25,7 @@
 #include "pstrings.hpp"
 #include "fileio/fileio.hpp"
 #include "game_error.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 #include "terminal.hpp"
 
 struct pstrings::ps_data {

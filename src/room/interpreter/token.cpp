@@ -23,7 +23,7 @@
 
 #include "room/interpreter/token.hpp"
 #include "vars/gvars.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 //Set the appropriate type to each Token in a TokenVec
 namespace token

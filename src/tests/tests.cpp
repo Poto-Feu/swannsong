@@ -25,7 +25,7 @@
 #include "tests.hpp"
 #include "room/interpreter/token.hpp"
 #include "pcurses.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 namespace tests
 {

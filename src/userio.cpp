@@ -36,7 +36,7 @@ extern "C" {
 #include "room/RoomDisplay.hpp"
 #include "room/interpreter/parser.hpp"
 #include "savefile.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 /*Get user text input and return it in a pointer*/
 static void copy_input_to_char_str(char** buf, int max_n)
@@ -47,7 +47,7 @@ static void copy_input_to_char_str(char** buf, int max_n)
     getnstr(*buf, max_n);
     noecho();
 
-    stringsm_chomp(*buf);
+    stringsm::chomp(*buf);
 }
 
 /*Pause the program until the user press Enter*/

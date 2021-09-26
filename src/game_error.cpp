@@ -22,7 +22,7 @@
 #include <fstream>
 
 #include "game_error.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 static bool is_filepath_already_set = false;
 static bool is_debug = false;

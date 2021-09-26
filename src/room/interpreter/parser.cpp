@@ -24,7 +24,7 @@
 #include "player/Player.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomDisplay.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 static void CHOICE_block_err(std::string const& func_name)
 {

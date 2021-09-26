@@ -30,7 +30,7 @@
 #include "room/RoomDisplay.hpp"
 #include "room/RoomLoopState.hpp"
 #include "room/interpreter/parser.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 #include "userio.hpp"
 
 Room::Room() { }

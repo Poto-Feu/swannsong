@@ -23,7 +23,7 @@
 #include "CutscenesContainer.hpp"
 #include "fileio/fileio.hpp"
 #include "game_error.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 CutscenesContainer::CutscenesContainer() { }
 

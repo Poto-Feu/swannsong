@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2020 Adrien Saad
+    Copyright (C) 2021 Adrien Saad
 
     This file is part of SwannSong Adventure.
 
@@ -14,29 +14,21 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.  If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
-#ifndef STRINGSM_H
-#define STRINGSM_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-//Replace the newline character by a null terminator (deprecated, use std::string instead)
-void stringsm_chomp(char* str);
-
-#ifdef __cplusplus
-}
+#ifndef STRINGSM_HPP
+#define STRINGSM_HPP
 
 #include <string>
-
-void stringsm_ext_str_quotes(std::string& r_ext, const char* p_str);
 
 namespace stringsm
 {
     const std::string empty_string = "";
+
+    //Replace the newline character by a null terminator
+    void chomp(char* str);
     //Return an uppercased string
     std::string to_upper(std::string p_str);
     //Return a lowercased string
@@ -54,6 +46,4 @@ namespace stringsm
     bool is_single_word(std::string const& p_str);
     bool has_quotes(std::string const& p_str);
 }
-#endif
-
 #endif

@@ -23,7 +23,7 @@
 #include "fileio/gameconf.hpp"
 #include "fileio/conf_files.hpp"
 #include "game_error.hpp"
-#include "stringsm.h"
+#include "stringsm.hpp"
 
 namespace gameconf
 {
