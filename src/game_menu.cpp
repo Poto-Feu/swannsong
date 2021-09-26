@@ -20,7 +20,6 @@
 
 #include "game_menu.hpp"
 #include "pcurses.hpp"
-#include "userio.hpp"
 
 std::string game_menu::display(const std::string *title,
         const std::string *desc, const std::vector<std::string> *other_str,
@@ -96,5 +95,5 @@ std::string game_menu::display(const std::string *title,
 
     display_server::show_screen();
 
-    return userio::gettextinput(p_flags->input_length);
+    return pcurses::get_text_input(p_flags->input_length);
 }

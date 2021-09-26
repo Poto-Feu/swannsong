@@ -36,7 +36,6 @@ class RoomLoopState;
 namespace userio
 {
     void waitenter();
-    std::string gettextinput(int max_n);
     bool interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
             rooms::RoomsData_ptr const& rooms_data,
             CutscenesContainer const& cs_container, Room const& room,

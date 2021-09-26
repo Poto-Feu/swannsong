@@ -19,6 +19,7 @@
 */
 
 #include "pcurses.hpp"
+#include "stringsm.hpp"
 #include "userio.hpp"
 
 int pcurses::margin = 0;
@@ -140,4 +141,22 @@ void pcurses::display_penter_message(
                 A_BOLD);
         display_server::show_screen();
         if(wait_enter) userio::waitenter();
+}
+
+std::string pcurses::get_text_input(int max_n)
+{
+    std::string input_str;
+    char* buf = new char[max_n+1];
+
+    buf[max_n] = '\0';
+
+    echo();
+    getnstr(buf, max_n);
+    noecho();
+
+    stringsm::chomp(buf);
+    input_str.assign(buf);
+    delete[](buf);
+
+    return input_str;
 }

@@ -22,8 +22,6 @@ extern "C" {
 #include <ncurses.h>
 }
 
-#include <cstdlib>
-
 #include "userio.hpp"
 #include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
@@ -38,18 +36,6 @@ extern "C" {
 #include "savefile.hpp"
 #include "stringsm.hpp"
 
-/*Get user text input and return it in a pointer*/
-static void copy_input_to_char_str(char** buf, int max_n)
-{
-    *buf = (char*)calloc(max_n+1, sizeof(char));
-
-    echo();
-    getnstr(*buf, max_n);
-    noecho();
-
-    stringsm::chomp(*buf);
-}
-
 /*Pause the program until the user press Enter*/
 void userio::waitenter()
 {
@@ -60,19 +46,6 @@ void userio::waitenter()
     #endif
 
     while(getch() != enter_ch) {}
-}
-
-std::string userio::gettextinput(int max_n)
-{
-    char* buf = NULL;
-    std::string r_str;
-
-    copy_input_to_char_str(&buf, max_n);
-    r_str.assign(buf);
-
-    free(buf);
-
-    return r_str;
 }
 
 bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,

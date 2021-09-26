@@ -45,8 +45,8 @@ namespace pcurses
     unsigned int display_center_string(std::string const& p_str,
             int startline = getcury(stdscr),
             int p_attr = display_server::NULL_ATTR);
-
     void display_penter_message(pstrings::ps_data_ptr const& pstrings_data,
             bool wait_enter = true);
+    std::string get_text_input(int max_n);
 }
 #endif
