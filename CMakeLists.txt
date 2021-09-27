@@ -57,7 +57,6 @@ add_executable(swannsongadv
     src/room/rooms.cpp
     src/vars/intvar.cpp
     src/vars/gvars.cpp
-    src/tests/tests.cpp
     src/CutscenesContainer.cpp
     src/LocalConfVars.cpp
     src/rendering.cpp
