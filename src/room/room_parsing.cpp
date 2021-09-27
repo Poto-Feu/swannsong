@@ -23,7 +23,6 @@
 #include "room/room_parsing.hpp"
 #include "fileio/fileio.hpp"
 #include "game_error.hpp"
-#include "pstrings.hpp"
 #include "room/RoomClass.hpp"
 #include "room/interpreter/parser.hpp"
 #include "stringsm.hpp"

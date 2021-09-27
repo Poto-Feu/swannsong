@@ -26,7 +26,6 @@
 #include "game_error.hpp"
 #include "game_menu.hpp"
 #include "pcurses.hpp"
-#include "pstrings.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomDisplay.hpp"
 

@@ -20,7 +20,6 @@
 
 #include "room/interpreter/parser.hpp"
 #include "game_error.hpp"
-#include "pcurses.hpp"
 #include "player/Player.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomDisplay.hpp"

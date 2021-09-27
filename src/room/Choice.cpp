@@ -21,7 +21,6 @@
 
 #include "room/Choice.hpp"
 #include "game_error.hpp"
-#include "pcurses.hpp"
 #include "stringsm.hpp"
 
 Choice::Choice() { }

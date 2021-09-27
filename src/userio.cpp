@@ -18,16 +18,11 @@
     <https://www.gnu.org/licenses/>.
 */
 
-extern "C" {
-#include <ncurses.h>
-}
-
 #include "userio.hpp"
 #include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "game_state.hpp"
 #include "player/Player.hpp"
 #include "rendering.hpp"
 #include "room/RoomClass.hpp"

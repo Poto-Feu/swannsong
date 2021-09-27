@@ -26,14 +26,12 @@
 #include "game_error.hpp"
 #include "game_menu.hpp"
 #include "game_state.hpp"
-#include "os_module.hpp"
 #include "pcurses.hpp"
 #include "player/Player.hpp"
 #include "rendering.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
 #include "terminal.hpp"
-#include "userio.hpp"
 
 struct lang_item
 {

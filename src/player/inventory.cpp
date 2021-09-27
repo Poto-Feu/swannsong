@@ -21,10 +21,7 @@
 #include <algorithm>
 
 #include "player/inventory.hpp"
-#include "dialogbox.hpp"
 #include "game_error.hpp"
-#include "pcurses.hpp"
-#include "userio.hpp"
 
 namespace inventory
 {

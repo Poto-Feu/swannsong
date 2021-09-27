@@ -20,7 +20,6 @@
 
 #include "dialogbox.hpp"
 #include "pcurses.hpp"
-#include "userio.hpp"
 
 static void display_strings(std::vector<std::string> const& p_strings,
         const unsigned int first_line_index, unsigned int start_line,

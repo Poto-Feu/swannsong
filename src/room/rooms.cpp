@@ -18,8 +18,6 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
-
 #include "room/rooms.hpp"
 #include "room/RoomClass.hpp"
 #include "room/room_parsing.hpp"
