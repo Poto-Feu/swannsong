@@ -36,18 +36,6 @@ extern "C" {
 #include "savefile.hpp"
 #include "stringsm.hpp"
 
-/*Pause the program until the user press Enter*/
-void userio::waitenter()
-{
-    #ifdef _WIN32
-    int enter_ch = WIN_ENTER_KEY;
-    #else
-    int enter_ch = '\n';
-    #endif
-
-    while(getch() != enter_ch) {}
-}
-
 bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
         rooms::RoomsData_ptr const& rooms_data,
         CutscenesContainer const& cs_container, Room const& room,

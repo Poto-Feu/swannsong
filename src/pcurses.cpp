@@ -20,7 +20,6 @@
 
 #include "pcurses.hpp"
 #include "stringsm.hpp"
-#include "userio.hpp"
 
 int pcurses::margin = 0;
 int pcurses::title_y = 0;
@@ -64,6 +63,18 @@ static unsigned int multiline_center_string(std::string const& p_str,
 static int find_centered_x(std::string const& p_str)
 {
     return COLS / 2 - static_cast<int>(p_str.size()) / 2;
+}
+
+/*Pause the program until the user press Enter*/
+void pcurses::waitenter()
+{
+    #ifdef _WIN32
+    int enter_ch = WIN_ENTER_KEY;
+    #else
+    int enter_ch = '\n';
+    #endif
+
+    while(getch() != enter_ch) {}
 }
 
 void pcurses::display_pos_string(std::string p_str, int x_space, int startline,
@@ -140,7 +151,9 @@ void pcurses::display_penter_message(
                 {pcurses::lines - pcurses::bottom_margin, pcurses::margin},
                 A_BOLD);
         display_server::show_screen();
-        if(wait_enter) userio::waitenter();
+        if(wait_enter) {
+            waitenter();
+        }
 }
 
 std::string pcurses::get_text_input(int max_n)

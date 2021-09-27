@@ -21,8 +21,6 @@
 #ifndef USERIO_HPP
 #define USERIO_HPP
 
-#define WIN_ENTER_KEY 13
-
 #include "pstrings.hpp"
 #include "room/rooms.hpp"
 
@@ -35,7 +33,6 @@ class RoomLoopState;
 
 namespace userio
 {
-    void waitenter();
     bool interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
             rooms::RoomsData_ptr const& rooms_data,
             CutscenesContainer const& cs_container, Room const& room,
