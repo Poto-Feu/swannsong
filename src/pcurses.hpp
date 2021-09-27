@@ -26,8 +26,6 @@
 #include "display_server.hpp"
 #include "pstrings.hpp"
 
-#define WIN_ENTER_KEY 13
-
 namespace pcurses
 {
     const int top_margin = 3;
@@ -50,6 +48,7 @@ namespace pcurses
     void display_penter_message(pstrings::ps_data_ptr const& pstrings_data,
             bool wait_enter = true);
     void waitenter();
+    bool is_enter_key(int key);
     std::string get_text_input(int max_n);
 }
 #endif

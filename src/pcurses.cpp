@@ -68,13 +68,7 @@ static int find_centered_x(std::string const& p_str)
 /*Pause the program until the user press Enter*/
 void pcurses::waitenter()
 {
-    #ifdef _WIN32
-    int enter_ch = WIN_ENTER_KEY;
-    #else
-    int enter_ch = '\n';
-    #endif
-
-    while(getch() != enter_ch) {}
+    while(!pcurses::is_enter_key(getch())) {}
 }
 
 void pcurses::display_pos_string(std::string p_str, int x_space, int startline,
@@ -172,4 +166,15 @@ std::string pcurses::get_text_input(int max_n)
     delete[](buf);
 
     return input_str;
+}
+
+bool pcurses::is_enter_key(int key)
+{
+#ifdef _WIN32
+    const int enter_key = 13;
+#else
+    const int enter_key = '\n';
+#endif
+
+    return key == enter_key;
 }

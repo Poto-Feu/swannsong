@@ -90,11 +90,7 @@ namespace dialogbox
                         ++strings_display_offset;
                         is_key_pressed = true;
                     }
-#ifdef _WIN32
-                } else if(key_pressed == WIN_ENTER_KEY) {
-#else
-                } else if(key_pressed == '\n') {
-#endif
+                } else if(pcurses::is_enter_key(key_pressed)) {
                     is_key_pressed = true;
                     screen_exited = true;
                 }
