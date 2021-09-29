@@ -42,22 +42,6 @@ static void missing_lcvar(std::string const& p_name)
     game_error::fatal_error("missing local conf var (" + p_name +")");
 }
 
-static void set_curses()
-{
-    initscr();
-    raw();
-    noecho();
-    keypad(stdscr, TRUE);
-
-    if(COLS < 100) pcurses::margin = 4;
-    else if(COLS > 200) pcurses::margin = 15;
-    else pcurses::margin = 10;
-
-    pcurses::title_y = LINES / 2 - LINES / 6;
-    pcurses::lines = LINES;
-    pcurses::cols = COLS;
-}
-
 //Fetch variables from the gameconf file and return a vector containing them
 static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
         std::string const& system_data_path)
@@ -92,8 +76,7 @@ static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
 
 Game::~Game()
 {
-    delwin(stdscr);
-    endwin();
+    pcurses::clean();
 
     //Print the message attached to a fatal error if one occurred
     if(game_error::has_encountered_fatal()) {
@@ -129,7 +112,7 @@ bool Game::init(pargs::args_data const& args_data)
             });
     };
 
-    set_curses();
+    pcurses::init();
     game_lang::lang_init(lcv, lang_info);
     this->pstrings_data = pstrings::init_data(p_paths.data_path,
             lang_info.code);

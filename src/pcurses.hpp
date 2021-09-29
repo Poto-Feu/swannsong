@@ -36,6 +36,8 @@ namespace pcurses
     extern int lines;
     extern int cols;
 
+    void init();
+    void clean();
     /*Return a vector in which the string has been cut into multiple string to
      * fit the terminal width */
     std::vector<std::string> divide_string_into_lines(std::string p_string);

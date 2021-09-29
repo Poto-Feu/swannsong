@@ -65,6 +65,32 @@ static int find_centered_x(std::string const& p_str)
     return COLS / 2 - static_cast<int>(p_str.size()) / 2;
 }
 
+void pcurses::init()
+{
+    initscr();
+    raw();
+    noecho();
+    keypad(stdscr, TRUE);
+
+    if(COLS < 100) {
+        pcurses::margin = 4;
+    } else if(COLS > 200) {
+        pcurses::margin = 15;
+    } else {
+        pcurses::margin = 10;
+    }
+
+    pcurses::title_y = LINES / 2 - LINES / 6;
+    pcurses::lines = LINES;
+    pcurses::cols = COLS;
+}
+
+void pcurses::clean()
+{
+    delwin(stdscr);
+    endwin();
+}
+
 /*Pause the program until the user press Enter*/
 void pcurses::waitenter()
 {
