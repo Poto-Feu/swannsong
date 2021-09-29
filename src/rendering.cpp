@@ -73,10 +73,9 @@ void rendering::display_inventory(pstrings::ps_data_ptr const& pstrings_data,
                     "inventory_empty"));
     } else {
         for(auto const& it : inv) {
-            std::string disp_str = it.name;
             std::string str_name = "item_" + it.name;
-
-            disp_str = pstrings::fetch_string(pstrings_data, str_name);
+            std::string disp_str = pstrings::fetch_string(pstrings_data,
+                    str_name);
 
             disp_str += "   " + std::to_string(return_item_n(inv, it.name));
             strings_list.push_back(std::move(disp_str));
