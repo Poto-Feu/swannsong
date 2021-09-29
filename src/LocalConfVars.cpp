@@ -14,8 +14,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure.
-    If not, see <https://www.gnu.org/licenses/>.
+    along with SwannSong Adventure.  If not, see
+    <https://www.gnu.org/licenses/>.
 */
 
 #include <fstream>
@@ -47,7 +47,7 @@ static bool does_map_key_exists(
     return map.find(id) != map.end();
 }
 
-static void read_from_file(LocalConfVars::lcv_data_ptr data,
+static void read_from_file(LocalConfVars::lcv_data_ptr const& lcv,
         std::string const& conf_file_path)
 {
     std::vector<std::string> file_content = fileio::copy_to_vector(
@@ -67,7 +67,7 @@ static void read_from_file(LocalConfVars::lcv_data_ptr data,
             game_error::emit_warning("Wrong variable formatting: " + it);
             continue;
         }
-        data->map[var] = value;
+        lcv->map[var] = value;
     }
 }
 
@@ -87,25 +87,24 @@ std::shared_ptr<LocalConfVars::lcv_data> LocalConfVars::init_data(
     return lcv_ptr;
 }
 
-bool LocalConfVars::change_value(lcv_data_ptr const data,
-        std::string const& id,
-        std::string const& value)
+bool LocalConfVars::change_value(lcv_data_ptr const& lcv,
+        std::string const& id, std::string const& value)
 {
-    if(!does_map_key_exists(data->map, id)) {
+    if(!does_map_key_exists(lcv->map, id)) {
         return false;
     } else {
-        data->map[id] = value;
+        lcv->map[id] = value;
         return true;
     }
 }
 
-std::string const* LocalConfVars::get_value(lcv_data_ptr data,
+std::string const* LocalConfVars::get_value(lcv_data_ptr const& lcv,
         std::string const& id)
 {
-    if(!does_map_key_exists(data->map, id)) {
+    if(!does_map_key_exists(lcv->map, id)) {
         return nullptr;
     } else {
-        return &data->map.at(id);
+        return &lcv->map.at(id);
     }
 }
 
@@ -115,12 +114,12 @@ void LocalConfVars::set_value(lcv_data_ptr const& lcv, std::string const& id,
     lcv->map[id] = value;
 }
 
-bool LocalConfVars::write_to_file(lcv_data_ptr data,
+bool LocalConfVars::write_to_file(lcv_data_ptr const& lcv,
         std::string const& local_conf_path)
 {
     std::ofstream file_stream(local_conf_path + LOCAL_CONF_FILENAME);
 
-    for(auto const& it : data->map) {
+    for(auto const& it : lcv->map) {
         file_stream << it.first << "=" << "\"" << it.second << "\""
             << std::endl;
     }
