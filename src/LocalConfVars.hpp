@@ -34,9 +34,12 @@ namespace LocalConfVars {
             bool reset_conf = false);
     bool change_value(lcv_data_ptr lcv, std::string const& id,
             std::string const& value);
+    /* Same as change_value, except it will always set a value even if the
+     * local configuration variable does not exists. */
+    void set_value(lcv_data_ptr const& lcv, std::string const& id,
+            std::string const& value);
     std::string const* get_value(lcv_data_ptr lcv,
             std::string const& id);
-    bool write_to_file(lcv_data_ptr lcv,
-            std::string const& local_conf_path);
+    bool write_to_file(lcv_data_ptr lcv, std::string const& local_conf_path);
 }
 #endif

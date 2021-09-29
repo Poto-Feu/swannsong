@@ -24,23 +24,13 @@
 #include "fileio/gameconf.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
-#include "game_menu.hpp"
 #include "game_state.hpp"
+#include "game_lang.hpp"
 #include "pcurses.hpp"
 #include "player/Player.hpp"
 #include "rendering.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
-#include "terminal.hpp"
-
-struct lang_item
-{
-    lang_item(std::string const& p_id, std::string const& p_disp)
-        : id(p_id), disp(p_disp) {}
-
-    std::string id;
-    std::string disp;
-};
 
 static void missing_gcvar(std::string const& p_name)
 {
@@ -100,56 +90,6 @@ static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
     return gc_vec;
 }
 
-//Show a prompt asking the user to choose the language and the prompt to do so
-void Game::ask_lang(LocalConfVars::lcv_data_ptr lcv,
-        std::string const& data_path)
-{
-    bool validinp = false;
-
-    std::vector<lang_item> langarr {
-        lang_item("eng", "English"),
-        lang_item("fra", "Français")
-    };
-
-    const std::string *error_msg_ptr = nullptr;
-
-    // Slight hack to get "Français" to display correctly
-    terminal::set_locale("fra");
-
-    while(!validinp) {
-        const std::string hint_str = "Hint : make a choice by typing the corresponding number.";
-        const std::string select_lang_str = "Select your language";
-        const std::string not_valid_error_str = "Nope. (not a valid input)";
-        const std::string nothing_error_str = "Nope. (nothing !)";
-        const std::string too_long_error_str = "Nope. (too long)";
-
-        game_menu::flags menu_flags;
-        menu_flags.title_bold = false;
-        menu_flags.input_length = 2;
-
-        std::string buf = game_menu::display(&hint_str, &select_lang_str, nullptr,
-                { langarr[0].disp, langarr[1].disp }, error_msg_ptr, &menu_flags, nullptr);
-
-        if(buf.size() == 1) {
-            size_t intval = buf[0] - '0';
-
-            if(intval > 0 && intval <= langarr.size()) {
-                std::string lang = langarr[intval - 1].id;
-
-                validinp = true;
-                LocalConfVars::change_value(lcv, "lang",
-                        langarr[intval - 1].id);
-                this->pstrings_data = pstrings::init_data(data_path,
-                        langarr[intval - 1].id);
-            } else error_msg_ptr = &not_valid_error_str;
-        } else if(buf.size() == 0) {
-            error_msg_ptr = &nothing_error_str;
-        } else {
-            error_msg_ptr = &too_long_error_str;
-        }
-    }
-}
-
 Game::~Game()
 {
     delwin(stdscr);
@@ -164,13 +104,14 @@ Game::~Game()
 bool Game::init(pargs::args_data const& args_data)
 {
     LocalConfVars::lcv_data_ptr lcv;
+    game_lang::LangInfo lang_info;
 
     files_path::paths_struct p_paths = files_path::getpaths(args_data.local);
 
     if(!args_data.reset) {
-        lcv= LocalConfVars::init_data(p_paths.local_conf_path);
+        lcv = LocalConfVars::init_data(p_paths.local_conf_path);
     } else {
-        lcv= LocalConfVars::init_data(p_paths.local_conf_path, true);
+        lcv = LocalConfVars::init_data(p_paths.local_conf_path, true);
     }
     game_error::set_filepath(p_paths.local_data_path);
 
@@ -189,26 +130,12 @@ bool Game::init(pargs::args_data const& args_data)
     };
 
     set_curses();
+    game_lang::lang_init(lcv, lang_info);
+    this->pstrings_data = pstrings::init_data(p_paths.data_path,
+            lang_info.code);
 
     auto csfile_it = get_gcvar_it("csfile");
     auto firstroom_it = get_gcvar_it("firstroom");
-
-    if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
-        ask_lang(lcv, p_paths.data_path);
-    } else {
-        std::string const* lang_lcv = LocalConfVars::get_value(lcv,
-                "lang");
-        if(!lang_lcv) {
-            missing_lcvar("lang");
-            return false;
-        }
-
-        this->pstrings_data = pstrings::init_data(p_paths.data_path,
-                *lang_lcv);
-        if(!this->pstrings_data) {
-            return false;
-        }
-    }
 
     this->rooms_data = rooms::init_data(this->pstrings_data,
             p_paths.data_path);

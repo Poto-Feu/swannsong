@@ -65,6 +65,7 @@ add_executable(swannsongadv
     src/files_path.cpp
     src/Game.cpp
     src/game_error.cpp
+    src/game_lang.cpp
     src/game_menu.cpp
     src/pargs.cpp
     src/pcurses.cpp

@@ -109,6 +109,12 @@ std::string const* LocalConfVars::get_value(lcv_data_ptr data,
     }
 }
 
+void LocalConfVars::set_value(lcv_data_ptr const& lcv, std::string const& id,
+        std::string const& value)
+{
+    lcv->map[id] = value;
+}
+
 bool LocalConfVars::write_to_file(lcv_data_ptr data,
         std::string const& local_conf_path)
 {
