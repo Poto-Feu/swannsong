@@ -20,8 +20,10 @@
 
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 
 #include "fileio.hpp"
+#include "game_error.hpp"
 #include "stringsm.hpp"
 
 bool fileio::getfileln(std::string& r_str, std::ifstream& p_stream)
@@ -44,6 +46,22 @@ std::vector<std::string> fileio::copy_to_vector(std::string const& file_path)
     }
 
     return file_content;
+}
+
+bool fileio::copy_to_string(std::string const& file_path, std::string& content)
+{
+    std::ifstream file_stream(file_path);
+    std::stringstream buf;
+
+    if(!file_stream.is_open()) {
+        game_error::emit_warning("Cannot open file: " + file_path);
+        return false;
+    } else {
+        buf << file_stream.rdbuf();
+        content = buf.str();
+
+        return true;
+    }
 }
 
 bool fileio::file_exists(std::string const& file_path)

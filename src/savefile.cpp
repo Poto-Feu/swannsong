@@ -19,7 +19,6 @@
 */
 
 #include <fstream>
-#include <sstream>
 
 extern "C" {
 #include <jansson.h>
@@ -264,14 +263,10 @@ bool savefile::save(Player const& player, std::string const& current_room,
 }
 
 static bool open_save_file_load(savefile::load_data& savefile_data,
-        std::ifstream& file_stream, std::string const& local_data_path)
+        std::string const& local_data_path, std::string& content)
 {
-    using namespace savefile;
-
-    file_stream.open(local_data_path + "save.json");
-
-    if(!file_stream.is_open()) {
-        savefile_data.error = loading_error::NO_FILE;
+    if(!fileio::copy_to_string(local_data_path + "save.json", content)) {
+        savefile_data.error = savefile::loading_error::NO_FILE;
         return false;
     }
 
@@ -388,19 +383,16 @@ static bool parse_json_structure(savefile::load_data& savefile_data,
 bool savefile::load(savefile::load_data& savefile_data,
         std::string const& local_data_path)
 {
-    std::ifstream file_stream;
-    std::stringstream buf;
     json_t* root_json;
+    std::string content;
 
     savefile_data.error = loading_error::NOERROR;
 
-    if(!open_save_file_load(savefile_data, file_stream, local_data_path)) {
+    if(!open_save_file_load(savefile_data, local_data_path, content)) {
         return false;
     }
 
-    buf << file_stream.rdbuf();
-
-    root_json = json_loads(buf.str().c_str(), JSON_REJECT_DUPLICATES, NULL);
+    root_json = json_loads(content.c_str(), JSON_REJECT_DUPLICATES, NULL);
     if(!root_json) {
         return false;
     }
