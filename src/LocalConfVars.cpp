@@ -18,14 +18,15 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include <fstream>
 #include <unordered_map>
 
+extern "C" {
+#include <jansson.h>
+}
+
 #include "LocalConfVars.hpp"
-#include "fileio/conf_files.hpp"
 #include "fileio/fileio.hpp"
 #include "game_error.hpp"
-#include "stringsm.hpp"
 
 struct LocalConfVars::lcv_data {
     std::unordered_map<std::string, std::string> map;
@@ -47,27 +48,45 @@ static bool does_map_key_exists(
     return map.find(id) != map.end();
 }
 
-static void read_from_file(LocalConfVars::lcv_data_ptr const& lcv,
+static void check_each_var_json(LocalConfVars::lcv_data_ptr const& lcv,
+        json_t const* lcv_json)
+{
+    for(auto const& it : local_conf_vars) {
+        json_t* var_json = json_object_get(lcv_json, it.first.c_str());
+
+        if(!var_json || json_typeof(var_json) != JSON_STRING) {
+            lcv->map[it.first] = it.second;
+        } else {
+            lcv->map[it.first] = json_string_value(var_json);
+        }
+    }
+}
+
+static bool parse_lcv_json(LocalConfVars::lcv_data_ptr const& lcv,
+        std::string const& file_content)
+{
+    json_t* lcv_json;
+
+    lcv_json = json_loads(file_content.c_str(), JSON_REJECT_DUPLICATES, NULL);
+    if(!lcv_json) {
+        game_error::emit_warning("Cannot parse LocalConfVars json");
+        return false;
+    } else {
+        check_each_var_json(lcv, lcv_json);
+        json_decref(lcv_json);
+        return true;
+    }
+}
+
+static bool read_from_file(LocalConfVars::lcv_data_ptr const& lcv,
         std::string const& conf_file_path)
 {
-    std::vector<std::string> file_content = fileio::copy_to_vector(
-            conf_file_path);
+    std::string file_content;
 
-    for(auto& it : file_content) {
-        std::string var;
-        std::string value;
-
-        stringsm::rtab(it);
-
-        if(it == "" || it[0] == '#') {
-            continue;
-        }
-
-        if(!conf_files::split_var(var, value, it)) {
-            game_error::emit_warning("Wrong variable formatting: " + it);
-            continue;
-        }
-        lcv->map[var] = value;
+    if(!fileio::copy_to_string(conf_file_path, file_content)) {
+        return false;
+    } else {
+        return parse_lcv_json(lcv, file_content);
     }
 }
 
@@ -77,9 +96,7 @@ std::shared_ptr<LocalConfVars::lcv_data> LocalConfVars::init_data(
     std::shared_ptr<lcv_data> lcv_ptr(new lcv_data);
     std::string conf_file_path = local_conf_path + LOCAL_CONF_FILENAME;
 
-    if(fileio::file_exists(conf_file_path) && !reset_conf) {
-        read_from_file(lcv_ptr, conf_file_path);
-    } else {
+    if(reset_conf || !read_from_file(lcv_ptr, conf_file_path)) {
         lcv_ptr->map = local_conf_vars;
         write_to_file(lcv_ptr, local_conf_path);
     }
@@ -114,14 +131,51 @@ void LocalConfVars::set_value(lcv_data_ptr const& lcv, std::string const& id,
     lcv->map[id] = value;
 }
 
+static bool create_json_vars_strings(LocalConfVars::lcv_data_ptr const& lcv,
+        json_t* root_json)
+{
+    for(auto const& it : lcv->map) {
+        json_t* var_json;
+
+        if(!(var_json = json_string(it.second.c_str()))) {
+            game_error::emit_warning("Cannot create LocalConfVar JSON string");
+            return false;
+        }
+
+        if(json_object_set_new(root_json, it.first.c_str(), var_json) == -1) {
+            game_error::emit_warning(
+                    "Cannot add LocalConfVar JSON string to root object");
+            json_decref(var_json);
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool LocalConfVars::write_to_file(lcv_data_ptr const& lcv,
         std::string const& local_conf_path)
 {
-    std::ofstream file_stream(local_conf_path + LOCAL_CONF_FILENAME);
+    json_t* root_json;
+    char* buf_c;
+    std::string buf;
 
-    for(auto const& it : lcv->map) {
-        file_stream << it.first << "=" << "\"" << it.second << "\""
-            << std::endl;
+    if(!(root_json = json_object())) {
+        game_error::fatal_error("Cannot create conf_vars JSON root object");
+        return false;
+    } else if(!create_json_vars_strings(lcv, root_json)) {
+        json_decref(root_json);
+        return false;
+    } else if(!(buf_c = json_dumps(root_json, JSON_INDENT(4)))) {
+        game_error::fatal_error("Cannot dump LocalConfVars JSON root object");
+        return false;
     }
-    return true;
+
+    buf = buf_c;
+    buf += '\n';
+    free(buf_c);
+    json_decref(root_json);
+
+    return fileio::write_to_file(local_conf_path + LOCAL_CONF_FILENAME, buf);
 }

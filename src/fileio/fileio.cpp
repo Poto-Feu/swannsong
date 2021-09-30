@@ -48,13 +48,18 @@ std::vector<std::string> fileio::copy_to_vector(std::string const& file_path)
     return file_content;
 }
 
+static void file_cant_open_warning(std::string const& file_path)
+{
+    game_error::emit_warning("Cannot open file: " + file_path);
+}
+
 bool fileio::copy_to_string(std::string const& file_path, std::string& content)
 {
     std::ifstream file_stream(file_path);
     std::stringstream buf;
 
     if(!file_stream.is_open()) {
-        game_error::emit_warning("Cannot open file: " + file_path);
+        file_cant_open_warning(file_path);
         return false;
     } else {
         buf << file_stream.rdbuf();
@@ -64,9 +69,18 @@ bool fileio::copy_to_string(std::string const& file_path, std::string& content)
     }
 }
 
-bool fileio::file_exists(std::string const& file_path)
+bool fileio::write_to_file(std::string const& file_path,
+        std::string const& content)
 {
-    return std::filesystem::exists(file_path);
+    std::ofstream file_stream(file_path);
+
+    if(!file_stream.is_open()) {
+        file_cant_open_warning(file_path);
+        return false;
+    } else {
+        file_stream << content;
+        return true;
+    }
 }
 
 bool fileio::create_directories(std::string const& path)

@@ -18,8 +18,6 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include <fstream>
-
 extern "C" {
 #include <jansson.h>
 }
@@ -30,19 +28,6 @@ extern "C" {
 #include "player/Player.hpp"
 
 static const std::string const_game_name = "SwannSong Adventure";
-
-static bool open_save_file_write(std::ofstream& file_stream,
-        std::string const& local_data_path)
-{
-    file_stream.open(local_data_path + "save.json");
-
-    if(!file_stream.is_open()) {
-        game_error::fatal_error("Cannot open save file");
-        return false;
-    }
-
-    return true;
-}
 
 static bool add_to_json_object(json_t* parent, std::string const& key,
         json_t* child)
@@ -209,7 +194,7 @@ static bool set_json_structure(Player const& player,
     return true;
 }
 
-static bool write_save_to_file(std::ofstream& file_stream,
+static bool write_save_to_file(std::string const& local_data_path,
         const json_t* json_root)
 {
     char *buf_c;
@@ -225,22 +210,15 @@ static bool write_save_to_file(std::ofstream& file_stream,
     buf += '\n';
     free(buf_c);
 
-    file_stream << buf;
-
-    return true;
+    return fileio::write_to_file(local_data_path + "save.json", buf);
 }
 
 bool savefile::save(Player const& player, std::string const& current_room,
         std::string const& local_data_path)
 {
-    std::ofstream file_stream;
     json_t* root_json;
 
     fileio::create_directories(local_data_path);
-
-    if(!open_save_file_write(file_stream, local_data_path)) {
-        return false;
-    }
 
     root_json = json_object();
     if(!root_json) {
@@ -250,9 +228,7 @@ bool savefile::save(Player const& player, std::string const& current_room,
 
     if(!set_json_structure(player, current_room, root_json)) {
         return false;
-    }
-
-    if(!write_save_to_file(file_stream, root_json)) {
+    } else if(!write_save_to_file(local_data_path, root_json)) {
         json_decref(root_json);
         return false;
     }
