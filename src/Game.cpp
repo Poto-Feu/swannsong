@@ -37,43 +37,6 @@ static void missing_gcvar(std::string const& p_name)
     game_error::fatal_error("missing gameconf var (" + p_name +")");
 }
 
-static void missing_lcvar(std::string const& p_name)
-{
-    game_error::fatal_error("missing local conf var (" + p_name +")");
-}
-
-//Fetch variables from the gameconf file and return a vector containing them
-static auto fetch_gameconf_vars(LocalConfVars::lcv_data_ptr lcv,
-        std::string const& system_data_path)
-{
-    std::string const* firstlaunch_val;
-    auto gc_vec = gameconf::readfile(system_data_path);
-
-    auto get_gcvar_it = [gc_vec](std::string const& p_name) {
-        return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
-            [p_name](gameconf::gcvar_struct const& cgcvar) {
-            return cgcvar.name == p_name;
-            });
-    };
-
-    //Avoid overwriting user-selected language
-    firstlaunch_val = LocalConfVars::get_value(lcv, "firstlaunch");
-    if(!firstlaunch_val) {
-        missing_lcvar("firstlaunch");
-    } else if(*firstlaunch_val == "1") {
-        auto defaultlang_it = get_gcvar_it("defaultlang");
-
-        if(defaultlang_it != gc_vec.cend()) {
-            LocalConfVars::change_value(lcv, "lang",
-                    defaultlang_it->value);
-        } else {
-            missing_gcvar("defaultlang");
-        }
-    }
-
-    return gc_vec;
-}
-
 Game::~Game()
 {
     pcurses::clean();
@@ -98,8 +61,7 @@ bool Game::init(pargs::args_data const& args_data)
     }
     game_error::set_filepath(p_paths.local_data_path);
 
-    // If this function succeed, "firstlaunch" is guaranteed to exists
-    auto gc_vec = fetch_gameconf_vars(lcv, p_paths.data_path);
+    auto gc_vec = gameconf::readfile(p_paths.data_path);
 
     if(game_error::has_encountered_fatal()) {
         return false;
@@ -136,17 +98,9 @@ bool Game::init(pargs::args_data const& args_data)
 
     if(game_error::has_encountered_fatal()) {
         return false;
-    }
-
-    if(*LocalConfVars::get_value(lcv, "firstlaunch") == "1") {
-        auto const* cs = m_cutscenes_container.get_cutscene("help");
-
-        rendering::display_cutscene(this->pstrings_data, *cs);
-        LocalConfVars::change_value(lcv, "firstlaunch", "0");
-        LocalConfVars::write_to_file(lcv, p_paths.local_conf_path);
-    }
-
-    if(firstroom_it != gc_vec.cend()) {
+    } else if(!LocalConfVars::write_to_file(lcv, p_paths.local_conf_path)) {
+        return false;
+    } else if(firstroom_it != gc_vec.cend()) {
         m_start_room = firstroom_it->value;
         return true;
     } else {

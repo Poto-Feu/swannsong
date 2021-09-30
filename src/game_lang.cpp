@@ -79,16 +79,15 @@ static std::string const& show_lang_select_screen()
 void game_lang::lang_init(LocalConfVars::lcv_data_ptr const& lcv,
         game_lang::LangInfo& lang_info)
 {
-    std::string const* firstlaunch_var = LocalConfVars::get_value(lcv,
-            "firstlaunch");
     std::string const* lang_var = LocalConfVars::get_value(lcv, "lang");
 
-    if(!firstlaunch_var || *firstlaunch_var == "1" || !lang_var) {
+    if(!lang_var) {
         lang_info.code = show_lang_select_screen();
     } else {
         lang_info.code = *lang_var;
     }
 
     LocalConfVars::set_value(lcv, "lang", lang_info.code);
+    LocalConfVars::set_value(lcv, "firstlaunch", "0");
     terminal::set_locale(lang_info.code);
 }

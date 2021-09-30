@@ -34,13 +34,6 @@ struct LocalConfVars::lcv_data {
 
 static const std::string LOCAL_CONF_FILENAME = "conf_vars.txt";
 
-/* The corresponding value is the default value of the variable if it was not
- * defined in the conf file */
-static const std::unordered_map<std::string, std::string> local_conf_vars({
-        {"firstlaunch", "1"},
-        {"lang", "eng"}
-});
-
 static bool does_map_key_exists(
         std::unordered_map<std::string, std::string> const& map,
         std::string const& id)
@@ -48,18 +41,29 @@ static bool does_map_key_exists(
     return map.find(id) != map.end();
 }
 
-static void check_each_var_json(LocalConfVars::lcv_data_ptr const& lcv,
-        json_t const* lcv_json)
+static bool check_each_var_json(LocalConfVars::lcv_data_ptr const& lcv,
+        json_t* lcv_json)
 {
-    for(auto const& it : local_conf_vars) {
-        json_t* var_json = json_object_get(lcv_json, it.first.c_str());
+    const char* key;
+    json_t* var_json;
 
-        if(!var_json || json_typeof(var_json) != JSON_STRING) {
-            lcv->map[it.first] = it.second;
+    json_object_foreach(lcv_json, key, var_json) {
+        if(json_typeof(var_json) != JSON_STRING) {
+            game_error::emit_warning("Non-string value in local conf file");
         } else {
-            lcv->map[it.first] = json_string_value(var_json);
+            const char* var_str = json_string_value(var_json);
+
+            if(!var_str) {
+                game_error::fatal_error("Cannot get value from JSON string");
+
+                return false;
+            } else {
+                lcv->map[key] = var_str;
+            }
         }
     }
+
+    return true;
 }
 
 static bool parse_lcv_json(LocalConfVars::lcv_data_ptr const& lcv,
@@ -96,9 +100,8 @@ std::shared_ptr<LocalConfVars::lcv_data> LocalConfVars::init_data(
     std::shared_ptr<lcv_data> lcv_ptr(new lcv_data);
     std::string conf_file_path = local_conf_path + LOCAL_CONF_FILENAME;
 
-    if(reset_conf || !read_from_file(lcv_ptr, conf_file_path)) {
-        lcv_ptr->map = local_conf_vars;
-        write_to_file(lcv_ptr, local_conf_path);
+    if(!reset_conf) {
+        read_from_file(lcv_ptr, conf_file_path);
     }
 
     return lcv_ptr;
