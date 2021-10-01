@@ -26,7 +26,6 @@
 #include "gameconf.hpp"
 #include "pcurses.hpp"
 #include "player/Player.hpp"
-#include "rendering.hpp"
 #include "room/RoomClass.hpp"
 #include "room/RoomLoopState.hpp"
 
