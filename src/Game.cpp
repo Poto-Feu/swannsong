@@ -21,11 +21,11 @@
 #include <algorithm>
 
 #include "Game.hpp"
-#include "fileio/gameconf.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
 #include "game_state.hpp"
 #include "game_lang.hpp"
+#include "gameconf.hpp"
 #include "pcurses.hpp"
 #include "player/Player.hpp"
 #include "rendering.hpp"

@@ -46,7 +46,6 @@ add_executable(swannsongadv
     src/main.cpp
     src/fileio/conf_files.cpp
     src/fileio/fileio.cpp
-    src/fileio/gameconf.cpp
     src/player/inventory.cpp
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.cpp
@@ -63,6 +62,7 @@ add_executable(swannsongadv
     src/dialogbox.cpp
     src/display_server.cpp
     src/files_path.cpp
+    src/gameconf.cpp
     src/Game.cpp
     src/game_error.cpp
     src/game_lang.cpp

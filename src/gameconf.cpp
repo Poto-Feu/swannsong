@@ -20,7 +20,7 @@
 
 #include <fstream>
 
-#include "fileio/gameconf.hpp"
+#include "gameconf.hpp"
 #include "fileio/conf_files.hpp"
 #include "game_error.hpp"
 #include "stringsm.hpp"
