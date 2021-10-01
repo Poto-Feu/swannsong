@@ -32,7 +32,13 @@ CutscenesContainer::CutscenesContainer(std::string const& csfile,
         pstrings::ps_data_ptr const& pstrings_data)
 {
     std::string buf;
-    std::ifstream file_stream(data_path + csfile);
+    std::string file_path = data_path + csfile;
+    std::ifstream file_stream(file_path);
+
+    if(!file_stream.is_open()) {
+        game_error::fatal_error("Cannot open cutscenes file");
+        return;
+    }
 
     while(fileio::getfileln(buf, file_stream)) {
         Cutscene curr_cs;
