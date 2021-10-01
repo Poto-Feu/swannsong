@@ -18,43 +18,119 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include <fstream>
+#include <algorithm>
+
+extern "C" {
+#include <jansson.h>
+}
 
 #include "gameconf.hpp"
-#include "fileio/conf_files.hpp"
+#include "fileio/fileio.hpp"
 #include "game_error.hpp"
-#include "stringsm.hpp"
 
-/* Read data contained in the gameconf file and set the gameconf variable to
- * the appropriate value */
-std::vector<gameconf::gcvar_struct> gameconf::readfile(
-        std::string const& data_path)
+struct gc_var {
+    std::string name;
+    std::vector<std::string> values;
+};
+
+struct gameconf::gcvars {
+    std::vector<gc_var> vars_vec;
+};
+
+static bool parse_gameconf_json_array(gameconf::gcvars_ptr const& vars,
+        std::string const& var_key, json_t* array_json)
 {
-    std::ifstream gc_stream(data_path + "gameconf.txt");
+    size_t i;
+    json_t* value_json;
+    std::vector<std::string> values;
 
-    if(!gc_stream.good()) {
-        game_error::fatal_error("gameconf file not found (this may also "
-                "applies to other game files)");
-    }
+    values.reserve(json_array_size(array_json));
 
-    std::vector<gcvar_struct> rtrn_vec;
-    std::string curr_line;
-
-    while(std::getline(gc_stream, curr_line)) {
-        stringsm::rtab(curr_line);
-        if(curr_line.empty()) continue;
-        if(curr_line.at(0) != '#')
-        {
-            std::string var;
-            std::string value;
-
-            if(conf_files::split_var(var, value, curr_line)) {
-                rtrn_vec.push_back(gcvar_struct {var, value});
-            } else {
-                game_error::emit_warning("incorrect gameconf syntax");
-            }
+    json_array_foreach(array_json, i, value_json) {
+        if(json_typeof(value_json) != JSON_STRING) {
+            game_error::emit_warning("gameconf var array (" + var_key + ") \
+                have a non-string member");
+            return false;
+        } else {
+            values.push_back(json_string_value(value_json));
         }
-        curr_line.clear();
     }
-    return rtrn_vec;
+
+    vars->vars_vec.push_back({ var_key, std::move(values) });
+
+    return true;
+}
+
+static bool parse_gameconf_json(gameconf::gcvars_ptr const& vars,
+        json_t* gameconf_json)
+{
+    const char* var_key;
+    json_t* var_json;
+
+    if(json_typeof(gameconf_json) != JSON_OBJECT) {
+        game_error::fatal_error("gameconf root JSON is not an object");
+        return false;
+    }
+
+    vars->vars_vec.reserve(json_object_size(gameconf_json));
+
+    json_object_foreach(gameconf_json, var_key, var_json) {
+        if(json_typeof(var_json) == JSON_STRING) {
+            vars->vars_vec.push_back({
+                    var_key, { json_string_value(var_json) }});
+        } else if(json_typeof(var_json) == JSON_ARRAY) {
+            /* No need to check the return value, "crash" on runtime if
+             * needed. */
+            parse_gameconf_json_array(vars, var_key, var_json);
+        } else {
+            game_error::emit_warning("gameconf JSON var is neither a STRING \
+                    nor an array");
+        }
+    }
+
+    json_decref(gameconf_json);
+
+    return true;
+}
+
+gameconf::gcvars_ptr gameconf::readfile(std::string const& data_path)
+{
+    gameconf::gcvars_ptr vars(new gameconf::gcvars);
+    std::string file_content;
+    json_t* gameconf_json;
+
+    if(!fileio::copy_to_string(data_path + "/gameconf.json", file_content)) {
+        return nullptr;
+    } else if(!(gameconf_json = json_loads(file_content.c_str(),
+                    JSON_REJECT_DUPLICATES, NULL))) {
+        game_error::fatal_error("Cannot load gameconf.json JSON");
+        return nullptr;
+    } else if(!parse_gameconf_json(vars, gameconf_json)) {
+        json_decref(gameconf_json);
+        return nullptr;
+    }
+    json_decref(gameconf_json);
+
+    return vars;
+}
+
+static auto get_gameconf_var_iterator(std::vector<gc_var> const& vars_vec,
+        std::string const& var_name)
+{
+    return std::find_if(vars_vec.cbegin(), vars_vec.cend(),
+            [&var_name](struct gc_var const& var) {
+            return var.name == var_name;
+            });
+}
+
+std::vector<std::string> const* gameconf::get_var(
+        gameconf::gcvars_ptr const& vars, std::string const& var_name)
+{
+    auto var_iterator = get_gameconf_var_iterator(vars->vars_vec, var_name);
+
+    if(var_iterator == vars->vars_vec.cend()) {
+        return nullptr;
+    } else {
+        return &var_iterator->values;
+    }
 }

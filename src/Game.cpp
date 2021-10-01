@@ -18,8 +18,6 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#include <algorithm>
-
 #include "Game.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
@@ -51,6 +49,8 @@ bool Game::init(pargs::args_data const& args_data)
 {
     LocalConfVars::lcv_data_ptr lcv;
     game_lang::LangInfo lang_info;
+    std::vector<std::string> const* csfile_values;
+    std::vector<std::string> const* firstroom_values;
 
     files_path::paths_struct p_paths = files_path::getpaths(args_data.local);
 
@@ -61,26 +61,16 @@ bool Game::init(pargs::args_data const& args_data)
     }
     game_error::set_filepath(p_paths.local_data_path);
 
-    auto gc_vec = gameconf::readfile(p_paths.data_path);
+    gameconf::gcvars_ptr gameconf_vars = gameconf::readfile(p_paths.data_path);
 
     if(game_error::has_encountered_fatal()) {
         return false;
     }
 
-    auto get_gcvar_it = [gc_vec](std::string const& p_name) {
-        return std::find_if(gc_vec.cbegin(), gc_vec.cend(),
-            [p_name](gameconf::gcvar_struct const& ccpvar) {
-            return ccpvar.name == p_name;
-            });
-    };
-
     pcurses::init();
     game_lang::lang_init(lcv, lang_info);
     this->pstrings_data = pstrings::init_data(p_paths.data_path,
             lang_info.code);
-
-    auto csfile_it = get_gcvar_it("csfile");
-    auto firstroom_it = get_gcvar_it("firstroom");
 
     this->rooms_data = rooms::init_data(this->pstrings_data,
             p_paths.data_path);
@@ -88,24 +78,26 @@ bool Game::init(pargs::args_data const& args_data)
         return false;
     }
 
-    if(csfile_it != gc_vec.cend()) {
-        m_cutscenes_container = CutscenesContainer(csfile_it->value,
-                p_paths.data_path, this->pstrings_data);
-    } else {
+    csfile_values = gameconf::get_var(gameconf_vars, "csfile");
+    firstroom_values = gameconf::get_var(gameconf_vars, "firstroom");
+    if(!csfile_values) {
         missing_gcvar("csfile");
         return false;
+    } else if(!firstroom_values) {
+        missing_gcvar("firstroom");
+        return false;
     }
+
+    m_cutscenes_container = CutscenesContainer((*csfile_values)[0],
+            p_paths.data_path, this->pstrings_data);
 
     if(game_error::has_encountered_fatal()) {
         return false;
     } else if(!LocalConfVars::write_to_file(lcv, p_paths.local_conf_path)) {
         return false;
-    } else if(firstroom_it != gc_vec.cend()) {
-        m_start_room = firstroom_it->value;
-        return true;
     } else {
-        missing_gcvar("firstroom");
-        return false;
+        m_start_room = (*firstroom_values)[0];
+        return true;
     }
 }
 

@@ -1,7 +1,0 @@
-# files path
-langdir="lang/"
-csfile="cutscenes.txt"
-
-# game vars
-defaultlang="eng"
-firstroom="menu"

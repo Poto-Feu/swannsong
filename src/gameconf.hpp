@@ -21,17 +21,17 @@
 #ifndef GAMECONF_HPP
 #define GAMECONF_HPP
 
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace gameconf
 {
-    struct gcvar_struct {
-        std::string name;
-        std::string value;
-    };
+    struct gcvars;
+    typedef std::shared_ptr<gcvars> gcvars_ptr;
 
-    std::vector<gcvar_struct> readfile(std::string const& data_path);
+    gcvars_ptr readfile(std::string const& data_path);
+    std::vector<std::string> const* get_var(gameconf::gcvars_ptr const& vars,
+            std::string const& var_name);
 }
-
 #endif
