@@ -29,10 +29,6 @@ namespace stringsm
 
     //Replace the newline character by a null terminator
     void chomp(char* str);
-    //Return an uppercased string
-    std::string to_upper(std::string p_str);
-    //Return a lowercased string
-    std::string to_lower(std::string p_str);
     //Check if the content of a string is an unsigned number
     bool is_number(std::string const& p_str);
     //Remove space and tab characters at the beginning of a string

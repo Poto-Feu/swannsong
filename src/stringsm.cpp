@@ -28,22 +28,6 @@ void stringsm::chomp(char* str)
     *str = '\0';
 }
 
-std::string stringsm::to_upper(std::string p_str)
-{
-    for(auto& it : p_str) {
-        it = std::toupper(it);
-    }
-    return p_str;
-}
-
-std::string stringsm::to_lower(std::string p_str)
-{
-    for(auto& it : p_str) {
-        it = std::tolower(it);
-    }
-    return p_str;
-}
-
 bool stringsm::is_number(std::string const& p_str)
 {
     if(p_str.size() == 0) return false;
