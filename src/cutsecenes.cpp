@@ -33,9 +33,8 @@ struct cutscenes::csdata {
     std::unordered_map<std::string, Cutscene> cs_map;
 };
 
-static bool parse_cutscene_field_json(
-        pstrings::ps_data_ptr const& pstrings_data,
-        CutsceneField& cutscene_field, json_t* cutscene_field_json)
+static bool parse_cutscene_field_json(CutsceneField& cutscene_field,
+        json_t* cutscene_field_json)
 {
     const char* type;
     const char* value;
@@ -49,7 +48,7 @@ static bool parse_cutscene_field_json(
         return false;
     } else if(std::strcmp(type, "string") == 0) {
         cutscene_field.type = CutsceneFieldType::STRING;
-        cutscene_field.content = pstrings::fetch_string(pstrings_data, value);
+        cutscene_field.content = value;
     } else if(std::strcmp(type, "blank") == 0) {
         cutscene_field.type = CutsceneFieldType::BLANK;
     } else {
@@ -60,9 +59,8 @@ static bool parse_cutscene_field_json(
     return true;
 }
 
-static bool parse_cutscene_screen_json(
-        pstrings::ps_data_ptr const& pstrings_data,
-        Cutscene& cutscene, json_t* cutscene_screen_json)
+static bool parse_cutscene_screen_json(Cutscene& cutscene,
+        json_t* cutscene_screen_json)
 {
     json_t* cutscene_field_json;
     size_t i;
@@ -70,8 +68,7 @@ static bool parse_cutscene_screen_json(
     json_array_foreach(cutscene_screen_json, i, cutscene_field_json) {
         CutsceneField cutscene_field;
 
-        if(!parse_cutscene_field_json(pstrings_data, cutscene_field,
-                    cutscene_field_json)) {
+        if(!parse_cutscene_field_json(cutscene_field, cutscene_field_json)) {
             return false;
         } else {
             cutscene.actions_vec.push_back(std::move(cutscene_field));
@@ -82,7 +79,6 @@ static bool parse_cutscene_screen_json(
 }
 
 static bool parse_individual_cutscene_json(
-        pstrings::ps_data_ptr const& pstrings_data,
         cutscenes::csdata_ptr const& cs_data, std::string const& name,
         json_t* cutscene_json)
 {
@@ -105,8 +101,7 @@ static bool parse_individual_cutscene_json(
             is_new_screen = false;
         }
 
-        if(!parse_cutscene_screen_json(pstrings_data, cutscene,
-                    cutscene_screen_json)) {
+        if(!parse_cutscene_screen_json(cutscene, cutscene_screen_json)) {
             return false;
         } else {
             is_new_screen = true;
@@ -118,9 +113,7 @@ static bool parse_individual_cutscene_json(
     return true;
 }
 
-static bool parse_cs_json(pstrings::ps_data_ptr const& pstrings_data,
-        cutscenes::csdata_ptr const& cs_data,
-        json_t* root)
+static bool parse_cs_json(cutscenes::csdata_ptr const& cs_data, json_t* root)
 {
     json_t* child_json;
     const char* key;
@@ -131,16 +124,14 @@ static bool parse_cs_json(pstrings::ps_data_ptr const& pstrings_data,
     }
 
     json_object_foreach(root, key, child_json) {
-        if(!parse_individual_cutscene_json(pstrings_data, cs_data, key,
-                    child_json)) {
+        if(!parse_individual_cutscene_json(cs_data, key, child_json)) {
             return false;
         }
     }
     return true;
 }
 
-static bool load_cs_json(pstrings::ps_data_ptr const& pstrings_data,
-        std::string const& game_data_path,
+static bool load_cs_json(std::string const& game_data_path,
         cutscenes::csdata_ptr const& cs_data)
 {
     const std::string cs_file_path = game_data_path + "cutscenes.json";
@@ -159,7 +150,7 @@ static bool load_cs_json(pstrings::ps_data_ptr const& pstrings_data,
         return false;
     }
 
-    if(!parse_cs_json(pstrings_data, cs_data, root_json)) {
+    if(!parse_cs_json(cs_data, root_json)) {
         json_decref(root_json);
         return false;
     } else {
@@ -168,13 +159,11 @@ static bool load_cs_json(pstrings::ps_data_ptr const& pstrings_data,
     }
 }
 
-cutscenes::csdata_ptr cutscenes::init(
-        pstrings::ps_data_ptr const& pstrings_data,
-        std::string const& game_data_path)
+cutscenes::csdata_ptr cutscenes::init(std::string const& game_data_path)
 {
     csdata_ptr cs_data(new cutscenes::csdata);
 
-    if(!load_cs_json(pstrings_data, game_data_path, cs_data)) {
+    if(!load_cs_json(game_data_path, cs_data)) {
         return nullptr;
     } else {
         return cs_data;

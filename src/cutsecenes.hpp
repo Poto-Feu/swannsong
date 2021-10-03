@@ -24,14 +24,12 @@
 #include <memory>
 
 #include "CutsceneClass.hpp"
-#include "pstrings.hpp"
 
 namespace cutscenes {
     struct csdata;
     typedef std::shared_ptr<csdata> csdata_ptr;
 
-    csdata_ptr init(pstrings::ps_data_ptr const& pstrings_data,
-            std::string const& game_data_path);
+    csdata_ptr init(std::string const& game_data_path);
     Cutscene const* get(csdata_ptr const& cs_data, std::string const& id);
 }
 #endif

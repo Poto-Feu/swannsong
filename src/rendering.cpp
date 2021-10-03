@@ -43,10 +43,11 @@ void rendering::display_cutscene(pstrings::ps_data_ptr const& pstrings_data,
 {
     std::vector<std::string> strings_vec;
 
-    for(auto const& action_it : cutscene.actions_vec) {
-        switch(action_it.type) {
+    for(auto const& it : cutscene.actions_vec) {
+        switch(it.type) {
             case CutsceneFieldType::STRING:
-                add_string(strings_vec, action_it.content);
+                add_string(strings_vec, pstrings::fetch_string(pstrings_data,
+                            it.content));
                 break;
             case CutsceneFieldType::BLANK:
                 strings_vec.push_back("");

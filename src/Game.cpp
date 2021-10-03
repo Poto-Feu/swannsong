@@ -87,7 +87,7 @@ bool Game::init(pargs::args_data const& args_data)
         return false;
     }
 
-    this->cs_data = cutscenes::init(pstrings_data, p_paths.data_path);
+    this->cs_data = cutscenes::init(p_paths.data_path);
 
     if(!this->cs_data || game_error::has_encountered_fatal()) {
         return false;
