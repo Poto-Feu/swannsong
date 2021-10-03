@@ -107,17 +107,6 @@ std::shared_ptr<LocalConfVars::lcv_data> LocalConfVars::init_data(
     return lcv_ptr;
 }
 
-bool LocalConfVars::change_value(lcv_data_ptr const& lcv,
-        std::string const& id, std::string const& value)
-{
-    if(!does_map_key_exists(lcv->map, id)) {
-        return false;
-    } else {
-        lcv->map[id] = value;
-        return true;
-    }
-}
-
 std::string const* LocalConfVars::get_value(lcv_data_ptr const& lcv,
         std::string const& id)
 {
