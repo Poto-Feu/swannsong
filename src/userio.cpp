@@ -19,7 +19,6 @@
 */
 
 #include "userio.hpp"
-#include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
 #include "files_path.hpp"
 #include "game_error.hpp"
@@ -33,7 +32,7 @@
 
 bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
         rooms::RoomsData_ptr const& rooms_data,
-        CutscenesContainer const& cs_container, Room const& room,
+        cutscenes::csdata_ptr const& cs_data, Room const& room,
         Player& player, RoomDisplay const& room_display, RoomLoopState& rls,
         game_state_s& game_state, std::string& menu_input, bool& wrong_input)
 {
@@ -75,7 +74,7 @@ bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
             }
 
             for(auto const& it : displayed_cs) {
-                auto const* cs = cs_container.get_cutscene(it);
+                auto const* cs = cutscenes::get(cs_data, it);
 
                 if(!cs) {
                     game_error::emit_warning("Unknown cutscene");
@@ -121,9 +120,12 @@ bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
             dialogbox::display(NULL, &dialogbox_strs, pstrings_data);
         }
     } else if(menu_input == "help") {
-        auto const* cs = cs_container.get_cutscene("help");
+        auto const* cs = cutscenes::get(cs_data, "help");
 
-        rendering::display_cutscene(pstrings_data, *cs);
+        /* TODO: find a fallback if help cutscene is not found */
+        if(cs) {
+            rendering::display_cutscene(pstrings_data, *cs);
+        }
     } else if(menu_input == "inv" || menu_input == "inventory") {
         rendering::display_inventory(pstrings_data, player.inv);
     } else {

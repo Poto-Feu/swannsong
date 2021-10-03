@@ -21,7 +21,6 @@
 #include <algorithm>
 
 #include "rendering.hpp"
-#include "CutsceneClass.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "game_menu.hpp"
@@ -46,13 +45,13 @@ void rendering::display_cutscene(pstrings::ps_data_ptr const& pstrings_data,
 
     for(auto const& action_it : cutscene.actions_vec) {
         switch(action_it.type) {
-            case cs_action_type::STRING:
+            case CutsceneFieldType::STRING:
                 add_string(strings_vec, action_it.content);
                 break;
-            case cs_action_type::BLANK:
+            case CutsceneFieldType::BLANK:
                 strings_vec.push_back("");
                 break;
-            case cs_action_type::PAUSE:
+            case CutsceneFieldType::PAUSE:
                 dialogbox::display(NULL, &strings_vec, pstrings_data);
                 strings_vec.clear();
                 break;

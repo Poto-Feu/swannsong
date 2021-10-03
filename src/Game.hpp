@@ -21,7 +21,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "CutscenesContainer.hpp"
+#include "cutsecenes.hpp"
 #include "pargs.hpp"
 #include "room/rooms.hpp"
 
@@ -38,6 +38,6 @@ class Game
         std::string m_start_room;
         pstrings::ps_data_ptr pstrings_data;
         rooms::RoomsData_ptr rooms_data;
-        CutscenesContainer m_cutscenes_container;
+        cutscenes::csdata_ptr cs_data;
 };
 #endif

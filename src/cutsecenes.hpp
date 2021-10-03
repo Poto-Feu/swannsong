@@ -18,32 +18,20 @@
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CUTSCENES_CONTAINER_HPP
-#define CUTSCENES_CONTAINER_HPP
+#ifndef CUTSCENES_HPP
+#define CUTSCENES_HPP
 
-#include <unordered_map>
+#include <memory>
 
 #include "CutsceneClass.hpp"
 #include "pstrings.hpp"
 
-class CutscenesContainer
-{
-    public:
+namespace cutscenes {
+    struct csdata;
+    typedef std::shared_ptr<csdata> csdata_ptr;
 
-        CutscenesContainer();
-        CutscenesContainer(std::string const& csfile,
-                std::string const& data_path,
-                pstrings::ps_data_ptr const& pstrings_data);
-
-        // Return nullptr if the cutscene does not exists
-        Cutscene const* get_cutscene(std::string const& name) const;
-
-    private:
-
-        std::unordered_map<std::string, Cutscene>::const_iterator return_cs_it(
-                std::string const& cutscene_name) const;
-        bool check_exist(std::string const& cutscene_name) const;
-
-        std::unordered_map<std::string, Cutscene> m_map;
-};
+    csdata_ptr init(pstrings::ps_data_ptr const& pstrings_data,
+            std::string const& game_data_path);
+    Cutscene const* get(csdata_ptr const& cs_data, std::string const& id);
+}
 #endif

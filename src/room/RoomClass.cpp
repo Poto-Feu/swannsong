@@ -21,7 +21,6 @@
 #include <algorithm>
 
 #include "room/RoomClass.hpp"
-#include "CutscenesContainer.hpp"
 #include "dialogbox.hpp"
 #include "game_error.hpp"
 #include "player/Player.hpp"
@@ -120,11 +119,11 @@ static void set_game_over(Player& player, game_state_s& game_state,
 }
 
 static void display_cutscenes(pstrings::ps_data_ptr const& pstrings_data,
-        CutscenesContainer const& cs_container,
+        cutscenes::csdata_ptr const& cs_data,
         std::vector<std::string> const& displayed_cutscenes)
 {
     for(auto const& it : displayed_cutscenes) {
-        auto const& cs = cs_container.get_cutscene(it);
+        auto const& cs = cutscenes::get(cs_data, it);
 
         if(!cs) {
             game_error::emit_warning("Unknown cutscene");
@@ -136,7 +135,7 @@ static void display_cutscenes(pstrings::ps_data_ptr const& pstrings_data,
 
 bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
         rooms::RoomsData_ptr const& rooms_data,
-        CutscenesContainer const& cs_container, Player& player,
+        cutscenes::csdata_ptr const& cs_data, Player& player,
         RoomLoopState& rls, game_state_s& game_state) const
 {
     std::string const& incorrect_input_str = pstrings::fetch_string(
@@ -157,7 +156,7 @@ bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
             return false;
         }
 
-        display_cutscenes(pstrings_data, cs_container, displayed_cutscenes);
+        display_cutscenes(pstrings_data, cs_data, displayed_cutscenes);
         if(rls.is_game_over()) {
             set_game_over(player, game_state, pstrings_data);
             return true;
@@ -171,9 +170,9 @@ bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
                     room_display, &incorrect_input_str);
         }
 
-        if(!userio::interpret_user_input(pstrings_data, rooms_data,
-                    cs_container, *this, player, room_display, rls, game_state,
-                    menu_input, wrong_input)) {
+        if(!userio::interpret_user_input(pstrings_data, rooms_data, cs_data,
+                    *this, player, room_display, rls, game_state, menu_input,
+                    wrong_input)) {
             return false;
         }
 

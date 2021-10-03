@@ -87,10 +87,9 @@ bool Game::init(pargs::args_data const& args_data)
         return false;
     }
 
-    m_cutscenes_container = CutscenesContainer((*csfile_values)[0],
-            p_paths.data_path, this->pstrings_data);
+    this->cs_data = cutscenes::init(pstrings_data, p_paths.data_path);
 
-    if(game_error::has_encountered_fatal()) {
+    if(!this->cs_data || game_error::has_encountered_fatal()) {
         return false;
     } else if(!LocalConfVars::write_to_file(lcv, p_paths.local_conf_path)) {
         return false;
@@ -120,8 +119,8 @@ bool Game::run()
 
         rls.resetGameOver();
 
-        if(!room->load(pstrings_data, this->rooms_data,
-                    this->m_cutscenes_container, player, rls, game_state)) {
+        if(!room->load(pstrings_data, this->rooms_data, this->cs_data , player,
+                    rls, game_state)) {
             return false;
         }
         if(!game_state.should_game_exit) {

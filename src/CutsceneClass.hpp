@@ -24,21 +24,21 @@
 #include <string>
 #include <vector>
 
-enum class cs_action_type
+enum class CutsceneFieldType
 {
     STRING,
     PAUSE,
     BLANK
 };
 
-struct cs_action
+struct CutsceneField
 {
-    cs_action_type type;
+    CutsceneFieldType type;
     std::string content;
 };
 
 struct Cutscene
 {
-    std::vector<cs_action> actions_vec;
+    std::vector<CutsceneField> actions_vec;
 };
 #endif

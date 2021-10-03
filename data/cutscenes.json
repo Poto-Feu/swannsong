@@ -1,0 +1,97 @@
+{
+    "about": [
+        [
+            { "type": "string", "value": "GAME_NAME" },
+            { "type": "string", "value": "GAME_VERSION" },
+            { "type": "blank", "value": ""},
+            { "type": "string", "value": "cs_about_1" }
+        ]
+    ],
+
+    "welcome": [
+        [
+            { "type": "string", "value": "cs_welcome_1" }
+        ], [
+            { "type": "string", "value": "cs_welcome_2" }
+        ]
+    ],
+
+    "help": [
+        [
+            { "type": "string", "value": "cs_help_intro" },
+            { "type": "blank", "value": ""},
+            { "type": "string", "value": "cs_help_inv_cmd" },
+            { "type": "string", "value": "cs_help_save_cmd" },
+            { "type": "string", "value": "cs_help_load_cmd" },
+            { "type": "string", "value": "cs_help_help_cmd" }
+        ]
+    ],
+
+    "cs_gold_nugget_found": [
+        [
+            { "type": "string", "value": "cs_gold_nugget_found_1" }
+        ]
+    ],
+
+    "cs_gold_nugget_kept": [
+        [
+            { "type": "string", "value": "cs_gold_nugget_kept_1" }
+        ]
+    ],
+
+    "cs_gold_nugget_eaten": [
+        [
+            { "type": "string", "value": "cs_gold_nugget_eaten_1" }
+        ]
+    ],
+
+    "cs_gold_nugget_die": [
+        [
+            { "type": "string", "value": "cs_gold_nugget_die_1" }
+        ], [
+            { "type": "string", "value": "cs_gold_nugget_die_2" }
+        ]
+    ],
+
+    "cs_house_metal_detector_on": [
+        [
+            { "type": "string", "value": "cs_house_metal_detector_on_1" },
+            { "type": "blank", "value": ""},
+            { "type": "string", "value": "cs_house_metal_detector_on_2" }
+        ], [
+            { "type": "string", "value": "cs_house_metal_detector_on_3" },
+            { "type": "blank", "value": ""},
+            { "type": "string", "value": "cs_house_metal_detector_on_4" }
+        ]
+    ],
+
+    "cs_play_HOP": [
+        [
+            { "type": "string", "value": "cs_play_HOP_1" }
+        ]
+    ],
+
+    "cs_play_HOP_again": [
+        [
+            { "type": "string", "value": "cs_play_HOP_again_1" }
+        ]
+    ],
+
+    "cs_cure_nugget": [
+        [
+            { "type": "string", "value": "cs_cure_nugget_1" }
+        ]
+    ],
+
+    "cs_already_cured": [
+        [
+            { "type": "string", "value": "cs_already_cured_1" }
+        ]
+    ],
+
+    "cs_hospital_ask_info": [
+        [
+            { "type": "string", "value": "cs_hospital_ask_info_1" }
+        ]
+    ]
+}
