@@ -35,8 +35,6 @@ namespace stringsm
     void rtab(std::string& p_buf);
     //Get the first word of a string
     std::string getfw(std::string const& p_str);
-    //Check if the passed char array is a string enclosed with quotes
-    bool is_str(std::string const& p_str);
     //Extract string from quotations marks
     std::string ext_str_quotes(std::string const& p_str);
     bool is_single_word(std::string const& p_str);

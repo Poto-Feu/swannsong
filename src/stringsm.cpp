@@ -63,29 +63,6 @@ std::string stringsm::getfw(std::string const& p_str)
     return fw;
 }
 
-bool stringsm::is_str(std::string const& p_str)
-{
-    int str_size = p_str.size();
-    char quote_ch = '\0';
-
-    if(p_str.at(0) != '"' && p_str.at(0) != '\'') return false;
-    else quote_ch = p_str.at(0);
-
-    for(int i = 1; i < str_size; ++i) {
-        if(p_str[i] == '\\') {
-            if(p_str[i+1] == quote_ch) ++i;
-        } else if(p_str[i] == quote_ch) {
-            if(i + 1 < str_size) {
-                for(int j = i + 1; j < str_size; ++j) {
-                    if(p_str.at(j) != ' ' && p_str.at(j) != '\t') return false;
-                }
-                return true;
-            } else return true;
-        }
-    }
-    return false;
-}
-
 std::string stringsm::ext_str_quotes(std::string const& p_str)
 {
     bool str_end = false;
