@@ -25,7 +25,6 @@ extern "C" {
 }
 
 #include "gameconf.hpp"
-#include "fileio/fileio.hpp"
 #include "game_error.hpp"
 
 struct gc_var {
@@ -40,16 +39,20 @@ struct gameconf::gcvars {
 static bool parse_gameconf_json_array(gameconf::gcvars_ptr const& vars,
         std::string const& var_key, json_t* array_json)
 {
-    size_t i;
     json_t* value_json;
+    json_error_t error;
     std::vector<std::string> values;
+    size_t i;
 
     values.reserve(json_array_size(array_json));
 
     json_array_foreach(array_json, i, value_json) {
-        if(json_typeof(value_json) != JSON_STRING) {
-            game_error::emit_warning("gameconf var array (" + var_key + ") \
-                have a non-string member");
+        const char* var_val;
+
+        if(json_unpack_ex(value_json, &error, 0, "s", &var_val) != 0) {
+            game_error::fatal_error("Cannot get gameconf variable value: "
+                    + std::string(error.text) + " (line "
+                    + std::to_string(error.line) + ")");
             return false;
         } else {
             values.push_back(json_string_value(value_json));
@@ -95,21 +98,22 @@ static bool parse_gameconf_json(gameconf::gcvars_ptr const& vars,
 
 gameconf::gcvars_ptr gameconf::readfile(std::string const& data_path)
 {
-    gameconf::gcvars_ptr vars(new gameconf::gcvars);
-    std::string file_content;
+    const std::string file_path = data_path + "gameconf.json";
     json_t* gameconf_json;
+    json_error_t error;
+    gameconf::gcvars_ptr vars(new gameconf::gcvars);
 
-    if(!fileio::copy_to_string(data_path + "/gameconf.json", file_content)) {
-        return nullptr;
-    } else if(!(gameconf_json = json_loads(file_content.c_str(),
-                    JSON_REJECT_DUPLICATES, NULL))) {
-        game_error::fatal_error("Cannot load gameconf.json JSON");
+    gameconf_json = json_load_file(file_path.c_str(), JSON_REJECT_DUPLICATES,
+            &error);
+    if(!gameconf_json) {
+        game_error::fatal_error("Cannot parse gameconf json file: "
+                + std::string(error.text) + " (line "
+                + std::to_string(error.line) + ")");
         return nullptr;
     } else if(!parse_gameconf_json(vars, gameconf_json)) {
         json_decref(gameconf_json);
         return nullptr;
     }
-    json_decref(gameconf_json);
 
     return vars;
 }
