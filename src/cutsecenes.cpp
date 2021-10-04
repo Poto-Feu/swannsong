@@ -26,7 +26,6 @@ extern "C" {
 }
 
 #include "cutsecenes.hpp"
-#include "fileio/fileio.hpp"
 #include "game_error.hpp"
 
 struct cutscenes::csdata {
@@ -134,19 +133,17 @@ static bool parse_cs_json(cutscenes::csdata_ptr const& cs_data, json_t* root)
 static bool load_cs_json(std::string const& game_data_path,
         cutscenes::csdata_ptr const& cs_data)
 {
-    const std::string cs_file_path = game_data_path + "cutscenes.json";
+    const std::string file_path = game_data_path + "cutscenes.json";
     json_t* root_json;
     json_error_t error;
     std::string file_content;
 
-    if(!fileio::copy_to_string(cs_file_path, file_content)) {
-        return false;
-    }
-    root_json = json_loads(file_content.c_str(), JSON_REJECT_DUPLICATES,
+    root_json = json_load_file(file_path.c_str(), JSON_REJECT_DUPLICATES,
             &error);
     if(!root_json) {
-        game_error::fatal_error("Cannot load cutscenes JSON: " +
-                std::string(error.text));
+        game_error::fatal_error("Cannot load cutscenes JSON: "
+                + std::string(error.text) + " (line "
+                + std::to_string(error.line) + ")");
         return false;
     }
 
@@ -169,6 +166,7 @@ cutscenes::csdata_ptr cutscenes::init(std::string const& game_data_path)
         return cs_data;
     }
 }
+
 Cutscene const* cutscenes::get(csdata_ptr const& cs_data,
         std::string const& id)
 {
