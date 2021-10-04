@@ -44,36 +44,37 @@ static bool does_map_key_exists(
 static bool check_each_var_json(LocalConfVars::lcv_data_ptr const& lcv,
         json_t* lcv_json)
 {
-    const char* key;
     json_t* var_json;
+    const char* key;
 
     json_object_foreach(lcv_json, key, var_json) {
-        if(json_typeof(var_json) != JSON_STRING) {
-            game_error::emit_warning("Non-string value in local conf file");
+        json_error_t error;
+        const char* var_val;
+
+        if(json_unpack_ex(var_json, &error, 0, "s", &var_val) != 0) {
+            game_error::fatal_error("Cannot get LocalConfVar value: "
+                    + std::string(error.text) + " (line "
+                    + std::to_string(error.line) + ")");
         } else {
-            const char* var_str = json_string_value(var_json);
-
-            if(!var_str) {
-                game_error::fatal_error("Cannot get value from JSON string");
-
-                return false;
-            } else {
-                lcv->map[key] = var_str;
-            }
+            lcv->map[key] = var_val;
         }
     }
 
     return true;
 }
 
-static bool parse_lcv_json(LocalConfVars::lcv_data_ptr const& lcv,
-        std::string const& file_content)
+static bool read_from_file(LocalConfVars::lcv_data_ptr const& lcv,
+        std::string const& file_path)
 {
     json_t* lcv_json;
+    json_error_t error;
 
-    lcv_json = json_loads(file_content.c_str(), JSON_REJECT_DUPLICATES, NULL);
+    lcv_json = json_load_file(file_path.c_str(), JSON_REJECT_DUPLICATES,
+            &error);
     if(!lcv_json) {
-        game_error::emit_warning("Cannot parse LocalConfVars json");
+        game_error::fatal_error("Cannot parse LocalConfVars json: "
+                + std::string(error.text) + " (line "
+                + std::to_string(error.line) + ")");
         return false;
     } else {
         check_each_var_json(lcv, lcv_json);
@@ -82,26 +83,16 @@ static bool parse_lcv_json(LocalConfVars::lcv_data_ptr const& lcv,
     }
 }
 
-static bool read_from_file(LocalConfVars::lcv_data_ptr const& lcv,
-        std::string const& conf_file_path)
-{
-    std::string file_content;
-
-    if(!fileio::copy_to_string(conf_file_path, file_content)) {
-        return false;
-    } else {
-        return parse_lcv_json(lcv, file_content);
-    }
-}
-
 std::shared_ptr<LocalConfVars::lcv_data> LocalConfVars::init_data(
         std::string const& local_conf_path, bool reset_conf)
 {
     std::shared_ptr<lcv_data> lcv_ptr(new lcv_data);
-    std::string conf_file_path = local_conf_path + LOCAL_CONF_FILENAME;
+    std::string file_path = local_conf_path + LOCAL_CONF_FILENAME;
 
     if(!reset_conf) {
-        read_from_file(lcv_ptr, conf_file_path);
+        if(!read_from_file(lcv_ptr, file_path)) {
+            return nullptr;
+        }
     }
 
     return lcv_ptr;
@@ -149,9 +140,8 @@ static bool create_json_vars_strings(LocalConfVars::lcv_data_ptr const& lcv,
 bool LocalConfVars::write_to_file(lcv_data_ptr const& lcv,
         std::string const& local_conf_path)
 {
+    const std::string file_path = local_conf_path + LOCAL_CONF_FILENAME;
     json_t* root_json;
-    char* buf_c;
-    std::string buf;
 
     if(!(root_json = json_object())) {
         game_error::fatal_error("Cannot create conf_vars JSON root object");
@@ -159,15 +149,12 @@ bool LocalConfVars::write_to_file(lcv_data_ptr const& lcv,
     } else if(!create_json_vars_strings(lcv, root_json)) {
         json_decref(root_json);
         return false;
-    } else if(!(buf_c = json_dumps(root_json, JSON_INDENT(4)))) {
-        game_error::fatal_error("Cannot dump LocalConfVars JSON root object");
+    } if(json_dump_file(root_json, file_path.c_str(), JSON_INDENT(4)) != 0) {
+        game_error::fatal_error("Cannot write savefile JSON to file");
+        json_decref(root_json);
         return false;
+    } else {
+        json_decref(root_json);
+        return true;
     }
-
-    buf = buf_c;
-    buf += '\n';
-    free(buf_c);
-    json_decref(root_json);
-
-    return fileio::write_to_file(local_conf_path + LOCAL_CONF_FILENAME, buf);
 }

@@ -58,6 +58,11 @@ bool Game::init(pargs::args_data const& args_data)
     } else {
         lcv = LocalConfVars::init_data(p_paths.local_conf_path, true);
     }
+
+    if(!lcv) {
+        return false;
+    }
+
     game_error::set_filepath(p_paths.local_data_path);
 
     gameconf::gcvars_ptr gameconf_vars = gameconf::readfile(p_paths.data_path);
