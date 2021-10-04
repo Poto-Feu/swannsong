@@ -28,7 +28,6 @@ namespace fileio
 {
     bool getfileln(std::string& r_str, std::ifstream& p_stream);
     std::vector<std::string> copy_to_vector(std::string const& file_path);
-    bool copy_to_string(std::string const& file_path, std::string& content);
     bool create_directories(std::string const& path);
 }
 #endif

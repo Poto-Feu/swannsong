@@ -48,27 +48,6 @@ std::vector<std::string> fileio::copy_to_vector(std::string const& file_path)
     return file_content;
 }
 
-static void file_cant_open_warning(std::string const& file_path)
-{
-    game_error::emit_warning("Cannot open file: " + file_path);
-}
-
-bool fileio::copy_to_string(std::string const& file_path, std::string& content)
-{
-    std::ifstream file_stream(file_path);
-    std::stringstream buf;
-
-    if(!file_stream.is_open()) {
-        file_cant_open_warning(file_path);
-        return false;
-    } else {
-        buf << file_stream.rdbuf();
-        content = buf.str();
-
-        return true;
-    }
-}
-
 bool fileio::create_directories(std::string const& path)
 {
     return std::filesystem::create_directories(path);
