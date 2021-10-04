@@ -86,8 +86,8 @@ static bool parse_gameconf_json(gameconf::gcvars_ptr const& vars,
              * needed. */
             parse_gameconf_json_array(vars, var_key, var_json);
         } else {
-            game_error::emit_warning("gameconf JSON var is neither a STRING \
-                    nor an array");
+            game_error::emit_warning("gameconf JSON var is neither a STRING "
+                    "nor an array");
         }
     }
 
