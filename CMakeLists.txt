@@ -44,7 +44,7 @@ endif()
 
 add_executable(swannsongadv
     src/main.cpp
-    src/fileio/fileio.cpp
+    src/fileio.cpp
     src/player/inventory.cpp
     src/room/interpreter/parser.cpp
     src/room/interpreter/token.cpp

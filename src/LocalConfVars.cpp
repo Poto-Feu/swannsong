@@ -25,7 +25,7 @@ extern "C" {
 }
 
 #include "LocalConfVars.hpp"
-#include "fileio/fileio.hpp"
+#include "fileio.hpp"
 #include "game_error.hpp"
 
 struct LocalConfVars::lcv_data {
