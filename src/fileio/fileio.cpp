@@ -69,20 +69,6 @@ bool fileio::copy_to_string(std::string const& file_path, std::string& content)
     }
 }
 
-bool fileio::write_to_file(std::string const& file_path,
-        std::string const& content)
-{
-    std::ofstream file_stream(file_path);
-
-    if(!file_stream.is_open()) {
-        file_cant_open_warning(file_path);
-        return false;
-    } else {
-        file_stream << content;
-        return true;
-    }
-}
-
 bool fileio::create_directories(std::string const& path)
 {
     return std::filesystem::create_directories(path);
