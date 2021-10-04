@@ -27,7 +27,7 @@ extern "C" {
 #include "game_error.hpp"
 #include "player/Player.hpp"
 
-static const std::string const_game_name = "SwannSong Adventure";
+static const std::string game_name = "SwannSong Adventure";
 
 static bool add_to_json_object(json_t* parent, std::string const& key,
         json_t* child)
@@ -38,21 +38,6 @@ static bool add_to_json_object(json_t* parent, std::string const& key,
     }
 
     return true;
-}
-
-static bool add_pair_to_json_object(json_t* object_json,
-        std::string const& key, int value)
-{
-    json_t* child = json_integer(value);
-
-    if(!child) {
-        game_error::fatal_error("Cannot create JSON int");
-        json_decref(child);
-
-        return false;
-    }
-
-    return add_to_json_object(object_json, key, child);
 }
 
 static bool add_pair_to_json_object(json_t* object_json,
@@ -83,29 +68,16 @@ static bool set_game_vars_json_array(gvarVector const& gvars,
 
     for(auto const& it : gvars) {
         json_t* gvar_json;
+        json_error_t error;
 
-        gvar_json = json_object();
+        gvar_json = json_pack_ex(&error, 0, "{ s:s, s:i }", "id",
+                it.name.c_str(), "value", it.val);
         if(!gvar_json) {
-            game_error::fatal_error("Cannot create savefile item object");
-            json_decref(gvars_array_json);
-            return false;
-        }
-
-        if(!add_pair_to_json_object(gvar_json, "id", it.name)) {
-            json_decref(gvar_json);
-            json_decref(gvars_array_json);
-            return false;
-        }
-
-        if(!add_pair_to_json_object(gvar_json, "value", it.val)) {
-            game_error::fatal_error("Cannot create jannson int");
-            json_decref(gvar_json);
-            json_decref(gvars_array_json);
-            return false;
-        }
-
-        if(json_array_append_new(gvars_array_json, gvar_json) == -1) {
-            game_error::fatal_error("Cannot add game_var to savefile array");
+            game_error::fatal_error("Cannot create savefile JSON game var: "
+                    + std::string(error.text) + " (line "
+                    + std::to_string(error.line) + ")");
+        } else if(json_array_append_new(gvars_array_json, gvar_json) == -1) {
+            game_error::fatal_error("Cannot add game var to savefile array");
             json_decref(gvar_json);
             json_decref(gvars_array_json);
             return false;
@@ -133,27 +105,15 @@ static bool set_items_json_array(
 
     for(auto const& it : items) {
         json_t* item_json;
+        json_error_t error;
 
-        item_json = json_object();
+        item_json = json_pack_ex(&error, 0, "{ s:s, s:i }", "id",
+                it.name.c_str(), "number", it.val);
         if(!item_json) {
-            game_error::fatal_error("Cannot create savefile item object");
-            json_decref(items_array_json);
-            return false;
-        }
-
-        if(!add_pair_to_json_object(item_json, "id", it.name)) {
-            json_decref(item_json);
-            json_decref(items_array_json);
-            return false;
-        }
-
-        if(!add_pair_to_json_object(item_json, "number", it.val)) {
-            json_decref(item_json);
-            json_decref(items_array_json);
-            return false;
-        }
-
-        if(json_array_append_new(items_array_json, item_json) == -1) {
+            game_error::fatal_error("Cannot create savefile JSON inventory "
+                    "item: " + std::string(error.text) + " (line "
+                    + std::to_string(error.line) + ")");
+        } else if(json_array_append_new(items_array_json, item_json) == -1) {
             game_error::fatal_error("Cannot add item to savefile array");
             json_decref(item_json);
             json_decref(items_array_json);
@@ -172,7 +132,7 @@ static bool set_items_json_array(
 static bool set_json_structure(Player const& player,
         std::string const& current_room, json_t* root_json)
 {
-    if(!add_pair_to_json_object(root_json, "game_name", const_game_name)) {
+    if(!add_pair_to_json_object(root_json, "game_name", game_name)) {
         game_error::fatal_error("Cannot create savefile game_name string");
         json_decref(root_json);
         return false;
@@ -197,20 +157,14 @@ static bool set_json_structure(Player const& player,
 static bool write_save_to_file(std::string const& local_data_path,
         const json_t* json_root)
 {
-    char *buf_c;
-    std::string buf;
+    const std::string file_path = local_data_path + "save.json";
 
-    buf_c = json_dumps(json_root, JSON_INDENT(4));
-    if(!buf_c) {
-        game_error::fatal_error("Cannot dump savefile JSON structure");
+    if(json_dump_file(json_root, file_path.c_str(), JSON_INDENT(4)) != 0) {
+        game_error::fatal_error("Cannot write savefile JSON to file");
         return false;
+    } else {
+        return true;
     }
-
-    buf = buf_c;
-    buf += '\n';
-    free(buf_c);
-
-    return fileio::write_to_file(local_data_path + "save.json", buf);
 }
 
 bool savefile::save(Player const& player, std::string const& current_room,
@@ -222,7 +176,7 @@ bool savefile::save(Player const& player, std::string const& current_room,
 
     root_json = json_object();
     if(!root_json) {
-        game_error::fatal_error("Cannot create savefile root object");
+        game_error::fatal_error("Cannot create savefile JSON root object");
         return false;
     }
 
@@ -238,52 +192,41 @@ bool savefile::save(Player const& player, std::string const& current_room,
     return true;
 }
 
-static bool open_save_file_load(savefile::load_data& savefile_data,
-        std::string const& local_data_path, std::string& content)
+static void check_int32_overflow(json_int_t* var)
 {
-    if(!fileio::copy_to_string(local_data_path + "save.json", content)) {
-        savefile_data.error = savefile::loading_error::NO_FILE;
-        return false;
+    if(*var > INT32_MAX) {
+        *var = INT32_MAX;
     }
-
-    return true;
 }
 
 static bool parse_json_inventory_items(savefile::load_data& savefile_data,
         json_t const* root_json)
 {
-    using namespace savefile;
-
     json_t* items_array;
     json_t* item;
     size_t i;
 
     items_array = json_object_get(root_json, "items");
     json_array_foreach(items_array, i, item) {
+        json_error_t error;
+        json_int_t number = 0;
         inventory::gitem new_gitem;
-        std::string id_str;
-        uint32_t number_int;
-        json_t* id_json;
-        json_t* number_json;
+        const char* id;
 
-        id_json = json_object_get(item, "id");
-        if(!id_json || id_json->type != JSON_STRING) {
-            savefile_data.error = loading_error::BAD_FORMAT;
+        if(json_unpack_ex(item, &error, 0, "{ s:s, s:i }", "id", &id, "number",
+                    &number) != 0) {
+            game_error::fatal_error("Cannot get savefile JSON inventory item: "
+                    + std::string(error.text) + " (line "
+                    + std::to_string(error.line) + ")");
             return false;
+        } else {
+            check_int32_overflow(&number);
+
+            new_gitem.name = id;
+            new_gitem.val = number;
+
+            savefile_data.gitems.push_back(std::move(new_gitem));
         }
-        id_str = json_string_value(id_json);
-
-        number_json = json_object_get(item, "number");
-        if(!number_json || number_json->type != JSON_INTEGER) {
-            savefile_data.error = loading_error::BAD_FORMAT;
-            return false;
-        }
-        number_int = json_integer_value(number_json);
-
-        new_gitem.name = std::move(id_str);
-        new_gitem.val = number_int;
-
-        savefile_data.gitems.push_back(std::move(new_gitem));
     }
 
     return true;
@@ -292,34 +235,25 @@ static bool parse_json_inventory_items(savefile::load_data& savefile_data,
 static bool parse_json_game_vars(savefile::load_data& savefile_data,
         json_t const* root_json)
 {
-    using namespace savefile;
-
     json_t* gvars_array;
     json_t* gvar;
     size_t i;
 
     gvars_array = json_object_get(root_json, "game_vars");
     json_array_foreach(gvars_array, i, gvar) {
-        std::string id_str;
-        uint32_t value_int;
-        json_t* id_json;
-        json_t* value_json;
+        json_error_t error;
+        json_int_t value = 0;
+        const char* id;
 
-        id_json = json_object_get(gvar, "id");
-        if(!id_json || id_json->type != JSON_STRING) {
-            savefile_data.error = loading_error::BAD_FORMAT;
-            return false;
+        if(json_unpack_ex(gvar, &error, 0, "{ s:s, s:i }", "id", &id, "value",
+                    &value) != 0) {
+            game_error::fatal_error("Cannot get savefile JSON game var: "
+                    + std::string(error.text) + " (line "
+                    + std::to_string(error.line) + ")");
+        } else {
+            check_int32_overflow(&value);
+            gvars::set_var(savefile_data.gvars, std::move(id), value);
         }
-        id_str = json_string_value(id_json);
-
-        value_json = json_object_get(gvar, "value");
-        if(!value_json|| value_json->type != JSON_INTEGER) {
-            savefile_data.error = loading_error::BAD_FORMAT;
-            return false;
-        }
-        value_int = json_integer_value(value_json);
-
-        gvars::set_var(savefile_data.gvars, std::move(id_str), value_int);
     }
 
     return true;
@@ -328,26 +262,24 @@ static bool parse_json_game_vars(savefile::load_data& savefile_data,
 static bool parse_json_structure(savefile::load_data& savefile_data,
         json_t const* root_json)
 {
-    using namespace savefile;
-
     std::string game_name_str;
     json_t* game_name_json;
     json_t* current_room_json;
 
     game_name_json = json_object_get(root_json, "game_name");
     if(!game_name_json || game_name_json->type != JSON_STRING) {
-        savefile_data.error = loading_error::BAD_FORMAT;
+        savefile_data.error = savefile::loading_error::BAD_FORMAT;
         return false;
     }
     game_name_str = json_string_value(game_name_json);
-    if(game_name_str != const_game_name) {
-        savefile_data.error = loading_error::BAD_GAME_NAME;
+    if(game_name_str != game_name) {
+        savefile_data.error = savefile::loading_error::BAD_GAME_NAME;
         return false;
     }
 
     current_room_json = json_object_get(root_json, "current_room");
     if(!current_room_json || current_room_json->type != JSON_STRING) {
-        savefile_data.error = loading_error::BAD_FORMAT;
+        savefile_data.error = savefile::loading_error::BAD_FORMAT;
         return false;
     }
     savefile_data.current_room = json_string_value(current_room_json);
@@ -359,21 +291,20 @@ static bool parse_json_structure(savefile::load_data& savefile_data,
 bool savefile::load(savefile::load_data& savefile_data,
         std::string const& local_data_path)
 {
+    const std::string file_path = local_data_path + "save.json";
     json_t* root_json;
-    std::string content;
+    json_error_t error;
 
     savefile_data.error = loading_error::NOERROR;
 
-    if(!open_save_file_load(savefile_data, local_data_path, content)) {
-        return false;
-    }
-
-    root_json = json_loads(content.c_str(), JSON_REJECT_DUPLICATES, NULL);
+    root_json = json_load_file(file_path.c_str(), JSON_REJECT_DUPLICATES,
+            &error);
     if(!root_json) {
+        game_error::fatal_error("Cannot parse savefile json file: "
+                + std::string(error.text) + " (line "
+                + std::to_string(error.line) + ")");
         return false;
-    }
-
-    if(!parse_json_structure(savefile_data, root_json)) {
+    } else if(!parse_json_structure(savefile_data, root_json)) {
         json_decref(root_json);
         return false;
     }
