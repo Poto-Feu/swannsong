@@ -27,7 +27,6 @@
 #include "rendering.hpp"
 #include "room/RoomDisplay.hpp"
 #include "room/interpreter/parser.hpp"
-#include "stringsm.hpp"
 #include "userio.hpp"
 
 Room::Room() { }

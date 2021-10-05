@@ -20,10 +20,8 @@
 
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 
 #include "fileio.hpp"
-#include "game_error.hpp"
 #include "stringsm.hpp"
 
 bool fileio::getfileln(std::string& r_str, std::ifstream& p_stream)
