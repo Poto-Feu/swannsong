@@ -31,6 +31,5 @@ namespace room_parsing {
     bool parse_rooms_file(pstrings::ps_data_ptr const& pstrings_data,
             std::string const& data_path,
             std::unordered_map<std::string, Room>& room_map);
-};
-
+}
 #endif
