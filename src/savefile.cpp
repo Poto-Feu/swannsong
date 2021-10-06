@@ -236,17 +236,17 @@ static bool parse_json_game_vars(savefile::load_data& savefile_data,
         json_t const* root_json)
 {
     json_t* gvars_array;
-    json_t* gvar;
+    json_t* gvar_json;
     size_t i;
 
     gvars_array = json_object_get(root_json, "game_vars");
-    json_array_foreach(gvars_array, i, gvar) {
+    json_array_foreach(gvars_array, i, gvar_json) {
         json_error_t error;
         json_int_t value = 0;
         const char* id;
 
-        if(json_unpack_ex(gvar, &error, 0, "{ s:s, s:i }", "id", &id, "value",
-                    &value) != 0) {
+        if(json_unpack_ex(gvar_json, &error, 0, "{ s:s, s:i }", "id", &id,
+                    "value", &value) != 0) {
             game_error::fatal_error("Cannot get savefile JSON game var: "
                     + std::string(error.text) + " (line "
                     + std::to_string(error.line) + ")");
