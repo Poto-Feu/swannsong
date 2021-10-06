@@ -11,7 +11,6 @@ Note: do not try to load a save from a previous pre-alpha version (< 1.0) as it 
 ### Building prerequisites
 
 * a C++17-compatible version of GCC/MinGW
-* CMake
 * jansson
 * ncursesw
 
@@ -20,13 +19,15 @@ Please note that while this program may be compiled with another toolchain, we c
 ### Compiling
 
 #### Unix-like
-```bash
-mkdir build && cd build
-cmake .. 
-make
-```
 
-On Unix-like systems, you will need to use the `-local` arguments when launching the game from the build directory (or simply make the start.sh file executable with `chmod +x` and use it). A `make install` command is also provided. However, it is still in an experimental state.
+If the source code was obtained from an archive, you can simply execute the following commands:
+
+```bash
+./configure
+make
+make install
+```
+If not, you can use autotools with autoconf-archive to generate the configure script yourself.
 
 #### Windows
 TO-DO

@@ -121,16 +121,12 @@ pstrings::ps_data_ptr pstrings::init_data(std::string const& data_path,
 
     file_stream = open_strfile(lang_code, data_path + lang_dir);
 
+    pstrings_data->map["GAME_NAME"] = "SwannSong Adventure";
+
 #ifdef GAME_VERSION
     pstrings_data->map["GAME_VERSION"] = "v" + std::string(GAME_VERSION);
 #else
     pstrings_data->map["GAME_VERSION"] = "UndefinedGAME_VERSION";
-#endif
-
-#ifdef GAME_NAME
-    pstrings_data->map["GAME_NAME"] = GAME_NAME;
-#else
-    pstrings_data->map["GAME_NAME"] = "UndefinedGAME_NAME";
 #endif
     if(!read_pstrings_from_file(file_stream, pstrings_data->map)) {
         return nullptr;
