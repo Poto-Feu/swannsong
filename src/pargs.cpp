@@ -35,15 +35,15 @@ static bool is_arg_present(int argc, char **argv, const char *arg_str)
 
 void pargs::init_data(args_data& data, int argc, char **argv)
 {
-    if(is_arg_present(argc, argv, "-debug")) {
+    if(is_arg_present(argc, argv, "--debug")) {
         data.debug = true;
     }
 
-    if(is_arg_present(argc, argv, "-local")) {
+    if(is_arg_present(argc, argv, "--local")) {
         data.local = true;
     }
 
-    if(is_arg_present(argc, argv, "-reset")) {
+    if(is_arg_present(argc, argv, "--reset")) {
         data.reset = true;
     }
 }

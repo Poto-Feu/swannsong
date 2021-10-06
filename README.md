@@ -36,9 +36,9 @@ TO-DO
 Note : On Windows, the program must be run from the executable directory. On Unix-like, if the program is not installed, it must be run in the build directory using the -local argument.
 
 ### Command-line arguments
-* `-local`: use the game data from the current directory (this is mainly useful for running the program in its build directory without installing it)
-* `-debug`: enable debug features such as warning logs (mainly for developers).
-* `-reset`: remove the game user configuration as if it was a fresh install.
+* `--local`: use the game data from the current directory (this is mainly useful for running the program in its build directory without installing it)
+* `--debug`: enable debug features such as warning logs (mainly for developers).
+* `--reset`: remove the game user configuration as if it was a fresh install.
 
 
 ## Roadmap
