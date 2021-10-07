@@ -26,9 +26,9 @@ int pcurses::title_y = 0;
 int pcurses::lines = 0;
 int pcurses::cols = 0;
 
-static unsigned int max_size_str()
+static size_t max_size_str()
 {
-    return COLS - pcurses::margin * 2;
+    return (size_t)(COLS - pcurses::margin * 2);
 }
 
 static unsigned int multiline_center_string(std::string const& p_str,
@@ -103,10 +103,10 @@ void pcurses::display_pos_string(std::string p_str, int x_space, int startline,
     const int multiline_space = 3;
     bool end_of_str = false;
     bool end_of_zone = false;
-    unsigned int pos_str_max_size = max_size_str() / 2 + x_space;
+    size_t pos_str_max_size = max_size_str() / 2 + (size_t)x_space;
 
     for(auto i = 0; !end_of_str && !end_of_zone; ++i) {
-        unsigned int str_size = p_str.size();
+        const size_t str_size = p_str.size();
 
         if(startline > lines - 5) end_of_zone = true;
         else if(str_size > pos_str_max_size) {
@@ -153,7 +153,7 @@ std::vector<std::string> pcurses::divide_string_into_lines(std::string p_string)
 
 unsigned int pcurses::display_center_string(std::string const& p_str, int startline, int p_attr)
 {
-    unsigned int max_size_func = max_size_str();
+    const size_t max_size_func = max_size_str();
 
     if(p_str.size() < max_size_func) {
         int p_x = find_centered_x(p_str);
@@ -179,7 +179,7 @@ void pcurses::display_penter_message(
 std::string pcurses::get_text_input(int max_n)
 {
     std::string input_str;
-    char* buf = new char[max_n+1];
+    char* buf = new char[(size_t)max_n+1];
 
     buf[max_n] = '\0';
 

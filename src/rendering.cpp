@@ -85,7 +85,7 @@ void rendering::display_inventory(pstrings::ps_data_ptr const& pstrings_data,
 }
 
 Choice const* get_choice_from_vector(std::vector<Choice> const& choices,
-        unsigned int choice_id)
+        int choice_id)
 {
     auto const& choice_it = std::find_if(choices.cbegin(), choices.cend(),
             [=](Choice const& choice) {

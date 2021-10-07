@@ -48,8 +48,8 @@ void stringsm::rtab(std::string& p_buf)
 
 std::string stringsm::getfw(std::string const& p_str)
 {
+    const size_t str_size = p_str.size();
     unsigned int i = 0;
-    unsigned int str_size = p_str.size();
     std::string fw;
 
     for(auto& it : p_str) {

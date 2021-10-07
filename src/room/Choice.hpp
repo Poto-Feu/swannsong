@@ -28,17 +28,17 @@ class Choice
     public:
 
         Choice();
-        Choice(unsigned int choice_id, std::vector<TokenVec>&& instructions,
+        Choice(int choice_id, std::vector<TokenVec>&& instructions,
                 pstrings::ps_data_ptr const& pstrings_data);
 
-        unsigned int getId() const;
+        int getId() const;
         std::string getText() const;
 
         std::vector<TokenVec> const& getInstructions() const;
 
     private:
 
-        unsigned int m_id;
+        int m_id;
         std::string m_text;
         std::vector<TokenVec> m_instructions;
 };

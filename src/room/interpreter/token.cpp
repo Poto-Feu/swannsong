@@ -156,7 +156,7 @@ namespace token
 
     static bool is_string(std::string const& p_tkn)
     {
-        int str_ln = p_tkn.size();
+        size_t str_ln = p_tkn.size();
         char symbol = '\0';
 
         switch(p_tkn[0]) {

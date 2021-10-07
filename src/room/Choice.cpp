@@ -24,7 +24,7 @@
 #include "stringsm.hpp"
 
 Choice::Choice() { }
-Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,
+Choice::Choice(int choice_n, std::vector<TokenVec>&& instructions,
         pstrings::ps_data_ptr const& pstrings_data) : m_id(choice_n),
     m_instructions(instructions)
 {
@@ -48,7 +48,7 @@ Choice::Choice(unsigned int choice_n, std::vector<TokenVec>&& instructions,
     }
 }
 
-unsigned int Choice::getId() const
+int Choice::getId() const
 {
     return m_id;
 }

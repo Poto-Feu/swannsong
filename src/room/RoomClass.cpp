@@ -62,7 +62,7 @@ std::vector<Choice> const& Room::getChoicesVec() const
     return m_Choices_vec;
 }
 
-const Choice *Room::getChoice(unsigned int choice_n) const
+const Choice *Room::getChoice(int choice_n) const
 {
     auto const& Choice_it = std::find_if(m_Choices_vec.cbegin(),
             m_Choices_vec.cend(), [=](Choice const& p_choice) {
@@ -93,7 +93,7 @@ void Room::setChoices(std::vector<Choice>&& choices_vec)
     m_Choices_vec = std::move(choices_vec);
 }
 
-bool Room::isChoicePresent(unsigned int choice_n) const
+bool Room::isChoicePresent(int choice_n) const
 {
     return std::find_if(m_Choices_vec.cbegin(), m_Choices_vec.cend(),
             [=](Choice const& p_Choice) {

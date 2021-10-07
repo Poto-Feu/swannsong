@@ -48,7 +48,7 @@ class Room {
 
         //Get the number of choices defined in the room
         unsigned int getChoicesSize() const;
-        const Choice *getChoice(unsigned int choice_n) const;
+        const Choice *getChoice(int choice_n) const;
 
         void setTitle(std::string const& title);
         void setDesc(std::string const& room_desc);
@@ -56,7 +56,7 @@ class Room {
         void setChoices(std::vector<Choice>&& choices_vec);
 
         //Check if the choice with the specified number is defined
-        bool isChoicePresent(unsigned int choice_n) const;
+        bool isChoicePresent(int choice_n) const;
 
         void displayAllChoices() const;
 

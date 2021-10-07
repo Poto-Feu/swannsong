@@ -145,8 +145,8 @@ static bool interp_GET_func(inventory::Inventory& p_inv, TokenVec const& p_vec)
 {
     using namespace game_error;
 
-    inventory::item_val_type item_n = 1;
-    int item_name_pos = 1;
+    int item_n = 1;
+    size_t item_name_pos = 1;
 
     if(p_vec.size() == 3) {
         if(p_vec[1].type != token_type::NUMBER) {
@@ -162,7 +162,8 @@ static bool interp_GET_func(inventory::Inventory& p_inv, TokenVec const& p_vec)
         return false;
     }
 
-    inventory::getitem(p_inv, p_vec[item_name_pos].str, item_n);
+    inventory::getitem(p_inv, p_vec[item_name_pos].str,
+            (inventory::item_val_type)item_n);
 
     return true;
 }
@@ -170,8 +171,9 @@ static bool interp_GET_func(inventory::Inventory& p_inv, TokenVec const& p_vec)
 static bool interp_USE_func(inventory::Inventory& p_inv, TokenVec const& p_vec)
 {
     using namespace game_error;
-    inventory::item_val_type item_n = 1;
-    int item_name_pos = 1;
+
+    int item_n = 1;
+    size_t item_name_pos = 1;
 
     if(p_vec.size() == 3) {
         if(p_vec[1].type != token_type::NUMBER) {
@@ -187,7 +189,8 @@ static bool interp_USE_func(inventory::Inventory& p_inv, TokenVec const& p_vec)
         return false;
     }
 
-    inventory::useitem(p_inv, p_vec[item_name_pos].str, item_n);
+    inventory::useitem(p_inv, p_vec[item_name_pos].str,
+            (inventory::item_val_type)item_n);
 
     return true;
 }
@@ -220,7 +223,7 @@ static bool interp_gvar_ins(gvarVector& p_gvars, TokenVec r_vec)
     };
 
     bool continue_func = true;
-    int16_t result_value = 0;
+    int result_value = 0;
     func_tkn_type last_tkn = func_tkn_type::EQUAL;
     oper_type last_oper = oper_type::NONE;
 
@@ -379,10 +382,10 @@ static bool check_HAS_condition(TokenVec r_vec,
 {
     using namespace game_error;
 
-    int vec_size = r_vec.size();
+    size_t vec_size = r_vec.size();
     bool not_cond = false;
-    int has_pos = 1;
-    int item_pos = 2;
+    size_t has_pos = 1;
+    size_t item_pos = 2;
 
     if(vec_size != 4 && vec_size != 5) {
         wrg_tkn_num("HAS IF");
@@ -395,7 +398,7 @@ static bool check_HAS_condition(TokenVec r_vec,
         ++item_pos;
     }
     if(r_vec[has_pos].type == token_type::HAS) {
-        uint16_t req_item_n = 1;
+        int req_item_n = 1;
 
         if(r_vec[item_pos].type == token_type::NUMBER) {
             req_item_n = std::stoi(r_vec[item_pos].str);
@@ -407,7 +410,7 @@ static bool check_HAS_condition(TokenVec r_vec,
 
             condition_result = false;
 
-            if(item_n >= req_item_n) {
+            if((int)item_n >= req_item_n) {
                 condition_result = true;
             }
             if(not_cond) {
@@ -591,17 +594,17 @@ bool parser::exec_until_end(std::vector<TokenVec> const& block_vector,
 //Split a line into an argument and a type string
 bool parser::splitline(std::string& type, std::string& arg, std::string ins)
 {
-    unsigned int ins_size = ins.size();
-    unsigned int type_size = 0;
+    size_t ins_size = ins.size();
+    size_t type_size = 0;
     bool correct_syntax = true;
 
     type = stringsm::getfw(ins);
     type_size = type.size();
 
     if(ins.size() > type.size()) {
-        int starti = type_size + 1;
+        size_t starti = type_size + 1;
 
-        for(unsigned int i = starti; i < ins_size; ++i) {
+        for(size_t i = starti; i < ins_size; ++i) {
             arg += ins[i];
         }
     } else {

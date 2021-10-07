@@ -223,7 +223,7 @@ static bool parse_json_inventory_items(savefile::load_data& savefile_data,
             check_int32_overflow(&number);
 
             new_gitem.name = id;
-            new_gitem.val = number;
+            new_gitem.val = (inventory::item_val_type)number;
 
             savefile_data.gitems.push_back(std::move(new_gitem));
         }
@@ -252,7 +252,8 @@ static bool parse_json_game_vars(savefile::load_data& savefile_data,
                     + std::to_string(error.line) + ")");
         } else {
             check_int32_overflow(&value);
-            gvars::set_var(savefile_data.gvars, std::move(id), value);
+            gvars::set_var(savefile_data.gvars, std::move(id),
+                    (gvar_type)value);
         }
     }
 
