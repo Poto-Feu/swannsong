@@ -37,7 +37,7 @@ bool userio::interpret_user_input(GameData const& game_data, Room const& room,
     wrong_input = false;
 
     if(stringsm::is_number(menu_input)) {
-        uint32_t choice_digit = std::stoi(menu_input);
+        int choice_digit = std::stoi(menu_input);
 
         if(choice_digit != 0) {
             const Choice *current_choice;
@@ -46,19 +46,20 @@ bool userio::interpret_user_input(GameData const& game_data, Room const& room,
             unsigned int start_ln = 0;
 
             if(room_display.are_all_choices_displayed) {
-                if(choice_digit > room.getChoicesVec().size()) {
+                if(choice_digit > (int)room.getChoicesVec().size()) {
                     wrong_input = true;
                     return true;
                 } else {
                     corres_choice_id = choice_digit;
                 }
             } else {
-                if(choice_digit > room_display.choices_displayed.size()) {
+                if(choice_digit > (int)room_display.choices_displayed.size()) {
                     wrong_input = true;
                     return true;
                 } else {
                     corres_choice_id =
-                        room_display.choices_displayed[choice_digit - 1];
+                        room_display.choices_displayed[
+                        (size_t)choice_digit - 1];
                 }
             }
 
