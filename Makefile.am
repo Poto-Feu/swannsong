@@ -72,8 +72,9 @@ swannsongadv_SOURCES = \
 	src/vars/intvar.cpp \
 	src/vars/intvar.hpp
 
+dist_man_MANS = swannsongadv.6
+
 gamedir = $(datadir)/swannsong_adventure
-swannsongadv_MANS = docs/swannsongadv.6
 
 dist_game_DATA = \
 	data/cutscenes.json \
