@@ -21,6 +21,7 @@ swannsongadv_SOURCES = \
 	src/fileio.hpp \
 	src/files_path.cpp \
 	src/files_path.hpp \
+	src/game_data.cpp \
 	src/game_error.cpp \
 	src/game_error.hpp \
 	src/game_lang.cpp \

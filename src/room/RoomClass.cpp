@@ -117,28 +117,25 @@ static void set_game_over(Player& player, game_state_s& game_state,
     dialogbox::display(&gameover_title, &gameover_strings, pstrings_data);
 }
 
-static void display_cutscenes(pstrings::ps_data_ptr const& pstrings_data,
-        cutscenes::csdata_ptr const& cs_data,
+static void display_cutscenes(GameData const& game_data,
         std::vector<std::string> const& displayed_cutscenes)
 {
     for(auto const& it : displayed_cutscenes) {
-        auto const& cs = cutscenes::get(cs_data, it);
+        auto const& cs = cutscenes::get(game_data.cs_data, it);
 
         if(!cs) {
             game_error::emit_warning("Unknown cutscene");
         } else {
-            rendering::display_cutscene(pstrings_data, *cs);
+            rendering::display_cutscene(game_data.pstrings_data, *cs);
         }
     }
 }
 
-bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
-        rooms::RoomsData_ptr const& rooms_data,
-        cutscenes::csdata_ptr const& cs_data, Player& player,
+bool Room::load(GameData const& game_data, Player& player,
         RoomLoopState& rls, game_state_s& game_state) const
 {
     std::string const& incorrect_input_str = pstrings::fetch_string(
-            pstrings_data, "incorrect_input");
+            game_data.pstrings_data, "incorrect_input");
     std::vector<std::string> displayed_cutscenes;
     bool wrong_input = false;
 
@@ -149,34 +146,34 @@ bool Room::load(pstrings::ps_data_ptr const& pstrings_data,
         std::string menu_input;
         unsigned int atlaunch_start_ln = 0;
 
-        if(!parser::exec_until_end(this->getATLAUNCHIns(), rooms_data, *this,
-                parser::block_type::ATLAUNCH, player, rls, &room_display,
-                game_state, displayed_cutscenes, atlaunch_start_ln)) {
+        if(!parser::exec_until_end(this->getATLAUNCHIns(),
+                    game_data.rooms_data, *this, parser::block_type::ATLAUNCH,
+                    player, rls, &room_display, game_state,
+                    displayed_cutscenes, atlaunch_start_ln)) {
             return false;
         }
 
-        display_cutscenes(pstrings_data, cs_data, displayed_cutscenes);
+        display_cutscenes(game_data, displayed_cutscenes);
         if(rls.is_game_over()) {
-            set_game_over(player, game_state, pstrings_data);
+            set_game_over(player, game_state, game_data.pstrings_data);
             return true;
         }
 
         if(!wrong_input) {
-            menu_input = rendering::display_room(pstrings_data, *this,
-                    room_display);
+            menu_input = rendering::display_room(game_data.pstrings_data,
+                    *this, room_display);
         } else {
-            menu_input = rendering::display_room(pstrings_data, *this,
-                    room_display, &incorrect_input_str);
+            menu_input = rendering::display_room(game_data.pstrings_data,
+                    *this, room_display, &incorrect_input_str);
         }
 
-        if(!userio::interpret_user_input(pstrings_data, rooms_data, cs_data,
-                    *this, player, room_display, rls, game_state, menu_input,
-                    wrong_input)) {
+        if(!userio::interpret_user_input(game_data, *this, player,
+                    room_display, rls, game_state, menu_input, wrong_input)) {
             return false;
         }
 
         if(rls.is_game_over()) {
-            set_game_over(player, game_state, pstrings_data);
+            set_game_over(player, game_state, game_data.pstrings_data);
             return true;
         }
     } while(wrong_input);

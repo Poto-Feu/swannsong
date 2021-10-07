@@ -21,10 +21,9 @@
 #ifndef ROOMCLASS_HPP
 #define ROOMCLASS_HPP
 
-#include "cutsecenes.hpp"
+#include "game_data.hpp"
 #include "room/Choice.hpp"
 #include "room/interpreter/token.hpp"
-#include "room/rooms.hpp"
 
 struct game_state_s;
 class RoomLoopState;
@@ -60,9 +59,7 @@ class Room {
 
         void displayAllChoices() const;
 
-        bool load(pstrings::ps_data_ptr const& pstrings_data,
-                rooms::RoomsData_ptr const& rooms_data,
-                cutscenes::csdata_ptr const& cs_data, Player& player,
+        bool load(GameData const& game_data, Player& player,
                 RoomLoopState& rls, game_state_s& game_state) const;
 
     private:

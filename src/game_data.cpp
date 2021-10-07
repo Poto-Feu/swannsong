@@ -14,27 +14,30 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with SwannSong Adventure. If not, see
+    along with SwannSong Adventure.  If not, see
     <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GAME_HPP
-#define GAME_HPP
-
 #include "game_data.hpp"
-#include "pargs.hpp"
 
-class Game
+bool init_game_data(std::string const& game_data_path,
+        std::string const& lang_code, GameData& game_data)
 {
-    public:
+    game_data.pstrings_data = pstrings::init_data(game_data_path, lang_code);
+    if(!game_data.pstrings_data) {
+        return false;
+    }
 
-        ~Game();
-        bool init(pargs::args_data const& args_data);
-        bool run();
+    game_data.rooms_data = rooms::init_data(game_data.pstrings_data,
+            game_data_path);
+    if(!game_data.rooms_data) {
+        return false;
+    }
 
-    private:
+    game_data.cs_data = cutscenes::init(game_data_path);
+    if(!game_data.cs_data) {
+        return false;
+    }
 
-        std::string m_start_room;
-        GameData game_data;
-};
-#endif
+    return true;
+}

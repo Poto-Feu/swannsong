@@ -73,14 +73,6 @@ bool Game::init(pargs::args_data const& args_data)
 
     pcurses::init();
     game_lang::lang_init(lcv, lang_info);
-    this->pstrings_data = pstrings::init_data(p_paths.data_path,
-            lang_info.code);
-
-    this->rooms_data = rooms::init_data(this->pstrings_data,
-            p_paths.data_path);
-    if(!this->rooms_data) {
-        return false;
-    }
 
     csfile_values = gameconf::get_var(gameconf_vars, "csfile");
     firstroom_values = gameconf::get_var(gameconf_vars, "firstroom");
@@ -92,9 +84,8 @@ bool Game::init(pargs::args_data const& args_data)
         return false;
     }
 
-    this->cs_data = cutscenes::init(p_paths.data_path);
-
-    if(!this->cs_data || game_error::has_encountered_fatal()) {
+    if(!init_game_data(p_paths.data_path, lang_info.code, this->game_data)
+            || game_error::has_encountered_fatal()) {
         return false;
     } else if(!LocalConfVars::write_to_file(lcv, p_paths.local_conf_path)) {
         return false;
@@ -112,7 +103,7 @@ bool Game::run()
     std::string current_room_id = this->m_start_room;
 
     while(!game_state.should_game_exit) {
-        Room const* room = rooms::get_room(this->rooms_data,
+        Room const* room = rooms::get_room(this->game_data.rooms_data,
                 current_room_id);
 
         if(!room) {
@@ -124,8 +115,7 @@ bool Game::run()
 
         rls.resetGameOver();
 
-        if(!room->load(pstrings_data, this->rooms_data, this->cs_data , player,
-                    rls, game_state)) {
+        if(!room->load(game_data, player, rls, game_state)) {
             return false;
         }
         if(!game_state.should_game_exit) {

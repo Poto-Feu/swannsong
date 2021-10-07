@@ -30,9 +30,7 @@
 #include "savefile.hpp"
 #include "stringsm.hpp"
 
-bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
-        rooms::RoomsData_ptr const& rooms_data,
-        cutscenes::csdata_ptr const& cs_data, Room const& room,
+bool userio::interpret_user_input(GameData const& game_data, Room const& room,
         Player& player, RoomDisplay const& room_display, RoomLoopState& rls,
         game_state_s& game_state, std::string& menu_input, bool& wrong_input)
 {
@@ -68,18 +66,19 @@ bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
 
             //Process the input if it is a number corresponding to a choice
             if(!parser::exec_until_end(current_choice->getInstructions(),
-                    rooms_data, room, parser::block_type::CHOICE, player, rls,
-                    nullptr, game_state, displayed_cs, start_ln)) {
+                    game_data.rooms_data, room, parser::block_type::CHOICE,
+                    player, rls, nullptr, game_state, displayed_cs,
+                    start_ln)) {
                 return false;
             }
 
             for(auto const& it : displayed_cs) {
-                auto const* cs = cutscenes::get(cs_data, it);
+                auto const* cs = cutscenes::get(game_data.cs_data, it);
 
                 if(!cs) {
                     game_error::emit_warning("Unknown cutscene");
                 } else {
-                    rendering::display_cutscene(pstrings_data, *cs);
+                    rendering::display_cutscene(game_data.pstrings_data, *cs);
                 }
             }
         } else {
@@ -96,15 +95,14 @@ bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
             std::vector<std::string> dialogbox_strs;
 
             if(savefile_data.error == loading_error::NO_FILE) {
-                dialogbox_strs.push_back(pstrings::fetch_string(pstrings_data,
-                            "load_nofile"));
+                dialogbox_strs.push_back(pstrings::fetch_string(
+                            game_data.pstrings_data, "load_nofile"));
             } else {
-                dialogbox_strs.push_back(
-                        pstrings::fetch_string(pstrings_data,
-                            "load_corrupted"));
+                dialogbox_strs.push_back(pstrings::fetch_string(
+                            game_data.pstrings_data, "load_corrupted"));
             }
 
-            dialogbox::display(NULL, &dialogbox_strs, pstrings_data);
+            dialogbox::display(NULL, &dialogbox_strs, game_data.pstrings_data);
         } else {
             game_state.next_room = savefile_data.current_room;
             player.inv = std::move(savefile_data.gitems);
@@ -114,20 +112,20 @@ bool userio::interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
         if(savefile::save(player, room.getName(),
                 files_path::get_local_data_path())) {
             std::vector<std::string> dialogbox_strs = {
-                pstrings::fetch_string(pstrings_data, "save_success")
+                pstrings::fetch_string(game_data.pstrings_data, "save_success")
             };
 
-            dialogbox::display(NULL, &dialogbox_strs, pstrings_data);
+            dialogbox::display(NULL, &dialogbox_strs, game_data.pstrings_data);
         }
     } else if(menu_input == "help") {
-        auto const* cs = cutscenes::get(cs_data, "help");
+        auto const* cs = cutscenes::get(game_data.cs_data, "help");
 
         /* TODO: find a fallback if help cutscene is not found */
         if(cs) {
-            rendering::display_cutscene(pstrings_data, *cs);
+            rendering::display_cutscene(game_data.pstrings_data, *cs);
         }
     } else if(menu_input == "inv" || menu_input == "inventory") {
-        rendering::display_inventory(pstrings_data, player.inv);
+        rendering::display_inventory(game_data.pstrings_data, player.inv);
     } else {
         wrong_input = true;
     }

@@ -21,8 +21,7 @@
 #ifndef USERIO_HPP
 #define USERIO_HPP
 
-#include "cutsecenes.hpp"
-#include "room/rooms.hpp"
+#include "game_data.hpp"
 
 struct Player;
 struct RoomDisplay;
@@ -32,9 +31,7 @@ class RoomLoopState;
 
 namespace userio
 {
-    bool interpret_user_input(pstrings::ps_data_ptr const& pstrings_data,
-            rooms::RoomsData_ptr const& rooms_data,
-            cutscenes::csdata_ptr const& cs_data, Room const& room,
+    bool interpret_user_input(GameData const& game_data, Room const& room,
             Player& player, RoomDisplay const& room_display,
             RoomLoopState& rls, game_state_s& game_state, std::string& input,
             bool& has_wrong_input);
